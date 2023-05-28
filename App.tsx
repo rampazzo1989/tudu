@@ -16,6 +16,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import Animated, {FadeInDown, FadeInUp} from 'react-native-reanimated';
 
 import {
   Colors,
@@ -71,7 +72,9 @@ function App(): JSX.Element {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
+        <Animated.View entering={FadeInDown}>
+          <Header />
+        </Animated.View>
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
