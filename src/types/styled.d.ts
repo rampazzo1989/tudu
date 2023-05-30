@@ -7,11 +7,18 @@ declare module 'styled-components/native' {
       secondary: string;
       pageBackground: string;
       text: string;
+      headerText: string;
       tabbar: string;
+      listCard: string;
+      listCardHighlighted: string;
+      listCardNumber: string;
+      listCardNumberHighlighted: string;
     };
     fonts: {
       header: string;
-      text: string;
+      itemLabel: string;
+      listCardLabel: string;
+      listCardLabelHighlighted: string;
       title: string;
     };
   }

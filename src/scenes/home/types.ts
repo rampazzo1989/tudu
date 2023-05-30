@@ -4,3 +4,10 @@ import {StackNavigatorParamList} from '../../navigation/stack-navigator/types';
 type HomePageProps = NativeStackScreenProps<StackNavigatorParamList, 'Home'>;
 
 export type {HomePageProps};
+
+export type List = {
+  icon: string;
+  label: string;
+  isHighlighted: boolean;
+  numberOfActiveItems: number;
+};

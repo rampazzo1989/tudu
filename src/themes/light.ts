@@ -6,11 +6,14 @@ const lightTheme: DefaultTheme = {
     secondary: '#6B49B7',
     pageBackground: '#FFFFFF',
     text: '#444B56',
+    headerText: '#FFFFFF',
     tabbar: '#2D344A',
   },
   fonts: {
     header: 'Inter-SemiBold',
-    text: 'Inter-Regular',
+    itemLabel: 'Inter-Regular',
+    listCardLabel: 'Inter-Regular',
+    listCardLabelHighlighted: 'Inter-Regular',
     title: 'Inter-Regular',
   },
 };
