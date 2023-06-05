@@ -1,10 +1,16 @@
 import styled from 'styled-components/native';
+import {AppIcon} from '../../assets/static/app_icon';
+import {LogoText} from '../../assets/static/logo_text';
 
 export const HeaderContent = styled.View`
   width: 100%;
   height: 82px;
   margin-bottom: -16px;
   background-color: ${({theme}) => theme.colors.primary};
+  padding-bottom: 32px;
+  padding-left: 18px;
+  padding-right: 18px;
+  justify-content: flex-end;
 `;
 
 export const TitleBackground = styled.View`
@@ -16,4 +22,18 @@ export const TitleBackground = styled.View`
   top: 0;
   left: 0;
   background-color: ${({theme}) => theme.colors.secondary};
+`;
+
+export const LogoAndTitle = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const LogoIcon = styled(AppIcon).attrs(() => ({
+  height: 30,
+  width: 30,
+}))``;
+
+export const LogoTitle = styled(LogoText).attrs(() => ({}))`
+  margin-left: 8px;
 `;

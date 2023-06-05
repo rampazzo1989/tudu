@@ -5,7 +5,7 @@ type HighlightableComponentProps = {
   isHighlighted: boolean;
 };
 
-export const ListCardContainer = styled.View<HighlightableComponentProps>`
+export const ListCardContainer = styled.TouchableOpacity<HighlightableComponentProps>`
   height: 46px;
   width: 100%;
   padding: 12px 16px;
