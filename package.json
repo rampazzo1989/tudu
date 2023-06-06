@@ -13,6 +13,8 @@
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "@types/styled-components-react-native": "^5.2.1",
+    "lottie-ios": "3.4.0",
+    "lottie-react-native": "^5.1.6",
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-reanimated": "^3.1.0",
