@@ -5,4 +5,5 @@ export const PageContentContainer = styled.View`
   background-color: ${({theme}) => theme.colors.pageBackground};
   border-top-right-radius: 16px;
   border-top-left-radius: 16px;
+  padding: 30px 20px;
 `;
