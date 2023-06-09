@@ -13,6 +13,8 @@ declare module 'styled-components/native' {
       listCardHighlighted: string;
       listCardNumber: string;
       listCardNumberHighlighted: string;
+      profileThumbBackground: string;
+      profileThumbText: string;
     };
     fonts: {
       header: string;
@@ -20,6 +22,7 @@ declare module 'styled-components/native' {
       listCardLabel: string;
       listCardLabelHighlighted: string;
       title: string;
+      initials: string;
     };
   }
 }

@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {Pressable, TouchableNativeFeedback} from 'react-native';
+import {Pressable, StyleSheet, TouchableNativeFeedback} from 'react-native';
 import {
   Container,
   IconLabelContainer,
@@ -22,14 +22,14 @@ const NumberOfActiveItems: React.FC<NumberOfActiveItemsProps> = memo(
 );
 
 const ListCard: React.FC<ListCardProps> = memo(
-  ({icon, label, numberOfActiveItems, style, isHighlighted = false}) => {
+  ({Icon, label, numberOfActiveItems, style, isHighlighted = false}) => {
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}
         style={style}
         onPress={() => console.log('LIST CARD TOUCH', {label})}>
         <IconLabelContainer>
-          {/* ICON */}
+          <Icon />
           <Label isHighlighted={isHighlighted}>{label}</Label>
         </IconLabelContainer>
         <NumberOfActiveItems

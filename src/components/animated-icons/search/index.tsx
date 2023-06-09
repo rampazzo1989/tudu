@@ -1,18 +1,17 @@
-import Lottie from 'lottie-react-native';
-import React, {memo, useEffect, useRef} from 'react';
-import {useIdlyAnimatedComponent} from '../../../hooks/useIdlyAnimatedComponent';
+import React, {memo} from 'react';
+import {AnimatedIconProps} from '../animated-icon/types';
+import {AnimatedIcon} from './styles';
 
-const SearchIcon: React.FC = memo(() => {
-  const animationRef = useRef<Lottie>(null);
-
-  useIdlyAnimatedComponent(animationRef, 'SearchIcon', 60);
-
+const SearchIcon: React.FC<AnimatedIconProps> = memo(props => {
   return (
-    <Lottie
-      source={require('../../../assets/lottie/search.json')}
-      ref={animationRef}
+    <AnimatedIcon
       loop={false}
-      style={{marginLeft: 40}}
+      initialFrame={60}
+      finalFrame={150}
+      animateWhenIdle
+      componentName="SearchIcon"
+      source={require('../../../assets/lottie/search.json')}
+      {...props}
     />
   );
 });

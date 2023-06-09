@@ -1,18 +1,28 @@
 import React, {memo} from 'react';
-import {CalendarIcon} from '../../../../components/animated-icons/calendar';
 import {SearchIcon} from '../../../../components/animated-icons/search';
 import {Header} from '../../../../components/header';
-import {LogoAndTitle, LogoIcon, LogoTitle} from './styles';
+import {
+  ContentRow,
+  LogoAndTitle,
+  LogoIcon,
+  LogoTitle,
+  ProfileThumb,
+  SearchAndProfile,
+} from './styles';
 
 const HomeHeader: React.FC = memo(() => {
   return (
     <Header>
-      <LogoAndTitle>
-        <LogoIcon />
-        <LogoTitle />
-        <SearchIcon />
-        <CalendarIcon />
-      </LogoAndTitle>
+      <ContentRow>
+        <LogoAndTitle>
+          <LogoIcon />
+          <LogoTitle />
+        </LogoAndTitle>
+        <SearchAndProfile>
+          <SearchIcon />
+          <ProfileThumb initials="FR" />
+        </SearchAndProfile>
+      </ContentRow>
     </Header>
   );
 });

@@ -12,6 +12,8 @@ const darkTheme: DefaultTheme = {
     listCardHighlighted: '#444B56',
     listCardNumber: '#444B56',
     listCardNumberHighlighted: '#3C414A',
+    profileThumbBackground: '#FFFFFF',
+    profileThumbText: '#212529',
   },
   fonts: {
     header: 'Inter-SemiBold',
@@ -19,6 +21,7 @@ const darkTheme: DefaultTheme = {
     listCardLabel: 'Inter-Regular',
     listCardLabelHighlighted: 'Inter-Regular',
     title: 'Inter-Regular',
+    initials: 'Inter-Medium',
   },
 };
 

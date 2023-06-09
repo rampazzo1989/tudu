@@ -19,8 +19,8 @@ export const ListCardContainer = styled.TouchableOpacity<HighlightableComponentP
 
 export const IconLabelContainer = styled.View`
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
 `;
 
 export const Label = styled.Text<HighlightableComponentProps>`
@@ -28,8 +28,10 @@ export const Label = styled.Text<HighlightableComponentProps>`
     isHighlighted
       ? theme.fonts.listCardLabelHighlighted
       : theme.fonts.listCardLabel};
-  font-size: ${({isHighlighted}) => (isHighlighted ? 20 : 18)}px;
+  font-size: 18px;
   color: ${({theme}) => theme.colors.text};
+  margin-left: 10px;
+  line-height: 22px;
 `;
 
 export const Container = styled.View<NumberOfActiveItemsProps>`

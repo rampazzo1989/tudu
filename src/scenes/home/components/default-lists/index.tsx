@@ -7,7 +7,7 @@ const DefaultLists: React.FC<DefaultListsProps> = memo(({lists}) => {
     <>
       {lists.map(list => (
         <StyledListCard
-          icon={list.icon}
+          Icon={list.icon}
           label={list.label}
           numberOfActiveItems={list.numberOfActiveItems}
           isHighlighted={list.isHighlighted}

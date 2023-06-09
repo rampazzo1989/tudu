@@ -1,17 +1,17 @@
-import Lottie from 'lottie-react-native';
-import React, {memo, useEffect, useRef} from 'react';
-import {useIdlyAnimatedComponent} from '../../../hooks/useIdlyAnimatedComponent';
+import React, {memo} from 'react';
+import {BaseAnimatedIcon} from '../animated-icon';
+import {AnimatedIconProps} from '../animated-icon/types';
 
-const CalendarIcon: React.FC = memo(() => {
-  const animationRef = useRef<Lottie>(null);
-
-  useIdlyAnimatedComponent(animationRef, 'CalendarIcon', 60, 150);
-
+const CalendarIcon: React.FC<AnimatedIconProps> = memo(props => {
   return (
-    <Lottie
+    <BaseAnimatedIcon
       source={require('../../../assets/lottie/calendar.json')}
-      ref={animationRef}
       loop={false}
+      componentName="CalendarIcon"
+      initialFrame={60}
+      finalFrame={150}
+      animateWhenIdle
+      {...props}
     />
   );
 });
