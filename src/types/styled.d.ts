@@ -15,6 +15,9 @@ declare module 'styled-components/native' {
       listCardNumberHighlighted: string;
       profileThumbBackground: string;
       profileThumbText: string;
+      sectionTitleBorder: string;
+      counterTile: string;
+      counterIconBackground: string;
     };
     fonts: {
       header: string;
@@ -22,7 +25,9 @@ declare module 'styled-components/native' {
       listCardLabel: string;
       listCardLabelHighlighted: string;
       title: string;
+      sectionTitle: string;
       initials: string;
+      counterTitle: string;
     };
   }
 }

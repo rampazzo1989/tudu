@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import {atom} from 'recoil';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
@@ -9,19 +10,19 @@ export const homeDefaultLists = atom<List[]>({
   default: [
     {
       icon: SunIcon,
-      label: 'Today',
+      label: i18next.t('listTitles.today'),
       isHighlighted: true,
       numberOfActiveItems: 0,
     },
     {
       icon: ListDefaultIcon,
-      label: 'All tasks',
+      label: i18next.t('listTitles.allTasks'),
       isHighlighted: false,
       numberOfActiveItems: 0,
     },
     {
       icon: StarIcon,
-      label: 'Starred',
+      label: i18next.t('listTitles.starred'),
       isHighlighted: false,
       numberOfActiveItems: 0,
     },

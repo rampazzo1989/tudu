@@ -13,6 +13,7 @@ const lightTheme: DefaultTheme = {
     listCardNumber: '#444B56',
     listCardNumberHighlighted: '#3C414A',
     profileThumbBackground: '#FFFFFF',
+    sectionTitleBorder: '#444B56',
   },
   fonts: {
     header: 'Inter-SemiBold',
