@@ -3,7 +3,7 @@ import {atom} from 'recoil';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
 import {SunIcon} from '../../components/animated-icons/sun-icon';
-import {List} from './types';
+import {Counter, List} from './types';
 
 export const homeDefaultLists = atom<List[]>({
   key: 'homeDefaultLists',
@@ -25,6 +25,27 @@ export const homeDefaultLists = atom<List[]>({
       label: i18next.t('listTitles.starred'),
       isHighlighted: false,
       numberOfActiveItems: 0,
+    },
+  ],
+});
+
+export const counters = atom<Counter[]>({
+  key: 'counters',
+  default: [
+    {
+      title: 'Glasses of water today',
+      value: 8,
+      format: 'general',
+    },
+    {
+      title: 'Money saved',
+      value: 2400000,
+      format: 'currency',
+    },
+    {
+      title: 'Extra hours this week',
+      value: 7,
+      format: 'general',
     },
   ],
 });

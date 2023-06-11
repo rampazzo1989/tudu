@@ -6,5 +6,6 @@ export const en = {
   },
   sectionTitles: {
     counters: 'Counters',
+    myLists: 'My Lists',
   },
 };

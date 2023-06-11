@@ -27,6 +27,7 @@ const darkTheme: DefaultTheme = {
     sectionTitle: 'Inter-SemiBold',
     initials: 'Inter-Medium',
     counterTitle: 'Inter-Regular',
+    counterValue: 'Inter-Regular',
   },
 };
 

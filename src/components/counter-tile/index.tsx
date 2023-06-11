@@ -1,15 +1,33 @@
 import React, {memo, useCallback} from 'react';
-import {IconContainer, Tile, TileTitleContainer, Title} from './styles';
-import {CounterTileProps, TileTitleProps} from './types';
+import {AdjustIcon} from '../animated-icons/adjust-icon';
+import {HashIcon} from '../animated-icons/hash-icon';
+import {
+  ButtonContainer,
+  ChangeValueButton,
+  CounterText,
+  IconContainer,
+  Tile,
+  TileTitleContainer,
+  Title,
+} from './styles';
+import {CounterTileProps, CounterValueProps, TileTitleProps} from './types';
 
 const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
   return (
     <TileTitleContainer>
       <IconContainer>
-        <CounterIcon />
+        <HashIcon />
       </IconContainer>
       <Title>{title}</Title>
     </TileTitleContainer>
+  );
+});
+
+const CounterValue: React.FC<CounterValueProps> = memo(({value, format}) => {
+  return (
+    <CounterText adjustsFontSizeToFit numberOfLines={1}>
+      {value}
+    </CounterText>
   );
 });
 
@@ -23,7 +41,11 @@ const CounterTile: React.FC<CounterTileProps> = memo(
       <Tile>
         <TileTitle title={title} />
         <CounterValue value={value} format={format} />
-        <ChangeValueButton onPress={handleChangeButtonPress} />
+        <ButtonContainer>
+          <ChangeValueButton onPress={handleChangeButtonPress}>
+            <AdjustIcon />
+          </ChangeValueButton>
+        </ButtonContainer>
       </Tile>
     );
   },

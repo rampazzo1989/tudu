@@ -28,6 +28,7 @@ declare module 'styled-components/native' {
       sectionTitle: string;
       initials: string;
       counterTitle: string;
+      counterValue: string;
     };
   }
 }

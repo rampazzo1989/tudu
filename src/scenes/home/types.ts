@@ -12,3 +12,9 @@ export type List = {
   isHighlighted: boolean;
   numberOfActiveItems: number;
 };
+
+export type Counter = {
+  title: string;
+  value: number;
+  format: 'general' | 'currency';
+};
