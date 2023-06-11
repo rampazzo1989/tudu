@@ -47,7 +47,7 @@ export const ButtonContainer = styled.View`
   width: 100%;
 `;
 
-export const ChangeValueButton = styled.TouchableOpacity`
+export const Button = styled.TouchableOpacity`
   height: 14px;
   width: 26px;
   background-color: ${({theme}) => theme.colors.primary};

@@ -1,37 +1,62 @@
 import Lottie from 'lottie-react-native';
-import React, {memo, useEffect, useRef} from 'react';
+import React, {
+  forwardRef,
+  memo,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import {useIdlyAnimatedComponent} from '../../../hooks/useIdlyAnimatedComponent';
-import {BaseAnimatedIconProps} from './types';
+import {BaseAnimatedIconProps, BaseAnimatedIconRef} from './types';
 
-const BaseAnimatedIcon: React.FC<BaseAnimatedIconProps> = memo(
-  ({
-    componentName,
-    initialFrame,
-    finalFrame,
-    animateWhenIdle = false,
-    ...props
-  }) => {
-    const animationRef = useRef<Lottie>(null);
+const BaseAnimatedIcon = memo(
+  forwardRef<BaseAnimatedIconRef, BaseAnimatedIconProps>(
+    (
+      {
+        componentName,
+        initialFrame = 0,
+        finalFrame = 500,
+        animateWhenIdle = false,
+        ...props
+      },
+      ref,
+    ) => {
+      const animationRef = useRef<Lottie>(null);
 
-    useEffect(() => {
-      if (props.autoPlay) {
-        console.log('here');
-        setTimeout(() => {
-          animationRef.current?.play(0, 500);
-        }, 500);
-      }
-    }, [props.autoPlay]);
+      useImperativeHandle(
+        ref,
+        () => {
+          return {
+            play() {
+              animationRef.current?.play(initialFrame, finalFrame);
+            },
+            pause() {
+              animationRef.current?.pause();
+            },
+          };
+        },
+        [finalFrame, initialFrame],
+      );
 
-    useIdlyAnimatedComponent({
-      componentRef: animationRef,
-      componentName: componentName,
-      initialFrame,
-      finalFrame,
-      shouldAnimate: animateWhenIdle,
-    });
+      useEffect(() => {
+        if (props.autoPlay) {
+          setTimeout(() => {
+            animationRef.current?.play(initialFrame, finalFrame);
+          }, 500);
+        }
+      }, [finalFrame, initialFrame, props.autoPlay]);
 
-    return <Lottie ref={animationRef} loop={false} {...props} />;
-  },
+      useIdlyAnimatedComponent({
+        componentRef: animationRef,
+        componentName: componentName,
+        initialFrame,
+        finalFrame,
+        shouldAnimate: animateWhenIdle,
+      });
+
+      return <Lottie loop={false} {...props} ref={animationRef} />;
+    },
+  ),
 );
 
 export {BaseAnimatedIcon};

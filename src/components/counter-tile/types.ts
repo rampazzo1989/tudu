@@ -7,3 +7,7 @@ export type CounterTileProps = {
 export type TileTitleProps = Pick<CounterTileProps, 'title'>;
 
 export type CounterValueProps = Pick<CounterTileProps, 'value' | 'format'>;
+
+export type AdjustButtonProps = {
+  onChangeButtonPress: () => void;
+};

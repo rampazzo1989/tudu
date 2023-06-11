@@ -1,18 +1,38 @@
-import React, {memo} from 'react';
-import {AnimatedIconProps} from '../animated-icon/types';
+import React, {forwardRef, memo, useImperativeHandle, useRef} from 'react';
+import {AnimatedIconProps, BaseAnimatedIconRef} from '../animated-icon/types';
 import {AnimatedIcon} from './styles';
 
-const AdjustIcon: React.FC<AnimatedIconProps> = memo(props => {
-  return (
-    <AnimatedIcon
-      source={require('../../../assets/lottie/adjust.json')}
-      loop={false}
-      componentName="AdjustIcon"
-      animateWhenIdle
-      initialFrame={90}
-      {...props}
-    />
-  );
-});
+const AdjustIcon = memo(
+  forwardRef<BaseAnimatedIconRef, AnimatedIconProps>((props, ref) => {
+    const iconRef = useRef<BaseAnimatedIconRef>(null);
+
+    useImperativeHandle(
+      ref,
+      () => {
+        return {
+          play() {
+            iconRef.current?.play();
+          },
+          pause() {
+            iconRef.current?.pause();
+          },
+        };
+      },
+      [],
+    );
+
+    return (
+      <AnimatedIcon
+        source={require('../../../assets/lottie/adjust.json')}
+        loop={false}
+        componentName="AdjustIcon"
+        animateWhenIdle
+        initialFrame={90}
+        ref={iconRef}
+        {...props}
+      />
+    );
+  }),
+);
 
 export {AdjustIcon};

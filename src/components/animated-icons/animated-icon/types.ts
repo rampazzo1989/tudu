@@ -11,3 +11,5 @@ export type AnimatedIconProps = Omit<
   BaseAnimatedIconProps,
   'componentName' | 'source'
 >;
+
+export type BaseAnimatedIconRef = {play: () => void; pause: () => void};
