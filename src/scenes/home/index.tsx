@@ -18,6 +18,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   return (
     <Page>
+      {'Ola'}
       <HomeHeader />
       <PageContent>
         <DefaultLists lists={lists} />

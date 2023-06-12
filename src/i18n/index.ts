@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import {initReactI18next} from 'react-i18next';
-import {en} from '../locale/en';
-import {pt} from '../locale/pt';
+import en from '../locale/en.json';
+import pt from '../locale/pt.json';
 
 export const defaultNS = 'translation';
 

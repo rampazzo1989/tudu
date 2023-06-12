@@ -1,0 +1,11 @@
+{
+  "listTitles": {
+    "today": "Hoje",
+    "allTasks": "Todas as tarefas",
+    "starred": "Favoritas"
+  },
+  "sectionTitles": {
+    "counters": "Contadores",
+    "myLists": "Minhas listas"
+  }
+}
