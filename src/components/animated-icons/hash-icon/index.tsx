@@ -7,7 +7,7 @@ const HashIcon: React.FC<AnimatedIconProps> = memo(props => {
     <AnimatedIcon
       source={require('../../../assets/lottie/hash.json')}
       loop={false}
-      componentName="StarIcon"
+      componentName="HashIcon"
       animateWhenIdle
       {...props}
     />

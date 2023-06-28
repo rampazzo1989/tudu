@@ -12,7 +12,7 @@ const Page: React.FC<PageProps> = memo(({children}) => {
   const theme = useTheme();
   const idlyAnimatedRefs = useRecoilValue(idlyAnimatedComponents);
   const isIdle = useIdle();
-  const idleTimerId = useRef<number>();
+  const idleTimerId = useRef<NodeJS.Timer>();
   const animationPosition = useRef<number>(0);
 
   useEffect(() => {
@@ -31,12 +31,7 @@ const Page: React.FC<PageProps> = memo(({children}) => {
             shuffledOrder = generateShuffledArray(idlyAnimatedRefs.length);
           }
 
-          const initialFrame = idlyAnimatedRefs[position].initialFrame ?? 0;
-          const finalFrame = idlyAnimatedRefs[position].finalFrame ?? 500;
-          idlyAnimatedRefs[position].componentRef?.current?.play(
-            initialFrame,
-            finalFrame,
-          );
+          idlyAnimatedRefs[position].animateFunction();
         }, TIME_BETWEEN_IDLE_ANIMATIONS);
       } else if (idleTimerId.current) {
         clearInterval(idleTimerId.current);

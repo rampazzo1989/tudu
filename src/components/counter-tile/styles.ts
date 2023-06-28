@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import {FadingView} from '../fading-view';
 
 export const Tile = styled.View`
   height: 100px;
@@ -45,6 +46,8 @@ export const ButtonContainer = styled.View`
   align-items: center;
   justify-content: flex-end;
   width: 100%;
+  position: absolute;
+  bottom: 0;
 `;
 
 export const Button = styled.TouchableOpacity`
@@ -54,4 +57,17 @@ export const Button = styled.TouchableOpacity`
   border-radius: 12px;
   align-items: center;
   justify-content: center;
+`;
+
+export const ReplacebleContainer = styled(FadingView)`
+  border: 1px solid blue;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  padding-bottom: 6px;
+`;
+
+export const EditingContainer = styled(FadingView)`
+  border: 1px solid red;
+  flex: 1;
 `;

@@ -1,11 +1,11 @@
 import Lottie from 'lottie-react-native';
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {useSetRecoilState} from 'recoil';
 import {idlyAnimatedComponents} from '../state/atoms';
 
 type UseIdlyAnimatedComponent = {
-  componentRef: React.RefObject<Lottie>;
-  componentName: string;
+  componentRef: React.MutableRefObject<Lottie | null>;
+  componentKey: string;
   initialFrame?: number;
   finalFrame?: number;
   shouldAnimate?: boolean;
@@ -13,12 +13,16 @@ type UseIdlyAnimatedComponent = {
 
 const useIdlyAnimatedComponent = ({
   componentRef,
-  componentName,
+  componentKey,
   initialFrame = 0,
   finalFrame = 500,
   shouldAnimate = true,
 }: UseIdlyAnimatedComponent) => {
   const setIdlyAnimatedComponent = useSetRecoilState(idlyAnimatedComponents);
+
+  const animate = useCallback(() => {
+    componentRef?.current?.play(initialFrame, finalFrame);
+  }, [componentRef, finalFrame, initialFrame]);
 
   // Starts the animation from the last frame (to show the image static in the last frame).
   useEffect(() => {
@@ -27,28 +31,39 @@ const useIdlyAnimatedComponent = ({
     }
 
     componentRef.current?.play(finalFrame, finalFrame);
-    setIdlyAnimatedComponent(current => [
-      ...current,
-      {componentRef, componentName, initialFrame, finalFrame},
-    ]);
 
-    console.log('HERE');
+    setIdlyAnimatedComponent(current => {
+      console.log('INSIDE SETTER', {componentKey});
+      var newArray = current.filter(x => x.componentKey !== componentKey);
+
+      return [
+        ...newArray,
+        {
+          animateFunction: animate,
+          componentKey,
+          initialFrame,
+          finalFrame,
+        },
+      ];
+    });
 
     return () => {
-      setIdlyAnimatedComponent(current =>
-        current.filter(x => x.componentName === componentName),
-      );
+      console.log('SAINDO', {componentKey});
+
+      setIdlyAnimatedComponent(current => {
+        var a = current.filter(x => x.componentKey !== componentKey);
+        return [...a];
+      });
     };
   }, [
-    componentName,
+    animate,
+    componentKey,
     componentRef,
     finalFrame,
     initialFrame,
     setIdlyAnimatedComponent,
     shouldAnimate,
   ]);
-
-  // Registers the component on the state
 };
 
 export {useIdlyAnimatedComponent};

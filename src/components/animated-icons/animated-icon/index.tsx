@@ -6,6 +6,7 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
+import {useHashGenerator} from '../../../hooks/useHashGenerator';
 import {useIdlyAnimatedComponent} from '../../../hooks/useIdlyAnimatedComponent';
 import {BaseAnimatedIconProps, BaseAnimatedIconRef} from './types';
 
@@ -21,7 +22,7 @@ const BaseAnimatedIcon = memo(
       },
       ref,
     ) => {
-      const animationRef = useRef<Lottie>(null);
+      const animationRef = useRef<Lottie | null>(null);
 
       useImperativeHandle(
         ref,
@@ -46,9 +47,11 @@ const BaseAnimatedIcon = memo(
         }
       }, [finalFrame, initialFrame, props.autoPlay]);
 
+      const {key: componentKey} = useHashGenerator({componentName});
+
       useIdlyAnimatedComponent({
         componentRef: animationRef,
-        componentName: componentName,
+        componentKey,
         initialFrame,
         finalFrame,
         shouldAnimate: animateWhenIdle,
