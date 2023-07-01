@@ -11,3 +11,11 @@ export type CounterValueProps = Pick<CounterTileProps, 'value' | 'format'>;
 export type AdjustButtonProps = {
   onChangeButtonPress: () => void;
 };
+
+export type OptionsButtonProps = {
+  onOptionsButtonPress: () => void;
+};
+
+export type ActionButtonProps = {
+  onAction: () => void;
+};

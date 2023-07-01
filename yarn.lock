@@ -6795,6 +6795,11 @@ react-native-gradle-plugin@^0.71.18:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.19.tgz#3379e28341fcd189bc1f4691cefc84c1a4d7d232"
   integrity sha512-1dVk9NwhoyKHCSxcrM6vY6cxmojeATsBobDicX0ZKr7DgUF2cBQRTKsimQFvzH8XhOVXyH8p4HyDSZNIFI8OlQ==
 
+react-native-linear-gradient@^2.7.3:
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.7.3.tgz#f77b71ed7c955e033f9cba5fc8478df57953eb27"
+  integrity sha512-iyJszlZ1Ech2c+2qV+isMvvJKyoctR9ashDkhJg1/cuSF0vQaeLV1FAYTT3qW9doxChJGxVAFfYoxotH0yi3Iw==
+
 react-native-quick-base64@^2.0.5, react-native-quick-base64@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/react-native-quick-base64/-/react-native-quick-base64-2.0.6.tgz#be5d02186697dafea9cce6b982ba6a2322f2ce42"
@@ -7145,6 +7150,11 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
+
+rn-faded-scrollview@^1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/rn-faded-scrollview/-/rn-faded-scrollview-1.0.13.tgz#b80ae08ba61e4a097bae2526d55123f69ff277de"
+  integrity sha512-Io0rAuk/0q70/Ff6kojSwMi88HyvsgOAZ7D/UyRMwqY3hSmvdzr8C6mOdt4pukV5rsJICY8a6hAtJ1DvoognMg==
 
 run-parallel@^1.1.9:
   version "1.2.0"

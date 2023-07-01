@@ -18,6 +18,8 @@ declare module 'styled-components/native' {
       sectionTitleBorder: string;
       counterTile: string;
       counterIconBackground: string;
+      optionsButtonBackground: string;
+      scrollFadeGradientColors: string[];
     };
     fonts: {
       header: string;

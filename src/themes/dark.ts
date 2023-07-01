@@ -17,6 +17,12 @@ const darkTheme: DefaultTheme = {
     sectionTitleBorder: '#444B56',
     counterTile: '#3C414A',
     counterIconBackground: '#2B3139',
+    optionsButtonBackground: '#2B3139',
+    scrollFadeGradientColors: [
+      'rgba(37, 48, 61, 0.18)',
+      'rgba(37, 48, 61, 0.6)',
+      'rgba(37, 48, 61, 0.9)',
+    ],
   },
   fonts: {
     header: 'Inter-SemiBold',

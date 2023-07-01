@@ -1,3 +1,4 @@
+import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {FadingView} from '../fading-view';
 
@@ -41,13 +42,17 @@ export const CounterText = styled.Text`
   color: ${({theme}) => theme.colors.text};
 `;
 
-export const ButtonContainer = styled.View`
+export const EditingCounterText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.counterValue};
+  font-size: 24px;
+  color: ${({theme}) => theme.colors.text};
+`;
+
+export const ButtonContainer = styled(Animated.View)`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
   width: 100%;
-  position: absolute;
-  bottom: 0;
 `;
 
 export const Button = styled.TouchableOpacity`
@@ -59,15 +64,41 @@ export const Button = styled.TouchableOpacity`
   justify-content: center;
 `;
 
+export const OptionsButton = styled.TouchableOpacity`
+  height: 14px;
+  width: 26px;
+  background-color: ${({theme}) => theme.colors.optionsButtonBackground};
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const ReplacebleContainer = styled(FadingView)`
-  border: 1px solid blue;
   align-items: center;
   justify-content: space-between;
-  flex: 1;
-  padding-bottom: 6px;
+  width: 100%;
+  height: 100%;
 `;
 
 export const EditingContainer = styled(FadingView)`
-  border: 1px solid red;
-  flex: 1;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const ActionButtonContainer = styled.TouchableOpacity`
+  height: 34px;
+  width: 34px;
+  background-color: ${({theme}) => theme.colors.primary};
+  border-radius: 20px;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const ActionButtonsContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;

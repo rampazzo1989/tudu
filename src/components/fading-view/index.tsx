@@ -12,8 +12,8 @@ const FadingView: React.FC<FadingViewProps> = memo(
       <>
         {visible ? (
           <Animated.View
-            entering={FadeInUp.duration(100)}
-            exiting={FadeOutUp.duration(100)}
+            entering={FadeInUp.duration(300)}
+            exiting={FadeOutUp.duration(300)}
             style={style}>
             {children}
           </Animated.View>
