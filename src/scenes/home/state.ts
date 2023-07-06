@@ -3,9 +3,9 @@ import {atom} from 'recoil';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
 import {SunIcon} from '../../components/animated-icons/sun-icon';
-import {Counter, List} from './types';
+import {Counter, BuiltInList, List, MyLists} from './types';
 
-export const homeDefaultLists = atom<List[]>({
+export const homeDefaultLists = atom<BuiltInList[]>({
   key: 'homeDefaultLists',
   default: [
     {
@@ -48,4 +48,34 @@ export const counters = atom<Counter[]>({
       format: 'general',
     },
   ],
+});
+
+export const myLists = atom<MyLists>({
+  key: 'myLists',
+  default: {
+    ungroupedLists: [
+      {
+        label: 'Movies',
+        color: 'green',
+        numberOfActiveItems: 1,
+      },
+    ],
+    groups: [
+      {
+        title: 'Travel',
+        lists: [
+          {
+            label: 'America',
+            color: 'red',
+            numberOfActiveItems: 10,
+          },
+          {
+            label: 'Europe',
+            color: 'blue',
+            numberOfActiveItems: 12,
+          },
+        ],
+      },
+    ],
+  },
 });

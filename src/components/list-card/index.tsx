@@ -1,5 +1,4 @@
 import React, {memo} from 'react';
-import {Pressable, StyleSheet, TouchableNativeFeedback} from 'react-native';
 import {
   Container,
   IconLabelContainer,

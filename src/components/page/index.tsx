@@ -31,7 +31,7 @@ const Page: React.FC<PageProps> = memo(({children}) => {
             shuffledOrder = generateShuffledArray(idlyAnimatedRefs.length);
           }
 
-          idlyAnimatedRefs[position].animateFunction();
+          idlyAnimatedRefs[position].animateFunction?.();
         }, TIME_BETWEEN_IDLE_ANIMATIONS);
       } else if (idleTimerId.current) {
         clearInterval(idleTimerId.current);

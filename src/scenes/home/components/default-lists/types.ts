@@ -1,5 +1,5 @@
-import {List} from '../../types';
+import {BuiltInList} from '../../types';
 
 export type DefaultListsProps = {
-  lists: List[];
+  lists: BuiltInList[];
 };
