@@ -7,6 +7,8 @@ import {useRecoilValue} from 'recoil';
 import {idlyAnimatedComponents} from '../../state/atoms';
 import {TIME_BETWEEN_IDLE_ANIMATIONS} from '../../constants';
 import {generateShuffledArray} from '../../utils/array-utils';
+import {NestableScrollContainer} from 'react-native-draggable-flatlist';
+import {DraxProvider, DraxScrollView} from 'react-native-drax';
 
 const Page: React.FC<PageProps> = memo(({children}) => {
   const theme = useTheme();
@@ -48,7 +50,11 @@ const Page: React.FC<PageProps> = memo(({children}) => {
   return (
     <StyledSafeAreaView>
       <StatusBar backgroundColor={theme.colors.primary} />
-      <ScrollView>{children}</ScrollView>
+      <DraxProvider>
+        <DraxScrollView style={{flex: 1}} contentContainerStyle={{flex: 1}}>
+          {children}
+        </DraxScrollView>
+      </DraxProvider>
     </StyledSafeAreaView>
   );
 });

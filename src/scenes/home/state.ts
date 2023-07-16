@@ -59,6 +59,16 @@ export const myLists = atom<MyLists>({
         color: 'green',
         numberOfActiveItems: 1,
       },
+      {
+        label: 'America',
+        color: 'red',
+        numberOfActiveItems: 10,
+      },
+      {
+        label: 'Europe',
+        color: 'blue',
+        numberOfActiveItems: 12,
+      },
     ],
     groups: [
       {

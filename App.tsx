@@ -15,6 +15,7 @@ import {darkTheme} from './src/themes/dark';
 
 import RNBootSplash from 'react-native-bootsplash';
 import {IdleProvider} from './src/contexts/idle-context';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -24,15 +25,17 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <RecoilRoot>
-      <ThemeProvider theme={darkTheme}>
-        <IdleProvider>
-          <NavigationContainer>
-            <StackNavigator />
-          </NavigationContainer>
-        </IdleProvider>
-      </ThemeProvider>
-    </RecoilRoot>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <RecoilRoot>
+        <ThemeProvider theme={darkTheme}>
+          <IdleProvider>
+            <NavigationContainer>
+              <StackNavigator />
+            </NavigationContainer>
+          </IdleProvider>
+        </ThemeProvider>
+      </RecoilRoot>
+    </GestureHandlerRootView>
   );
 }
 
