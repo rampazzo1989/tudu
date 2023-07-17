@@ -51,7 +51,10 @@ const Page: React.FC<PageProps> = memo(({children}) => {
     <StyledSafeAreaView>
       <StatusBar backgroundColor={theme.colors.primary} />
       <DraxProvider>
-        <DraxScrollView style={{flex: 1}} contentContainerStyle={{flex: 1}}>
+        <DraxScrollView
+          style={{flex: 1}}
+          contentContainerStyle={{flexGrow: 1}}
+          scrollEnabled>
           {children}
         </DraxScrollView>
       </DraxProvider>

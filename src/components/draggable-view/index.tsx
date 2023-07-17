@@ -9,14 +9,18 @@ import {DraggableContext} from '../../contexts/draggable-context';
 import {isEmpty} from '../../utils/general-utils';
 import {DraggableViewProps} from './types';
 
+const PLACEHOLDER_HEIGHT = 50;
+
 const DraggableView = memo<DraggableViewProps<any>>(
   ({payload, isReceiver = false, children}) => {
     const draggableContext = useContext(DraggableContext);
 
-    const sortReceiverHeight = useSharedValue(50);
+    const sortReceiverHeight = useSharedValue<number | undefined>(undefined);
     const isReceivingNestedItem = useSharedValue(false);
     const [draggedViewSnapBackAnimation, setDraggedViewSnapBackAnimation] =
       useState(true);
+
+    const itemHeight = useSharedValue<number | undefined>(undefined);
 
     useEffect(() => {
       console.log({draggableContext});
@@ -31,17 +35,26 @@ const DraggableView = memo<DraggableViewProps<any>>(
     const animatedStyle = useAnimatedStyle(() => {
       return {
         height: sortReceiverHeight.value,
-        marginTop: 4,
+        marginTop: 8,
         opacity: isReceivingNestedItem.value ? 0.5 : 1,
       };
     }, []);
 
     return (
-      <Animated.View layout={Layout.springify()} style={animatedStyle}>
+      <Animated.View
+        layout={Layout.springify()}
+        style={animatedStyle}
+        onLayout={event => {
+          console.log('ONLAYOUT', event.nativeEvent.layout.height);
+
+          itemHeight.value =
+            itemHeight.value ?? event.nativeEvent.layout.height;
+        }}>
         <DraxView
           isParent
           onReceiveDragDrop={data => {
-            sortReceiverHeight.value = 50;
+            console.log('HOLA', itemHeight.value);
+            sortReceiverHeight.value = itemHeight.value;
             isReceivingNestedItem.value = false;
             const draggedItem = data.dragged.payload;
             const draggedItemIndex = draggableContext.data.indexOf(draggedItem);
@@ -62,22 +75,23 @@ const DraggableView = memo<DraggableViewProps<any>>(
             }
           }}
           onReceiveDragEnter={data => {
-            console.log(
-              'ENTER PARENT',
-              payload?.label,
-              data.dragged.payload === payload,
-            );
-
             if (data.dragged.payload === payload) {
-              sortReceiverHeight.value = 50;
+              sortReceiverHeight.value = itemHeight.value;
               return;
             }
-            sortReceiverHeight.value = 96;
+
+            sortReceiverHeight.value =
+              (itemHeight.value ?? 0) + PLACEHOLDER_HEIGHT;
+
+            console.log('>>>>>', {
+              itemHeight: itemHeight.value,
+              PLACEHOLDER_HEIGHT,
+              sortReceiverHeight: sortReceiverHeight.value,
+            });
           }}
           onReceiveDragExit={data => {
-            console.log('EXIT PARENT');
             isReceivingNestedItem.value = false;
-            sortReceiverHeight.value = 50;
+            sortReceiverHeight.value = itemHeight.value;
           }}
           // receivingStyle={[
           //   {
@@ -124,7 +138,7 @@ const DraggableView = memo<DraggableViewProps<any>>(
             // }}
             onReceiveDragDrop={event => {
               let selected_item = event.dragged.payload;
-              console.log('AQUI');
+              console.log('AQUI', itemHeight.value);
             }}
             onDragEnter={data => {
               setDraggedViewSnapBackAnimation(false);

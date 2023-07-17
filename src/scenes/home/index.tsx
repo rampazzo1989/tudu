@@ -44,16 +44,16 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const counterList = useRecoilValue(counters);
   const {t} = useTranslation();
 
-  const customListsAndGroups = useMemo(() => {
-    return [...customLists.groups, ...customLists.ungroupedLists];
-  }, [customLists.groups, customLists.ungroupedLists]);
+  const [customListsAndGroups, setCustomListsAndGroups] = useState([
+    ...customLists.groups,
+    ...customLists.ungroupedLists,
+  ]);
 
-  const handleSetCustomLists = useCallback(
-    (newOrderList: List[]) => {
-      setCustomLists(x => ({...x, ungroupedLists: newOrderList}));
-    },
-    [setCustomLists],
-  );
+  const handleSetCustomLists = useCallback((newOrderList: List[]) => {
+    console.log({newOrderList});
+
+    setCustomListsAndGroups(newOrderList);
+  }, []);
 
   const isGroup = (item: List | ListGroup): item is ListGroup => {
     return (item as ListGroup).title !== undefined;
@@ -73,13 +73,16 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           {customListsAndGroups.map((item, index) => {
             if (isGroup(item)) {
               return (
-                <DraggableView key={`${index}`} payload={item} isReceiver>
+                <DraggableView
+                  key={`${item.title}${index}`}
+                  payload={item}
+                  isReceiver>
                   <ListGroupCard group={item} />
                 </DraggableView>
               );
             } else {
               return (
-                <DraggableView key={`${index}`} payload={item}>
+                <DraggableView key={`${item.label}${index}`} payload={item}>
                   <ListCard
                     Icon={ListDefaultIcon}
                     label={item.label}
