@@ -49,15 +49,74 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     ...customLists.ungroupedLists,
   ]);
 
-  const handleSetCustomLists = useCallback((newOrderList: List[]) => {
-    console.log({newOrderList});
-
-    setCustomListsAndGroups(newOrderList);
-  }, []);
-
   const isGroup = (item: List | ListGroup): item is ListGroup => {
     return (item as ListGroup).title !== undefined;
   };
+
+  const handleSetCustomLists = useCallback(
+    (newOrderList: (List | ListGroup)[]) => {
+      console.log({newOrderList});
+
+      const allGroups = newOrderList.filter(item =>
+        isGroup(item),
+      ) as ListGroup[];
+
+      newOrderList.forEach(item => {
+        if (!isGroup(item)) {
+          const list = item as List;
+          allGroups.forEach(group => {
+            const removedIndex = group.lists.indexOf(list);
+            if (removedIndex === -1) {
+              return;
+            }
+            const newGroupLists = group.lists.slice();
+            newGroupLists.splice(removedIndex, 1);
+            console.log({
+              removedIndex,
+              newGroupLists,
+              thisItem: list.label,
+              groupsCount: allGroups.length,
+            });
+            group.lists = newGroupLists;
+          });
+        }
+      });
+
+      const emptyGroups = newOrderList.filter(
+        item => isGroup(item) && !item.lists.length,
+      ) as ListGroup[];
+
+      for (let i = 0; i < emptyGroups.length; i++) {
+        const emptyGroupIndex = newOrderList.indexOf(emptyGroups[i]);
+        newOrderList.splice(emptyGroupIndex, 1);
+      }
+
+      setCustomListsAndGroups(newOrderList);
+    },
+    [],
+  );
+
+  const handleAddToGroup = useCallback((group: ListGroup, item: List) => {
+    const newLists = group?.lists.slice();
+    newLists.push(item);
+    group.lists = newLists;
+
+    setCustomListsAndGroups(current => {
+      const groupIndex = current.findIndex(
+        x => isGroup(x) && x.title === group.title,
+      );
+
+      const newOrderList = current.slice();
+      newOrderList.splice(groupIndex, 1, group);
+
+      const itemIndexToRemove = newOrderList.indexOf(item);
+
+      newOrderList.splice(itemIndexToRemove, 1);
+
+      console.log('handleAddToGroup', {newOrderList});
+      return newOrderList;
+    });
+  }, []);
 
   return (
     <Page>
@@ -69,12 +128,13 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
         <SectionTitle title={t('sectionTitles.myLists')} />
         <DraggableContextProvider
           data={customListsAndGroups}
-          onSetData={handleSetCustomLists}>
+          onSetData={handleSetCustomLists}
+          onItemReceiving={handleAddToGroup}>
           {customListsAndGroups.map((item, index) => {
             if (isGroup(item)) {
               return (
                 <DraggableView
-                  key={`${item.title}${index}`}
+                  key={`${item.title}${index}${item.lists.length}`}
                   payload={item}
                   isReceiver>
                   <ListGroupCard group={item} />

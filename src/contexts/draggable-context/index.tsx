@@ -4,9 +4,10 @@ import {DraggableContextProviderProps, DraggableContextType} from './types';
 const DraggableContext = React.createContext({} as DraggableContextType);
 
 const DraggableContextProvider = memo<DraggableContextProviderProps>(
-  ({children, data, onSetData}) => {
+  ({children, data, onSetData, onItemReceiving}) => {
     return (
-      <DraggableContext.Provider value={{data, setData: onSetData}}>
+      <DraggableContext.Provider
+        value={{data, setData: onSetData, onItemReceiving}}>
         {children}
       </DraggableContext.Provider>
     );

@@ -60,12 +60,12 @@ export const myLists = atom<MyLists>({
         numberOfActiveItems: 1,
       },
       {
-        label: 'America',
+        label: 'Shop List',
         color: 'red',
-        numberOfActiveItems: 10,
+        numberOfActiveItems: 3,
       },
       {
-        label: 'Europe',
+        label: 'Gift Ideias',
         color: 'blue',
         numberOfActiveItems: 12,
       },

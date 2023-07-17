@@ -53,29 +53,52 @@ const DraggableView = memo<DraggableViewProps<any>>(
         <DraxView
           isParent
           onReceiveDragDrop={data => {
-            console.log('HOLA', itemHeight.value);
             sortReceiverHeight.value = itemHeight.value;
-            isReceivingNestedItem.value = false;
             const draggedItem = data.dragged.payload;
             const draggedItemIndex = draggableContext.data.indexOf(draggedItem);
             const newList = draggableContext.data.slice();
-            newList.splice(draggedItemIndex, 1);
-            const currentItemIndex = newList.indexOf(payload);
-            newList.splice(currentItemIndex, 0, draggedItem);
-            console.log({currentItemIndex, draggedItem, draggedItemIndex});
 
-            draggableContext.setData(newList);
+            if (draggedItemIndex !== -1) {
+              newList.splice(draggedItemIndex, 1);
+            }
+
+            if (isReceivingNestedItem.value) {
+              console.log('HOLA', data.dragged.payload, {draggedItemIndex});
+
+              draggableContext.onItemReceiving(payload, draggedItem);
+            } else {
+              const currentItemIndex = newList.indexOf(payload);
+              newList.splice(currentItemIndex, 0, draggedItem);
+              draggableContext.setData(newList);
+            }
+
+            isReceivingNestedItem.value = false;
           }}
           onReceiveDragOver={data => {
-            if (isReceiver && data.receiver.receiveOffsetRatio.y > 0.5) {
-              isReceivingNestedItem.value = true;
-              console.log('EMBAIXO', {y: data.receiver.receiveOffsetRatio.y});
+            if (isReceiver) {
+              if (data.receiver.receiveOffset.y > PLACEHOLDER_HEIGHT) {
+                isReceivingNestedItem.value = true;
+                sortReceiverHeight.value = itemHeight.value;
+                console.log('EMBAIXO', {y: data.receiver.receiveOffsetRatio.y});
+              } else {
+                isReceivingNestedItem.value = false;
+                if (data.dragged.payload !== payload) {
+                  sortReceiverHeight.value =
+                    (itemHeight.value ?? 0) + PLACEHOLDER_HEIGHT;
+                }
+              }
             } else {
               isReceivingNestedItem.value = false;
             }
           }}
           onReceiveDragEnter={data => {
-            if (data.dragged.payload === payload) {
+            if (data.dragged.payload === payload || isReceiver) {
+              console.log(
+                'AAAAAAAAAAAAAAAAAAAA',
+                itemHeight.value,
+                sortReceiverHeight.value,
+              );
+
               sortReceiverHeight.value = itemHeight.value;
               return;
             }
@@ -93,11 +116,6 @@ const DraggableView = memo<DraggableViewProps<any>>(
             isReceivingNestedItem.value = false;
             sortReceiverHeight.value = itemHeight.value;
           }}
-          // receivingStyle={[
-          //   {
-          //     height: 46,
-          //   },
-          // ]}
           style={[
             {
               alignContent: 'center',
@@ -108,6 +126,7 @@ const DraggableView = memo<DraggableViewProps<any>>(
           {/* <DropHere autoPlay loop /> */}
 
           <DraxView
+            isParent={isReceiver}
             animateSnapback={draggedViewSnapBackAnimation}
             draggable
             longPressDelay={300}
