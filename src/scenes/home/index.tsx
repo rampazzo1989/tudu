@@ -14,29 +14,33 @@ import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon
 import {DraggableView} from '../../components/draggable-view';
 import {DraggableContextProvider} from '../../contexts/draggable-context';
 import {ListGroupCard} from './components/list-group-card';
+import {DraggableItem} from '../../contexts/draggable-context/types';
 
-export function getColor(i: number, numItems: number) {
-  const multiplier = 255 / (numItems - 1);
-  const colorVal = i * multiplier;
-  return `rgb(${colorVal}, ${Math.abs(128 - colorVal)}, ${255 - colorVal})`;
-}
+const mapListToDraggableItems = <T,>(list: T[], groupProperty: keyof T) => {
+  const draggableList: DraggableItem<T>[] = [];
 
-export const getRandColorVal = () => Math.floor(Math.random() * 255);
+  for (const item of list) {
+    if (!item) {
+      console.log('UNDEFINED');
+    }
+    const groupId =
+      item[groupProperty] === undefined
+        ? undefined
+        : String(item[groupProperty]);
+    if (groupId) {
+      const alreadyAdded = draggableList.find(x => x.groupId === groupId);
+      if (alreadyAdded) {
+        alreadyAdded.data = [...alreadyAdded.data, item];
+      } else {
+        draggableList.push(new DraggableItem<T>([item], groupId));
+      }
+    } else {
+      draggableList.push(new DraggableItem<T>([item]));
+    }
+  }
 
-export const mapIndexToData = (d: any, index: number, arr: any[]) => {
-  const backgroundColor = getColor(index, arr.length);
-  return {
-    text: `${index}`,
-    key: `key-${backgroundColor}`,
-    backgroundColor,
-  };
+  return draggableList;
 };
-
-type Item = ReturnType<typeof mapIndexToData>;
-
-// type DraxItemType<T> = {
-
-// };
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -44,79 +48,38 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const counterList = useRecoilValue(counters);
   const {t} = useTranslation();
 
-  const [customListsAndGroups, setCustomListsAndGroups] = useState([
-    ...customLists.groups,
-    ...customLists.ungroupedLists,
-  ]);
-
-  const isGroup = (item: List | ListGroup): item is ListGroup => {
-    return (item as ListGroup).title !== undefined;
-  };
-
   const handleSetCustomLists = useCallback(
-    (newOrderList: (List | ListGroup)[]) => {
+    (newOrderList: DraggableItem<List>[]) => {
       console.log({newOrderList});
 
-      const allGroups = newOrderList.filter(item =>
-        isGroup(item),
-      ) as ListGroup[];
-
-      newOrderList.forEach(item => {
-        if (!isGroup(item)) {
-          const list = item as List;
-          allGroups.forEach(group => {
-            const removedIndex = group.lists.indexOf(list);
-            if (removedIndex === -1) {
-              return;
-            }
-            const newGroupLists = group.lists.slice();
-            newGroupLists.splice(removedIndex, 1);
-            console.log({
-              removedIndex,
-              newGroupLists,
-              thisItem: list.label,
-              groupsCount: allGroups.length,
-            });
-            group.lists = newGroupLists;
-          });
+      for (let itemIndex in newOrderList) {
+        const item = newOrderList[itemIndex];
+        if (item.groupId) {
+          for (let subItemIndex in item.data) {
+            item.data[subItemIndex] = {
+              ...item.data[subItemIndex],
+              groupName: item.groupId,
+            };
+          }
+        } else {
+          item.groupId = undefined;
+          item.data[0].groupName = undefined;
         }
-      });
-
-      const emptyGroups = newOrderList.filter(
-        item => isGroup(item) && !item.lists.length,
-      ) as ListGroup[];
-
-      for (let i = 0; i < emptyGroups.length; i++) {
-        const emptyGroupIndex = newOrderList.indexOf(emptyGroups[i]);
-        newOrderList.splice(emptyGroupIndex, 1);
       }
 
-      setCustomListsAndGroups(newOrderList);
+      const flatList = newOrderList.flatMap(item => item.data);
+
+      setCustomLists(flatList);
     },
-    [],
+    [setCustomLists],
   );
 
-  const handleAddToGroup = useCallback((group: ListGroup, item: List) => {
-    const newLists = group?.lists.slice();
-    newLists.push(item);
-    group.lists = newLists;
-
-    setCustomListsAndGroups(current => {
-      const groupIndex = current.findIndex(
-        x => isGroup(x) && x.title === group.title,
-      );
-
-      const newOrderList = current.slice();
-      newOrderList.splice(groupIndex, 1, group);
-
-      const itemIndexToRemove = newOrderList.indexOf(item);
-
-      newOrderList.splice(itemIndexToRemove, 1);
-
-      console.log('handleAddToGroup', {newOrderList});
-      return newOrderList;
-    });
-  }, []);
+  const groupedCustomLists = useMemo(() => {
+    return mapListToDraggableItems(
+      customLists,
+      'groupName',
+    ) as DraggableItem<List>[];
+  }, [customLists]);
 
   return (
     <Page>
@@ -126,28 +89,27 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
         <SectionTitle title={t('sectionTitles.counters')} />
         <CountersList list={counterList} />
         <SectionTitle title={t('sectionTitles.myLists')} />
-        <DraggableContextProvider
-          data={customListsAndGroups}
-          onSetData={handleSetCustomLists}
-          onItemReceiving={handleAddToGroup}>
-          {customListsAndGroups.map((item, index) => {
-            if (isGroup(item)) {
+        <DraggableContextProvider<List>
+          data={groupedCustomLists}
+          onSetData={handleSetCustomLists}>
+          {groupedCustomLists.map((item, index) => {
+            if (item.groupId) {
               return (
                 <DraggableView
-                  key={`${item.title}${index}${item.lists.length}`}
+                  key={`${item.groupId}${index}${item.data.length}`}
                   payload={item}
                   isReceiver>
-                  <ListGroupCard group={item} />
+                  <ListGroupCard groupTitle={item.groupId} items={item.data} />
                 </DraggableView>
               );
             } else {
+              const onlyItem = item.data[0];
               return (
-                <DraggableView key={`${item.label}${index}`} payload={item}>
+                <DraggableView key={`${onlyItem.label}${index}`} payload={item}>
                   <ListCard
                     Icon={ListDefaultIcon}
-                    label={item.label}
-                    numberOfActiveItems={item.numberOfActiveItems}
-                    key={item.label}
+                    label={onlyItem.label}
+                    numberOfActiveItems={onlyItem.numberOfActiveItems}
                   />
                 </DraggableView>
               );

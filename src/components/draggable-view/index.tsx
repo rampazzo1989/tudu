@@ -1,4 +1,11 @@
-import React, {memo, useContext, useEffect, useRef, useState} from 'react';
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {DraxView} from 'react-native-drax';
 import Animated, {
   Layout,
@@ -6,178 +13,182 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import {DraggableContext} from '../../contexts/draggable-context';
+import {DraggableItem} from '../../contexts/draggable-context/types';
 import {isEmpty} from '../../utils/general-utils';
 import {DraggableViewProps} from './types';
+import Reactotron from 'reactotron-react-native';
 
 const PLACEHOLDER_HEIGHT = 50;
 
-const DraggableView = memo<DraggableViewProps<any>>(
-  ({payload, isReceiver = false, children}) => {
-    const draggableContext = useContext(DraggableContext);
+const DraggableView = <T,>({
+  payload,
+  isReceiver = false,
+  children,
+}: DraggableViewProps<T>) => {
+  const draggableContext = useContext(DraggableContext);
 
-    const sortReceiverHeight = useSharedValue<number | undefined>(undefined);
-    const isReceivingNestedItem = useSharedValue(false);
-    const [draggedViewSnapBackAnimation, setDraggedViewSnapBackAnimation] =
-      useState(true);
+  const sortReceiverHeight = useSharedValue<number | undefined>(undefined);
+  const isReceivingNestedItem = useSharedValue(false);
+  const [draggedViewSnapBackAnimation, setDraggedViewSnapBackAnimation] =
+    useState(true);
 
-    const itemHeight = useSharedValue<number | undefined>(undefined);
+  const itemHeight = useSharedValue<number | undefined>(undefined);
 
-    useEffect(() => {
-      console.log({draggableContext});
+  const showPlaceholder = useCallback(() => {
+    sortReceiverHeight.value = (itemHeight.value ?? 0) + PLACEHOLDER_HEIGHT;
+  }, [itemHeight.value, sortReceiverHeight]);
 
-      if (isEmpty(draggableContext)) {
-        throw new Error(
-          'There must be a DraggableContextProvider above a DraggableView.',
-        );
-      }
-    }, [draggableContext]);
+  const hidePlaceholder = useCallback(() => {
+    sortReceiverHeight.value = itemHeight.value;
+  }, [itemHeight.value, sortReceiverHeight]);
 
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        height: sortReceiverHeight.value,
-        marginTop: 8,
-        opacity: isReceivingNestedItem.value ? 0.5 : 1,
-      };
-    }, []);
+  const castItem = useCallback((item: any) => {
+    return item instanceof DraggableItem<T>
+      ? (item as DraggableItem<T>)
+      : new DraggableItem([item as T]);
+  }, []);
 
-    return (
-      <Animated.View
-        layout={Layout.springify()}
-        style={animatedStyle}
-        onLayout={event => {
-          console.log('ONLAYOUT', event.nativeEvent.layout.height);
+  const isGroupedItem = useCallback((item: any) => {
+    return !(item instanceof DraggableItem<T>);
+  }, []);
 
-          itemHeight.value =
-            itemHeight.value ?? event.nativeEvent.layout.height;
-        }}>
-        <DraxView
-          isParent
-          onReceiveDragDrop={data => {
-            sortReceiverHeight.value = itemHeight.value;
-            const draggedItem = data.dragged.payload;
-            const draggedItemIndex = draggableContext.data.indexOf(draggedItem);
-            const newList = draggableContext.data.slice();
+  useEffect(() => {
+    if (isEmpty(draggableContext)) {
+      throw new Error(
+        'There must be a DraggableContextProvider above a DraggableView.',
+      );
+    }
+  }, [draggableContext]);
 
-            if (draggedItemIndex !== -1) {
-              newList.splice(draggedItemIndex, 1);
-            }
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      height: sortReceiverHeight.value,
+      marginTop: 8,
+      opacity: isReceivingNestedItem.value ? 0.5 : 1,
+    };
+  }, []);
 
-            if (isReceivingNestedItem.value) {
-              console.log('HOLA', data.dragged.payload, {draggedItemIndex});
+  return (
+    <Animated.View
+      layout={Layout.springify()}
+      style={animatedStyle}
+      onLayout={event => {
+        itemHeight.value = itemHeight.value ?? event.nativeEvent.layout.height;
+      }}>
+      <DraxView
+        isParent
+        onReceiveDragDrop={data => {
+          hidePlaceholder();
+          const newList = draggableContext.data.slice();
 
-              draggableContext.onItemReceiving(payload, draggedItem);
-            } else {
-              const currentItemIndex = newList.indexOf(payload);
-              newList.splice(currentItemIndex, 0, draggedItem);
-              draggableContext.setData(newList);
-            }
+          const draggedItem = castItem(data.dragged.payload);
+          const draggedItemIndex = draggableContext.data.indexOf(draggedItem);
 
-            isReceivingNestedItem.value = false;
-          }}
-          onReceiveDragOver={data => {
-            if (isReceiver) {
-              if (data.receiver.receiveOffset.y > PLACEHOLDER_HEIGHT) {
-                isReceivingNestedItem.value = true;
-                sortReceiverHeight.value = itemHeight.value;
-                console.log('EMBAIXO', {y: data.receiver.receiveOffsetRatio.y});
-              } else {
-                isReceivingNestedItem.value = false;
-                if (data.dragged.payload !== payload) {
-                  sortReceiverHeight.value =
-                    (itemHeight.value ?? 0) + PLACEHOLDER_HEIGHT;
+          // Remove from the list if found
+          if (draggedItemIndex !== -1) {
+            console.log('REMOVING', {draggedItemIndex});
+
+            newList.splice(draggedItemIndex, 1);
+          }
+
+          if (isReceivingNestedItem.value && payload.groupId) {
+            payload.data = payload.data.concat(draggedItem.data);
+            console.log('ADDING', {newPayload: payload.data});
+          } else {
+            const currentItemIndex = newList.indexOf(payload);
+            newList.splice(currentItemIndex, 0, draggedItem);
+
+            const uncastedDraggedItem = data.dragged.payload;
+
+            // If it's an item
+            if (isGroupedItem(uncastedDraggedItem)) {
+              // Find all groups
+              const groups = draggableContext.data
+                .slice()
+                .filter(x => x.groupId);
+
+              for (let i in groups) {
+                const foundIndex = groups[i].data.indexOf(uncastedDraggedItem);
+                if (foundIndex >= 0) {
+                  const newItemList = groups[i].data.slice();
+                  newItemList.splice(foundIndex, 1);
+
+                  groups[i].data = newItemList;
                 }
               }
+            }
+          }
+
+          draggableContext.setData(newList);
+
+          isReceivingNestedItem.value = false;
+        }}
+        onReceiveDragOver={data => {
+          if (isReceiver) {
+            if (data.receiver.receiveOffset.y > PLACEHOLDER_HEIGHT) {
+              isReceivingNestedItem.value = true;
+              hidePlaceholder();
             } else {
               isReceivingNestedItem.value = false;
+              if (data.dragged.payload !== payload) {
+                showPlaceholder();
+              }
             }
-          }}
-          onReceiveDragEnter={data => {
-            if (data.dragged.payload === payload || isReceiver) {
-              console.log(
-                'AAAAAAAAAAAAAAAAAAAA',
-                itemHeight.value,
-                sortReceiverHeight.value,
-              );
-
-              sortReceiverHeight.value = itemHeight.value;
-              return;
-            }
-
-            sortReceiverHeight.value =
-              (itemHeight.value ?? 0) + PLACEHOLDER_HEIGHT;
-
-            console.log('>>>>>', {
-              itemHeight: itemHeight.value,
-              PLACEHOLDER_HEIGHT,
-              sortReceiverHeight: sortReceiverHeight.value,
-            });
-          }}
-          onReceiveDragExit={data => {
+          } else {
             isReceivingNestedItem.value = false;
-            sortReceiverHeight.value = itemHeight.value;
+          }
+        }}
+        onReceiveDragEnter={data => {
+          if (data.dragged.payload === payload || isReceiver) {
+            hidePlaceholder();
+            return;
+          }
+
+          showPlaceholder();
+        }}
+        onReceiveDragExit={() => {
+          isReceivingNestedItem.value = false;
+          hidePlaceholder();
+        }}
+        style={[
+          {
+            alignContent: 'center',
+            justifyContent: 'flex-end',
+            flexGrow: 1,
+          },
+        ]}>
+        {/* <DropHere autoPlay loop /> */}
+
+        <DraxView
+          isParent={isReceiver}
+          animateSnapback={draggedViewSnapBackAnimation}
+          draggable
+          longPressDelay={300}
+          draggingStyle={{
+            opacity: 0.2,
+            backgroundColor: 'transparent',
+          }}
+          hoverStyle={{elevation: 15}}
+          receivingStyle={{opacity: 0.6}}
+          payload={payload}
+          onDragEnter={() => {
+            setDraggedViewSnapBackAnimation(false);
+          }}
+          onDragExit={() => {
+            setDraggedViewSnapBackAnimation(true);
           }}
           style={[
             {
-              alignContent: 'center',
-              justifyContent: 'flex-end',
-              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
             },
+            {backgroundColor: 'transparent'},
           ]}>
-          {/* <DropHere autoPlay loop /> */}
-
-          <DraxView
-            isParent={isReceiver}
-            animateSnapback={draggedViewSnapBackAnimation}
-            draggable
-            longPressDelay={300}
-            draggingStyle={{
-              opacity: 0.2,
-              backgroundColor: 'transparent',
-            }}
-            // onDrag={data => console.log(data)}
-            // onDragOver={data => {
-            //   const receiverOffsetY = data.receiver.receiveOffsetRatio.y;
-            //   const receiver = data.receiver.payload?.text;
-            //   if (receiverOffsetY > 0.8) {
-            //     console.log('OVER', {receiver});
-            //   }
-            // }}
-            hoverStyle={{elevation: 15}}
-            receivingStyle={{opacity: 0.6}}
-            payload={payload}
-            // onReceiveDragEnter={data => {
-            //   if (data.dragged.payload === payload) {
-            //     sortReceiverHeight.value = 50;
-            //     return;
-            //   }
-            //   sortReceiverHeight.value = 96;
-            // }}
-            // onReceiveDragExit={data => {
-            //   sortReceiverHeight.value = 50;
-            // }}
-            onReceiveDragDrop={event => {
-              let selected_item = event.dragged.payload;
-              console.log('AQUI', itemHeight.value);
-            }}
-            onDragEnter={data => {
-              setDraggedViewSnapBackAnimation(false);
-            }}
-            onDragExit={data => {
-              setDraggedViewSnapBackAnimation(true);
-            }}
-            style={[
-              {
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-              {backgroundColor: 'transparent'},
-            ]}>
-            {children}
-          </DraxView>
+          {children}
         </DraxView>
-      </Animated.View>
-    );
-  },
-);
+      </DraxView>
+    </Animated.View>
+  );
+};
 
 export {DraggableView};

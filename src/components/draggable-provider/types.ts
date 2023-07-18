@@ -1,4 +1,4 @@
-export type DraggableProviderProps = {
+export type DraggableProviderProps<T> = {
   children: React.ReactElement;
-  data: any[];
+  data: DraggableItem<T>[];
 };

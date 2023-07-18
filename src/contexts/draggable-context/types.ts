@@ -1,12 +1,20 @@
-export type DraggableContextType = {
-  data: any[];
-  setData: (newData: any[]) => void;
-  onItemReceiving: (receiver: any, dragged: any) => void;
+export type DraggableContextType<T> = {
+  data: DraggableItem<T>[];
+  setData: (newData: DraggableItem<T>[]) => void;
 };
 
-export type DraggableContextProviderProps = {
+export type DraggableContextProviderProps<T> = {
   children: React.ReactNode;
-  data: any[];
-  onSetData: (newData: any[]) => void;
-  onItemReceiving: (receiver: any, dragged: any) => void;
+  data: DraggableItem<T>[];
+  onSetData: (newData: DraggableItem<T>[]) => void;
 };
+
+export class DraggableItem<T> {
+  groupId?: string;
+  data: T[];
+
+  constructor(data: T[] = [], groupId?: string) {
+    this.data = data;
+    this.groupId = groupId;
+  }
+}

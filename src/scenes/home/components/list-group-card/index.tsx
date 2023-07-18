@@ -4,15 +4,15 @@ import {ListDefaultIcon} from '../../../../components/animated-icons/list-defaul
 import {ListGroupContainer, SubListCard, Title} from './styles';
 import {ListGroupProps} from './types';
 
-const ListGroupCard: React.FC<ListGroupProps> = memo(({group}) => {
+const ListGroupCard: React.FC<ListGroupProps> = memo(({groupTitle, items}) => {
   return (
     <ListGroupContainer>
-      <Title>{group.title}</Title>
-      {group.lists.map((list, index) => {
+      <Title>{groupTitle}</Title>
+      {items.map((list, index) => {
         return (
           <DraxView
             draggable
-            key={`${list.label}${index}`}
+            key={`${list.label}${groupTitle}`}
             payload={list}
             longPressDelay={300}>
             <SubListCard

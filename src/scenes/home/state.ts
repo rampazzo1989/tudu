@@ -50,42 +50,35 @@ export const counters = atom<Counter[]>({
   ],
 });
 
-export const myLists = atom<MyLists>({
+export const myLists = atom<List[]>({
   key: 'myLists',
-  default: {
-    ungroupedLists: [
-      {
-        label: 'Movies',
-        color: 'green',
-        numberOfActiveItems: 1,
-      },
-      {
-        label: 'Shop List',
-        color: 'red',
-        numberOfActiveItems: 3,
-      },
-      {
-        label: 'Gift Ideias',
-        color: 'blue',
-        numberOfActiveItems: 12,
-      },
-    ],
-    groups: [
-      {
-        title: 'Travel',
-        lists: [
-          {
-            label: 'America',
-            color: 'red',
-            numberOfActiveItems: 10,
-          },
-          {
-            label: 'Europe',
-            color: 'blue',
-            numberOfActiveItems: 12,
-          },
-        ],
-      },
-    ],
-  },
+  default: [
+    {
+      label: 'Movies',
+      color: 'green',
+      numberOfActiveItems: 1,
+    },
+    {
+      label: 'Shop List',
+      color: 'red',
+      numberOfActiveItems: 3,
+    },
+    {
+      label: 'Gift Ideias',
+      color: 'blue',
+      numberOfActiveItems: 12,
+    },
+    {
+      label: 'America',
+      color: 'red',
+      numberOfActiveItems: 10,
+      groupName: 'Travel',
+    },
+    {
+      label: 'Europe',
+      color: 'blue',
+      numberOfActiveItems: 12,
+      groupName: 'Travel',
+    },
+  ],
 });

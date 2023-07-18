@@ -1,17 +1,18 @@
-import React, {memo} from 'react';
+import React from 'react';
 import {DraggableContextProviderProps, DraggableContextType} from './types';
 
-const DraggableContext = React.createContext({} as DraggableContextType);
+const DraggableContext = React.createContext({} as DraggableContextType<T>);
 
-const DraggableContextProvider = memo<DraggableContextProviderProps>(
-  ({children, data, onSetData, onItemReceiving}) => {
-    return (
-      <DraggableContext.Provider
-        value={{data, setData: onSetData, onItemReceiving}}>
-        {children}
-      </DraggableContext.Provider>
-    );
-  },
-);
+const DraggableContextProvider = <T,>({
+  children,
+  data,
+  onSetData,
+}: DraggableContextProviderProps<T>) => {
+  return (
+    <DraggableContext.Provider value={{data, setData: onSetData}}>
+      {children}
+    </DraggableContext.Provider>
+  );
+};
 
 export {DraggableContext, DraggableContextProvider};
