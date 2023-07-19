@@ -15,6 +15,7 @@ import {DraggableView} from '../../components/draggable-view';
 import {DraggableContextProvider} from '../../contexts/draggable-context';
 import {ListGroupCard} from './components/list-group-card';
 import {DraggableItem} from '../../contexts/draggable-context/types';
+import {generateRandomHash} from '../../hooks/useHashGenerator';
 
 const mapListToDraggableItems = <T,>(list: T[], groupProperty: keyof T) => {
   const draggableList: DraggableItem<T>[] = [];
@@ -105,7 +106,9 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             } else {
               const onlyItem = item.data[0];
               return (
-                <DraggableView key={`${onlyItem.label}${index}`} payload={item}>
+                <DraggableView
+                  key={generateRandomHash(`${onlyItem.label}${index}`)}
+                  payload={item}>
                   <ListCard
                     Icon={ListDefaultIcon}
                     label={onlyItem.label}

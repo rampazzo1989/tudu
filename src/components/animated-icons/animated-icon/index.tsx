@@ -47,7 +47,7 @@ const BaseAnimatedIcon = memo(
         }
       }, [finalFrame, initialFrame, props.autoPlay]);
 
-      const {key: componentKey} = useHashGenerator({componentName});
+      const {key: componentKey} = useHashGenerator({seedText: componentName});
 
       useIdlyAnimatedComponent({
         componentRef: animationRef,

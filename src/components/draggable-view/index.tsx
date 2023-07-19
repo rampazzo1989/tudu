@@ -68,6 +68,10 @@ const DraggableView = <T,>({
     };
   }, []);
 
+  const cancelDropping = useCallback(() => {
+    isReceivingNestedItem.value = false;
+  }, [isReceivingNestedItem]);
+
   return (
     <Animated.View
       layout={Layout.springify()}
@@ -79,28 +83,39 @@ const DraggableView = <T,>({
         isParent
         onReceiveDragDrop={data => {
           hidePlaceholder();
-          const newList = draggableContext.data.slice();
-
           const draggedItem = castItem(data.dragged.payload);
+          const uncastedDraggedItem = data.dragged.payload;
+
+          if (draggedItem === payload) {
+            return cancelDropping();
+          }
+
+          // If the dragged item is a group item, check if it's from the current group before adding
+          if (isReceivingNestedItem.value) {
+            const itsFromThisGroup =
+              isGroupedItem(uncastedDraggedItem) &&
+              payload.data.indexOf(uncastedDraggedItem) >= 0;
+
+            if (itsFromThisGroup) {
+              return cancelDropping();
+            }
+          }
+
+          const newList = draggableContext.data.slice();
           const draggedItemIndex = draggableContext.data.indexOf(draggedItem);
 
           // Remove from the list if found
-          if (draggedItemIndex !== -1) {
-            console.log('REMOVING', {draggedItemIndex});
-
+          if (draggedItemIndex >= 0) {
             newList.splice(draggedItemIndex, 1);
           }
 
           if (isReceivingNestedItem.value && payload.groupId) {
             payload.data = payload.data.concat(draggedItem.data);
-            console.log('ADDING', {newPayload: payload.data});
           } else {
             const currentItemIndex = newList.indexOf(payload);
             newList.splice(currentItemIndex, 0, draggedItem);
 
-            const uncastedDraggedItem = data.dragged.payload;
-
-            // If it's an item
+            // If it's an item from a group
             if (isGroupedItem(uncastedDraggedItem)) {
               // Find all groups
               const groups = draggableContext.data
