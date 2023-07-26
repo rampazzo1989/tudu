@@ -7,9 +7,12 @@ const DraggableContextProvider = <T,>({
   children,
   data,
   onSetData,
+  onDragStart,
+  onDragEnd,
 }: DraggableContextProviderProps<T>) => {
   return (
-    <DraggableContext.Provider value={{data, setData: onSetData}}>
+    <DraggableContext.Provider
+      value={{data, setData: onSetData, onDragStart, onDragEnd}}>
       {children}
     </DraggableContext.Provider>
   );

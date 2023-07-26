@@ -1,6 +1,7 @@
 import React, {memo} from 'react';
 import {DraxView} from 'react-native-drax';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
+import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {ListGroupContainer, SubListCard, Title} from './styles';
 import {ListGroupProps} from './types';
 
@@ -12,7 +13,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupTitle, items}) => {
         return (
           <DraxView
             draggable
-            key={`${list.label}${groupTitle}`}
+            key={generateRandomHash(`${list.label}${groupTitle}`)}
             payload={list}
             longPressDelay={300}>
             <SubListCard

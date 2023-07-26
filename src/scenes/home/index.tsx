@@ -1,5 +1,5 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {HomePageProps, List, ListGroup} from './types';
+import React, {useCallback, useMemo, useState} from 'react';
+import {HomePageProps, List} from './types';
 import {PageContent} from '../../components/page-content';
 import {Page} from '../../components/page';
 import {DefaultLists} from './components/default-lists';
@@ -9,44 +9,17 @@ import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
 import {SectionTitle} from './styles';
 import {CountersList} from './components/counters-list';
-import {ListCard} from '../../components/list-card';
-import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
-import {DraggableView} from '../../components/draggable-view';
-import {DraggableContextProvider} from '../../contexts/draggable-context';
-import {ListGroupCard} from './components/list-group-card';
-import {DraggableItem} from '../../contexts/draggable-context/types';
-import {generateRandomHash} from '../../hooks/useHashGenerator';
-
-const mapListToDraggableItems = <T,>(list: T[], groupProperty: keyof T) => {
-  const draggableList: DraggableItem<T>[] = [];
-
-  for (const item of list) {
-    if (!item) {
-      console.log('UNDEFINED');
-    }
-    const groupId =
-      item[groupProperty] === undefined
-        ? undefined
-        : String(item[groupProperty]);
-    if (groupId) {
-      const alreadyAdded = draggableList.find(x => x.groupId === groupId);
-      if (alreadyAdded) {
-        alreadyAdded.data = [...alreadyAdded.data, item];
-      } else {
-        draggableList.push(new DraggableItem<T>([item], groupId));
-      }
-    } else {
-      draggableList.push(new DraggableItem<T>([item]));
-    }
-  }
-
-  return draggableList;
-};
+import {DraggableItem} from '../../modules/draggable/draggable-context/types';
+import {CustomLists} from './components/custom-lists';
+import {mapListToDraggableItems} from '../../modules/draggable/draggable-utils';
+import {DraxScrollView} from 'react-native-drax';
+import {FloatingDelete} from '../../components/floating-delete';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
   const [customLists, setCustomLists] = useRecoilState(myLists);
   const counterList = useRecoilValue(counters);
+  const [deleteVisible, setDeleteVisible] = useState(false);
   const {t} = useTranslation();
 
   const handleSetCustomLists = useCallback(
@@ -79,47 +52,34 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     return mapListToDraggableItems(
       customLists,
       'groupName',
+      'label',
     ) as DraggableItem<List>[];
   }, [customLists]);
 
+  const handleListDragStart = useCallback(() => setDeleteVisible(true), []);
+  const handleListDragEnd = useCallback(() => setDeleteVisible(false), []);
+
   return (
     <Page>
-      <HomeHeader />
-      <PageContent>
-        <DefaultLists lists={lists} />
-        <SectionTitle title={t('sectionTitles.counters')} />
-        <CountersList list={counterList} />
-        <SectionTitle title={t('sectionTitles.myLists')} />
-        <DraggableContextProvider<List>
-          data={groupedCustomLists}
-          onSetData={handleSetCustomLists}>
-          {groupedCustomLists.map((item, index) => {
-            if (item.groupId) {
-              return (
-                <DraggableView
-                  key={`${item.groupId}${index}${item.data.length}`}
-                  payload={item}
-                  isReceiver>
-                  <ListGroupCard groupTitle={item.groupId} items={item.data} />
-                </DraggableView>
-              );
-            } else {
-              const onlyItem = item.data[0];
-              return (
-                <DraggableView
-                  key={generateRandomHash(`${onlyItem.label}${index}`)}
-                  payload={item}>
-                  <ListCard
-                    Icon={ListDefaultIcon}
-                    label={onlyItem.label}
-                    numberOfActiveItems={onlyItem.numberOfActiveItems}
-                  />
-                </DraggableView>
-              );
-            }
-          })}
-        </DraggableContextProvider>
-      </PageContent>
+      <DraxScrollView
+        style={{flex: 1}}
+        contentContainerStyle={{flexGrow: 1}}
+        scrollEnabled>
+        <HomeHeader />
+        <PageContent>
+          <DefaultLists lists={lists} />
+          <SectionTitle title={t('sectionTitles.counters')} />
+          <CountersList list={counterList} />
+          <SectionTitle title={t('sectionTitles.myLists')} />
+          <CustomLists
+            data={groupedCustomLists}
+            onSetData={handleSetCustomLists}
+            onDragStart={handleListDragStart}
+            onDragEnd={handleListDragEnd}
+          />
+        </PageContent>
+      </DraxScrollView>
+      <FloatingDelete visible={deleteVisible} />
     </Page>
   );
 };
