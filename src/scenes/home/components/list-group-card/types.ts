@@ -1,5 +1,6 @@
-import {ListGroup} from '../../types';
+import {List} from '../../types';
 
 export type ListGroupProps = {
-  group: ListGroup;
+  groupTitle: string;
+  items: List[];
 };

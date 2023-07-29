@@ -10,6 +10,7 @@ export type List = {
   label: string;
   numberOfActiveItems: number;
   color?: string;
+  groupName?: string;
 };
 
 export type BuiltInList = List & {

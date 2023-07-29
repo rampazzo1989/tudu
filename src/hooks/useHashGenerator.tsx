@@ -1,8 +1,8 @@
 import {useState} from 'react';
 import Crypto from 'react-native-quick-crypto';
 
-type UseComponentNameGeneratorProps = {
-  componentName: string;
+type UseHashGeneratorProps = {
+  seedText: string;
 };
 
 function generateRandomHash(text: string) {
@@ -16,10 +16,10 @@ function generateRandomHash(text: string) {
   return hash;
 }
 
-const useHashGenerator = ({componentName}: UseComponentNameGeneratorProps) => {
-  const [key] = useState(generateRandomHash(componentName));
+const useHashGenerator = ({seedText}: UseHashGeneratorProps) => {
+  const [key] = useState(generateRandomHash(seedText));
 
   return {key};
 };
 
-export {useHashGenerator};
+export {useHashGenerator, generateRandomHash};
