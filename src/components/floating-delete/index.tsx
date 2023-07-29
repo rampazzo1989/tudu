@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {SlideInDown, SlideOutDown} from 'react-native-reanimated';
 import {DeleteIcon} from '../animated-icons/delete-icon';
 import {AnimatedContainer, Container, Label} from './styles';
@@ -6,9 +6,18 @@ import {FloatingDeleteProps} from './types';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const FloatingDelete: React.FC<FloatingDeleteProps> = memo(({visible}) => {
+  const [animate, setAnimate] = useState(false);
   const handleItemIsHovering = useCallback(() => {
     ReactNativeHapticFeedback.trigger('impactLight');
+    setAnimate(true);
   }, []);
+
+  useEffect(() => {
+    if (!visible) {
+      setAnimate(false);
+    }
+  }, [visible]);
+
   return visible ? (
     <AnimatedContainer entering={SlideInDown} exiting={SlideOutDown}>
       <Container
@@ -16,7 +25,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(({visible}) => {
         onReceiveDragEnter={handleItemIsHovering}
         style={{zIndex: 9999999}}
         receivingStyle={{opacity: 1, transform: [{scale: 1.1}]}}>
-        <DeleteIcon loop />
+        <DeleteIcon loop animate={animate} />
         <Label>Delete</Label>
       </Container>
     </AnimatedContainer>
