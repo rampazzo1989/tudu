@@ -18,6 +18,7 @@ const useDraggableViewHooks = <T>({
   const sortReceiverHeight = useSharedValue<number | undefined>(undefined);
   const isReceivingNestedItem = useSharedValue(false);
   const itemHeight = useSharedValue<number | undefined>(undefined);
+  const [isOverDeleter, setOverDeleter] = useState(false);
   const [draggedViewSnapBackAnimationOn, setDraggedViewSnapBackAnimationOn] =
     useState(true);
 
@@ -183,13 +184,23 @@ const useDraggableViewHooks = <T>({
     hidePlaceholder();
   }, [hidePlaceholder, isReceivingNestedItem]);
 
-  const handleItemDragEnter = useCallback(() => {
-    setDraggedViewSnapBackAnimationOn(false);
-  }, []);
+  const handleItemDragEnter = useCallback(
+    (data: DraxDragWithReceiverEventData) => {
+      setDraggedViewSnapBackAnimationOn(false);
+      const overDeleter = data.receiver.payload?.id === 'delete';
+      setOverDeleter(overDeleter);
+    },
+    [],
+  );
 
-  const handleItemDragExit = useCallback(() => {
-    setDraggedViewSnapBackAnimationOn(true);
-  }, []);
+  const handleItemDragExit = useCallback(
+    (data: DraxDragWithReceiverEventData) => {
+      setDraggedViewSnapBackAnimationOn(true);
+      const overDeleter = data.receiver.payload?.id === 'delete';
+      setOverDeleter(overDeleter);
+    },
+    [],
+  );
   return {
     handleWrapperViewLayout,
     animatedStyle,
@@ -201,6 +212,7 @@ const useDraggableViewHooks = <T>({
     handleItemDragEnter,
     handleItemDragExit,
     draggableContext,
+    isOverDeleter,
   };
 };
 

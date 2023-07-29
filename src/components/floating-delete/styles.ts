@@ -6,10 +6,11 @@ export const Container = styled(DraxView)`
   border-radius: 20px;
   flex-direction: row;
   padding: 10px;
-  background-color: red;
+  background-color: transparent;
+  border: 1px solid #ffffff;
   justify-content: center;
   align-items: center;
-  opacity: 0.8;
+  opacity: 0.5;
 `;
 
 export const Label = styled.Text`
@@ -26,4 +27,5 @@ export const AnimatedContainer = styled(Animated.View)`
   right: 0;
   justify-content: center;
   align-items: center;
+  z-index: 99999999999;
 `;
