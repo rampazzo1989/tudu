@@ -35,6 +35,7 @@ const CountersList: React.FC<CounterListProps> = memo(({list}) => {
       style={{
         flexDirection: 'row',
         marginHorizontal: -DEFAULT_PAGE_HORIZONTAL_PADDING,
+        marginTop: 14,
       }}>
       <FlatList
         data={list}
