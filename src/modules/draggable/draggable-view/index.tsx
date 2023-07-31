@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {DraxView} from 'react-native-drax';
-import Animated, {FadeOut, Layout} from 'react-native-reanimated';
+import Animated, {FadeOut, Layout, StretchOutY} from 'react-native-reanimated';
 import {styles} from './styles';
 import {DraggableViewProps} from './types';
 import {useDraggableViewHooks} from './useDraggableViewHooks';
@@ -37,7 +37,7 @@ const DraggableView = memo(
             isParent={isReceiver}
             animateSnapback={draggedViewSnapBackAnimationOn}
             draggable
-            longPressDelay={300}
+            longPressDelay={500}
             draggingStyle={styles.itemDragging}
             hoverStyle={
               isOverDeleter ? styles.itemHoverDeleter : styles.itemHover

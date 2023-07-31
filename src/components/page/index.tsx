@@ -50,7 +50,7 @@ const Page: React.FC<PageProps> = memo(({children}) => {
   return (
     <StyledSafeAreaView>
       <StatusBar backgroundColor={theme.colors.primary} />
-      <DraxProvider>{children}</DraxProvider>
+      {children}
     </StyledSafeAreaView>
   );
 });

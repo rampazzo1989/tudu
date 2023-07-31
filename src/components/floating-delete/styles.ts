@@ -27,5 +27,5 @@ export const AnimatedContainer = styled(Animated.View)`
   right: 0;
   justify-content: center;
   align-items: center;
-  z-index: 99999999999;
+  z-index: 9999;
 `;

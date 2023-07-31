@@ -7,15 +7,12 @@ import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {List} from '../../types';
 import {ListGroupCard} from '../list-group-card';
 import {CustomListsProps} from './types';
+import {Container} from './styles';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({data, onSetData, onDragStart, onDragEnd}) => {
     return (
-      <DraggableContextProvider<List>
-        data={data}
-        onSetData={onSetData}
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}>
+      <Container>
         {data.map((item, index) => {
           if (item.groupId) {
             return (
@@ -43,7 +40,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             );
           }
         })}
-      </DraggableContextProvider>
+      </Container>
     );
   },
 );

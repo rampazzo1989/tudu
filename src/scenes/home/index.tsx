@@ -12,8 +12,9 @@ import {CountersList} from './components/counters-list';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {CustomLists} from './components/custom-lists';
 import {mapListToDraggableItems} from '../../modules/draggable/draggable-utils';
-import {DraxScrollView} from 'react-native-drax';
+import {DraxProvider, DraxScrollView} from 'react-native-drax';
 import {FloatingDelete} from '../../components/floating-delete';
+import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -61,25 +62,33 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   return (
     <Page>
-      <DraxScrollView
-        style={{flex: 1}}
-        contentContainerStyle={{flexGrow: 1}}
-        scrollEnabled>
-        <HomeHeader />
-        <PageContent>
-          <DefaultLists lists={lists} />
-          <SectionTitle title={t('sectionTitles.counters')} />
-          <CountersList list={counterList} />
-          <SectionTitle title={t('sectionTitles.myLists')} />
-          <CustomLists
-            data={groupedCustomLists}
-            onSetData={handleSetCustomLists}
-            onDragStart={handleListDragStart}
-            onDragEnd={handleListDragEnd}
-          />
-        </PageContent>
-      </DraxScrollView>
-      <FloatingDelete visible={deleteVisible} />
+      <HomeHeader />
+      <DraxProvider>
+        <DraggableContextProvider<List>
+          data={groupedCustomLists}
+          onSetData={handleSetCustomLists}
+          onDragStart={handleListDragStart}
+          onDragEnd={handleListDragEnd}>
+          <DraxScrollView
+            style={{flex: 1}}
+            contentContainerStyle={{flexGrow: 1}}
+            scrollEnabled>
+            <PageContent>
+              <DefaultLists lists={lists} />
+              <SectionTitle title={t('sectionTitles.counters')} />
+              <CountersList list={counterList} />
+              <SectionTitle title={t('sectionTitles.myLists')} />
+              <CustomLists
+                data={groupedCustomLists}
+                onSetData={handleSetCustomLists}
+                onDragStart={handleListDragStart}
+                onDragEnd={handleListDragEnd}
+              />
+            </PageContent>
+          </DraxScrollView>
+          <FloatingDelete visible={deleteVisible} />
+        </DraggableContextProvider>
+      </DraxProvider>
     </Page>
   );
 };
