@@ -5,6 +5,7 @@ const darkTheme: DefaultTheme = {
     primary: '#7956BF',
     secondary: '#6B49B7',
     pageBackground: '#25303D',
+    contrastColor: '#FFFFFF',
     text: '#FFFFFF',
     headerText: '#FFFFFF',
     tabbar: '#2D344A',
@@ -36,6 +37,7 @@ const darkTheme: DefaultTheme = {
     initials: 'Inter-Medium',
     counterTitle: 'Inter-Regular',
     counterValue: 'Inter-Regular',
+    default: 'Inter-Regular',
   },
 };
 

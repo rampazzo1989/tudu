@@ -41,3 +41,36 @@ export const mapListToDraggableItems = <T>(
 
   return draggableList;
 };
+
+export const mapDraggableItemsToList = <T extends object>(
+  newOrderList: DraggableItem<T>[],
+  groupIdProperty: keyof T,
+) => {
+  for (let itemIndex in newOrderList) {
+    const item = newOrderList[itemIndex];
+    if (item.groupId) {
+      for (let subItemIndex in item.data) {
+        const subItem = item.data[subItemIndex];
+        const cloneItem = {...subItem};
+        cloneItem[groupIdProperty] = item.groupId as T[keyof T];
+        item.data[subItemIndex] = cloneItem;
+      }
+    } else {
+      item.groupId = undefined;
+      item.data[0][groupIdProperty] = undefined as T[keyof T];
+    }
+  }
+
+  return newOrderList.flatMap(item => item.data);
+};
+
+export const removeSubItem = <T>(list: DraggableItem<T>[], item: T) => {
+  const group = list.filter(x => !!x.groupId).find(g => g.data.includes(item));
+
+  if (group) {
+    const itemIndex = group.data.indexOf(item);
+    if (itemIndex >= 0) {
+      group.data.splice(itemIndex, 1);
+    }
+  }
+};

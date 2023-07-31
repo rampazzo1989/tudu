@@ -6,6 +6,7 @@ declare module 'styled-components/native' {
       primary: string;
       secondary: string;
       pageBackground: string;
+      contrastColor: string;
       text: string;
       headerText: string;
       tabbar: string;
@@ -33,6 +34,7 @@ declare module 'styled-components/native' {
       initials: string;
       counterTitle: string;
       counterValue: string;
+      default: string;
     };
   }
 }

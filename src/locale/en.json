@@ -7,5 +7,8 @@
   "sectionTitles": {
     "counters": "Counters",
     "myLists": "My Lists"
+  },
+  "actions": {
+    "delete": "Delete"
   }
 }

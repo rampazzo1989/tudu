@@ -22,3 +22,9 @@ export class DraggableItem<T> {
     this.groupId = groupId;
   }
 }
+
+export const SPECIAL_DRAGGABLE_PAYLOAD_TYPES = ['delete', 'move'] as const;
+
+export type SpecialDraggablePayload = {
+  id: (typeof SPECIAL_DRAGGABLE_PAYLOAD_TYPES)[number];
+};
