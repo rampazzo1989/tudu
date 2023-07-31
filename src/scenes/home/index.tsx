@@ -7,11 +7,14 @@ import {useRecoilState, useRecoilValue} from 'recoil';
 import {counters, homeDefaultLists, myLists} from './state';
 import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
-import {SectionTitle} from './styles';
+import {SectionTitle, styles} from './styles';
 import {CountersList} from './components/counters-list';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {CustomLists} from './components/custom-lists';
-import {mapListToDraggableItems} from '../../modules/draggable/draggable-utils';
+import {
+  mapDraggableItemsToList,
+  mapListToDraggableItems,
+} from '../../modules/draggable/draggable-utils';
 import {DraxProvider, DraxScrollView} from 'react-native-drax';
 import {FloatingDelete} from '../../components/floating-delete';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
@@ -25,26 +28,8 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   const handleSetCustomLists = useCallback(
     (newOrderList: DraggableItem<List>[]) => {
-      console.log({newOrderList});
-
-      for (let itemIndex in newOrderList) {
-        const item = newOrderList[itemIndex];
-        if (item.groupId) {
-          for (let subItemIndex in item.data) {
-            item.data[subItemIndex] = {
-              ...item.data[subItemIndex],
-              groupName: item.groupId,
-            };
-          }
-        } else {
-          item.groupId = undefined;
-          item.data[0].groupName = undefined;
-        }
-      }
-
-      const flatList = newOrderList.flatMap(item => item.data);
-
-      setCustomLists(flatList);
+      const mappedList = mapDraggableItemsToList(newOrderList, 'groupName');
+      setCustomLists(mappedList);
     },
     [setCustomLists],
   );
@@ -69,23 +54,16 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           onSetData={handleSetCustomLists}
           onDragStart={handleListDragStart}
           onDragEnd={handleListDragEnd}>
-          <DraxScrollView
-            style={{flex: 1}}
-            contentContainerStyle={{flexGrow: 1}}
+          <PageContent
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContentContainer}
             scrollEnabled>
-            <PageContent>
-              <DefaultLists lists={lists} />
-              <SectionTitle title={t('sectionTitles.counters')} />
-              <CountersList list={counterList} />
-              <SectionTitle title={t('sectionTitles.myLists')} />
-              <CustomLists
-                data={groupedCustomLists}
-                onSetData={handleSetCustomLists}
-                onDragStart={handleListDragStart}
-                onDragEnd={handleListDragEnd}
-              />
-            </PageContent>
-          </DraxScrollView>
+            <DefaultLists lists={lists} />
+            <SectionTitle title={t('sectionTitles.counters')} />
+            <CountersList list={counterList} />
+            <SectionTitle title={t('sectionTitles.myLists')} />
+            <CustomLists data={groupedCustomLists} />
+          </PageContent>
           <FloatingDelete visible={deleteVisible} />
         </DraggableContextProvider>
       </DraxProvider>

@@ -1,10 +1,11 @@
-import {useCallback, useContext, useEffect, useState} from 'react';
+import {useCallback, useContext, useEffect} from 'react';
 import {LayoutChangeEvent} from 'react-native';
 import {DraxDragWithReceiverEventData} from 'react-native-drax';
 import {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 import {isEmpty} from '../../../utils/general-utils';
 import {DraggableContext} from '../draggable-context';
 import {DraggableItem} from '../draggable-context/types';
+import {removeSubItem} from '../draggable-utils';
 import {UseDraggableViewHooksProps} from './types';
 
 const PLACEHOLDER_HEIGHT = 50;
@@ -18,9 +19,6 @@ const useDraggableViewHooks = <T>({
   const sortReceiverHeight = useSharedValue<number | undefined>(undefined);
   const isReceivingNestedItem = useSharedValue(false);
   const itemHeight = useSharedValue<number | undefined>(undefined);
-  const [isOverDeleter, setOverDeleter] = useState(false);
-  const [draggedViewSnapBackAnimationOn, setDraggedViewSnapBackAnimationOn] =
-    useState(true);
 
   const showPlaceholder = useCallback(() => {
     sortReceiverHeight.value = (itemHeight.value ?? 0) + PLACEHOLDER_HEIGHT;
@@ -36,7 +34,7 @@ const useDraggableViewHooks = <T>({
       : new DraggableItem([item as T]);
   }, []);
 
-  const isGroupedItem = useCallback((item: any) => {
+  const isNestedItem = useCallback((item: any) => {
     return !(item instanceof DraggableItem<T>);
   }, []);
 
@@ -69,20 +67,11 @@ const useDraggableViewHooks = <T>({
 
   const removeFromOriginalGroup = useCallback(
     (uncastedDraggedItem: any) => {
-      // Find all groups
-      const groups = draggableContext.data.slice().filter(x => x.groupId);
-
-      for (let i in groups) {
-        const foundIndex = groups[i].data.indexOf(uncastedDraggedItem);
-        if (foundIndex >= 0) {
-          const newItemList = groups[i].data.slice();
-          newItemList.splice(foundIndex, 1);
-
-          groups[i].data = newItemList;
-        }
-      }
+      const cloneList = draggableContext.data.slice();
+      removeSubItem(cloneList, uncastedDraggedItem);
+      draggableContext.setData(cloneList);
     },
-    [draggableContext.data],
+    [draggableContext],
   );
 
   const handleContainerReceiveDragDrop = useCallback(
@@ -98,7 +87,7 @@ const useDraggableViewHooks = <T>({
       // If the dragged item is a group item, check if it's from the current group before adding
       if (isReceivingNestedItem.value) {
         const itsFromThisGroup =
-          isGroupedItem(uncastedDraggedItem) &&
+          isNestedItem(uncastedDraggedItem) &&
           payload.data.indexOf(uncastedDraggedItem) >= 0;
 
         if (itsFromThisGroup) {
@@ -115,7 +104,7 @@ const useDraggableViewHooks = <T>({
       }
 
       // If it's an item from a group
-      if (isGroupedItem(uncastedDraggedItem)) {
+      if (isNestedItem(uncastedDraggedItem)) {
         removeFromOriginalGroup(uncastedDraggedItem);
       }
 
@@ -135,7 +124,7 @@ const useDraggableViewHooks = <T>({
       castItem,
       draggableContext,
       hidePlaceholder,
-      isGroupedItem,
+      isNestedItem,
       isReceivingNestedItem,
       payload,
       removeFromOriginalGroup,
@@ -184,23 +173,6 @@ const useDraggableViewHooks = <T>({
     hidePlaceholder();
   }, [hidePlaceholder, isReceivingNestedItem]);
 
-  const handleItemDragEnter = useCallback(
-    (data: DraxDragWithReceiverEventData) => {
-      setDraggedViewSnapBackAnimationOn(false);
-      const overDeleter = data.receiver.payload?.id === 'delete';
-      setOverDeleter(overDeleter);
-    },
-    [],
-  );
-
-  const handleItemDragExit = useCallback(
-    (data: DraxDragWithReceiverEventData) => {
-      setDraggedViewSnapBackAnimationOn(true);
-      const overDeleter = data.receiver.payload?.id === 'delete';
-      setOverDeleter(overDeleter);
-    },
-    [],
-  );
   return {
     handleWrapperViewLayout,
     animatedStyle,
@@ -208,11 +180,7 @@ const useDraggableViewHooks = <T>({
     handleContainerReceiveDragOver,
     handleContainerReceiveDragEnter,
     handleContainerReceiveDragExit,
-    draggedViewSnapBackAnimationOn,
-    handleItemDragEnter,
-    handleItemDragExit,
     draggableContext,
-    isOverDeleter,
   };
 };
 
