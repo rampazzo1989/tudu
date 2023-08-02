@@ -25,6 +25,7 @@ const ListCard: React.FC<ListCardProps> = memo(
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}
+        activeOpacity={0.5}
         style={style}
         onPress={() => console.log('LIST CARD TOUCH', {label})}>
         <IconLabelContainer>

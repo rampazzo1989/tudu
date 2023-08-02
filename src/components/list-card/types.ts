@@ -7,6 +7,7 @@ export type ListCardProps = {
   numberOfActiveItems: number;
   isHighlighted?: boolean;
   style?: StyleProp<ViewStyle>;
+  color?: string;
 };
 
 export type NumberOfActiveItemsProps = Pick<

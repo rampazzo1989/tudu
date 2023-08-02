@@ -66,7 +66,7 @@ export const myLists = atom<List[]>({
     },
     {
       label: 'Gift Ideias',
-      color: 'blue',
+      color: '#7956BF',
       numberOfActiveItems: 12,
     },
     {

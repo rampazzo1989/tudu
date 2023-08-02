@@ -18,6 +18,8 @@ import {
 import {DraxProvider, DraxScrollView} from 'react-native-drax';
 import {FloatingDelete} from '../../components/floating-delete';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
+import {BlurredModal} from '../../components/blurred-modal';
+import {Text, View} from 'react-native';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -64,7 +66,16 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             <SectionTitle title={t('sectionTitles.myLists')} />
             <CustomLists data={groupedCustomLists} />
           </PageContent>
-          <FloatingDelete visible={deleteVisible} />
+          <FloatingDelete
+            visible={deleteVisible}
+            confirmationPopupTitleBuilder={item => {
+              console.log(item);
+
+              return (
+                `Confirm deletion of list ${item?.data?.[0]?.label}?` ?? 'Teste'
+              );
+            }}
+          />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>

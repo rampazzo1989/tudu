@@ -20,6 +20,7 @@ const darkTheme: DefaultTheme = {
     counterTile: '#3C414A',
     counterIconBackground: '#2B3139',
     optionsButtonBackground: '#2B3139',
+    popupBackground: '#3C414A',
     scrollFadeGradientColors: [
       'rgba(37, 48, 61, 0.18)',
       'rgba(37, 48, 61, 0.6)',

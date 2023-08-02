@@ -21,6 +21,7 @@ declare module 'styled-components/native' {
       counterTile: string;
       counterIconBackground: string;
       optionsButtonBackground: string;
+      popupBackground: string;
       scrollFadeGradientColors: string[];
     };
     fonts: {

@@ -51,6 +51,15 @@ const DraggableItem: React.FC<DraggableItemProps> = memo(
       },
       [handleOverSpecialReceiver],
     );
+
+    const handleItemDragDrop = useCallback(
+      (data: DraxDragWithReceiverEventData) => {
+        handleOverSpecialReceiver(data.receiver.payload, false);
+        draggableContext?.onDragEnd?.();
+      },
+      [draggableContext, handleOverSpecialReceiver],
+    );
+
     return (
       <DraxView
         animateSnapback={draggedViewSnapBackAnimationOn}
@@ -63,7 +72,7 @@ const DraggableItem: React.FC<DraggableItemProps> = memo(
         onDragExit={handleItemDragExit}
         onDragStart={draggableContext?.onDragStart}
         onDragEnd={draggableContext?.onDragEnd}
-        onDragDrop={draggableContext?.onDragEnd}
+        onDragDrop={handleItemDragDrop}
         style={styles.item}
         {...props}>
         {children}
