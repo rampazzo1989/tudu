@@ -95,6 +95,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
             {label: 'Sim', onPress: handleConfirmDelete},
             {label: 'Não', onPress: handleCancelDelete},
           ]}
+          Icon={DeleteIcon}
         />
       </>
     );

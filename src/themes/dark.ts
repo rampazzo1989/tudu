@@ -14,6 +14,8 @@ const darkTheme: DefaultTheme = {
     listCardNumber: '#444B56',
     listCardNumberHighlighted: '#3C414A',
     listCardGroup: '#3C414A',
+    button: '#3C414A',
+    buttonHighlight: '#444B56',
     profileThumbBackground: '#FFFFFF',
     profileThumbText: '#212529',
     sectionTitleBorder: '#444B56',
