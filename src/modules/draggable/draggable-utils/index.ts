@@ -74,3 +74,7 @@ export const removeSubItem = <T>(list: DraggableItem<T>[], item: T) => {
     }
   }
 };
+
+export const isNestedItem = <T>(item: T) => {
+  return !(item instanceof DraggableItem<T>);
+};

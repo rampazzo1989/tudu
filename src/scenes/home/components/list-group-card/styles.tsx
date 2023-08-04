@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import {ListCard} from '../../../../components/list-card';
 
-export const ListGroupContainer = styled.TouchableOpacity`
+export const ListGroupContainer = styled.View`
   border-radius: 10px;
   background-color: ${({theme}) => theme.colors.listCardGroup};
   padding-right: 12px;

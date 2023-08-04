@@ -1,3 +1,4 @@
+import {AnimatedIconProps} from '../animated-icons/animated-icon/types';
 import {BlurredModalProps} from '../blurred-modal/types';
 
 export type PopupButton = {
@@ -9,4 +10,6 @@ export type PopupButton = {
 export type PopupModalProps = BlurredModalProps & {
   title?: string;
   buttons?: PopupButton[];
+  Icon?: React.FC<AnimatedIconProps>;
+  shakeOnShow?: boolean;
 };

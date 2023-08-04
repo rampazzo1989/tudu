@@ -43,9 +43,9 @@ const BaseAnimatedIcon = memo(
         if (props.autoPlay) {
           setTimeout(() => {
             animationRef.current?.play(initialFrame, finalFrame);
-          }, 500);
+          }, props.autoPlayDelay ?? 500);
         }
-      }, [finalFrame, initialFrame, props.autoPlay]);
+      }, [finalFrame, initialFrame, props.autoPlay, props.autoPlayDelay]);
 
       const {key: componentKey} = useHashGenerator({seedText: componentName});
 

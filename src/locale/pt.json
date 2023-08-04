@@ -10,5 +10,12 @@
   },
   "actions": {
     "delete": "Remover"
+  },
+  "messages": {
+    "confirmDelete": "Confirma a exclusão da {{itemType}} {{listName}}?",
+    "confirmDeleteItemType": {
+      "list": "lista",
+      "group": "grupo"
+    }
   }
 }

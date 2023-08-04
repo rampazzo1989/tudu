@@ -1,3 +1,4 @@
+import {StyleSheet} from 'react-native';
 import styled from 'styled-components/native';
 
 export const PopupContainer = styled.TouchableOpacity.attrs({
@@ -34,8 +35,41 @@ export const SeparatorContainer = styled.View`
   background-image: linear-gradient(to right, #3c414a, #ffffff, #3c414a);
 `;
 
-export const ContentContainer = styled.View`
-  justify-content: center;
+type ButtonsContainerProps = {shouldWrap: boolean};
+
+export const ButtonsContainer = styled.View<ButtonsContainerProps>`
+  flex-direction: row;
   align-items: center;
+  flex-wrap: ${({shouldWrap}) => (shouldWrap ? 'wrap' : 'nowrap')};
   flex: 1;
+  justify-content: space-around;
+  padding-right: 10px;
 `;
+
+type HighlightableComponent = {highlight?: boolean};
+
+export const PopupButton = styled.TouchableOpacity<HighlightableComponent>`
+  padding: 12px;
+  border-radius: 8px;
+  border-width: 1px;
+  border-color: #444b56;
+  background-color: ${({highlight, theme}) =>
+    highlight ? theme.colors.buttonHighlight : theme.colors.button};
+  margin-left: 10px;
+  margin-top: 10px;
+  width: 100px;
+  height: 42px;
+  align-items: center;
+`;
+
+export const ButtonLabel = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  font-size: 14px;
+`;
+
+export const styles = StyleSheet.create({
+  icon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

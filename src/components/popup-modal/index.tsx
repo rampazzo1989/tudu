@@ -1,82 +1,91 @@
-import React, {memo} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Animated, {ZoomInRotate} from 'react-native-reanimated';
-import {DeleteIcon} from '../animated-icons/delete-icon';
+import React, {memo, useEffect} from 'react';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
+import {shake} from '../../utils/animation-utils';
 import {BlurredModal} from '../blurred-modal';
+import {GradientSeparator} from '../gradient-separator';
 import {
-  ContentContainer,
+  ButtonsContainer,
   PopupContainer,
   PopupTitle,
   PopupTitleContainer,
+  PopupButton,
+  ButtonLabel,
+  styles,
 } from './styles';
 import {PopupModalProps} from './types';
 
 const PopupModal: React.FC<PopupModalProps> = memo(
-  ({children, title, onRequestClose, buttons, ...props}) => {
+  ({
+    children,
+    title,
+    onRequestClose,
+    buttons,
+    Icon,
+    visible,
+    shakeOnShow,
+    ...props
+  }) => {
+    const shakeValue = useSharedValue(0);
+
+    const iconAnimationDelay = shakeOnShow ? 750 : 500;
+
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        transform: [{translateX: shakeValue.value}],
+      };
+    });
+
+    useEffect(() => {
+      if (visible && shakeOnShow) {
+        setTimeout(() => {
+          shake(shakeValue, 5);
+        }, 100);
+      }
+    }, [shakeOnShow, shakeValue, visible]);
+
     return (
-      <BlurredModal transparent onRequestClose={onRequestClose} {...props}>
-        {props.visible && (
-          <Animated.View entering={ZoomInRotate.duration(150)}>
-            <PopupContainer>
-              {title && (
+      <BlurredModal
+        transparent
+        onRequestClose={onRequestClose}
+        visible={visible}
+        {...props}>
+        <Animated.View style={animatedStyle}>
+          <PopupContainer>
+            {title && (
+              <>
                 <PopupTitleContainer>
-                  <DeleteIcon
-                    autoPlay
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  />
+                  {!!Icon && (
+                    <Icon
+                      autoPlay
+                      autoPlayDelay={iconAnimationDelay}
+                      style={styles.icon}
+                    />
+                  )}
                   <PopupTitle>{`${title}`}</PopupTitle>
                 </PopupTitleContainer>
-              )}
-
-              <LinearGradient
-                colors={['#3C414A', '#FFFFFF20', '#3C414A']}
-                style={{flex: 1, maxHeight: 1, marginTop: 10}}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-              />
-              {/* <ContentContainer> */}
-              {children}
-              {buttons && (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    flexWrap: buttons.length > 2 ? 'wrap' : 'nowrap',
-                    flex: 1,
-                    justifyContent: 'space-around',
-                    paddingRight: 10,
-                  }}>
-                  {buttons.map(button => (
-                    <TouchableOpacity
-                      onPress={button.onPress}
-                      style={{
-                        padding: 12,
-                        borderRadius: 8,
-                        // elevation: 5,
-                        borderWidth: 1,
-                        borderColor: '#444B56',
-                        backgroundColor: button.highlight
-                          ? '#444B56'
-                          : '#3C414A',
-                        marginLeft: 10,
-                        marginTop: 10,
-                        width: 100,
-                        height: 42,
-                        alignItems: 'center',
-                      }}>
-                      <Text>{button.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-              {/* </ContentContainer> */}
-            </PopupContainer>
-          </Animated.View>
-        )}
+                <GradientSeparator
+                  colorArray={['#3C414A', '#FFFFFF20', '#3C414A']}
+                />
+              </>
+            )}
+            {children}
+            {buttons && (
+              <ButtonsContainer shouldWrap={buttons.length > 2}>
+                {buttons.map(button => (
+                  <PopupButton
+                    onPress={button.onPress}
+                    highlight={button.highlight}
+                    key={button.label}>
+                    <ButtonLabel>{button.label}</ButtonLabel>
+                  </PopupButton>
+                ))}
+              </ButtonsContainer>
+            )}
+          </PopupContainer>
+        </Animated.View>
       </BlurredModal>
     );
   },

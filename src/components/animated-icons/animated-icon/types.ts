@@ -5,6 +5,7 @@ export interface BaseAnimatedIconProps extends AnimatedLottieViewProps {
   initialFrame?: number;
   finalFrame?: number;
   animateWhenIdle?: boolean;
+  autoPlayDelay?: number;
 }
 
 export type AnimatedIconProps = Omit<
