@@ -43,7 +43,7 @@ export const ButtonsContainer = styled.View<ButtonsContainerProps>`
   flex-wrap: ${({shouldWrap}) => (shouldWrap ? 'wrap' : 'nowrap')};
   flex: 1;
   justify-content: space-around;
-  padding-right: 10;
+  padding-right: 10px;
 `;
 
 type HighlightableComponent = {highlight?: boolean};
@@ -51,9 +51,8 @@ type HighlightableComponent = {highlight?: boolean};
 export const PopupButton = styled.TouchableOpacity<HighlightableComponent>`
   padding: 12px;
   border-radius: 8px;
-  // elevation: 5;
   border-width: 1px;
-  border-color: '#444B56';
+  border-color: #444b56;
   background-color: ${({highlight, theme}) =>
     highlight ? theme.colors.buttonHighlight : theme.colors.button};
   margin-left: 10px;

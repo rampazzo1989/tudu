@@ -11,4 +11,5 @@ export type PopupModalProps = BlurredModalProps & {
   title?: string;
   buttons?: PopupButton[];
   Icon?: React.FC<AnimatedIconProps>;
+  shakeOnShow?: boolean;
 };

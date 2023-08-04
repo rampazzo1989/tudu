@@ -11,7 +11,10 @@ import {
   SpecialDraggablePayload,
 } from '../../modules/draggable/draggable-context/types';
 import {useTranslation} from 'react-i18next';
-import {removeSubItem} from '../../modules/draggable/draggable-utils';
+import {
+  isNestedItem,
+  removeSubItem,
+} from '../../modules/draggable/draggable-utils';
 import {PopupModal} from '../popup-modal';
 
 const deletePayload: SpecialDraggablePayload = {
@@ -22,6 +25,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
   ({visible, confirmationPopupTitleBuilder}) => {
     const [animate, setAnimate] = useState(false);
     const [deletingItem, setDeletingItem] = useState<DraggableItem<unknown>>();
+    const [modal, setModal] = useState(false);
     const draggableContext = useContext(DraggableContext);
     const {t} = useTranslation();
 
@@ -35,10 +39,6 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
         setAnimate(false);
       }
     }, [visible]);
-
-    const isNestedItem = useCallback(<T,>(item: T) => {
-      return !(item instanceof DraggableItem<T>);
-    }, []);
 
     const handleDrop = useCallback((data: DraxDragWithReceiverEventData) => {
       setDeletingItem(data.dragged.payload);
@@ -61,7 +61,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
 
       draggableContext?.setData(cloneList);
       setModal(false);
-    }, [deletingItem, draggableContext, isNestedItem]);
+    }, [deletingItem, draggableContext]);
 
     const handleCancelDelete = useCallback(() => {
       setDeletingItem(undefined);
@@ -69,8 +69,6 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
     }, []);
 
     const handleReceiveDragExit = useCallback(() => setAnimate(false), []);
-
-    const [modal, setModal] = useState(false);
 
     return (
       <>
@@ -96,6 +94,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
             {label: 'Não', onPress: handleCancelDelete},
           ]}
           Icon={DeleteIcon}
+          shakeOnShow
         />
       </>
     );

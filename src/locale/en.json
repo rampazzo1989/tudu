@@ -10,5 +10,12 @@
   },
   "actions": {
     "delete": "Delete"
+  },
+  "messages": {
+    "confirmDelete": "Confirm deletion of {{itemType}} {{listName}}?",
+    "confirmDeleteItemType": {
+      "list": "list",
+      "group": "group"
+    }
   }
 }
