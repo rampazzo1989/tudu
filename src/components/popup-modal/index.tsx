@@ -30,7 +30,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
   }) => {
     const shakeValue = useSharedValue(0);
 
-    const iconAnimationDelay = shakeOnShow ? 750 : 500;
+    const iconAnimationDelay = shakeOnShow ? 600 : 500;
 
     const animatedStyle = useAnimatedStyle(() => {
       return {
@@ -41,7 +41,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     useEffect(() => {
       if (visible && shakeOnShow) {
         setTimeout(() => {
-          shake(shakeValue, 5);
+          shake(shakeValue, 4);
         }, 100);
       }
     }, [shakeOnShow, shakeValue, visible]);

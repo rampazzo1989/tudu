@@ -7,6 +7,8 @@ import {
   Container,
   HorizontalSeparator,
   LateralFadingGradient,
+  LeftFadingGradient,
+  RightFadingGradient,
   styles,
 } from './styles';
 import {CounterListProps} from './types';
@@ -38,7 +40,13 @@ const CountersList: React.FC<CounterListProps> = memo(({list}) => {
         keyExtractor={keyExtractor}
         ItemSeparatorComponent={HorizontalSeparator}
       />
-      <LateralFadingGradient
+      <LeftFadingGradient
+        start={{x: 1, y: 0}}
+        end={{x: 0, y: 0}}
+        colors={theme.colors.scrollFadeGradientColors}
+        pointerEvents={'none'}
+      />
+      <RightFadingGradient
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}
         colors={theme.colors.scrollFadeGradientColors}
