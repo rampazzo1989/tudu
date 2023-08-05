@@ -23,3 +23,9 @@ export const SubListCard = styled(ListCard)`
   elevation: 15;
   margin-bottom: 8px;
 `;
+
+export const TitleContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;

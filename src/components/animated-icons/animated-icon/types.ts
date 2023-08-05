@@ -6,6 +6,7 @@ export interface BaseAnimatedIconProps extends AnimatedLottieViewProps {
   finalFrame?: number;
   animateWhenIdle?: boolean;
   autoPlayDelay?: number;
+  staticStateFrame?: number;
 }
 
 export type AnimatedIconProps = Omit<
@@ -13,4 +14,8 @@ export type AnimatedIconProps = Omit<
   'componentName' | 'source'
 >;
 
-export type BaseAnimatedIconRef = {play: () => void; pause: () => void};
+export type BaseAnimatedIconRef = {
+  play: () => void;
+  pause: () => void;
+  toggle: () => void;
+};

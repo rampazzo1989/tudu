@@ -7,7 +7,12 @@ import {useRecoilState, useRecoilValue} from 'recoil';
 import {counters, homeDefaultLists, myLists} from './state';
 import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
-import {SectionTitle, styles} from './styles';
+import {
+  BottomFadingGradient,
+  SectionTitle,
+  styles,
+  TopFadingGradient,
+} from './styles';
 import {CountersList} from './components/counters-list';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {CustomLists} from './components/custom-lists';
@@ -19,6 +24,7 @@ import {
 import {DraxProvider} from 'react-native-drax';
 import {FloatingDelete} from '../../components/floating-delete';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
+import {useTheme} from 'styled-components/native';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -26,6 +32,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const counterList = useRecoilValue(counters);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const {t} = useTranslation();
+  const theme = useTheme();
 
   const handleSetCustomLists = useCallback(
     (newOrderList: DraggableItem<List>[]) => {
@@ -86,6 +93,18 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             <SectionTitle title={t('sectionTitles.myLists')} />
             <CustomLists data={groupedCustomLists} />
           </PageContent>
+          <TopFadingGradient
+            start={{x: 0, y: 1}}
+            end={{x: 0, y: 0}}
+            colors={theme.colors.scrollFadeGradientColors}
+            pointerEvents={'none'}
+          />
+          <BottomFadingGradient
+            start={{x: 0, y: 0}}
+            end={{x: 0, y: 1}}
+            colors={theme.colors.scrollFadeGradientColors}
+            pointerEvents={'none'}
+          />
           <FloatingDelete
             visible={deleteVisible}
             confirmationPopupTitleBuilder={handleDeleteList}

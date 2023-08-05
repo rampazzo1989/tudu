@@ -24,10 +24,11 @@ const darkTheme: DefaultTheme = {
     optionsButtonBackground: '#2B3139',
     popupBackground: '#3C414A',
     scrollFadeGradientColors: [
-      'rgba(37, 48, 61, 0.18)',
-      'rgba(37, 48, 61, 0.6)',
-      'rgba(37, 48, 61, 0.9)',
+      'rgba(37, 48, 61, 0.1)',
+      'rgba(37, 48, 61, 0.7)',
+      'rgba(37, 48, 61, 1)',
     ],
+    defaultSeparatorGradientColors: ['#3C414A', '#FFFFFF20', '#3C414A'],
   },
   fonts: {
     header: 'Inter-SemiBold',

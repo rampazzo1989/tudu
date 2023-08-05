@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react';
 import {useHashGenerator} from '../../../hooks/useHashGenerator';
 import {useIdlyAnimatedComponent} from '../../../hooks/useIdlyAnimatedComponent';
@@ -18,11 +19,13 @@ const BaseAnimatedIcon = memo(
         initialFrame = 0,
         finalFrame = 500,
         animateWhenIdle = false,
+        staticStateFrame = 0,
         ...props
       },
       ref,
     ) => {
       const animationRef = useRef<Lottie | null>(null);
+      const [toggle, setToggle] = useState(false);
 
       useImperativeHandle(
         ref,
@@ -34,9 +37,18 @@ const BaseAnimatedIcon = memo(
             pause() {
               animationRef.current?.pause();
             },
+            toggle() {
+              if (toggle) {
+                console.log('TOGGLE');
+                animationRef.current?.play(finalFrame, initialFrame);
+              } else {
+                animationRef.current?.play(initialFrame, finalFrame);
+              }
+              setToggle(x => !x);
+            },
           };
         },
-        [finalFrame, initialFrame],
+        [finalFrame, initialFrame, toggle],
       );
 
       useEffect(() => {
@@ -55,9 +67,10 @@ const BaseAnimatedIcon = memo(
         initialFrame,
         finalFrame,
         shouldAnimate: animateWhenIdle,
+        staticStateFrame,
       });
 
-      return <Lottie loop={false} {...props} ref={animationRef} />;
+      return <Lottie loop={false} {...props} ref={animationRef} speed={2} />;
     },
   ),
 );
