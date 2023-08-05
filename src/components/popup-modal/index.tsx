@@ -3,6 +3,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import {useTheme} from 'styled-components/native';
 import {shake} from '../../utils/animation-utils';
 import {BlurredModal} from '../blurred-modal';
 import {GradientSeparator} from '../gradient-separator';
@@ -29,6 +30,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     ...props
   }) => {
     const shakeValue = useSharedValue(0);
+    const theme = useTheme();
 
     const iconAnimationDelay = shakeOnShow ? 600 : 500;
 
@@ -67,7 +69,8 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                   <PopupTitle>{`${title}`}</PopupTitle>
                 </PopupTitleContainer>
                 <GradientSeparator
-                  colorArray={['#3C414A', '#FFFFFF20', '#3C414A']}
+                  colorArray={theme.colors.defaultSeparatorGradientColors}
+                  marginTop={10}
                 />
               </>
             )}

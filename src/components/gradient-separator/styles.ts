@@ -1,8 +1,11 @@
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
 
-export const StyledGradient = styled(LinearGradient)`
+type StyledGradientProps = {marginTop?: number};
+
+export const StyledGradient = styled(LinearGradient)<StyledGradientProps>`
   flex: 1;
   max-height: 1px;
-  margin-top: 10px;
+  height: 1px;
+  margin-top: ${({marginTop}) => marginTop ?? 0}px;
 `;

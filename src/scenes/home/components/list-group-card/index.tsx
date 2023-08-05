@@ -1,36 +1,42 @@
-import React, {memo} from 'react';
+import React, {memo, useRef} from 'react';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {DraggableItem} from '../../../../modules/draggable/draggable-item';
 import {ListGroupContainer, SubListCard, Title, TitleContainer} from './styles';
 import {ListGroupProps} from './types';
-import Popover from 'react-native-popover-view';
-import {StatusBar, Text} from 'react-native';
+import {PopoverMenu} from '../../../../components/popover-menu';
+import {GroupOptions} from './components/group-options';
+import {OptionsArrowDownIcon} from '../../../../components/animated-icons/options-arrow-down-icon';
+import {BaseAnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 
-const ListGroupCard: React.FC<ListGroupProps> = memo(({groupTitle, items}) => {
+const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
+  const iconRef = useRef<BaseAnimatedIconRef>(null);
+
   return (
     <ListGroupContainer>
       <TitleContainer>
-        <Title>{groupTitle}</Title>
-        <Popover
-          statusBarTranslucent
-          verticalOffset={StatusBar.currentHeight}
-          popoverStyle={{
-            backgroundColor: '#3C414A',
-            padding: 12,
-            borderRadius: 8,
-          }}
-          from={
-            <TouchableOpacity style={{width: 30, height: 30, borderWidth: 1}} />
-          }>
-          <Text style={{color: 'white'}}>Rename</Text>
-        </Popover>
+        <Title>{groupData.groupId}</Title>
+
+        <PopoverMenu
+          from={(sourceRef, showPopover) => (
+            <TouchableOpacity
+              onPress={() => {
+                iconRef.current?.play();
+                showPopover();
+              }}
+              style={{width: 20, height: 20}}
+              hitSlop={20}>
+              <OptionsArrowDownIcon ref={iconRef} />
+            </TouchableOpacity>
+          )}>
+          <GroupOptions groupData={groupData} />
+        </PopoverMenu>
       </TitleContainer>
-      {items.map(list => {
+      {groupData.data.map(list => {
         return (
           <DraggableItem
-            key={generateRandomHash(`${list.label}${groupTitle}`)}
+            key={generateRandomHash(`${list.label}${groupData.groupId}`)}
             payload={list}>
             <SubListCard
               Icon={ListDefaultIcon}

@@ -26,11 +26,11 @@ const useIdlyAnimatedComponent = ({
 
   // Starts the animation from the last frame (to show the image static in the last frame).
   useEffect(() => {
+    componentRef.current?.play(finalFrame, finalFrame);
+
     if (!shouldAnimate) {
       return;
     }
-
-    componentRef.current?.play(finalFrame, finalFrame);
 
     setIdlyAnimatedComponent(current => {
       console.log('INSIDE SETTER', {componentKey});
