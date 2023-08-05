@@ -16,6 +16,9 @@ const OptionsArrowDownIcon = memo(
           pause() {
             iconRef.current?.pause();
           },
+          toggle() {
+            iconRef.current?.toggle();
+          },
         };
       },
       [],
@@ -23,11 +26,11 @@ const OptionsArrowDownIcon = memo(
 
     return (
       <AnimatedIcon
-        source={require('../../../assets/lottie/options_arrow_down.json')}
+        source={require('../../../assets/lottie/threedots_close.json')}
         loop={false}
         componentName="OptionsArrowDownIcon"
         animateWhenIdle
-        initialFrame={0}
+        finalFrame={60}
         ref={iconRef}
         {...props}
       />

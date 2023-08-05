@@ -9,6 +9,7 @@ type UseIdlyAnimatedComponent = {
   initialFrame?: number;
   finalFrame?: number;
   shouldAnimate?: boolean;
+  staticStateFrame?: number;
 };
 
 const useIdlyAnimatedComponent = ({
@@ -17,6 +18,7 @@ const useIdlyAnimatedComponent = ({
   initialFrame = 0,
   finalFrame = 500,
   shouldAnimate = true,
+  staticStateFrame = 0,
 }: UseIdlyAnimatedComponent) => {
   const setIdlyAnimatedComponent = useSetRecoilState(idlyAnimatedComponents);
 
@@ -24,16 +26,15 @@ const useIdlyAnimatedComponent = ({
     componentRef?.current?.play(initialFrame, finalFrame);
   }, [componentRef, finalFrame, initialFrame]);
 
-  // Starts the animation from the last frame (to show the image static in the last frame).
+  // Starts the animation from static state frame (to show the image static on a specific frame).
   useEffect(() => {
-    componentRef.current?.play(finalFrame, finalFrame);
+    componentRef.current?.play(staticStateFrame, staticStateFrame);
 
     if (!shouldAnimate) {
       return;
     }
 
     setIdlyAnimatedComponent(current => {
-      console.log('INSIDE SETTER', {componentKey});
       var newArray = current.filter(x => x.componentKey !== componentKey);
 
       return [
@@ -48,8 +49,6 @@ const useIdlyAnimatedComponent = ({
     });
 
     return () => {
-      console.log('SAINDO', {componentKey});
-
       setIdlyAnimatedComponent(current => {
         var a = current.filter(x => x.componentKey !== componentKey);
         return [...a];

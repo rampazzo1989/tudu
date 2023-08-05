@@ -9,6 +9,7 @@ const ListDefaultIcon: React.FC<AnimatedIconProps> = memo(props => {
       loop={false}
       componentName="ListDefaultIcon"
       animateWhenIdle
+      staticStateFrame={500}
       {...props}
     />
   );

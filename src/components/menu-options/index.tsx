@@ -1,7 +1,7 @@
 import React, {memo} from 'react';
 import {useTheme} from 'styled-components/native';
 import {GradientSeparator} from '../gradient-separator';
-import {Label, OptionContainer, OptionLine, OptionsContainer} from './styles';
+import {Label, OptionContainer, OptionLine} from './styles';
 import {MenuOptionsProps} from './types';
 
 const MenuOptions: React.FC<MenuOptionsProps> = memo(({options}) => {

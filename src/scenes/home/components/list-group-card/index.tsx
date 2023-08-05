@@ -19,15 +19,16 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
         <Title>{groupData.groupId}</Title>
 
         <PopoverMenu
+          onRequestClose={() => iconRef.current?.toggle()}
           from={(sourceRef, showPopover) => (
             <TouchableOpacity
               onPress={() => {
-                iconRef.current?.play();
+                iconRef.current?.toggle();
                 showPopover();
               }}
               style={{width: 20, height: 20}}
               hitSlop={20}>
-              <OptionsArrowDownIcon ref={iconRef} />
+              <OptionsArrowDownIcon ref={iconRef} animateWhenIdle={false} />
             </TouchableOpacity>
           )}>
           <GroupOptions groupData={groupData} />
