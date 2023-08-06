@@ -3,4 +3,6 @@ import {List} from '../../../../types';
 
 export type GroupOptionsProps = {
   groupData: DraggableItem<List>;
+  closeMenu: () => void;
+  onRename: () => void;
 };

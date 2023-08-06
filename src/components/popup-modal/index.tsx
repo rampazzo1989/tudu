@@ -1,4 +1,5 @@
 import React, {memo, useEffect} from 'react';
+import {View} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -54,26 +55,31 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         onRequestClose={onRequestClose}
         visible={visible}
         {...props}>
-        <Animated.View style={animatedStyle}>
-          <PopupContainer>
-            {title && (
-              <>
-                <PopupTitleContainer>
-                  {!!Icon && (
-                    <Icon
-                      autoPlay
-                      autoPlayDelay={iconAnimationDelay}
-                      style={styles.icon}
-                    />
-                  )}
-                  <PopupTitle>{`${title}`}</PopupTitle>
-                </PopupTitleContainer>
-                <GradientSeparator
-                  colorArray={theme.colors.defaultSeparatorGradientColors}
-                  marginTop={10}
-                />
-              </>
-            )}
+        <PopupContainer style={animatedStyle}>
+          {title && (
+            <View>
+              <PopupTitleContainer>
+                {!!Icon && (
+                  <Icon
+                    autoPlay
+                    autoPlayDelay={iconAnimationDelay}
+                    style={styles.icon}
+                  />
+                )}
+                <PopupTitle>{`${title}`}</PopupTitle>
+              </PopupTitleContainer>
+              <GradientSeparator
+                colorArray={theme.colors.defaultSeparatorGradientColors}
+                marginTop={10}
+              />
+            </View>
+          )}
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingVertical: 12,
+            }}>
             {children}
             {buttons && (
               <ButtonsContainer shouldWrap={buttons.length > 2}>
@@ -87,8 +93,8 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                 ))}
               </ButtonsContainer>
             )}
-          </PopupContainer>
-        </Animated.View>
+          </View>
+        </PopupContainer>
       </BlurredModal>
     );
   },

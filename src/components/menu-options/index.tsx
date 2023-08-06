@@ -21,7 +21,7 @@ const MenuOptions: React.FC<MenuOptionsProps> = memo(({options}) => {
             {!isLastItem && (
               <GradientSeparator
                 colorArray={theme.colors.defaultSeparatorGradientColors}
-                marginTop={8}
+                marginTop={0}
               />
             )}
           </OptionContainer>

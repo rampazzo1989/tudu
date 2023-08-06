@@ -3,7 +3,9 @@ import styled from 'styled-components/native';
 export const OptionLine = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
-  margin-top: 4px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  /* border: 1px solid; */
 `;
 
 export const Label = styled.Text`
@@ -14,6 +16,5 @@ export const Label = styled.Text`
 `;
 
 export const OptionContainer = styled.View`
-  padding-bottom: 4px;
   flex: 1;
 `;

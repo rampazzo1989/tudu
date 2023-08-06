@@ -29,3 +29,14 @@ export const TitleContainer = styled.View`
   justify-content: space-between;
   align-items: center;
 `;
+
+export const OptionsTouchable = styled.TouchableOpacity`
+  width: 28px;
+  height: 28px;
+  align-items: flex-end;
+`;
+
+export const OptionsIconContainer = styled.View`
+  height: 20px;
+  width: 20px;
+`;

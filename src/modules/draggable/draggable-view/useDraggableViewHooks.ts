@@ -5,7 +5,7 @@ import {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 import {isEmpty} from '../../../utils/general-utils';
 import {DraggableContext} from '../draggable-context';
 import {DraggableItem} from '../draggable-context/types';
-import {removeSubItem} from '../draggable-utils';
+import {castItem, removeSubItem} from '../draggable-utils';
 import {UseDraggableViewHooksProps} from './types';
 
 const PLACEHOLDER_HEIGHT = 50;
@@ -27,12 +27,6 @@ const useDraggableViewHooks = <T>({
   const hidePlaceholder = useCallback(() => {
     sortReceiverHeight.value = itemHeight.value;
   }, [itemHeight.value, sortReceiverHeight]);
-
-  const castItem = useCallback((item: any) => {
-    return item instanceof DraggableItem<T>
-      ? (item as DraggableItem<T>)
-      : new DraggableItem([item as T]);
-  }, []);
 
   const isNestedItem = useCallback((item: any) => {
     return !(item instanceof DraggableItem<T>);
@@ -121,7 +115,6 @@ const useDraggableViewHooks = <T>({
     },
     [
       cancelDropping,
-      castItem,
       draggableContext,
       hidePlaceholder,
       isNestedItem,

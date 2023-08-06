@@ -75,6 +75,48 @@ export const removeSubItem = <T>(list: DraggableItem<T>[], item: T) => {
   }
 };
 
-export const isNestedItem = <T>(item: T) => {
+export const isNestedItem = <T>(item: DraggableItem<T> | T): item is T => {
   return !(item instanceof DraggableItem<T>);
+};
+
+export const deleteItem = <T>(
+  list: DraggableItem<T>[],
+  listSetter: (newData: DraggableItem<T>[]) => void,
+  deletingItem?: DraggableItem<T>,
+) => {
+  if (!deletingItem) {
+    return;
+  }
+  const cloneList = list?.slice();
+
+  if (isNestedItem(deletingItem)) {
+    removeSubItem(cloneList, deletingItem);
+  } else {
+    const index = cloneList?.indexOf(deletingItem);
+    cloneList?.splice(index, 1);
+  }
+
+  listSetter(cloneList);
+};
+
+export const castItem = <T>(item: any) => {
+  return item instanceof DraggableItem<T>
+    ? (item as DraggableItem<T>)
+    : new DraggableItem([item as T]);
+};
+
+export const ungroupAllItems = <T>(
+  list: DraggableItem<T>[],
+  listSetter: (newData: DraggableItem<T>[]) => void,
+  group: DraggableItem<T>,
+) => {
+  const cloneList = list?.slice();
+  const groupIndex = cloneList.indexOf(group);
+
+  if (groupIndex >= 0) {
+    const castedGroupItems = group.data.map(item => castItem<T>(item));
+    cloneList.splice(groupIndex, 1, ...castedGroupItems);
+  }
+
+  listSetter(cloneList);
 };
