@@ -85,6 +85,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           onDragEnd={handleListDragEnd}>
           <PageContent
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContentContainer}
             scrollEnabled>
             <DefaultLists lists={lists} />

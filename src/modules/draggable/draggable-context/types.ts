@@ -1,6 +1,10 @@
 export type DraggableContextType<T> = {
   data: DraggableItem<T>[];
   setData: (newData: DraggableItem<T>[]) => void;
+  showDeleteConfirmationModal: (
+    itemToDelete: DraggableItem<T>,
+    titleBuilderFn: (item?: DraggableItem<T> | undefined) => string,
+  ) => void;
   onDragStart?: () => void;
   onDragEnd?: () => void;
 };

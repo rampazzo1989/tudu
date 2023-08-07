@@ -1,8 +1,8 @@
 import {DraggableItem} from '../../../../../../modules/draggable/draggable-context/types';
 import {List} from '../../../../types';
 
-export type GroupOptionsProps = {
+export type RenameModalProps = {
+  visible: boolean;
   groupData: DraggableItem<List>;
-  closeMenu: () => void;
-  onRename: () => void;
+  onRequestClose: () => void;
 };

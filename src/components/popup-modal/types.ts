@@ -5,6 +5,7 @@ export type PopupButton = {
   label: string;
   onPress: () => void;
   highlight?: boolean;
+  disabled?: boolean;
 };
 
 export type PopupModalProps = BlurredModalProps & {
