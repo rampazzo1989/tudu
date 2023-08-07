@@ -120,3 +120,7 @@ export const ungroupAllItems = <T>(
 
   listSetter(cloneList);
 };
+
+export const renameGroup = <T>(group: DraggableItem<T>, newName: string) => {
+  group.groupId = newName;
+};

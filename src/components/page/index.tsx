@@ -1,6 +1,11 @@
 import React, {memo, useEffect, useRef} from 'react';
 import {PageProps} from './types';
-import {ScrollView, StatusBar, StyledSafeAreaView} from './styles';
+import {
+  ScrollView,
+  StatusBar,
+  StyledKeyboardAvoidingView,
+  StyledSafeAreaView,
+} from './styles';
 import {useTheme} from 'styled-components/native';
 import {useIdle} from '../../contexts/idle-context';
 import {useRecoilValue} from 'recoil';
@@ -49,8 +54,10 @@ const Page: React.FC<PageProps> = memo(({children}) => {
 
   return (
     <StyledSafeAreaView>
-      <StatusBar backgroundColor={theme.colors.primary} />
-      {children}
+      <StyledKeyboardAvoidingView>
+        <StatusBar backgroundColor={theme.colors.primary} />
+        {children}
+      </StyledKeyboardAvoidingView>
     </StyledSafeAreaView>
   );
 });

@@ -15,8 +15,7 @@ import {PopoverMenu} from '../../../../components/popover-menu';
 import {GroupOptions} from './components/group-options';
 import {OptionsArrowDownIcon} from '../../../../components/animated-icons/options-arrow-down-icon';
 import {BaseAnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
-import {PopupModal} from '../../../../components/popup-modal';
-import {TextInput} from 'react-native';
+import {RenameModal} from './components/rename-modal';
 
 const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
   const iconRef = useRef<BaseAnimatedIconRef>(null);
@@ -73,24 +72,11 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
           </DraggableItem>
         );
       })}
-      <PopupModal
+      <RenameModal
         visible={renamePopupVisible}
         onRequestClose={() => setRenamePopupVisible(false)}
-        title={'Rename Group'}
-        buttons={[
-          {label: 'OK', onPress: () => console.log('CONFIRM RENAME')},
-          {label: 'Cancel', onPress: () => console.log('CANCEL RENAME')},
-        ]}
-        Icon={ListDefaultIcon}
-        shakeOnShow>
-        <TextInput
-          style={{
-            width: '100%',
-            backgroundColor: '#444B56',
-            borderRadius: 4,
-          }}
-        />
-      </PopupModal>
+        groupData={groupData}
+      />
     </ListGroupContainer>
   );
 });

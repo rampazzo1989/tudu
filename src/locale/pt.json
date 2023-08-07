@@ -17,5 +17,14 @@
       "list": "lista",
       "group": "grupo"
     }
+  },
+  "buttons": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "popupTitles": {
+    "renameGroup": "Renomear Grupo"
   }
 }

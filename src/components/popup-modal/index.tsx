@@ -64,6 +64,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                     autoPlay
                     autoPlayDelay={iconAnimationDelay}
                     style={styles.icon}
+                    animateWhenIdle={false}
                   />
                 )}
                 <PopupTitle>{`${title}`}</PopupTitle>
@@ -87,6 +88,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                   <PopupButton
                     onPress={button.onPress}
                     highlight={button.highlight}
+                    disabled={button.disabled}
                     key={button.label}>
                     <ButtonLabel>{button.label}</ButtonLabel>
                   </PopupButton>
