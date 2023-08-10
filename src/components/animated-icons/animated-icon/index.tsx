@@ -39,7 +39,6 @@ const BaseAnimatedIcon = memo(
             },
             toggle() {
               if (toggle) {
-                console.log('TOGGLE');
                 animationRef.current?.play(finalFrame, initialFrame);
               } else {
                 animationRef.current?.play(initialFrame, finalFrame);
@@ -70,7 +69,7 @@ const BaseAnimatedIcon = memo(
         staticStateFrame,
       });
 
-      return <Lottie loop={false} {...props} ref={animationRef} speed={2} />;
+      return <Lottie loop={false} {...props} ref={animationRef} />;
     },
   ),
 );

@@ -1,11 +1,14 @@
 import styled from 'styled-components/native';
 import {NumberOfActiveItemsProps} from './types';
+import {ShrinkableView} from '../shrinkable-view';
 
 type HighlightableComponentProps = {
   isHighlighted: boolean;
 };
 
-export const ListCardContainer = styled.TouchableOpacity<HighlightableComponentProps>`
+export const ListCardContainer = styled(
+  ShrinkableView,
+)<HighlightableComponentProps>`
   height: 46px;
   width: 100%;
   padding: 12px 16px;

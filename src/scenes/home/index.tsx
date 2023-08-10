@@ -25,6 +25,7 @@ import {DraxProvider} from 'react-native-drax';
 import {FloatingDelete} from '../../components/floating-delete';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
 import {useTheme} from 'styled-components/native';
+import {FloatingActionButton} from '../../components/floating-action-button';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -110,6 +111,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             visible={deleteVisible}
             confirmationPopupTitleBuilder={handleDeleteList}
           />
+          <FloatingActionButton />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>

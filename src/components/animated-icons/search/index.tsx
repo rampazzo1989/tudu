@@ -8,6 +8,7 @@ const SearchIcon: React.FC<AnimatedIconProps> = memo(props => {
       loop={false}
       initialFrame={60}
       finalFrame={150}
+      staticStateFrame={60}
       animateWhenIdle
       componentName="SearchIcon"
       source={require('../../../assets/lottie/search.json')}

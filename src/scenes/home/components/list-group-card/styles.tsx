@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
 import {ListCard} from '../../../../components/list-card';
+import Animated from 'react-native-reanimated';
 
 export const ListGroupContainer = styled.View`
   border-radius: 10px;
@@ -11,7 +12,7 @@ export const ListGroupContainer = styled.View`
   width: 100%;
 `;
 
-export const Title = styled.Text`
+export const Title = styled(Animated.Text)`
   font-family: ${({theme}) => theme.fonts.listCardGroupTitle};
   font-size: 16px;
   line-height: 24px;

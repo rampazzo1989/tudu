@@ -2,40 +2,38 @@ import React, {forwardRef, memo, useImperativeHandle, useRef} from 'react';
 import {AnimatedIconProps, BaseAnimatedIconRef} from '../animated-icon/types';
 import {AnimatedIcon} from './styles';
 
-const AdjustIcon = memo(
+const PlusIcon = memo(
   forwardRef<BaseAnimatedIconRef, AnimatedIconProps>((props, ref) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
 
     useImperativeHandle(
       ref,
-      () => {
-        return {
-          play() {
-            iconRef.current?.play();
-          },
-          pause() {
-            iconRef.current?.pause();
-          },
-          toggle() {
-            iconRef.current?.toggle();
-          },
-        };
-      },
+      () => ({
+        play() {
+          iconRef.current?.play();
+        },
+        pause() {
+          iconRef.current?.pause();
+        },
+        toggle() {
+          iconRef.current?.toggle();
+        },
+      }),
       [],
     );
 
     return (
       <AnimatedIcon
-        source={require('../../../assets/lottie/adjust.json')}
+        source={require('../../../assets/lottie/plus.json')}
         loop={false}
-        componentName="AdjustIcon"
+        componentName="PlusIcon"
         animateWhenIdle
-        initialFrame={90}
         ref={iconRef}
+        staticStateFrame={0}
         {...props}
       />
     );
   }),
 );
 
-export {AdjustIcon};
+export {PlusIcon};

@@ -1,6 +1,7 @@
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {FadingView} from '../fading-view';
+import {ShrinkableView} from '../shrinkable-view';
 
 export const Tile = styled.View`
   height: 100px;
@@ -87,7 +88,9 @@ export const EditingContainer = styled(FadingView)`
   justify-content: space-between;
 `;
 
-export const ActionButtonContainer = styled.TouchableOpacity`
+export const ActionButtonContainer = styled(ShrinkableView).attrs({
+  scaleFactor: 0.08,
+})`
   height: 34px;
   width: 34px;
   background-color: ${({theme}) => theme.colors.primary};

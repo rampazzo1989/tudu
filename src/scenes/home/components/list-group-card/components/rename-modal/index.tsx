@@ -52,8 +52,7 @@ const RenameModal: React.FC<RenameModalProps> = memo(
         }}
         title={t('popupTitles.renameGroup')}
         buttons={buttonsData}
-        Icon={ListDefaultIcon}
-        shakeOnShow>
+        Icon={ListDefaultIcon}>
         <Input
           value={internalGroupName}
           onChangeText={handleTextChange}

@@ -16,6 +16,7 @@ import {GroupOptions} from './components/group-options';
 import {OptionsArrowDownIcon} from '../../../../components/animated-icons/options-arrow-down-icon';
 import {BaseAnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {RenameModal} from './components/rename-modal';
+import {FadeIn} from 'react-native-reanimated';
 
 const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
   const iconRef = useRef<BaseAnimatedIconRef>(null);
@@ -36,7 +37,11 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
     () => (
       <OptionsTouchable onPress={handleOptionsButtonPress} hitSlop={20}>
         <OptionsIconContainer>
-          <OptionsArrowDownIcon ref={iconRef} animateWhenIdle={false} />
+          <OptionsArrowDownIcon
+            ref={iconRef}
+            animateWhenIdle={false}
+            speed={2}
+          />
         </OptionsIconContainer>
       </OptionsTouchable>
     ),
@@ -46,7 +51,9 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
   return (
     <ListGroupContainer>
       <TitleContainer>
-        <Title>{groupData.groupId}</Title>
+        <Title layout={FadeIn.delay(100).duration(600)}>
+          {groupData.groupId}
+        </Title>
 
         <PopoverMenu
           isVisible={popoverMenuVisible}
