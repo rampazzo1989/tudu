@@ -62,6 +62,7 @@ const useIdlyAnimatedComponent = ({
     initialFrame,
     setIdlyAnimatedComponent,
     shouldAnimate,
+    staticStateFrame,
   ]);
 };
 

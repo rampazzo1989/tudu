@@ -64,6 +64,7 @@ const DraggableContextProvider = <T,>({
         ]}
         Icon={DeleteIcon}
         shakeOnShow
+        haptics
       />
     </DraggableContext.Provider>
   );

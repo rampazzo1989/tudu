@@ -26,6 +26,7 @@ import {FloatingDelete} from '../../components/floating-delete';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
 import {useTheme} from 'styled-components/native';
 import {FloatingActionButton} from '../../components/floating-action-button';
+import {generateListAndGroupDeleteTitle} from '../../utils/list-and-group-utils';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -53,27 +54,6 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   const handleListDragStart = useCallback(() => setDeleteVisible(true), []);
   const handleListDragEnd = useCallback(() => setDeleteVisible(false), []);
-
-  const handleDeleteList = useCallback(
-    (item?: DraggableItem<List> | List) => {
-      if (!item) {
-        return '';
-      }
-      let listName: string;
-      let itemType: string = t('messages.confirmDeleteItemType.list');
-      if (isNestedItem(item)) {
-        listName = (item as List).label;
-      } else {
-        const draggableItem = item as DraggableItem<List>;
-        listName = draggableItem.groupId ?? draggableItem.data[0].label;
-        itemType = draggableItem.groupId
-          ? t('messages.confirmDeleteItemType.group')
-          : itemType;
-      }
-      return t('messages.confirmDelete', {itemType, listName});
-    },
-    [t],
-  );
 
   return (
     <Page>
@@ -109,7 +89,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           />
           <FloatingDelete
             visible={deleteVisible}
-            confirmationPopupTitleBuilder={handleDeleteList}
+            confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
           />
           <FloatingActionButton />
         </DraggableContextProvider>

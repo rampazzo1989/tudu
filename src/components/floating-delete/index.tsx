@@ -20,7 +20,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
     const {t} = useTranslation();
 
     const handleItemIsHovering = useCallback(() => {
-      ReactNativeHapticFeedback.trigger('impactLight');
+      ReactNativeHapticFeedback.trigger('rigid');
       setAnimate(true);
     }, []);
 

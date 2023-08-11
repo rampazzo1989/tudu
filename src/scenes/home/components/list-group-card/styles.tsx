@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import {ListCard} from '../../../../components/list-card';
 import Animated from 'react-native-reanimated';
+import {ShrinkableView} from '../../../../components/shrinkable-view';
 
 export const ListGroupContainer = styled.View`
   border-radius: 10px;
@@ -31,7 +32,7 @@ export const TitleContainer = styled.View`
   align-items: center;
 `;
 
-export const OptionsTouchable = styled.TouchableOpacity`
+export const OptionsTouchable = styled(ShrinkableView)`
   width: 28px;
   height: 28px;
   align-items: flex-end;

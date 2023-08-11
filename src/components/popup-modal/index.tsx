@@ -18,6 +18,7 @@ import {
   styles,
 } from './styles';
 import {PopupModalProps} from './types';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const PopupModal: React.FC<PopupModalProps> = memo(
   ({
@@ -28,12 +29,13 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     Icon,
     visible,
     shakeOnShow,
+    haptics = false,
     ...props
   }) => {
     const shakeValue = useSharedValue(0);
     const theme = useTheme();
 
-    const iconAnimationDelay = shakeOnShow ? 600 : 500;
+    const iconAnimationDelay = 400;
 
     const animatedStyle = useAnimatedStyle(() => {
       return {
@@ -42,12 +44,24 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     });
 
     useEffect(() => {
-      if (visible && shakeOnShow) {
-        setTimeout(() => {
-          shake(shakeValue, 4);
-        }, 100);
+      if (!visible) {
+        return;
       }
-    }, [shakeOnShow, shakeValue, visible]);
+      const shakeFn = () => {
+        if (shakeOnShow) {
+          shake(shakeValue, 4);
+        }
+      };
+      const hapticsFeedbackFn = () => {
+        if (haptics) {
+          RNReactNativeHapticFeedback.trigger('notificationWarning');
+        }
+      };
+      setTimeout(() => {
+        shakeFn();
+        hapticsFeedbackFn();
+      }, 100);
+    }, [haptics, shakeOnShow, shakeValue, visible]);
 
     return (
       <BlurredModal

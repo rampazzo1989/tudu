@@ -35,7 +35,10 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
 
   const OptionsComponent = useCallback(
     () => (
-      <OptionsTouchable onPress={handleOptionsButtonPress} hitSlop={20}>
+      <OptionsTouchable
+        onPress={handleOptionsButtonPress}
+        hitSlop={20}
+        scaleFactor={0}>
         <OptionsIconContainer>
           <OptionsArrowDownIcon
             ref={iconRef}
@@ -51,7 +54,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
   return (
     <ListGroupContainer>
       <TitleContainer>
-        <Title layout={FadeIn.delay(100).duration(600)}>
+        <Title layout={FadeIn.delay(150).duration(600)}>
           {groupData.groupId}
         </Title>
 

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android && react-native start",
+    "android": "react-native run-android --active-arch-only && react-native start",
     "clean": "cd android && ./gradlew clean && cd ..",
     "ios": "react-native run-ios",
     "lint": "eslint .",

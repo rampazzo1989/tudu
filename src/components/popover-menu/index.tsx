@@ -5,13 +5,13 @@ import {StatusBar} from 'react-native';
 import {styles} from './styles';
 
 const PopoverMenu: React.FC<PopoverMenuProps> = memo(
-  ({children, from, ...props}) => {
+  ({children, from, verticalOffset, ...props}) => {
     return (
       <Popover
         statusBarTranslucent
         animationType="none"
         animationConfig={{duration: 100}}
-        verticalOffset={StatusBar.currentHeight}
+        verticalOffset={(verticalOffset ?? 0) + (StatusBar?.currentHeight ?? 0)}
         backgroundStyle={styles.background}
         popoverStyle={styles.popover}
         from={from}
