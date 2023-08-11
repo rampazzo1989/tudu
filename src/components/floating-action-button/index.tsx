@@ -1,54 +1,89 @@
-import React, {memo, useCallback, useRef, useState} from 'react';
-import {FloatingActionButtonProps} from './types';
-import {PlusIcon} from '../animated-icons/plus-icon';
+import React, {
+  forwardRef,
+  memo,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import {FloatingActionButtonProps, FloatingActionButtonRef} from './types';
 import {FloatingButton} from './styles';
-import {BaseAnimatedIconRef} from '../animated-icons/animated-icon/types';
-import {FadeIn, ZoomIn} from 'react-native-reanimated';
+import {
+  AnimatedIconProps,
+  BaseAnimatedIconRef,
+} from '../animated-icons/animated-icon/types';
+import {ZoomIn} from 'react-native-reanimated';
 import {PopoverMenu} from '../popover-menu';
 import {MenuOptions} from '../menu-options';
 import {DeleteIcon} from '../animated-icons/delete-icon';
 
-const FloatingActionButton: React.FC<FloatingActionButtonProps> = memo(() => {
-  const iconRef = useRef<BaseAnimatedIconRef>(null);
-  const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
+const FloatingActionButton = memo(
+  forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
+    ({DefaultIcon}, ref) => {
+      const iconRef = useRef<BaseAnimatedIconRef>(null);
+      const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
+      const [CurrentIcon, setCurrentIcon] =
+        useState<
+          React.ForwardRefExoticComponent<
+            AnimatedIconProps & React.RefAttributes<BaseAnimatedIconRef>
+          >
+        >(DefaultIcon);
 
-  const handlePress = useCallback(() => {
-    iconRef.current?.play();
-    setPopoverMenuVisible(true);
-  }, []);
+      const handlePress = useCallback(() => {
+        iconRef.current?.toggle();
+        setPopoverMenuVisible(true);
+      }, []);
 
-  const handlePopoverMenuRequestClose = useCallback(() => {
-    iconRef.current?.toggle();
-    setPopoverMenuVisible(false);
-  }, []);
+      useImperativeHandle(ref, () => ({
+        animateThisIcon(Icon) {
+          setCurrentIcon(Icon);
+          // setTimeout(() => {
+          //   iconRef.current?.play();
+          // }, 50);
+          setTimeout(() => {
+            setCurrentIcon(DefaultIcon);
+          }, 1500);
+        },
+      }));
 
-  const OptionsComponent = useCallback(
-    () => (
-      <FloatingButton
-        onPress={handlePress}
-        scaleFactor={0.05}
-        entering={ZoomIn.delay(500)}>
-        <PlusIcon autoPlay ref={iconRef} speed={1.4} />
-      </FloatingButton>
-    ),
-    [handlePress],
-  );
+      const handlePopoverMenuRequestClose = useCallback(() => {
+        iconRef.current?.toggle();
+        setPopoverMenuVisible(false);
+      }, []);
 
-  return (
-    <PopoverMenu
-      isVisible={popoverMenuVisible}
-      arrowSize={{width: 0, height: 0}}
-      popoverShift={{y: 50}}
-      onRequestClose={handlePopoverMenuRequestClose}
-      verticalOffset={-8}
-      from={OptionsComponent}>
-      <MenuOptions
-        options={[
-          {Icon: DeleteIcon, label: 'OLA', onPress: () => console.log('Ola')},
-        ]}
-      />
-    </PopoverMenu>
-  );
-});
+      const OptionsComponent = useCallback(
+        () => (
+          <FloatingButton
+            onPress={handlePress}
+            scaleFactor={0.05}
+            entering={ZoomIn.delay(500)}>
+            <CurrentIcon autoPlay ref={iconRef} speed={1.4} />
+          </FloatingButton>
+        ),
+        [CurrentIcon, handlePress],
+      );
+
+      return (
+        <PopoverMenu
+          isVisible={popoverMenuVisible}
+          arrowSize={{width: 0, height: 0}}
+          popoverShift={{y: 50}}
+          onRequestClose={handlePopoverMenuRequestClose}
+          verticalOffset={-8}
+          from={OptionsComponent}>
+          <MenuOptions
+            options={[
+              {
+                Icon: DeleteIcon,
+                label: 'OLA',
+                onPress: () => console.log('Ola'),
+              },
+            ]}
+          />
+        </PopoverMenu>
+      );
+    },
+  ),
+);
 
 export {FloatingActionButton};

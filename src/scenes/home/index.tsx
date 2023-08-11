@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {HomePageProps, List} from './types';
 import {PageContent} from '../../components/page-content';
 import {Page} from '../../components/page';
@@ -27,6 +27,9 @@ import {DraggableContextProvider} from '../../modules/draggable/draggable-contex
 import {useTheme} from 'styled-components/native';
 import {FloatingActionButton} from '../../components/floating-action-button';
 import {generateListAndGroupDeleteTitle} from '../../utils/list-and-group-utils';
+import {PlusIcon} from '../../components/animated-icons/plus-icon';
+import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
+import {OptionsArrowDownIcon} from '../../components/animated-icons/options-arrow-down-icon';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -53,7 +56,12 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   }, [customLists]);
 
   const handleListDragStart = useCallback(() => setDeleteVisible(true), []);
-  const handleListDragEnd = useCallback(() => setDeleteVisible(false), []);
+  const handleListDragEnd = useCallback(() => {
+    setDeleteVisible(false);
+    testRef.current?.animateThisIcon(OptionsArrowDownIcon);
+  }, []);
+
+  const testRef = useRef<FloatingActionButtonRef>(null);
 
   return (
     <Page>
@@ -91,7 +99,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
           />
-          <FloatingActionButton />
+          <FloatingActionButton DefaultIcon={PlusIcon} ref={testRef} />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>
