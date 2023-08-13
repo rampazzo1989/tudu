@@ -30,6 +30,31 @@ import {generateListAndGroupDeleteTitle} from '../../utils/list-and-group-utils'
 import {PlusIcon} from '../../components/animated-icons/plus-icon';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
 import {OptionsArrowDownIcon} from '../../components/animated-icons/options-arrow-down-icon';
+import {MenuOption} from '../../components/menu-options/types';
+import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
+import {HashIcon} from '../../components/animated-icons/hash-icon';
+
+const handleNewListPress = () => {
+  console.log('Menu pressed');
+};
+
+const options: MenuOption[] = [
+  {
+    Icon: ListDefaultIcon,
+    label: 'New list',
+    onPress: handleNewListPress,
+  },
+  {
+    Icon: ListDefaultIcon,
+    label: 'New group',
+    onPress: handleNewListPress,
+  },
+  {
+    Icon: HashIcon,
+    label: 'New counter',
+    onPress: handleNewListPress,
+  },
+];
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -99,7 +124,12 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
           />
-          <FloatingActionButton DefaultIcon={PlusIcon} ref={testRef} />
+          <FloatingActionButton
+            DefaultIcon={PlusIcon}
+            ref={testRef}
+            animationMode="play"
+            menuOptions={options}
+          />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>

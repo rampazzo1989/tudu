@@ -10,8 +10,8 @@ const OptionsArrowDownIcon = memo(
       ref,
       () => {
         return {
-          play() {
-            iconRef.current?.play();
+          play(onAnimationFinish?: () => void) {
+            iconRef.current?.play(onAnimationFinish);
           },
           pause() {
             iconRef.current?.pause();

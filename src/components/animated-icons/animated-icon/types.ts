@@ -15,7 +15,7 @@ export type AnimatedIconProps = Omit<
 >;
 
 export type BaseAnimatedIconRef = {
-  play: () => void;
+  play: (onAnimationFinish?: () => void) => void;
   pause: () => void;
   toggle: () => void;
 };

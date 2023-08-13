@@ -2,6 +2,7 @@ import Lottie from 'lottie-react-native';
 import React, {
   forwardRef,
   memo,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -26,13 +27,18 @@ const BaseAnimatedIcon = memo(
     ) => {
       const animationRef = useRef<Lottie | null>(null);
       const [toggle, setToggle] = useState(false);
+      const [animationFinishCallback, setAnimationFinishCallback] =
+        useState<() => void>();
 
       useImperativeHandle(
         ref,
         () => {
           return {
-            play() {
+            play(onAnimationFinish?: () => void) {
               animationRef.current?.play(initialFrame, finalFrame);
+              setAnimationFinishCallback(
+                onAnimationFinish ? () => onAnimationFinish : undefined,
+              );
             },
             pause() {
               animationRef.current?.pause();
@@ -60,6 +66,11 @@ const BaseAnimatedIcon = memo(
 
       const {key: componentKey} = useHashGenerator({seedText: componentName});
 
+      const handleAnimationFinish = useCallback(() => {
+        animationFinishCallback?.();
+        setAnimationFinishCallback(undefined);
+      }, [animationFinishCallback]);
+
       useIdlyAnimatedComponent({
         componentRef: animationRef,
         componentKey,
@@ -69,7 +80,14 @@ const BaseAnimatedIcon = memo(
         staticStateFrame,
       });
 
-      return <Lottie loop={false} {...props} ref={animationRef} />;
+      return (
+        <Lottie
+          loop={false}
+          {...props}
+          ref={animationRef}
+          onAnimationFinish={handleAnimationFinish}
+        />
+      );
     },
   ),
 );

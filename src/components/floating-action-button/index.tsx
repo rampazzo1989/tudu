@@ -2,6 +2,7 @@ import React, {
   forwardRef,
   memo,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -15,12 +16,12 @@ import {
 import {ZoomIn} from 'react-native-reanimated';
 import {PopoverMenu} from '../popover-menu';
 import {MenuOptions} from '../menu-options';
-import {DeleteIcon} from '../animated-icons/delete-icon';
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
-    ({DefaultIcon}, ref) => {
+    ({DefaultIcon, menuOptions, animationMode = 'toggle'}, ref) => {
       const iconRef = useRef<BaseAnimatedIconRef>(null);
+      const animateNextIcon = useRef(true);
       const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
       const [CurrentIcon, setCurrentIcon] =
         useState<
@@ -29,27 +30,42 @@ const FloatingActionButton = memo(
           >
         >(DefaultIcon);
 
+      // Animates the current icon when option is set
+      useEffect(() => {
+        if (animateNextIcon.current) {
+          console.log('useeeffect animation');
+
+          iconRef.current?.play(() =>
+            setTimeout(() => setCurrentIcon(DefaultIcon), 500),
+          );
+          animateNextIcon.current = false;
+        } else {
+          iconRef.current?.pause();
+        }
+      }, [CurrentIcon, DefaultIcon]);
+
       const handlePress = useCallback(() => {
-        iconRef.current?.toggle();
+        if (animationMode === 'toggle') {
+          iconRef.current?.toggle();
+        } else {
+          iconRef.current?.play();
+        }
         setPopoverMenuVisible(true);
-      }, []);
+      }, [animationMode]);
 
       useImperativeHandle(ref, () => ({
         animateThisIcon(Icon) {
+          animateNextIcon.current = true;
           setCurrentIcon(Icon);
-          // setTimeout(() => {
-          //   iconRef.current?.play();
-          // }, 50);
-          setTimeout(() => {
-            setCurrentIcon(DefaultIcon);
-          }, 1500);
         },
       }));
 
       const handlePopoverMenuRequestClose = useCallback(() => {
-        iconRef.current?.toggle();
+        if (animationMode === 'toggle') {
+          iconRef.current?.toggle();
+        }
         setPopoverMenuVisible(false);
-      }, []);
+      }, [animationMode]);
 
       const OptionsComponent = useCallback(
         () => (
@@ -57,7 +73,7 @@ const FloatingActionButton = memo(
             onPress={handlePress}
             scaleFactor={0.05}
             entering={ZoomIn.delay(500)}>
-            <CurrentIcon autoPlay ref={iconRef} speed={1.4} />
+            <CurrentIcon ref={iconRef} speed={1.4} />
           </FloatingButton>
         ),
         [CurrentIcon, handlePress],
@@ -71,15 +87,7 @@ const FloatingActionButton = memo(
           onRequestClose={handlePopoverMenuRequestClose}
           verticalOffset={-8}
           from={OptionsComponent}>
-          <MenuOptions
-            options={[
-              {
-                Icon: DeleteIcon,
-                label: 'OLA',
-                onPress: () => console.log('Ola'),
-              },
-            ]}
-          />
+          <MenuOptions options={menuOptions} />
         </PopoverMenu>
       );
     },
