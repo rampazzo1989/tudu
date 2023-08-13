@@ -1,17 +1,12 @@
 import React, {forwardRef, memo, useCallback} from 'react';
-import {TouchableOpacity, TouchableOpacityProps} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-
-interface ShrinkableViewProps
-  extends Animated.AnimateProps<TouchableOpacityProps> {
-  scaleFactor?: number;
-  onPress?: () => void;
-}
+import {ShrinkableViewProps} from './types';
 
 const AnimatedTouchableOpacity =
   Animated.createAnimatedComponent(TouchableOpacity);
@@ -21,9 +16,7 @@ const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
     ({children, style, scaleFactor = 0.1, onPress, ...props}, ref) => {
       const scaleValue = useSharedValue(1);
 
-      const handlePress = useCallback(() => {
-        onPress?.();
-        RNReactNativeHapticFeedback.trigger('keyboardTap');
+      const shrink = useCallback(() => {
         scaleValue.value = withTiming(1 - scaleFactor, {duration: 100}, () => {
           scaleValue.value = withTiming(
             1 + scaleFactor,
@@ -33,7 +26,13 @@ const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
             },
           );
         });
-      }, [onPress, scaleFactor, scaleValue]);
+      }, [scaleFactor, scaleValue]);
+
+      const handlePress = useCallback(() => {
+        onPress?.();
+        RNReactNativeHapticFeedback.trigger('keyboardTap');
+        shrink();
+      }, [onPress, shrink]);
 
       const animatedStyles = useAnimatedStyle(() => {
         return {

@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
   popover: {
-    backgroundColor: '#2D344A',
+    backgroundColor: '#2B3139',
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 8,
