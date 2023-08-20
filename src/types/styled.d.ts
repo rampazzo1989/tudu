@@ -26,6 +26,7 @@ declare module 'styled-components/native' {
       popupBackground: string;
       scrollFadeGradientColors: string[];
       defaultSeparatorGradientColors: string[];
+      menuSeparatorGradientColors: string[];
     };
     fonts: {
       header: string;

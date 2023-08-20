@@ -1,7 +1,13 @@
 import React, {memo} from 'react';
 import {useTheme} from 'styled-components/native';
 import {GradientSeparator} from '../gradient-separator';
-import {Label, OptionContainer, OptionLine} from './styles';
+import {
+  IconContainer,
+  Label,
+  OptionContainer,
+  OptionLine,
+  styles,
+} from './styles';
 import {MenuOptionsProps} from './types';
 
 const MenuOptions: React.FC<MenuOptionsProps> = memo(({options}) => {
@@ -15,13 +21,14 @@ const MenuOptions: React.FC<MenuOptionsProps> = memo(({options}) => {
         return (
           <OptionContainer key={label}>
             <OptionLine onPress={onPress}>
-              <Icon animateWhenIdle={false} style={{maxHeight: 20}} />
+              <IconContainer>
+                <Icon animateWhenIdle={false} style={styles.icon} />
+              </IconContainer>
               <Label>{label}</Label>
             </OptionLine>
             {!isLastItem && (
               <GradientSeparator
-                colorArray={theme.colors.defaultSeparatorGradientColors}
-                marginTop={0}
+                colorArray={theme.colors.menuSeparatorGradientColors}
               />
             )}
           </OptionContainer>

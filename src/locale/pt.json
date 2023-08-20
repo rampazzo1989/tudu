@@ -25,6 +25,7 @@
     "no": "Não"
   },
   "popupTitles": {
-    "renameGroup": "Renomear Grupo"
+    "renameGroup": "Renomear Grupo",
+    "newList": "Criar nova lista"
   }
 }

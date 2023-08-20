@@ -18,4 +18,5 @@ export type FloatingActionButtonRef = {
       AnimatedIconProps & React.RefAttributes<BaseAnimatedIconRef>
     >,
   ) => void;
+  closeMenu: () => void;
 };
