@@ -28,7 +28,8 @@ const darkTheme: DefaultTheme = {
       'rgba(37, 48, 61, 0.7)',
       'rgba(37, 48, 61, 1)',
     ],
-    defaultSeparatorGradientColors: ['#2B3139', '#FFFFFF20', '#2B3139'],
+    defaultSeparatorGradientColors: ['#3C414A', '#FFFFFF20', '#3C414A'],
+    menuSeparatorGradientColors: ['#2B3139', '#FFFFFF20', '#2B3139'],
   },
   fonts: {
     header: 'Inter-SemiBold',

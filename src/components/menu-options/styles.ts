@@ -1,3 +1,4 @@
+import { StyleSheet } from 'react-native';
 import styled from 'styled-components/native';
 
 export const OptionLine = styled.TouchableOpacity`
@@ -12,9 +13,18 @@ export const Label = styled.Text`
   font-family: ${({theme}) => theme.fonts.default};
   font-size: 14px;
   color: ${({theme}) => theme.colors.text};
-  margin-left: 2px;
+  margin-left: 6px;
 `;
 
 export const OptionContainer = styled.View`
   flex: 1;
 `;
+
+export const IconContainer = styled.View`
+  height: 16px;
+  width: 16px;
+`;
+
+export const styles = StyleSheet.create({
+  icon: {maxHeight: 20, height: 'auto', width: 'auto'},
+});

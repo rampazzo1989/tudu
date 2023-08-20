@@ -17,7 +17,6 @@ import {CountersList} from './components/counters-list';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {CustomLists} from './components/custom-lists';
 import {
-  isNestedItem,
   mapDraggableItemsToList,
   mapListToDraggableItems,
 } from '../../modules/draggable/draggable-utils';
@@ -25,42 +24,16 @@ import {DraxProvider} from 'react-native-drax';
 import {FloatingDelete} from '../../components/floating-delete';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
 import {useTheme} from 'styled-components/native';
-import {FloatingActionButton} from '../../components/floating-action-button';
 import {generateListAndGroupDeleteTitle} from '../../utils/list-and-group-utils';
-import {PlusIcon} from '../../components/animated-icons/plus-icon';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
-import {OptionsArrowDownIcon} from '../../components/animated-icons/options-arrow-down-icon';
-import {MenuOption} from '../../components/menu-options/types';
-import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
-import {HashIcon} from '../../components/animated-icons/hash-icon';
-
-const handleNewListPress = () => {
-  console.log('Menu pressed');
-};
-
-const options: MenuOption[] = [
-  {
-    Icon: ListDefaultIcon,
-    label: 'New list',
-    onPress: handleNewListPress,
-  },
-  {
-    Icon: ListDefaultIcon,
-    label: 'New group',
-    onPress: handleNewListPress,
-  },
-  {
-    Icon: HashIcon,
-    label: 'New counter',
-    onPress: handleNewListPress,
-  },
-];
+import {HomeActionMenuOptions} from './components/button-actions';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
   const [customLists, setCustomLists] = useRecoilState(myLists);
   const counterList = useRecoilValue(counters);
   const [deleteVisible, setDeleteVisible] = useState(false);
+  const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const {t} = useTranslation();
   const theme = useTheme();
 
@@ -83,10 +56,11 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const handleListDragStart = useCallback(() => setDeleteVisible(true), []);
   const handleListDragEnd = useCallback(() => {
     setDeleteVisible(false);
-    testRef.current?.animateThisIcon(OptionsArrowDownIcon);
   }, []);
 
-  const testRef = useRef<FloatingActionButtonRef>(null);
+  const handleCreateNewList = useCallback(() => {
+    
+  }, []);
 
   return (
     <Page>
@@ -105,8 +79,14 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             <DefaultLists lists={lists} />
             <SectionTitle title={t('sectionTitles.counters')} />
             <CountersList list={counterList} />
-            <SectionTitle title={t('sectionTitles.myLists')} />
-            <CustomLists data={groupedCustomLists} />
+            {groupedCustomLists.length ? (
+              <>
+                <SectionTitle title={t('sectionTitles.myLists')} />
+                <CustomLists data={groupedCustomLists} />
+              </>
+            ) : (
+              <></>
+            )}
           </PageContent>
           <TopFadingGradient
             start={{x: 0, y: 1}}
@@ -124,11 +104,9 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
           />
-          <FloatingActionButton
-            DefaultIcon={PlusIcon}
-            ref={testRef}
-            animationMode="play"
-            menuOptions={options}
+          <HomeActionMenuOptions
+            onCreateNewList={handleCreateNewList}
+            ref={actionButtonRef}
           />
         </DraggableContextProvider>
       </DraxProvider>

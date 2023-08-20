@@ -15,7 +15,6 @@ import {
 } from '../animated-icons/animated-icon/types';
 import {ZoomIn} from 'react-native-reanimated';
 import {PopoverMenu} from '../popover-menu';
-import {MenuOptions} from '../menu-options';
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
@@ -33,8 +32,6 @@ const FloatingActionButton = memo(
       // Animates the current icon when option is set
       useEffect(() => {
         if (animateNextIcon.current) {
-          console.log('useeeffect animation');
-
           iconRef.current?.play(() =>
             setTimeout(() => setCurrentIcon(DefaultIcon), 500),
           );
@@ -53,19 +50,20 @@ const FloatingActionButton = memo(
         setPopoverMenuVisible(true);
       }, [animationMode]);
 
-      useImperativeHandle(ref, () => ({
-        animateThisIcon(Icon) {
-          animateNextIcon.current = true;
-          setCurrentIcon(Icon);
-        },
-      }));
-
       const handlePopoverMenuRequestClose = useCallback(() => {
         if (animationMode === 'toggle') {
           iconRef.current?.toggle();
         }
         setPopoverMenuVisible(false);
       }, [animationMode]);
+
+      useImperativeHandle(ref, () => ({
+        animateThisIcon(Icon) {
+          animateNextIcon.current = true;
+          setCurrentIcon(Icon);
+        },
+        closeMenu: handlePopoverMenuRequestClose,
+      }));
 
       const OptionsComponent = useCallback(
         () => (

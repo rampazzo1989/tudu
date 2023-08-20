@@ -124,3 +124,12 @@ export const ungroupAllItems = <T>(
 export const renameGroup = <T>(group: DraggableItem<T>, newName: string) => {
   group.groupId = newName;
 };
+
+export const insertNewItem = <T>(
+  list: DraggableItem<T>[],
+  listSetter: (newData: DraggableItem<T>[]) => void,
+  newItem: T,
+) => {
+  const newDraggableItem = new DraggableItem([newItem]);
+  listSetter([newDraggableItem, ...list]);
+};
