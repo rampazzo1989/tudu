@@ -3,7 +3,7 @@ import {atom} from 'recoil';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
 import {SunIcon} from '../../components/animated-icons/sun-icon';
-import {Counter, BuiltInList, List, MyLists} from './types';
+import {Counter, BuiltInList, List} from './types';
 
 export const homeDefaultLists = atom<BuiltInList[]>({
   key: 'homeDefaultLists',
@@ -35,17 +35,17 @@ export const counters = atom<Counter[]>({
     {
       title: 'Glasses of water today',
       value: 8,
-      format: 'general',
+      pace: 1,
     },
     {
       title: 'Money saved',
       value: 2400000,
-      format: 'currency',
+      pace: 5,
     },
     {
       title: 'Extra hours this week',
       value: 7,
-      format: 'general',
+      pace: 1,
     },
   ],
 });

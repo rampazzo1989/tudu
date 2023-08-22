@@ -1,4 +1,2 @@
 
-export type HomeActionMenuOptionsProps = {
-  onCreateNewList: () => void;
-};
+export type HomeActionMenuOptionsProps = {};

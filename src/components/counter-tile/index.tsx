@@ -30,19 +30,21 @@ import {
 import {OptionsIcon} from '../../assets/static/options';
 import {ActionMinusIcon} from '../../assets/static/action_minus';
 import {ActionPlusIcon} from '../../assets/static/action_plus';
+import { useSetRecoilState } from 'recoil';
+import { counters } from '../../scenes/home/state';
 
 const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
   return (
     <TileTitleContainer>
       <IconContainer>
-        <HashIcon autoPlay />
+        <HashIcon autoPlay size={14} />
       </IconContainer>
       <Title>{title}</Title>
     </TileTitleContainer>
   );
 });
 
-const CounterValue: React.FC<CounterValueProps> = memo(({value, format}) => {
+const CounterValue: React.FC<CounterValueProps> = memo(({value}) => {
   return (
     <CounterText adjustsFontSizeToFit numberOfLines={1}>
       {value}
@@ -50,15 +52,13 @@ const CounterValue: React.FC<CounterValueProps> = memo(({value, format}) => {
   );
 });
 
-const EditingCounterValue: React.FC<CounterValueProps> = memo(
-  ({value, format}) => {
-    return (
-      <EditingCounterText adjustsFontSizeToFit numberOfLines={1}>
-        {value}
-      </EditingCounterText>
-    );
-  },
-);
+const EditingCounterValue: React.FC<CounterValueProps> = memo(({value}) => {
+  return (
+    <EditingCounterText adjustsFontSizeToFit numberOfLines={1}>
+      {value}
+    </EditingCounterText>
+  );
+});
 
 const AdjustButton: React.FC<AdjustButtonProps> = memo(
   ({onChangeButtonPress}) => {
@@ -109,55 +109,58 @@ const IncrementButton: React.FC<ActionButtonProps> = memo(({onAction}) => {
 
 const EDITING_TIMEOUT_MS = 7000;
 
-const CounterTile: React.FC<CounterTileProps> = memo(
-  ({title, value, format}) => {
-    const [isEditing, setEditing] = useState(false);
+const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
+  const [isEditing, setEditing] = useState(false);
+  const setCountersList = useSetRecoilState(counters);
 
-    const idleTime = useRef<NodeJS.Timeout>();
+  const idleTime = useRef<NodeJS.Timeout>();
 
-    const startCloseEditingTimeout = useCallback(() => {
-      idleTime.current = setTimeout(() => {
-        idleTime.current = undefined;
-        setEditing(false);
-      }, EDITING_TIMEOUT_MS);
-    }, []);
+  const startCloseEditingTimeout = useCallback(() => {
+    idleTime.current = setTimeout(() => {
+      idleTime.current = undefined;
+      setEditing(false);
+    }, EDITING_TIMEOUT_MS);
+  }, []);
 
-    const handleChangeButtonPress = useCallback(() => {
-      console.log('handleChangeButtonPress');
-      startCloseEditingTimeout();
-      setEditing(toggle);
-    }, [startCloseEditingTimeout]);
+  const handleChangeButtonPress = useCallback(() => {
+    console.log('handleChangeButtonPress');
+    startCloseEditingTimeout();
+    setEditing(toggle);
+  }, [startCloseEditingTimeout]);
 
-    useEffect(() => console.log({isEditing}), [isEditing]);
+  useEffect(() => console.log({isEditing}), [isEditing]);
 
-    return (
-      <Tile
-        onStartShouldSetResponderCapture={() => {
-          if (idleTime.current) {
-            clearTimeout(idleTime.current);
-            startCloseEditingTimeout();
-          }
-          return false;
-        }}>
-        <ReplacebleContainer visible={!isEditing}>
-          <TileTitle title={title} />
-          <CounterValue value={value} format={format} />
-          <AdjustButton onChangeButtonPress={handleChangeButtonPress} />
-        </ReplacebleContainer>
+  return (
+    <Tile
+      onStartShouldSetResponderCapture={() => {
+        if (idleTime.current) {
+          clearTimeout(idleTime.current);
+          startCloseEditingTimeout();
+        }
+        return false;
+      }}>
+      <ReplacebleContainer visible={!isEditing}>
+        <TileTitle title={counterData.title} />
+        <CounterValue value={counterData.value} />
+        <AdjustButton onChangeButtonPress={handleChangeButtonPress} />
+      </ReplacebleContainer>
 
-        <EditingContainer visible={isEditing}>
-          <MoreOptionsButton
-            onOptionsButtonPress={() => console.log('More options Button')}
+      <EditingContainer visible={isEditing}>
+        <MoreOptionsButton
+          onOptionsButtonPress={() => console.log('More options Button')}
+        />
+        <EditingCounterValue value={counterData.value} />
+        <ActionButtonsContainer>
+          <DecrementButton
+            onAction={() => {
+              counterData.value -= counterData.pace;
+            }}
           />
-          <EditingCounterValue value={value} format={format} />
-          <ActionButtonsContainer>
-            <DecrementButton onAction={() => console.log('Decrement')} />
-            <IncrementButton onAction={() => console.log('Increment')} />
-          </ActionButtonsContainer>
-        </EditingContainer>
-      </Tile>
-    );
-  },
-);
+          <IncrementButton onAction={() => console.log('Increment')} />
+        </ActionButtonsContainer>
+      </EditingContainer>
+    </Tile>
+  );
+});
 
 export {CounterTile};

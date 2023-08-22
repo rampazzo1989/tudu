@@ -15,6 +15,7 @@ import {
 } from '../animated-icons/animated-icon/types';
 import {ZoomIn} from 'react-native-reanimated';
 import {PopoverMenu} from '../popover-menu';
+import { MenuOptions } from '../menu-options';
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(

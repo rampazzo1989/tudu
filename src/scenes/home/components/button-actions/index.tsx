@@ -14,6 +14,8 @@ import {PlusIcon} from '../../../../components/animated-icons/plus-icon';
 import {FloatingActionButton} from '../../../../components/floating-action-button';
 import {HashIcon} from '../../../../components/animated-icons/hash-icon';
 import {NewListModal} from '../../../group/components/new-list-modal';
+import { NewCounterModal } from '../../../counter/components/new-counter-modal';
+import { useTranslation } from 'react-i18next';
 
 const handleNewListPress = () => {
   console.log('Menu pressed');
@@ -21,30 +23,37 @@ const handleNewListPress = () => {
 
 const HomeActionMenuOptions = memo(
   forwardRef<FloatingActionButtonRef, HomeActionMenuOptionsProps>(
-    ({onCreateNewList}, ref) => {
+    (props, ref) => {
       const [newListPopupVisible, setNewListPopupVisible] = useState(false);
+      const [newCounterPopupVisible, setNewCounterPopupVisible] = useState(false);
       const parentRef = useRef<FloatingActionButtonRef>(null);
+      const {t} = useTranslation();
 
       const handleCreateNewList = useCallback(() => {
         setNewListPopupVisible(true);
         parentRef.current?.closeMenu();
       }, []);
 
+      const handleCreateNewCounter = useCallback(() => {
+        setNewCounterPopupVisible(true);
+        parentRef.current?.closeMenu();
+      }, []);
+
       const options: MenuOption[] = [
         {
           Icon: ListDefaultIcon,
-          label: 'New list',
+          label: t('actions.newList'),
           onPress: handleCreateNewList,
         },
         {
           Icon: ListDefaultIcon,
-          label: 'New group',
+          label: t('actions.newGroup'),
           onPress: handleNewListPress,
         },
         {
           Icon: HashIcon,
-          label: 'New counter',
-          onPress: handleNewListPress,
+          label: t('actions.newCounter'),
+          onPress: handleCreateNewCounter,
         },
       ];
 
@@ -68,6 +77,10 @@ const HomeActionMenuOptions = memo(
           <NewListModal
             visible={newListPopupVisible}
             onRequestClose={() => setNewListPopupVisible(false)}
+          />
+          <NewCounterModal
+            visible={newCounterPopupVisible}
+            onRequestClose={() => setNewCounterPopupVisible(false)}
           />
         </>
       );

@@ -16,6 +16,7 @@ import {
   PopupButton,
   ButtonLabel,
   styles,
+  ContentContainer,
 } from './styles';
 import {PopupModalProps} from './types';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -78,6 +79,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                     autoPlay
                     autoPlayDelay={iconAnimationDelay}
                     style={styles.icon}
+                    size={24}
                     animateWhenIdle={false}
                   />
                 )}
@@ -89,12 +91,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
               />
             </View>
           )}
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              paddingVertical: 12,
-            }}>
+          <ContentContainer>
             {children}
             {buttons && (
               <ButtonsContainer shouldWrap={buttons.length > 2}>
@@ -109,7 +106,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                 ))}
               </ButtonsContainer>
             )}
-          </View>
+          </ContentContainer>
         </PopupContainer>
       </BlurredModal>
     );

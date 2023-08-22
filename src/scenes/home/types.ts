@@ -23,13 +23,8 @@ export type ListGroup = {
   lists: List[];
 };
 
-export type MyLists = {
-  ungroupedLists: List[];
-  groups: ListGroup[];
-};
-
 export type Counter = {
   title: string;
   value: number;
-  format: 'general' | 'currency';
+  pace: number;
 };
