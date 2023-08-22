@@ -21,7 +21,7 @@ export const PopupTitle = styled.Text`
   font-size: 16px;
   line-height: 18px;
   text-align: left;
-  margin-left: 14px;
+  margin-left: 10px;
   flex-wrap: wrap;
   flex: 1;
 `;
@@ -74,3 +74,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export const ContentContainer = styled.View`
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+`;

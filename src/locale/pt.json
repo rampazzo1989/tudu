@@ -9,7 +9,10 @@
     "myLists": "Minhas listas"
   },
   "actions": {
-    "delete": "Remover"
+    "delete": "Remover",
+    "newList": "Nova lista",
+    "newGroup": "Novo grupo",
+    "newCounter": "Novo contador"
   },
   "messages": {
     "confirmDelete": "Confirma a exclusão da {{itemType}} {{listName}}?",
@@ -22,10 +25,19 @@
     "ok": "OK",
     "cancel": "Cancelar",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "other": "outro"
   },
   "popupTitles": {
     "renameGroup": "Renomear Grupo",
-    "newList": "Criar nova lista"
+    "newList": "Criar nova lista",
+    "newCounter": "Criar novo contador",
+    "editCounter": "Editar contador"
+  },
+  "inputLabels": {
+    "description": "Descrição",
+    "initialValue": "Valor inicial",
+    "currentValue": "Valor atual",
+    "pace": "Passo"
   }
 }

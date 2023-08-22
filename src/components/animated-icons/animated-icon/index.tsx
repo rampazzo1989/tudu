@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -21,6 +22,7 @@ const BaseAnimatedIcon = memo(
         finalFrame = 500,
         animateWhenIdle = false,
         staticStateFrame = 0,
+        size,
         ...props
       },
       ref,
@@ -80,10 +82,19 @@ const BaseAnimatedIcon = memo(
         staticStateFrame,
       });
 
+      const sizedStyle = useMemo(() => {
+        if (size) {
+          return {height: size, width: size};
+        } else {
+          return {};
+        }
+      }, [size]);
+
       return (
         <Lottie
           loop={false}
           {...props}
+          style={[props.style, sizedStyle]}
           ref={animationRef}
           onAnimationFinish={handleAnimationFinish}
         />

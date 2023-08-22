@@ -58,10 +58,6 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     setDeleteVisible(false);
   }, []);
 
-  const handleCreateNewList = useCallback(() => {
-    
-  }, []);
-
   return (
     <Page>
       <HomeHeader />
@@ -104,10 +100,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
           />
-          <HomeActionMenuOptions
-            onCreateNewList={handleCreateNewList}
-            ref={actionButtonRef}
-          />
+          <HomeActionMenuOptions ref={actionButtonRef} />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>

@@ -1,12 +1,12 @@
+import {Counter} from '../../scenes/home/types';
+
 export type CounterTileProps = {
-  title: string;
-  value: number;
-  format: 'general' | 'currency';
+  counterData: Counter;
 };
 
-export type TileTitleProps = Pick<CounterTileProps, 'title'>;
+export type TileTitleProps = Pick<Counter, 'title'>;
 
-export type CounterValueProps = Pick<CounterTileProps, 'value' | 'format'>;
+export type CounterValueProps = Pick<Counter, 'value'>;
 
 export type AdjustButtonProps = {
   onChangeButtonPress: () => void;

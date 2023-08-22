@@ -9,7 +9,10 @@
     "myLists": "My Lists"
   },
   "actions": {
-    "delete": "Delete"
+    "delete": "Delete",
+    "newList": "New list",
+    "newGroup": "New group",
+    "newCounter": "New counter"
   },
   "messages": {
     "confirmDelete": "Confirm deletion of {{itemType}} {{listName}}?",
@@ -22,10 +25,19 @@
     "ok": "OK",
     "cancel": "Cancel",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "other": "other"
   }, 
   "popupTitles": {
     "renameGroup": "Rename Group",
-    "newList": "Create new list"
+    "newList": "Create new list",
+    "newCounter": "Create new counter",
+    "editCounter": "Edit counter"
+  },
+  "inputLabels": {
+    "description": "Description",
+    "initialValue": "Initial value",
+    "currentValue": "Current value",
+    "pace": "Pace"
   }
 }

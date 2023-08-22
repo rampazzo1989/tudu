@@ -17,9 +17,7 @@ const CountersList: React.FC<CounterListProps> = memo(({list}) => {
   const theme = useTheme();
 
   const renderItem: ListRenderItem<Counter> = useCallback(
-    ({item}) => (
-      <CounterTile title={item.title} value={item.value} format={item.format} />
-    ),
+    ({item}) => <CounterTile counterData={item} />,
     [],
   );
 
