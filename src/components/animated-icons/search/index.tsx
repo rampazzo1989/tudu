@@ -1,10 +1,10 @@
 import React, {memo} from 'react';
+import {BaseAnimatedIcon} from '../animated-icon';
 import {AnimatedIconProps} from '../animated-icon/types';
-import {AnimatedIcon} from './styles';
 
 const SearchIcon: React.FC<AnimatedIconProps> = memo(props => {
   return (
-    <AnimatedIcon
+    <BaseAnimatedIcon
       loop={false}
       initialFrame={60}
       finalFrame={150}

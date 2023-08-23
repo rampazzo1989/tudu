@@ -1,4 +1,5 @@
 import React, {memo} from 'react';
+import {ProfileIcon} from '../../../../components/animated-icons/profile-icon';
 import {SearchIcon} from '../../../../components/animated-icons/search';
 import {Header} from '../../../../components/header';
 import {
@@ -8,6 +9,7 @@ import {
   LogoTitle,
   ProfileThumb,
   SearchAndProfile,
+  StyledProfileIcon,
 } from './styles';
 
 const HomeHeader: React.FC = memo(() => {
@@ -19,8 +21,8 @@ const HomeHeader: React.FC = memo(() => {
           <LogoTitle />
         </LogoAndTitle>
         <SearchAndProfile>
-          <SearchIcon />
-          <ProfileThumb initials="FR" />
+          <SearchIcon size={30} />
+          <StyledProfileIcon size={30} />
         </SearchAndProfile>
       </ContentRow>
     </Header>

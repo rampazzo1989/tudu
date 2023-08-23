@@ -30,8 +30,9 @@ import {
 import {OptionsIcon} from '../../assets/static/options';
 import {ActionMinusIcon} from '../../assets/static/action_minus';
 import {ActionPlusIcon} from '../../assets/static/action_plus';
-import { useSetRecoilState } from 'recoil';
-import { counters } from '../../scenes/home/state';
+import {useSetRecoilState} from 'recoil';
+import {counters} from '../../scenes/home/state';
+import {Counter} from '../../scenes/home/types';
 
 const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
   return (
@@ -128,7 +129,33 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
     setEditing(toggle);
   }, [startCloseEditingTimeout]);
 
-  useEffect(() => console.log({isEditing}), [isEditing]);
+  const handleChangeValue = useCallback(
+    (operation: 'increment' | 'decrement') => {
+      const newValue =
+        operation === 'increment'
+          ? counterData.value + counterData.pace
+          : counterData.value - counterData.pace;
+      const newCounter: Counter = {...counterData, value: newValue};
+
+      setCountersList(current => {
+        const currentIndex = current.indexOf(counterData);
+        const newList = [...current];
+        newList.splice(currentIndex, 1, newCounter);
+        return newList;
+      });
+    },
+    [counterData, setCountersList],
+  );
+
+  const handleIncrement = useCallback(
+    () => handleChangeValue('increment'),
+    [handleChangeValue],
+  );
+
+  const handleDecrement = useCallback(
+    () => handleChangeValue('decrement'),
+    [handleChangeValue],
+  );
 
   return (
     <Tile
@@ -151,12 +178,8 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
         />
         <EditingCounterValue value={counterData.value} />
         <ActionButtonsContainer>
-          <DecrementButton
-            onAction={() => {
-              counterData.value -= counterData.pace;
-            }}
-          />
-          <IncrementButton onAction={() => console.log('Increment')} />
+          <DecrementButton onAction={handleDecrement} />
+          <IncrementButton onAction={handleIncrement} />
         </ActionButtonsContainer>
       </EditingContainer>
     </Tile>
