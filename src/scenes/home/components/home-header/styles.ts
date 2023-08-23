@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import {AppIcon} from '../../../../assets/static/app_icon';
 import {LogoText} from '../../../../assets/static/logo_text';
+import {ProfileIcon} from '../../../../components/animated-icons/profile-icon';
 import {ProfileThumb as Profile} from '../../../../components/profile-thumb';
 
 export const LogoAndTitle = styled.View`
@@ -26,10 +27,10 @@ export const ContentRow = styled.View`
 export const SearchAndProfile = styled.View`
   flex-direction: row;
   align-items: center;
-  width: 30%;
+  width: 22%;
   height: 100%;
 `;
 
-export const ProfileThumb = styled(Profile)`
-  margin-left: 24px;
+export const StyledProfileIcon = styled(ProfileIcon)`
+  margin-left: 6px;
 `;
