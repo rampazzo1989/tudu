@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-quick-crypto/android/build.gradle b/node_modules/react-native-quick-crypto/android/build.gradle
+index 2ac6c0d..f8dd812 100644
+--- a/node_modules/react-native-quick-crypto/android/build.gradle
++++ b/node_modules/react-native-quick-crypto/android/build.gradle
+@@ -86,6 +86,7 @@ android {
+     excludes = [
+             "**/libc++_shared.so",
+             "**/libfbjni.so",
++            "**/libcrypto.so",
+             "**/libreactnativejni.so",
+             "**/libjsi.so",
+             "**/libreact_nativemodule_core.so",

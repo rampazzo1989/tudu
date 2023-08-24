@@ -15,6 +15,7 @@ import {
   TIME_BETWEEN_IDLE_ANIMATIONS_MEDIUM_DENSITY,
 } from '../../constants';
 import {generateShuffledArray} from '../../utils/array-utils';
+import {Platform} from 'react-native';
 
 const Page: React.FC<PageProps> = memo(({children}) => {
   const theme = useTheme();
@@ -65,10 +66,8 @@ const Page: React.FC<PageProps> = memo(({children}) => {
 
   return (
     <StyledSafeAreaView>
-      <StyledKeyboardAvoidingView>
-        <StatusBar backgroundColor={theme.colors.primary} />
-        {children}
-      </StyledKeyboardAvoidingView>
+      <StatusBar backgroundColor={theme.colors.primary} />
+      {children}
     </StyledSafeAreaView>
   );
 });

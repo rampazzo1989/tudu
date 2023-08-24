@@ -3,8 +3,6 @@ import {NewCounterModalProps} from './types';
 import {PopupModal} from '../../../../components/popup-modal';
 import {Counter} from '../../../home/types';
 import {
-  Input,
-  InputAndLabelContainer,
   InputsContainer,
   Label,
   PaceContainer,
@@ -21,7 +19,7 @@ import {HashIcon} from '../../../../components/animated-icons/hash-icon';
 import {PopupButton} from '../../../../components/popup-modal/types';
 import {useRecoilState} from 'recoil';
 import {counters} from '../../../home/state';
-import {TextInput, View} from 'react-native';
+import {Keyboard, TextInput, View} from 'react-native';
 
 const emptyCounter: Counter = {title: '', value: 0, pace: 1};
 
@@ -32,6 +30,7 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
     );
     const [customPace, setCustomPace] = useState<number>();
     const titleInputRef = useRef<TextInput>(null);
+    const valueInputRef = useRef<TextInput>(null);
 
     const {t} = useTranslation();
     const [counterList, setCountersList] = useRecoilState(counters);
@@ -99,9 +98,14 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
     const handlePaceOptionPressGenerator = useCallback(
       (pace: number) => () => {
         setInternalCounterData(current => ({...current, pace}));
+        Keyboard.dismiss();
       },
       [],
     );
+
+    const handleTitleSubmit = useCallback(() => {
+      valueInputRef.current?.focus();
+    }, []);
 
     return (
       <PopupModal
@@ -127,7 +131,9 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
               <TitleInput
                 value={internalCounterData.title}
                 onChangeText={handleTitleChange}
+                onSubmitEditing={handleTitleSubmit}
                 ref={titleInputRef}
+                enterKeyHint="next"
               />
             </TitleContainer>
             <ValueContainer>
@@ -141,7 +147,11 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
               <ValueInput
                 value={String(internalCounterData.value)}
                 onChangeText={handleValueChange}
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
                 keyboardType="number-pad"
+                ref={valueInputRef}
               />
             </ValueContainer>
           </InputsContainer>
