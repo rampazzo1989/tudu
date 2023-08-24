@@ -1,5 +1,9 @@
 import React, {forwardRef, memo, useImperativeHandle, useRef} from 'react';
-import {AnimatedIconProps, BaseAnimatedIconRef} from '../animated-icon/types';
+import {
+  AnimatedIconProps,
+  AnimationOptions,
+  BaseAnimatedIconRef,
+} from '../animated-icon/types';
 import {AnimatedIcon} from './styles';
 
 const OptionsArrowDownIcon = memo(
@@ -10,8 +14,8 @@ const OptionsArrowDownIcon = memo(
       ref,
       () => {
         return {
-          play(onAnimationFinish?: () => void) {
-            iconRef.current?.play(onAnimationFinish);
+          play(options?: AnimationOptions) {
+            iconRef.current?.play(options);
           },
           pause() {
             iconRef.current?.pause();

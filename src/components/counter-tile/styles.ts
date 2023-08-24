@@ -65,16 +65,14 @@ export const Button = styled.TouchableOpacity`
   justify-content: center;
 `;
 
-export const OptionsButton = styled.TouchableOpacity`
-  height: 14px;
-  width: 26px;
-  background-color: ${({theme}) => theme.colors.optionsButtonBackground};
-  border-radius: 12px;
+export const ReplacebleContainer = styled(FadingView)`
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
 `;
 
-export const ReplacebleContainer = styled(FadingView)`
+export const ShrinkableContainer = styled(ShrinkableView)`
   align-items: center;
   justify-content: space-between;
   width: 100%;
@@ -104,4 +102,15 @@ export const ActionButtonsContainer = styled.View`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+`;
+
+export const OptionsTouchable = styled(ShrinkableView)`
+  width: 28px;
+  height: 18px;
+  align-items: flex-end;
+`;
+
+export const OptionsIconContainer = styled.View`
+  height: 20px;
+  width: 20px;
 `;

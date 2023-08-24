@@ -11,7 +11,12 @@ import React, {
 } from 'react';
 import {useHashGenerator} from '../../../hooks/useHashGenerator';
 import {useIdlyAnimatedComponent} from '../../../hooks/useIdlyAnimatedComponent';
-import {BaseAnimatedIconProps, BaseAnimatedIconRef} from './types';
+import {
+  AnimationOptions,
+  BaseAnimatedIconProps,
+  BaseAnimatedIconRef,
+  BaseAnimationOptions,
+} from './types';
 
 const BaseAnimatedIcon = memo(
   forwardRef<BaseAnimatedIconRef, BaseAnimatedIconProps>(
@@ -36,10 +41,15 @@ const BaseAnimatedIcon = memo(
         ref,
         () => {
           return {
-            play(onAnimationFinish?: () => void) {
-              animationRef.current?.play(initialFrame, finalFrame);
+            play(options?: BaseAnimationOptions) {
+              animationRef.current?.play(
+                options?.initialFrame ?? initialFrame,
+                options?.finalFrame ?? finalFrame,
+              );
               setAnimationFinishCallback(
-                onAnimationFinish ? () => onAnimationFinish : undefined,
+                options?.onAnimationFinish
+                  ? () => options.onAnimationFinish
+                  : undefined,
               );
             },
             pause() {
