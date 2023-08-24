@@ -15,8 +15,25 @@ export type AnimatedIconProps = Omit<
   'componentName' | 'source'
 >;
 
+export type BaseAnimationOptions = {
+  onAnimationFinish?: () => void;
+  initialFrame?: number;
+  finalFrame?: number;
+};
+
 export type BaseAnimatedIconRef = {
-  play: (onAnimationFinish?: () => void) => void;
+  play: (options?: BaseAnimationOptions) => void;
+  pause: () => void;
+  toggle: () => void;
+};
+
+export type AnimationOptions = {
+  animationLayer: 'intro' | 'hover';
+  onAnimationFinish?: () => void;
+};
+
+export type AnimatedIconRef = {
+  play: (options?: AnimationOptions) => void;
   pause: () => void;
   toggle: () => void;
 };

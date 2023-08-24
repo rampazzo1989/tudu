@@ -17,7 +17,7 @@ import {
 import {useTranslation} from 'react-i18next';
 import {HashIcon} from '../../../../components/animated-icons/hash-icon';
 import {PopupButton} from '../../../../components/popup-modal/types';
-import {useRecoilState} from 'recoil';
+import {useSetRecoilState} from 'recoil';
 import {counters} from '../../../home/state';
 import {Keyboard, TextInput, View} from 'react-native';
 
@@ -33,7 +33,7 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
     const valueInputRef = useRef<TextInput>(null);
 
     const {t} = useTranslation();
-    const [counterList, setCountersList] = useRecoilState(counters);
+    const setCountersList = useSetRecoilState(counters);
 
     const isEditing = useMemo(() => !!editingCounterData, [editingCounterData]);
     const dataValidated = useMemo(
@@ -67,10 +67,24 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
       if (!internalCounterData?.title || !internalCounterData?.pace) {
         return;
       }
-      console.log('NEW COUNTER CONFIRM');
-      setCountersList(current => [internalCounterData, ...current]);
+      if (isEditing) {
+        setCountersList(current => {
+          const currentIndex = current.indexOf(editingCounterData);
+          const newList = [...current];
+          newList.splice(currentIndex, 1, internalCounterData);
+          return newList;
+        });
+      } else {
+        setCountersList(current => [internalCounterData, ...current]);
+      }
       onRequestClose();
-    }, [internalCounterData, onRequestClose, setCountersList]);
+    }, [
+      editingCounterData,
+      internalCounterData,
+      isEditing,
+      onRequestClose,
+      setCountersList,
+    ]);
 
     const buttonsData = useMemo<PopupButton[]>(
       () => [
@@ -96,10 +110,11 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
     }, []);
 
     const handlePaceOptionPressGenerator = useCallback(
-      (pace: number) => () => {
-        setInternalCounterData(current => ({...current, pace}));
-        Keyboard.dismiss();
-      },
+      (pace: number = 1) =>
+        () => {
+          setInternalCounterData(current => ({...current, pace}));
+          Keyboard.dismiss();
+        },
       [],
     );
 

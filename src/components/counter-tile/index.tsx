@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
+import React, {memo, useCallback, useRef, useState} from 'react';
 import {FadeOutDown} from 'react-native-reanimated';
 import {toggle} from '../../utils/state-utils';
 import {AdjustIcon} from '../animated-icons/adjust-icon';
@@ -18,6 +18,9 @@ import {
   ActionButtonContainer,
   ActionButtonsContainer,
   EditingCounterText,
+  OptionsTouchable,
+  OptionsIconContainer,
+  ShrinkableContainer,
 } from './styles';
 import {
   ActionButtonProps,
@@ -33,6 +36,13 @@ import {ActionPlusIcon} from '../../assets/static/action_plus';
 import {useSetRecoilState} from 'recoil';
 import {counters} from '../../scenes/home/state';
 import {Counter} from '../../scenes/home/types';
+import {PopoverMenu} from '../popover-menu';
+import {CounterOptions} from '../../scenes/counter/components/counter-options';
+import {OptionsArrowDownIcon} from '../animated-icons/options-arrow-down-icon';
+import {NewCounterModal} from '../../scenes/counter/components/new-counter-modal';
+import {PopupModal} from '../popup-modal';
+import {DeleteIcon} from '../animated-icons/delete-icon';
+import {ShrinkableView} from '../shrinkable-view';
 
 const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
   return (
@@ -81,12 +91,51 @@ const AdjustButton: React.FC<AdjustButtonProps> = memo(
 );
 
 const MoreOptionsButton: React.FC<OptionsButtonProps> = memo(
-  ({onOptionsButtonPress}) => {
+  ({counterData, onDeleteOption, onEditOption}) => {
+    const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
+    const iconRef = useRef<BaseAnimatedIconRef>(null);
+
+    const handlePopoverMenuRequestClose = useCallback(() => {
+      iconRef.current?.toggle();
+      setPopoverMenuVisible(false);
+    }, []);
+
+    const handleOptionsButtonPress = useCallback(() => {
+      iconRef.current?.toggle();
+      setPopoverMenuVisible(true);
+    }, []);
+
+    const OptionsComponent = useCallback(
+      () => (
+        <OptionsTouchable
+          onPress={handleOptionsButtonPress}
+          hitSlop={20}
+          scaleFactor={0}>
+          <OptionsIconContainer>
+            <OptionsArrowDownIcon
+              ref={iconRef}
+              animateWhenIdle={false}
+              speed={2}
+            />
+          </OptionsIconContainer>
+        </OptionsTouchable>
+      ),
+      [handleOptionsButtonPress],
+    );
+
     return (
       <ButtonContainer>
-        <OptionsButton onPress={onOptionsButtonPress} hitSlop={20}>
-          <OptionsIcon />
-        </OptionsButton>
+        <PopoverMenu
+          isVisible={popoverMenuVisible}
+          onRequestClose={handlePopoverMenuRequestClose}
+          from={OptionsComponent}>
+          <CounterOptions
+            counterData={counterData}
+            closeMenu={handlePopoverMenuRequestClose}
+            onDeleteOption={onDeleteOption}
+            onEditOption={onEditOption}
+          />
+        </PopoverMenu>
       </ButtonContainer>
     );
   },
@@ -112,6 +161,8 @@ const EDITING_TIMEOUT_MS = 7000;
 
 const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
   const [isEditing, setEditing] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const setCountersList = useSetRecoilState(counters);
 
   const idleTime = useRef<NodeJS.Timeout>();
@@ -124,7 +175,6 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
   }, []);
 
   const handleChangeButtonPress = useCallback(() => {
-    console.log('handleChangeButtonPress');
     startCloseEditingTimeout();
     setEditing(toggle);
   }, [startCloseEditingTimeout]);
@@ -157,6 +207,32 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
     [handleChangeValue],
   );
 
+  const handleEditCounter = useCallback(() => {
+    setEditModalVisible(true);
+  }, []);
+
+  const handleDeleteCounter = useCallback(() => {
+    setDeleteModalVisible(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    setDeleteModalVisible(false);
+    if (idleTime.current) {
+      clearTimeout(idleTime.current);
+    }
+    setEditing(false);
+    setCountersList(current => {
+      const currentIndex = current.indexOf(counterData);
+      const newList = [...current];
+      newList.splice(currentIndex, 1);
+      return newList;
+    });
+  }, [counterData, setCountersList]);
+
+  const handleCancelDelete = useCallback(() => {
+    setDeleteModalVisible(false);
+  }, []);
+
   return (
     <Tile
       onStartShouldSetResponderCapture={() => {
@@ -167,14 +243,18 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
         return false;
       }}>
       <ReplacebleContainer visible={!isEditing}>
-        <TileTitle title={counterData.title} />
-        <CounterValue value={counterData.value} />
-        <AdjustButton onChangeButtonPress={handleChangeButtonPress} />
+        <ShrinkableContainer scaleFactor={0.04}>
+          <TileTitle title={counterData.title} />
+          <CounterValue value={counterData.value} />
+          <AdjustButton onChangeButtonPress={handleChangeButtonPress} />
+        </ShrinkableContainer>
       </ReplacebleContainer>
 
       <EditingContainer visible={isEditing}>
         <MoreOptionsButton
-          onOptionsButtonPress={() => console.log('More options Button')}
+          counterData={counterData}
+          onEditOption={handleEditCounter}
+          onDeleteOption={handleDeleteCounter}
         />
         <EditingCounterValue value={counterData.value} />
         <ActionButtonsContainer>
@@ -182,6 +262,23 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
           <IncrementButton onAction={handleIncrement} />
         </ActionButtonsContainer>
       </EditingContainer>
+      <NewCounterModal
+        visible={editModalVisible}
+        onRequestClose={() => setEditModalVisible(false)}
+        editingCounterData={counterData}
+      />
+      <PopupModal
+        visible={deleteModalVisible}
+        onRequestClose={() => setDeleteModalVisible(false)}
+        title={'Deseja excluir o contador?'}
+        buttons={[
+          {label: 'Sim', onPress: handleConfirmDelete},
+          {label: 'Não', onPress: handleCancelDelete},
+        ]}
+        Icon={DeleteIcon}
+        shakeOnShow
+        haptics
+      />
     </Tile>
   );
 });

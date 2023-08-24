@@ -13,7 +13,9 @@ export type AdjustButtonProps = {
 };
 
 export type OptionsButtonProps = {
-  onOptionsButtonPress: () => void;
+  counterData: Counter;
+  onEditOption: () => void;
+  onDeleteOption: () => void;
 };
 
 export type ActionButtonProps = {
