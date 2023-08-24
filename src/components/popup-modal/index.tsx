@@ -1,5 +1,5 @@
 import React, {memo, useEffect} from 'react';
-import {View} from 'react-native';
+import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -70,44 +70,46 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         onRequestClose={onRequestClose}
         visible={visible}
         {...props}>
-        <PopupContainer style={animatedStyle}>
-          {title && (
-            <View>
-              <PopupTitleContainer>
-                {!!Icon && (
-                  <Icon
-                    autoPlay
-                    autoPlayDelay={iconAnimationDelay}
-                    style={styles.icon}
-                    size={24}
-                    animateWhenIdle={false}
-                  />
-                )}
-                <PopupTitle>{`${title}`}</PopupTitle>
-              </PopupTitleContainer>
-              <GradientSeparator
-                colorArray={theme.colors.defaultSeparatorGradientColors}
-                marginTop={10}
-              />
-            </View>
-          )}
-          <ContentContainer>
-            {children}
-            {buttons && (
-              <ButtonsContainer shouldWrap={buttons.length > 2}>
-                {buttons.map(button => (
-                  <PopupButton
-                    onPress={button.onPress}
-                    highlight={button.highlight}
-                    disabled={button.disabled}
-                    key={button.label}>
-                    <ButtonLabel>{button.label}</ButtonLabel>
-                  </PopupButton>
-                ))}
-              </ButtonsContainer>
+        <KeyboardAvoidingView behavior="padding">
+          <PopupContainer style={animatedStyle}>
+            {title && (
+              <View>
+                <PopupTitleContainer>
+                  {!!Icon && (
+                    <Icon
+                      autoPlay
+                      autoPlayDelay={iconAnimationDelay}
+                      style={styles.icon}
+                      size={24}
+                      animateWhenIdle={false}
+                    />
+                  )}
+                  <PopupTitle>{`${title}`}</PopupTitle>
+                </PopupTitleContainer>
+                <GradientSeparator
+                  colorArray={theme.colors.defaultSeparatorGradientColors}
+                  marginTop={10}
+                />
+              </View>
             )}
-          </ContentContainer>
-        </PopupContainer>
+            <ContentContainer>
+              {children}
+              {buttons && (
+                <ButtonsContainer shouldWrap={buttons.length > 2}>
+                  {buttons.map(button => (
+                    <PopupButton
+                      onPress={button.onPress}
+                      highlight={button.highlight}
+                      disabled={button.disabled}
+                      key={button.label}>
+                      <ButtonLabel>{button.label}</ButtonLabel>
+                    </PopupButton>
+                  ))}
+                </ButtonsContainer>
+              )}
+            </ContentContainer>
+          </PopupContainer>
+        </KeyboardAvoidingView>
       </BlurredModal>
     );
   },

@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: '@react-native-community',
+  extends: '@react-native',
   settings: {
     'import/resolver': {
       'babel-plugin-root-import': {
