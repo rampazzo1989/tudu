@@ -67,7 +67,7 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
       if (!internalCounterData?.title || !internalCounterData?.pace) {
         return;
       }
-      if (isEditing) {
+      if (isEditing && editingCounterData) {
         setCountersList(current => {
           const currentIndex = current.indexOf(editingCounterData);
           const newList = [...current];

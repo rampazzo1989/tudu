@@ -48,6 +48,7 @@ export const mapDraggableItemsToList = <T extends object>(
 ) => {
   for (let itemIndex in newOrderList) {
     const item = newOrderList[itemIndex];
+
     if (item.groupId) {
       for (let subItemIndex in item.data) {
         const subItem = item.data[subItemIndex];
@@ -57,7 +58,10 @@ export const mapDraggableItemsToList = <T extends object>(
       }
     } else {
       item.groupId = undefined;
-      item.data[0][groupIdProperty] = undefined as T[keyof T];
+      const onlyItem = {...item.data[0]};
+      onlyItem[groupIdProperty] = undefined as T[keyof T];
+
+      item.data = [onlyItem];
     }
   }
 

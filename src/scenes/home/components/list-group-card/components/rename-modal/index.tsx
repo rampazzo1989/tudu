@@ -2,6 +2,7 @@ import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {TextInput} from 'react-native';
 import {ListDefaultIcon} from '../../../../../../components/animated-icons/list-default-icon';
+import {RenameIcon} from '../../../../../../components/animated-icons/rename-icon';
 import {PopupModal} from '../../../../../../components/popup-modal';
 import {PopupButton} from '../../../../../../components/popup-modal/types';
 import {renameGroup} from '../../../../../../modules/draggable/draggable-utils';
@@ -52,7 +53,7 @@ const RenameModal: React.FC<RenameModalProps> = memo(
         }}
         title={t('popupTitles.renameGroup')}
         buttons={buttonsData}
-        Icon={ListDefaultIcon}>
+        Icon={RenameIcon}>
         <Input
           value={internalGroupName}
           onChangeText={handleTextChange}

@@ -13,7 +13,8 @@ export const PopupContainer = styled(AnimatedTouchable).attrs({
   border-radius: 8px;
   elevation: 15;
   padding: 14px 16px;
-  padding-bottom: 2px;
+  /* padding-bottom: 2px; */
+  border: 1px solid #ffffff30;
 `;
 
 export const PopupTitle = styled.Text`
@@ -43,9 +44,10 @@ export const ButtonsContainer = styled.View<ButtonsContainerProps>`
   flex-direction: row;
   align-items: center;
   flex-wrap: ${({shouldWrap}) => (shouldWrap ? 'wrap' : 'nowrap')};
-  justify-content: space-around;
+
   padding-right: 10px;
   margin-top: 10px;
+  height: 50px;
 `;
 
 type HighlightableComponent = {highlight?: boolean};
@@ -79,4 +81,6 @@ export const ContentContainer = styled.View`
   justify-content: center;
   align-items: center;
   padding: 12px;
+  padding-bottom: 0px;
+  /* border: 1px solid; */
 `;

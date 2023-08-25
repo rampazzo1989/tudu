@@ -7,6 +7,8 @@ import {DraggableContext} from '../../../../../../modules/draggable/draggable-co
 import {ungroupAllItems} from '../../../../../../modules/draggable/draggable-utils';
 import {GroupOptionsProps} from './types';
 import {generateListAndGroupDeleteTitle} from '../../../../../../utils/list-and-group-utils';
+import {RenameIcon} from '../../../../../../components/animated-icons/rename-icon';
+import {UngroupIcon} from '../../../../../../components/animated-icons/ungroup-icon';
 
 const GroupOptions: React.FC<GroupOptionsProps> = memo(
   ({groupData, closeMenu, onRename}) => {
@@ -41,7 +43,7 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
     const options = useMemo<MenuOption[]>(() => {
       return [
         {
-          Icon: ListDefaultIcon,
+          Icon: RenameIcon,
           label: 'Rename',
           onPress: handleRenameOptionPress,
         },
@@ -51,7 +53,7 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
           onPress: handleDeleteOptionPress,
         },
         {
-          Icon: ListDefaultIcon,
+          Icon: UngroupIcon,
           label: 'Ungroup All',
           onPress: handleUngroupOptionPress,
         },

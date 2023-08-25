@@ -15,11 +15,12 @@
     "newCounter": "New counter"
   },
   "messages": {
-    "confirmDelete": "Confirm deletion of {{itemType}} {{listName}}?",
-    "confirmDeleteItemType": {
+    "confirmListDelete": "Confirm deletion of {{itemType}} {{listName}}?",
+    "confirmListDeleteItemType": {
       "list": "list",
       "group": "group"
-    }
+    }, 
+    "confirmCounterDelete": "Confirm deletion of counter '{{counterTitle}}'?"
   },
   "buttons": {
     "ok": "OK",

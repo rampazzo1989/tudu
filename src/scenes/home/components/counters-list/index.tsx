@@ -37,6 +37,7 @@ const CountersList: React.FC<CounterListProps> = memo(({list}) => {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ItemSeparatorComponent={HorizontalSeparator}
+        keyboardShouldPersistTaps="handled"
       />
       <LeftFadingGradient
         start={{x: 1, y: 0}}

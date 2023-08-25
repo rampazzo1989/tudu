@@ -10,15 +10,15 @@ export const generateListAndGroupDeleteTitle = (
     return '';
   }
   let listName: string;
-  let itemType: string = t('messages.confirmDeleteItemType.list');
+  let itemType: string = t('messages.confirmListDeleteItemType.list');
   if (isNestedItem(item)) {
     listName = (item as List).label;
   } else {
     const draggableItem = item as DraggableItem<List>;
     listName = draggableItem.groupId ?? draggableItem.data[0].label;
     itemType = draggableItem.groupId
-      ? t('messages.confirmDeleteItemType.group')
+      ? t('messages.confirmListDeleteItemType.group')
       : itemType;
   }
-  return t('messages.confirmDelete', {itemType, listName});
+  return t('messages.confirmListDelete', {itemType, listName});
 };
