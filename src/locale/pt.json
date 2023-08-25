@@ -15,11 +15,12 @@
     "newCounter": "Novo contador"
   },
   "messages": {
-    "confirmDelete": "Confirma a exclusão da {{itemType}} {{listName}}?",
-    "confirmDeleteItemType": {
+    "confirmListDelete": "Confirma a exclusão da {{itemType}} {{listName}}?",
+    "confirmListDeleteItemType": {
       "list": "lista",
       "group": "grupo"
-    }
+    },
+    "confirmCounterDelete": "Confirma a exclusáo do contador '{{counterTitle}}'?"
   },
   "buttons": {
     "ok": "OK",

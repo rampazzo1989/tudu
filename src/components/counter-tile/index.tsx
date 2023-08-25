@@ -14,7 +14,6 @@ import {
   Title,
   ReplacebleContainer,
   EditingContainer,
-  OptionsButton,
   ActionButtonContainer,
   ActionButtonsContainer,
   EditingCounterText,
@@ -30,7 +29,6 @@ import {
   OptionsButtonProps,
   TileTitleProps,
 } from './types';
-import {OptionsIcon} from '../../assets/static/options';
 import {ActionMinusIcon} from '../../assets/static/action_minus';
 import {ActionPlusIcon} from '../../assets/static/action_plus';
 import {useSetRecoilState} from 'recoil';
@@ -42,7 +40,7 @@ import {OptionsArrowDownIcon} from '../animated-icons/options-arrow-down-icon';
 import {NewCounterModal} from '../../scenes/counter/components/new-counter-modal';
 import {PopupModal} from '../popup-modal';
 import {DeleteIcon} from '../animated-icons/delete-icon';
-import {ShrinkableView} from '../shrinkable-view';
+import {useTranslation} from 'react-i18next';
 
 const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
   return (
@@ -50,7 +48,7 @@ const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
       <IconContainer>
         <HashIcon autoPlay size={14} />
       </IconContainer>
-      <Title>{title}</Title>
+      <Title numberOfLines={2}>{title}</Title>
     </TileTitleContainer>
   );
 });
@@ -165,6 +163,8 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const setCountersList = useSetRecoilState(counters);
 
+  const {t} = useTranslation();
+
   const idleTime = useRef<NodeJS.Timeout>();
 
   const startCloseEditingTimeout = useCallback(() => {
@@ -270,10 +270,12 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
       <PopupModal
         visible={deleteModalVisible}
         onRequestClose={() => setDeleteModalVisible(false)}
-        title={'Deseja excluir o contador?'}
+        title={t('messages.confirmCounterDelete', {
+          counterTitle: counterData.title,
+        })}
         buttons={[
-          {label: 'Sim', onPress: handleConfirmDelete},
-          {label: 'Não', onPress: handleCancelDelete},
+          {label: t('buttons.yes'), onPress: handleConfirmDelete},
+          {label: t('buttons.no'), onPress: handleCancelDelete},
         ]}
         Icon={DeleteIcon}
         shakeOnShow

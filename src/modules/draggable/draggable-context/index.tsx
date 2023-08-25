@@ -59,8 +59,8 @@ const DraggableContextProvider = <T,>({
         onRequestClose={() => setModal(false)}
         title={confirmationPopupTitleBuilder?.(deletingItem)}
         buttons={[
-          {label: 'Sim', onPress: handleConfirmDelete},
-          {label: 'Não', onPress: handleCancelDelete},
+          {label: 'Yes', onPress: handleConfirmDelete},
+          {label: 'No', onPress: handleCancelDelete},
         ]}
         Icon={DeleteIcon}
         shakeOnShow
