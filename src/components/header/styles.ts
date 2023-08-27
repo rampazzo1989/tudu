@@ -1,6 +1,4 @@
 import styled from 'styled-components/native';
-import {AppIcon} from '../../assets/static/app_icon';
-import {LogoText} from '../../assets/static/logo_text';
 
 export const HeaderContent = styled.View`
   width: 100%;

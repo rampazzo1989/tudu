@@ -1,5 +1,5 @@
-import React, {memo} from 'react';
-import {ProfileIcon} from '../../../../components/animated-icons/profile-icon';
+import React, {memo, useEffect, useRef} from 'react';
+import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {SearchIcon} from '../../../../components/animated-icons/search';
 import {Header} from '../../../../components/header';
 import {
@@ -7,17 +7,28 @@ import {
   LogoAndTitle,
   LogoIcon,
   LogoTitle,
-  ProfileThumb,
   SearchAndProfile,
   StyledProfileIcon,
 } from './styles';
 
 const HomeHeader: React.FC = memo(() => {
+  const iconRef = useRef<AnimatedIconRef>(null);
+
+  useEffect(() => {
+    iconRef.current?.play({
+      animationLayer: 'toggleOff',
+      delay: 2000,
+      onAnimationFinish: () => {
+        iconRef.current?.play({animationLayer: 'toggleOn'});
+      },
+    });
+  }, []);
+
   return (
     <Header>
       <ContentRow>
         <LogoAndTitle>
-          <LogoIcon />
+          <LogoIcon ref={iconRef} speed={2} />
           <LogoTitle />
         </LogoAndTitle>
         <SearchAndProfile>

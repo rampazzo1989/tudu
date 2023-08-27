@@ -4,16 +4,17 @@ import styled from 'styled-components/native';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
+export const KeyboardAvoidingView = styled.KeyboardAvoidingView``;
+
 export const PopupContainer = styled(AnimatedTouchable).attrs({
   activeOpacity: 1,
-})`
-  min-width: 250px;
-  max-width: 320px;
+})<{minimumSized: boolean}>`
+  min-width: 280px;
+  max-width: ${({minimumSized}) => (minimumSized ? 280 : 320)}px;
   background-color: ${({theme}) => theme.colors.popupBackground};
   border-radius: 8px;
   elevation: 15;
   padding: 14px 16px;
-  /* padding-bottom: 2px; */
   border: 1px solid #ffffff30;
 `;
 
@@ -24,7 +25,6 @@ export const PopupTitle = styled.Text`
   text-align: left;
   margin-left: 10px;
   flex-wrap: wrap;
-  flex: 1;
 `;
 
 export const PopupTitleContainer = styled.View`
@@ -38,16 +38,12 @@ export const SeparatorContainer = styled.View`
   background-color: white;
 `;
 
-type ButtonsContainerProps = {shouldWrap: boolean};
-
-export const ButtonsContainer = styled.View<ButtonsContainerProps>`
+export const ButtonsContainer = styled.View<{shouldMarginTop: boolean}>`
   flex-direction: row;
   align-items: center;
-  flex-wrap: ${({shouldWrap}) => (shouldWrap ? 'wrap' : 'nowrap')};
-
-  padding-right: 10px;
-  margin-top: 10px;
+  justify-content: space-around;
   height: 50px;
+  margin-top: ${({shouldMarginTop}) => (shouldMarginTop ? 10 : 0)}px;
 `;
 
 type HighlightableComponent = {highlight?: boolean};
@@ -59,7 +55,6 @@ export const PopupButton = styled.TouchableOpacity<HighlightableComponent>`
   border-color: #444b56;
   background-color: ${({highlight, theme}) =>
     highlight ? theme.colors.buttonHighlight : theme.colors.button};
-  margin-left: 10px;
   width: 100px;
   height: 42px;
   align-items: center;
@@ -81,6 +76,4 @@ export const ContentContainer = styled.View`
   justify-content: center;
   align-items: center;
   padding: 12px;
-  padding-bottom: 0px;
-  /* border: 1px solid; */
 `;
