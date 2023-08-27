@@ -243,7 +243,9 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
         return false;
       }}>
       <ReplacebleContainer visible={!isEditing}>
-        <ShrinkableContainer scaleFactor={0.04}>
+        <ShrinkableContainer
+          scaleFactor={0.05}
+          onPress={handleChangeButtonPress}>
           <TileTitle title={counterData.title} />
           <CounterValue value={counterData.value} />
           <AdjustButton onChangeButtonPress={handleChangeButtonPress} />

@@ -42,14 +42,20 @@ const BaseAnimatedIcon = memo(
         () => {
           return {
             play(options?: BaseAnimationOptions) {
-              animationRef.current?.play(
-                options?.initialFrame ?? initialFrame,
-                options?.finalFrame ?? finalFrame,
-              );
-              setAnimationFinishCallback(
-                options?.onAnimationFinish
-                  ? () => options.onAnimationFinish
-                  : undefined,
+              setTimeout(
+                () => {
+                  animationRef.current?.play(
+                    options?.initialFrame ?? initialFrame,
+                    options?.finalFrame ?? finalFrame,
+                  );
+                  setAnimationFinishCallback(
+                    options?.onAnimationFinish
+                      ? () => options.onAnimationFinish
+                      : undefined,
+                  );
+                },
+
+                options?.delay ?? 0,
               );
             },
             pause() {

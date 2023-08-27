@@ -1,9 +1,6 @@
 import React, {memo, useEffect} from 'react';
-import {KeyboardAvoidingView, Platform, View} from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import {View} from 'react-native';
+import {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {shake} from '../../utils/animation-utils';
 import {BlurredModal} from '../blurred-modal';
@@ -17,6 +14,7 @@ import {
   ButtonLabel,
   styles,
   ContentContainer,
+  KeyboardAvoidingView,
 } from './styles';
 import {PopupModalProps} from './types';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -71,7 +69,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         visible={visible}
         {...props}>
         <KeyboardAvoidingView behavior="padding">
-          <PopupContainer style={animatedStyle}>
+          <PopupContainer style={animatedStyle} minimumSized={!children}>
             {title && (
               <View>
                 <PopupTitleContainer>
@@ -92,22 +90,20 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                 />
               </View>
             )}
-            <ContentContainer>
-              {children}
-              {buttons && (
-                <ButtonsContainer shouldWrap={buttons.length > 2}>
-                  {buttons.map(button => (
-                    <PopupButton
-                      onPress={button.onPress}
-                      highlight={button.highlight}
-                      disabled={button.disabled}
-                      key={button.label}>
-                      <ButtonLabel>{button.label}</ButtonLabel>
-                    </PopupButton>
-                  ))}
-                </ButtonsContainer>
-              )}
-            </ContentContainer>
+            {!!children && <ContentContainer>{children}</ContentContainer>}
+            {buttons && (
+              <ButtonsContainer shouldMarginTop={!children}>
+                {buttons.map(button => (
+                  <PopupButton
+                    onPress={button.onPress}
+                    highlight={button.highlight}
+                    disabled={button.disabled}
+                    key={button.label}>
+                    <ButtonLabel>{button.label}</ButtonLabel>
+                  </PopupButton>
+                ))}
+              </ButtonsContainer>
+            )}
           </PopupContainer>
         </KeyboardAvoidingView>
       </BlurredModal>

@@ -19,6 +19,7 @@ export type BaseAnimationOptions = {
   onAnimationFinish?: () => void;
   initialFrame?: number;
   finalFrame?: number;
+  delay?: number;
 };
 
 export type BaseAnimatedIconRef = {
@@ -28,8 +29,9 @@ export type BaseAnimatedIconRef = {
 };
 
 export type AnimationOptions = {
-  animationLayer: 'intro' | 'hover';
+  animationLayer: 'intro' | 'hover' | 'toggleOn' | 'toggleOff';
   onAnimationFinish?: () => void;
+  delay?: number;
 };
 
 export type AnimatedIconRef = {
