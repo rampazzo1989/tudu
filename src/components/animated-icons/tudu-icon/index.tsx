@@ -19,14 +19,14 @@ const TuduIcon = memo(
             if (options?.animationLayer === 'toggleOn') {
               iconRef.current?.play({
                 initialFrame: 0,
-                finalFrame: 130,
+                finalFrame: 80,
                 onAnimationFinish: options.onAnimationFinish,
                 delay: options.delay,
               });
             } else if (options?.animationLayer === 'toggleOff') {
               iconRef.current?.play({
-                initialFrame: 130,
-                finalFrame: 224,
+                initialFrame: 80,
+                finalFrame: 175,
                 delay: options.delay,
                 onAnimationFinish: options.onAnimationFinish,
               });
@@ -53,8 +53,8 @@ const TuduIcon = memo(
         loop={false}
         componentName="TuduIcon"
         animateWhenIdle={false}
-        initialFrame={130}
-        staticStateFrame={130}
+        initialFrame={80}
+        staticStateFrame={80}
         ref={iconRef}
         {...props}
       />
