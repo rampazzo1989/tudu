@@ -25,12 +25,13 @@ export const PopupTitle = styled.Text`
   text-align: left;
   margin-left: 10px;
   flex-wrap: wrap;
+  max-width: 90%;
 `;
 
 export const PopupTitleContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 `;
 
 export const SeparatorContainer = styled.View`

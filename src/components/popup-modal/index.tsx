@@ -71,7 +71,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         <KeyboardAvoidingView behavior="padding">
           <PopupContainer style={animatedStyle} minimumSized={!children}>
             {title && (
-              <View>
+              <>
                 <PopupTitleContainer>
                   {!!Icon && (
                     <Icon
@@ -88,7 +88,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                   colorArray={theme.colors.defaultSeparatorGradientColors}
                   marginTop={10}
                 />
-              </View>
+              </>
             )}
             {!!children && <ContentContainer>{children}</ContentContainer>}
             {buttons && (
