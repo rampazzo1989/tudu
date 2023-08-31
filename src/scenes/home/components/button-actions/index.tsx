@@ -2,6 +2,7 @@ import React, {
   forwardRef,
   memo,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -22,6 +23,7 @@ const HomeActionMenuOptions = memo(
   forwardRef<FloatingActionButtonRef, HomeActionMenuOptionsProps>(
     (props, ref) => {
       const [newListPopupVisible, setNewListPopupVisible] = useState(false);
+      const [visible, setVisible] = useState(false);
       const [newCounterPopupVisible, setNewCounterPopupVisible] =
         useState(false);
       const parentRef = useRef<FloatingActionButtonRef>(null);
@@ -69,7 +71,12 @@ const HomeActionMenuOptions = memo(
         },
       }));
 
-      return (
+      useEffect(() => {
+        setTimeout(() => setVisible(true), 700);
+        // setVisible(true);
+      }, []);
+
+      return visible ? (
         <>
           <FloatingActionButton
             DefaultIcon={PlusIcon}
@@ -86,7 +93,7 @@ const HomeActionMenuOptions = memo(
             onRequestClose={() => setNewCounterPopupVisible(false)}
           />
         </>
-      );
+      ) : undefined;
     },
   ),
 );

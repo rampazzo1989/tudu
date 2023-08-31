@@ -16,6 +16,9 @@ import {
 } from '../../constants';
 import {generateShuffledArray} from '../../utils/array-utils';
 import {Platform} from 'react-native';
+import changeNavigationBarColor, {
+  showNavigationBar,
+} from 'react-native-navigation-bar-color';
 
 const Page: React.FC<PageProps> = memo(({children}) => {
   const theme = useTheme();
@@ -40,13 +43,19 @@ const Page: React.FC<PageProps> = memo(({children}) => {
 
         idleTimerId.current = setInterval(() => {
           const position = shuffledOrder[animationPosition.current];
+          console.log({
+            shuffledOrder,
+            position,
+            animationPosition: animationPosition.current,
+            calc: (animationPosition.current + 1) % idlyAnimatedRefs.length,
+          });
 
           // Increments the position but resets it to zero when reaching the end.
           animationPosition.current =
             (animationPosition.current + 1) % idlyAnimatedRefs.length;
 
-          // If the position is back to 0, re-shuffles the order list.
-          if (position === 0) {
+          // If the animation position is back to 0, re-shuffles the order list.
+          if (animationPosition.current === 0) {
             shuffledOrder = generateShuffledArray(idlyAnimatedRefs.length);
           }
 
@@ -64,9 +73,11 @@ const Page: React.FC<PageProps> = memo(({children}) => {
     };
   }, [idlyAnimatedRefs, isIdle]);
 
+  setTimeout(() => changeNavigationBarColor('#25303D', true, false), 0);
+
   return (
     <StyledSafeAreaView>
-      <StatusBar backgroundColor={theme.colors.primary} />
+      <StatusBar backgroundColor={theme.colors.primary} hidden={false} />
       {children}
     </StyledSafeAreaView>
   );
