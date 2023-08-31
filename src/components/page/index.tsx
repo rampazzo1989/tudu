@@ -16,6 +16,9 @@ import {
 } from '../../constants';
 import {generateShuffledArray} from '../../utils/array-utils';
 import {Platform} from 'react-native';
+import changeNavigationBarColor, {
+  showNavigationBar,
+} from 'react-native-navigation-bar-color';
 
 const Page: React.FC<PageProps> = memo(({children}) => {
   const theme = useTheme();
@@ -70,9 +73,11 @@ const Page: React.FC<PageProps> = memo(({children}) => {
     };
   }, [idlyAnimatedRefs, isIdle]);
 
+  setTimeout(() => changeNavigationBarColor('#25303D', true, false), 0);
+
   return (
     <StyledSafeAreaView>
-      <StatusBar backgroundColor={theme.colors.primary} />
+      <StatusBar backgroundColor={theme.colors.primary} hidden={false} />
       {children}
     </StyledSafeAreaView>
   );

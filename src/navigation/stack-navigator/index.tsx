@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
@@ -9,47 +9,66 @@ import {HomePage} from '../../scenes/home';
 import {TuduIcon} from '../../components/animated-icons/tudu-icon';
 import {LogoText} from '../../assets/static/logo_text';
 import {AnimatedIconRef} from '../../components/animated-icons/animated-icon/types';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import 'react-native-gesture-handler';
 import {createStackNavigator} from '@react-navigation/stack';
 import {TransitionSpec} from '@react-navigation/stack/lib/typescript/src/types';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import changeNavigationBarColor, {
+  hideNavigationBar,
+} from 'react-native-navigation-bar-color';
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 
-function Test({navigation}: NativeStackScreenProps<{}>) {
+const Test = React.memo(({navigation}: NativeStackScreenProps<{}>) => {
   const iconRef = useRef<AnimatedIconRef>(null);
 
+  // StatusBar.setBackgroundColor('#6B49B7');
+  // hideNavigationBar();
+  // changeNavigationBarColor('#6B49B7');
+  // setTimeout(() => changeNavigationBarColor('#6B49B7', true, false), 100);
+
   useEffect(() => {
+    // changeNavigationBarColor('#6B49B7');
+
     iconRef.current?.play({
       animationLayer: 'toggleOff',
       onAnimationFinish: () =>
         iconRef.current?.play({
           animationLayer: 'toggleOn',
-          onAnimationFinish: () => navigation.navigate('Home'),
+          onAnimationFinish: () => navigation.replace('Home'),
         }),
     });
   });
 
   return (
-    <View
+    // <SafeAreaView style={{flex: 1, backgroundColor: 'red'}}>
+    <SafeAreaView
       style={{
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#6B49B7',
       }}>
-      <StatusBar backgroundColor={'#6B49B7'} />
-      <View style={{height: 22}} />
+      <StatusBar
+        backgroundColor={'#6B49B7'}
+        barStyle="light-content"
+        translucent={false}
+        hidden={true}
+      />
+      <View style={{height: 22 + StatusBar.length}} />
       <TuduIcon
         style={{height: 100, width: 100, marginTop: 5}}
         size={100}
         resizeMode="cover"
+        speed={1.5}
         ref={iconRef}
       />
-      <LogoText height={61} width={56} />
-    </View>
+      <LogoText height={61} width={56} style={{marginRight: 2}} />
+    </SafeAreaView>
+    // </SafeAreaView>
   );
-}
+});
 
 const StackNavigator = () => {
   const config: TransitionSpec = {
@@ -62,7 +81,7 @@ const StackNavigator = () => {
   const configSlow: TransitionSpec = {
     animation: 'timing',
     config: {
-      duration: 0,
+      duration: 100,
     },
   };
   return (
@@ -70,22 +89,24 @@ const StackNavigator = () => {
       initialRouteName="Details"
       screenOptions={{headerShown: false}}>
       <Stack.Screen
-        name="Home"
-        component={HomePage}
+        name="Details"
+        component={Test}
         options={{
+          cardStyle: {backgroundColor: '#7956BF'},
           transitionSpec: {
             open: config,
-            close: config,
+            close: configSlow,
           },
         }}
       />
       <Stack.Screen
-        name="Details"
-        component={Test}
+        name="Home"
+        component={HomePage}
         options={{
+          cardStyle: {backgroundColor: '#7956BF'},
           transitionSpec: {
             open: config,
-            close: configSlow,
+            close: config,
           },
         }}
       />

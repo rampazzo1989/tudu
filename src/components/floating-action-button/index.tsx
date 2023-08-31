@@ -15,7 +15,7 @@ import {
 } from '../animated-icons/animated-icon/types';
 import {ZoomIn} from 'react-native-reanimated';
 import {PopoverMenu} from '../popover-menu';
-import { MenuOptions } from '../menu-options';
+import {MenuOptions} from '../menu-options';
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
@@ -71,7 +71,7 @@ const FloatingActionButton = memo(
           <FloatingButton
             onPress={handlePress}
             scaleFactor={0.05}
-            entering={ZoomIn.delay(500)}>
+            entering={ZoomIn.delay(100)}>
             <CurrentIcon ref={iconRef} speed={1.4} />
           </FloatingButton>
         ),
