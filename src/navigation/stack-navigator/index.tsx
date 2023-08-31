@@ -54,7 +54,7 @@ const Test = React.memo(({navigation}: NativeStackScreenProps<{}>) => {
         backgroundColor={'#6B49B7'}
         barStyle="light-content"
         translucent={false}
-        hidden={true}
+        //hidden={true}
       />
       <View style={{height: 22 + StatusBar.length}} />
       <TuduIcon
