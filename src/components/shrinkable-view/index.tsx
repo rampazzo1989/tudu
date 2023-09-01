@@ -2,6 +2,7 @@ import React, {forwardRef, memo, useCallback} from 'react';
 import {TouchableOpacity} from 'react-native';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -13,26 +14,52 @@ const AnimatedTouchableOpacity =
 
 const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
   forwardRef<TouchableOpacity, ShrinkableViewProps>(
-    ({children, style, scaleFactor = 0.1, onPress, ...props}, ref) => {
+    (
+      {
+        children,
+        style,
+        onPress,
+        scaleFactor = 0.1,
+        delayPressEvent = 0,
+        waitForAnimation = false,
+        ...props
+      },
+      ref,
+    ) => {
       const scaleValue = useSharedValue(1);
 
-      const shrink = useCallback(() => {
-        scaleValue.value = withTiming(1 - scaleFactor, {duration: 100}, () => {
+      const shrink = useCallback(
+        (callback?: () => void) => {
           scaleValue.value = withTiming(
-            1 + scaleFactor,
+            1 - scaleFactor,
             {duration: 100},
             () => {
-              scaleValue.value = withTiming(1, {duration: 150});
+              scaleValue.value = withTiming(
+                1 + scaleFactor,
+                {duration: 100},
+                () => {
+                  scaleValue.value = withTiming(
+                    1,
+                    {duration: 150},
+                    callback ? runOnJS(callback) : undefined,
+                  );
+                },
+              );
             },
           );
-        });
-      }, [scaleFactor, scaleValue]);
+        },
+        [scaleFactor, scaleValue],
+      );
 
       const handlePress = useCallback(() => {
-        onPress?.();
         RNReactNativeHapticFeedback.trigger('keyboardTap');
-        shrink();
-      }, [onPress, shrink]);
+        if (waitForAnimation) {
+          shrink(onPress);
+        } else {
+          setTimeout(() => onPress?.(), delayPressEvent);
+          shrink();
+        }
+      }, [delayPressEvent, onPress, shrink, waitForAnimation]);
 
       const animatedStyles = useAnimatedStyle(() => {
         return {
