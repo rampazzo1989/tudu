@@ -65,3 +65,16 @@ export const PaceOptionLabel = styled.Text`
   font-size: 18px;
   color: ${({theme}) => theme.colors.text};
 `;
+
+export const CustomPaceInput = styled.TextInput`
+  background-color: #fff;
+  border-radius: 4px;
+  color: #25303d;
+  height: 30px;
+  padding-left: 10px;
+  margin-top: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  min-width: 54px;
+  /* font-size: 14px; */
+`;

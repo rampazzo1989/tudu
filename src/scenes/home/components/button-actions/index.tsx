@@ -73,7 +73,6 @@ const HomeActionMenuOptions = memo(
 
       useEffect(() => {
         setTimeout(() => setVisible(true), 700);
-        // setVisible(true);
       }, []);
 
       return visible ? (

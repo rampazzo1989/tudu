@@ -43,12 +43,12 @@ const FloatingActionButton = memo(
       }, [CurrentIcon, DefaultIcon]);
 
       const handlePress = useCallback(() => {
+        setPopoverMenuVisible(true);
         if (animationMode === 'toggle') {
           iconRef.current?.toggle();
         } else {
           iconRef.current?.play();
         }
-        setPopoverMenuVisible(true);
       }, [animationMode]);
 
       const handlePopoverMenuRequestClose = useCallback(() => {
