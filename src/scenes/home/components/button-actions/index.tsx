@@ -18,6 +18,7 @@ import {NewListModal} from '../../../group/components/new-list-modal';
 import {NewCounterModal} from '../../../counter/components/new-counter-modal';
 import {useTranslation} from 'react-i18next';
 import {NewGroupIcon} from '../../../../components/animated-icons/new-group-icon';
+import {NewGroupModal} from '../../../group/components/new-group-modal';
 
 const HomeActionMenuOptions = memo(
   forwardRef<FloatingActionButtonRef, HomeActionMenuOptionsProps>(
@@ -26,6 +27,7 @@ const HomeActionMenuOptions = memo(
       const [visible, setVisible] = useState(false);
       const [newCounterPopupVisible, setNewCounterPopupVisible] =
         useState(false);
+      const [newGroupPopupVisible, setNewGroupPopupVisible] = useState(false);
       const parentRef = useRef<FloatingActionButtonRef>(null);
       const {t} = useTranslation();
 
@@ -40,7 +42,7 @@ const HomeActionMenuOptions = memo(
       }, []);
 
       const handleCreateNewGroup = useCallback(() => {
-        setNewCounterPopupVisible(true);
+        setNewGroupPopupVisible(true);
         parentRef.current?.closeMenu();
       }, []);
 
@@ -90,6 +92,10 @@ const HomeActionMenuOptions = memo(
           <NewCounterModal
             visible={newCounterPopupVisible}
             onRequestClose={() => setNewCounterPopupVisible(false)}
+          />
+          <NewGroupModal
+            visible={newGroupPopupVisible}
+            onRequestClose={() => setNewGroupPopupVisible(false)}
           />
         </>
       ) : undefined;
