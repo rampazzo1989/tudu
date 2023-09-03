@@ -33,12 +33,15 @@
     "renameGroup": "Rename Group",
     "newList": "Create new list",
     "newCounter": "Create new counter",
-    "editCounter": "Edit counter"
+    "editCounter": "Edit counter",
+    "newGroup": "Create new group"
   },
   "inputLabels": {
     "description": "Description",
     "initialValue": "Initial value",
     "currentValue": "Current value",
-    "pace": "Pace"
+    "name": "Name",
+    "pace": "Pace",
+    "addLists": "+ Add lists"
   }
 }
