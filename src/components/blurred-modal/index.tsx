@@ -1,11 +1,5 @@
 import React, {memo} from 'react';
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Modal, TouchableOpacity} from 'react-native';
 import {BlurredModalProps} from './types';
 import {BlurView} from '@react-native-community/blur';
 

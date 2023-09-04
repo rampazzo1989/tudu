@@ -87,13 +87,13 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           <TopFadingGradient
             start={{x: 0, y: 1}}
             end={{x: 0, y: 0}}
-            colors={theme.colors.scrollFadeGradientColors}
+            colors={theme.colors.scrollFadeGradientColorsPageBackground}
             pointerEvents={'none'}
           />
           <BottomFadingGradient
             start={{x: 0, y: 0}}
             end={{x: 0, y: 1}}
-            colors={theme.colors.scrollFadeGradientColors}
+            colors={theme.colors.scrollFadeGradientColorsPageBackground}
             pointerEvents={'none'}
           />
           <FloatingDelete

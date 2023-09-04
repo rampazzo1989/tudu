@@ -78,6 +78,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
               Icon={ListDefaultIcon}
               label={list.label}
               numberOfActiveItems={list.numberOfActiveItems}
+              onPress={() => console.log(list.label)}
             />
           </DraggableItem>
         );

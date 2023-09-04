@@ -12,6 +12,7 @@ const DefaultLists: React.FC<DefaultListsProps> = memo(({lists}) => {
           numberOfActiveItems={list.numberOfActiveItems}
           isHighlighted={list.isHighlighted}
           key={list.label}
+          onPress={() => console.log(list.label)}
         />
       ))}
     </>

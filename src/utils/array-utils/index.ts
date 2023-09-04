@@ -10,3 +10,13 @@ export function generateShuffledArray(size: number): number[] {
 
   return array;
 }
+
+export function removeFromList<T>(list: T[], items: T[]) {
+  const newList = list.slice();
+  for (var item of items) {
+    const itemIndex = newList.indexOf(item);
+    newList.splice(itemIndex, 1);
+  }
+
+  return newList;
+}

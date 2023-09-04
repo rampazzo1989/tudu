@@ -33,6 +33,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data}) => {
                 label={onlyItem.label}
                 numberOfActiveItems={onlyItem.numberOfActiveItems}
                 color={onlyItem.color}
+                onPress={() => console.log(onlyItem.label)}
               />
             </DraggableView>
           );
