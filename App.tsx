@@ -6,7 +6,7 @@
  */
 
 import {NavigationContainer} from '@react-navigation/native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {RecoilEnv, RecoilRoot} from 'recoil';
 import {ThemeProvider} from 'styled-components/native';
 
@@ -23,23 +23,21 @@ import ReactNativeRecoilPersist, {
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 function App(): JSX.Element {
-  useEffect(() => {
-    RNBootSplash.hide();
-  }, []);
-
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <RecoilRoot>
-        <ReactNativeRecoilPersistGate store={ReactNativeRecoilPersist}>
-          <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={darkTheme}>
+        <RecoilRoot>
+          <ReactNativeRecoilPersistGate
+            onInit={() => RNBootSplash.hide()}
+            store={ReactNativeRecoilPersist}>
             <IdleProvider>
               <NavigationContainer>
                 <StackNavigator />
               </NavigationContainer>
             </IdleProvider>
-          </ThemeProvider>
-        </ReactNativeRecoilPersistGate>
-      </RecoilRoot>
+          </ReactNativeRecoilPersistGate>
+        </RecoilRoot>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }

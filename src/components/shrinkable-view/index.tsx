@@ -1,5 +1,5 @@
 import React, {forwardRef, memo, useCallback} from 'react';
-import {TouchableOpacity} from 'react-native';
+import {Platform, TouchableOpacity} from 'react-native';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   runOnJS,
@@ -52,7 +52,9 @@ const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
       );
 
       const handlePress = useCallback(() => {
-        RNReactNativeHapticFeedback.trigger('keyboardTap');
+        RNReactNativeHapticFeedback.trigger(
+          Platform.OS === 'ios' ? 'soft' : 'clockTick',
+        );
         if (waitForAnimation) {
           shrink(onPress);
         } else {
