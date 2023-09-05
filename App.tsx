@@ -16,6 +16,9 @@ import {darkTheme} from './src/themes/dark';
 import RNBootSplash from 'react-native-bootsplash';
 import {IdleProvider} from './src/contexts/idle-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import ReactNativeRecoilPersist, {
+  ReactNativeRecoilPersistGate,
+} from 'react-native-recoil-persist';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -27,13 +30,15 @@ function App(): JSX.Element {
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <RecoilRoot>
-        <ThemeProvider theme={darkTheme}>
-          <IdleProvider>
-            <NavigationContainer>
-              <StackNavigator />
-            </NavigationContainer>
-          </IdleProvider>
-        </ThemeProvider>
+        <ReactNativeRecoilPersistGate store={ReactNativeRecoilPersist}>
+          <ThemeProvider theme={darkTheme}>
+            <IdleProvider>
+              <NavigationContainer>
+                <StackNavigator />
+              </NavigationContainer>
+            </IdleProvider>
+          </ThemeProvider>
+        </ReactNativeRecoilPersistGate>
       </RecoilRoot>
     </GestureHandlerRootView>
   );

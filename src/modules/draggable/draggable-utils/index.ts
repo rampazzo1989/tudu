@@ -125,8 +125,17 @@ export const ungroupAllItems = <T>(
   listSetter(cloneList);
 };
 
-export const renameGroup = <T>(group: DraggableItem<T>, newName: string) => {
-  group.groupId = newName;
+export const renameGroup = <T>(
+  list: DraggableItem<T>[],
+  listSetter: (newData: DraggableItem<T>[]) => void,
+  group: DraggableItem<T>,
+  newName: string,
+) => {
+  const itemIndex = list.indexOf(group);
+  const newGroup = new DraggableItem<T>(group.data, newName);
+  const newList = list.slice();
+  newList.splice(itemIndex, 1, newGroup);
+  listSetter(newList);
 };
 
 export const insertNewItem = <T>(
