@@ -5,7 +5,7 @@ import {Touchable} from './styles';
 import {CheckboxSimpleProps} from './types';
 
 const CheckboxSimple: React.FC<CheckboxSimpleProps> = memo(
-  ({checked, onPress, ...props}) => {
+  ({checked, onPress}) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
 
     useEffect(() => {
@@ -22,9 +22,11 @@ const CheckboxSimple: React.FC<CheckboxSimpleProps> = memo(
           loop={false}
           animateWhenIdle={false}
           ref={iconRef}
-          {...props}
-          source={require('../../../assets/lottie/checkbox.json')}
+          source={require('../../assets/lottie/checkbox.json')}
           componentName="CheckboxSimple"
+          staticStateFrame={0}
+          initialFrame={0}
+          size={20}
         />
       </Touchable>
     );

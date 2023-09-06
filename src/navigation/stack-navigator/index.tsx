@@ -1,22 +1,9 @@
-import React, {useCallback, useEffect, useRef} from 'react';
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
-import {View, Text, StatusBar} from 'react-native';
+import React from 'react';
 import {StackNavigatorParamList} from './types';
 import {HomePage} from '../../scenes/home';
-import {TuduIcon} from '../../components/animated-icons/tudu-icon';
-import {LogoText} from '../../assets/static/logo_text';
-import {AnimatedIconRef} from '../../components/animated-icons/animated-icon/types';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import 'react-native-gesture-handler';
 import {createStackNavigator} from '@react-navigation/stack';
 import {TransitionSpec} from '@react-navigation/stack/lib/typescript/src/types';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import changeNavigationBarColor, {
-  hideNavigationBar,
-} from 'react-native-navigation-bar-color';
 import {SplashScreen} from '../../scenes/splash-screen';
 import {useTheme} from 'styled-components/native';
 

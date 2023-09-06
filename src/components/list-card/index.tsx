@@ -1,6 +1,7 @@
 import React, {memo} from 'react';
 import {
   Container,
+  ControlComponentContainer,
   IconLabelContainer,
   Label,
   ListCardContainer,
@@ -21,15 +22,29 @@ const NumberOfActiveItems: React.FC<NumberOfActiveItemsProps> = memo(
 );
 
 const ListCard: React.FC<ListCardProps> = memo(
-  ({Icon, label, numberOfActiveItems, style, isHighlighted = false}) => {
+  ({
+    Icon,
+    label,
+    numberOfActiveItems,
+    style,
+    onPress,
+    ControlComponent,
+    isHighlighted = false,
+  }) => {
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}
         activeOpacity={0.8}
+        disabled={!onPress}
         scaleFactor={0.02}
         style={style}
-        onPress={() => console.log('LIST CARD TOUCH', {label})}>
+        onPress={onPress}>
         <IconLabelContainer>
+          {ControlComponent && (
+            <ControlComponentContainer>
+              {ControlComponent}
+            </ControlComponentContainer>
+          )}
           <Icon />
           <Label isHighlighted={isHighlighted}>{label}</Label>
         </IconLabelContainer>

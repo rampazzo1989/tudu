@@ -6,7 +6,7 @@
  */
 
 import {NavigationContainer} from '@react-navigation/native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {RecoilEnv, RecoilRoot} from 'recoil';
 import {ThemeProvider} from 'styled-components/native';
 
@@ -16,25 +16,28 @@ import {darkTheme} from './src/themes/dark';
 import RNBootSplash from 'react-native-bootsplash';
 import {IdleProvider} from './src/contexts/idle-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import ReactNativeRecoilPersist, {
+  ReactNativeRecoilPersistGate,
+} from 'react-native-recoil-persist';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 function App(): JSX.Element {
-  useEffect(() => {
-    RNBootSplash.hide();
-  }, []);
-
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <RecoilRoot>
-        <ThemeProvider theme={darkTheme}>
-          <IdleProvider>
-            <NavigationContainer>
-              <StackNavigator />
-            </NavigationContainer>
-          </IdleProvider>
-        </ThemeProvider>
-      </RecoilRoot>
+      <ThemeProvider theme={darkTheme}>
+        <RecoilRoot>
+          <ReactNativeRecoilPersistGate
+            onInit={() => RNBootSplash.hide()}
+            store={ReactNativeRecoilPersist}>
+            <IdleProvider>
+              <NavigationContainer>
+                <StackNavigator />
+              </NavigationContainer>
+            </IdleProvider>
+          </ReactNativeRecoilPersistGate>
+        </RecoilRoot>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }

@@ -1,10 +1,18 @@
-import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {useTranslation} from 'react-i18next';
 import {TextInput} from 'react-native';
 import {ListDefaultIcon} from '../../../../../../components/animated-icons/list-default-icon';
 import {RenameIcon} from '../../../../../../components/animated-icons/rename-icon';
 import {PopupModal} from '../../../../../../components/popup-modal';
 import {PopupButton} from '../../../../../../components/popup-modal/types';
+import {DraggableContext} from '../../../../../../modules/draggable/draggable-context';
 import {renameGroup} from '../../../../../../modules/draggable/draggable-utils';
 import {Input} from './styles';
 import {RenameModalProps} from './types';
@@ -14,6 +22,7 @@ const RenameModal: React.FC<RenameModalProps> = memo(
     const [internalGroupName, setInternalGroupName] = useState(
       groupData.groupId,
     );
+    const draggableContext = useContext(DraggableContext);
 
     const {t} = useTranslation();
 
@@ -27,9 +36,20 @@ const RenameModal: React.FC<RenameModalProps> = memo(
       if (!internalGroupName) {
         return;
       }
-      renameGroup(groupData, internalGroupName);
+      renameGroup(
+        draggableContext.data,
+        draggableContext.setData,
+        groupData,
+        internalGroupName,
+      );
       onRequestClose();
-    }, [groupData, internalGroupName, onRequestClose]);
+    }, [
+      draggableContext.data,
+      draggableContext.setData,
+      groupData,
+      internalGroupName,
+      onRequestClose,
+    ]);
 
     const buttonsData = useMemo<PopupButton[]>(
       () => [

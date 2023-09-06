@@ -8,6 +8,8 @@ export type ListCardProps = {
   isHighlighted?: boolean;
   style?: StyleProp<ViewStyle>;
   color?: string;
+  onPress?: () => void;
+  ControlComponent?: React.ReactNode;
 };
 
 export type NumberOfActiveItemsProps = Pick<

@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import ReactNativeRecoilPersist from 'react-native-recoil-persist';
 import {atom} from 'recoil';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
@@ -27,6 +28,7 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       numberOfActiveItems: 0,
     },
   ],
+  effects: [ReactNativeRecoilPersist.persistAtom],
 });
 
 export const counters = atom<Counter[]>({
@@ -48,6 +50,7 @@ export const counters = atom<Counter[]>({
       pace: 1,
     },
   ],
+  effects: [ReactNativeRecoilPersist.persistAtom],
 });
 
 export const myLists = atom<List[]>({
@@ -82,4 +85,5 @@ export const myLists = atom<List[]>({
       groupName: 'Travel',
     },
   ],
+  effects: [ReactNativeRecoilPersist.persistAtom],
 });

@@ -15,15 +15,16 @@ const SplashScreen = React.memo(({navigation}: NativeStackScreenProps<{}>) => {
 
   useEffect(() => {
     // changeNavigationBarColor('#6B49B7');
-
-    iconRef.current?.play({
-      animationLayer: 'toggleOff',
-      onAnimationFinish: () =>
-        iconRef.current?.play({
-          animationLayer: 'toggleOn',
-          onAnimationFinish: () => navigation.replace('Home'),
-        }),
-    });
+    if (navigation) {
+      iconRef.current?.play({
+        animationLayer: 'toggleOff',
+        onAnimationFinish: () =>
+          iconRef.current?.play({
+            animationLayer: 'toggleOn',
+            onAnimationFinish: () => navigation.replace('Home'),
+          }),
+      });
+    }
   });
 
   return (

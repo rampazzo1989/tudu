@@ -68,7 +68,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         onRequestClose={onRequestClose}
         visible={visible}
         {...props}>
-        <KeyboardAvoidingView behavior="padding">
+        <KeyboardAvoidingView behavior="padding" pointerEvents="auto">
           <PopupContainer style={animatedStyle} minimumSized={!children}>
             {title && (
               <>

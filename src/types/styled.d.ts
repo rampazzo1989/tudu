@@ -25,6 +25,7 @@ declare module 'styled-components/native' {
       optionsButtonBackground: string;
       popupBackground: string;
       scrollFadeGradientColors: string[];
+      scrollFadeGradientColorsPageBackground: string[];
       defaultSeparatorGradientColors: string[];
       menuSeparatorGradientColors: string[];
     };

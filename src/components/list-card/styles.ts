@@ -54,3 +54,7 @@ export const Number = styled.Text`
   font-size: 14px;
   color: ${({theme}) => theme.colors.text};
 `;
+
+export const ControlComponentContainer = styled.View`
+  margin-right: 6px;
+`;

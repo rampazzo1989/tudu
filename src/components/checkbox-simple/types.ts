@@ -1,6 +1,4 @@
-import {BaseAnimatedIconProps} from '../animated-icons/animated-icon/types';
-
-export interface CheckboxSimpleProps extends BaseAnimatedIconProps {
+export interface CheckboxSimpleProps {
   checked: boolean;
   onPress: () => void;
 }

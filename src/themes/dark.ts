@@ -24,6 +24,11 @@ const darkTheme: DefaultTheme = {
     optionsButtonBackground: '#2B3139',
     popupBackground: '#3C414A',
     scrollFadeGradientColors: [
+      'rgba(60, 65, 74, 0.1)',
+      'rgba(60, 65, 74, 0.7)',
+      'rgba(60, 65, 74, 1)',
+    ],
+    scrollFadeGradientColorsPageBackground: [
       'rgba(37, 48, 61, 0.1)',
       'rgba(37, 48, 61, 0.7)',
       'rgba(37, 48, 61, 1)',
