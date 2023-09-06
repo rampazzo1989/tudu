@@ -19,8 +19,24 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import ReactNativeRecoilPersist, {
   ReactNativeRecoilPersistGate,
 } from 'react-native-recoil-persist';
+import Toast, {BaseToast} from 'react-native-toast-message';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
+
+const toastConfig = {
+  tuduWarning: props => (
+    <BaseToast
+      {...props}
+      style={{borderLeftColor: '#7956BF', backgroundColor: '#444B56'}}
+      contentContainerStyle={{paddingHorizontal: 15}}
+      text1Style={{
+        fontSize: 15,
+        fontWeight: '400',
+        color: 'white',
+      }}
+    />
+  ),
+};
 
 function App(): JSX.Element {
   return (
@@ -33,6 +49,7 @@ function App(): JSX.Element {
             <IdleProvider>
               <NavigationContainer>
                 <StackNavigator />
+                <Toast config={toastConfig} />
               </NavigationContainer>
             </IdleProvider>
           </ReactNativeRecoilPersistGate>

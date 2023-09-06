@@ -28,6 +28,7 @@ import {
   TextInputSubmitEditingEventData,
   View,
 } from 'react-native';
+import {getDuplicateProofCounterTitle} from '../../../../utils/counter-utils';
 
 const emptyCounter: Counter = {title: '', value: 0, pace: 1};
 
@@ -65,6 +66,34 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
       [],
     );
 
+    const insertOrUpdateCounter = useCallback(
+      (counter: Counter, update: boolean) => {
+        setCountersList(current => {
+          const isUpdatingTitle = counter.title !== editingCounterData?.title;
+
+          const newTitle = isUpdatingTitle
+            ? getDuplicateProofCounterTitle(current, counter.title)
+            : counter.title;
+
+          const newCounter: Counter = {
+            ...counter,
+            title: newTitle,
+          };
+
+          if (update && !!editingCounterData) {
+            const currentIndex = current.indexOf(editingCounterData);
+            const newList = [...current];
+
+            newList.splice(currentIndex, 1, newCounter);
+            return newList;
+          }
+
+          return [newCounter, ...current];
+        });
+      },
+      [editingCounterData, setCountersList],
+    );
+
     const handleCustomPaceInputSubmit = useCallback(() => {
       if (defaultPaceOptions.includes(customPaceInputValue ?? 0)) {
         setCustomPace(undefined);
@@ -90,25 +119,17 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
       if (!internalCounterData?.title || !internalCounterData?.pace) {
         return;
       }
-      if (isEditing && editingCounterData) {
-        setCountersList(current => {
-          const currentIndex = current.indexOf(editingCounterData);
-          const newList = [...current];
-          newList.splice(currentIndex, 1, internalCounterData);
-          return newList;
-        });
-      } else {
-        setCountersList(current => [internalCounterData, ...current]);
-      }
+
+      insertOrUpdateCounter(internalCounterData, isEditing);
+
       onRequestClose();
     }, [
       customPaceInputVisible,
-      editingCounterData,
       handleCustomPaceInputSubmit,
+      insertOrUpdateCounter,
       internalCounterData,
       isEditing,
       onRequestClose,
-      setCountersList,
     ]);
 
     const buttonsData = useMemo<PopupButton[]>(

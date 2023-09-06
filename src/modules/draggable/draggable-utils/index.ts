@@ -146,3 +146,8 @@ export const insertNewItem = <T>(
   const newDraggableItem = new DraggableItem([newItem]);
   listSetter([newDraggableItem, ...list]);
 };
+
+export const getUngroupedItems = <T>(list: DraggableItem<T>[]) => {
+  const ungrouped = list.filter(x => !x.groupId);
+  return ungrouped;
+};

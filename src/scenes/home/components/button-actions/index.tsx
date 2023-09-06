@@ -2,6 +2,7 @@ import React, {
   forwardRef,
   memo,
   useCallback,
+  useContext,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -19,6 +20,11 @@ import {NewCounterModal} from '../../../counter/components/new-counter-modal';
 import {useTranslation} from 'react-i18next';
 import {NewGroupIcon} from '../../../../components/animated-icons/new-group-icon';
 import {NewGroupModal} from '../../../group/components/new-group-modal';
+import {DraggableContextType} from '../../../../modules/draggable/draggable-context/types';
+import Toast from 'react-native-toast-message';
+import {getUngroupedItems} from '../../../../modules/draggable/draggable-utils';
+import {List} from '../../types';
+import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 
 const HomeActionMenuOptions = memo(
   forwardRef<FloatingActionButtonRef, HomeActionMenuOptionsProps>(
@@ -29,6 +35,8 @@ const HomeActionMenuOptions = memo(
         useState(false);
       const [newGroupPopupVisible, setNewGroupPopupVisible] = useState(false);
       const parentRef = useRef<FloatingActionButtonRef>(null);
+      const draggableContext =
+        useContext<DraggableContextType<List>>(DraggableContext);
       const {t} = useTranslation();
 
       const handleCreateNewList = useCallback(() => {
@@ -42,9 +50,23 @@ const HomeActionMenuOptions = memo(
       }, []);
 
       const handleCreateNewGroup = useCallback(() => {
+        const ungroupedLists = getUngroupedItems(draggableContext.data);
+        const thereAreLists = !!draggableContext.data.length;
+        if (!ungroupedLists.length) {
+          parentRef.current?.closeMenu();
+          return Toast.show({
+            type: 'tuduWarning',
+            text1: 'No ungrouped lists',
+            text2: thereAreLists
+              ? 'All your lists are grouped already'
+              : '👉 Start creating some lists',
+            position: 'bottom',
+            bottomOffset: 60,
+          });
+        }
         setNewGroupPopupVisible(true);
         parentRef.current?.closeMenu();
-      }, []);
+      }, [draggableContext.data]);
 
       const options: MenuOption[] = [
         {

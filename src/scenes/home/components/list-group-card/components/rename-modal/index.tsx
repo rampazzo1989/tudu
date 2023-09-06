@@ -14,6 +14,10 @@ import {PopupModal} from '../../../../../../components/popup-modal';
 import {PopupButton} from '../../../../../../components/popup-modal/types';
 import {DraggableContext} from '../../../../../../modules/draggable/draggable-context';
 import {renameGroup} from '../../../../../../modules/draggable/draggable-utils';
+import {
+  getDuplicateProofGroupTitle,
+  getDuplicateProofListTitle,
+} from '../../../../../../utils/list-and-group-utils';
 import {Input} from './styles';
 import {RenameModalProps} from './types';
 
@@ -36,11 +40,23 @@ const RenameModal: React.FC<RenameModalProps> = memo(
       if (!internalGroupName) {
         return;
       }
+
+      const isUpdatingTitle = internalGroupName !== groupData.groupId;
+
+      if (!isUpdatingTitle) {
+        return onRequestClose();
+      }
+
+      const newName = getDuplicateProofGroupTitle(
+        draggableContext.data,
+        internalGroupName,
+      );
+
       renameGroup(
         draggableContext.data,
         draggableContext.setData,
         groupData,
-        internalGroupName,
+        newName,
       );
       onRequestClose();
     }, [
