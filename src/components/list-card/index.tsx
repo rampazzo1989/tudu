@@ -46,7 +46,9 @@ const ListCard: React.FC<ListCardProps> = memo(
             </ControlComponentContainer>
           )}
           <Icon />
-          <Label isHighlighted={isHighlighted}>{label}</Label>
+          <Label isHighlighted={isHighlighted} numberOfLines={1}>
+            {label}
+          </Label>
         </IconLabelContainer>
         <NumberOfActiveItems
           numberOfActiveItems={numberOfActiveItems}

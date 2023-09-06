@@ -54,7 +54,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(({groupData}) => {
   return (
     <ListGroupContainer>
       <TitleContainer>
-        <Title layout={FadeIn.delay(150).duration(600)}>
+        <Title layout={FadeIn.delay(150).duration(600)} numberOfLines={1}>
           {groupData.groupId}
         </Title>
 

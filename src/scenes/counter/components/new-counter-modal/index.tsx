@@ -204,15 +204,17 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
     }, []);
 
     const handlePopupShow = useCallback(() => {
+      setCustomPaceInputVisible(false);
+
       if (isEditing && editingCounterData) {
         setInternalCounterData(editingCounterData);
-        setCustomPaceInputVisible(false);
         if (!defaultPaceOptions.includes(editingCounterData.pace)) {
           setCustomPace(editingCounterData.pace);
           setCustomPaceInputValue(editingCounterData.pace);
         }
       } else {
         setInternalCounterData(emptyCounter);
+        setCustomPaceInputValue(0);
       }
       setTimeout(() => titleInputRef.current?.focus(), 200);
     }, [editingCounterData, isEditing]);

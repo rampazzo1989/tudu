@@ -76,5 +76,6 @@ export const CustomPaceInput = styled.TextInput`
   padding-top: 4px;
   padding-bottom: 4px;
   min-width: 54px;
-  /* font-size: 14px; */
+  flex: 1;
+  max-width: 60px;
 `;

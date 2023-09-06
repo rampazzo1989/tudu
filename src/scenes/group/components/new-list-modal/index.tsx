@@ -35,7 +35,6 @@ const NewListModal: React.FC<NewListModalProps> = memo(
       if (!internalListName) {
         return;
       }
-      console.log('NEW LIST CONFIRM');
 
       const duplicateProofListTitle = getDuplicateProofListTitle(
         draggableContext.data,
@@ -83,6 +82,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         <Input
           value={internalListName}
           onChangeText={handleTextChange}
+          maxLength={40}
           ref={inputRef}
         />
       </PopupModal>

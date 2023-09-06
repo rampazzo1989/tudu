@@ -23,7 +23,7 @@ export const ListCardContainer = styled(
 export const IconLabelContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  flex: 1;
 `;
 
 export const Label = styled.Text<HighlightableComponentProps>`
@@ -35,6 +35,7 @@ export const Label = styled.Text<HighlightableComponentProps>`
   color: ${({theme}) => theme.colors.text};
   margin-left: 10px;
   line-height: 22px;
+  flex: 1;
 `;
 
 export const Container = styled.View<NumberOfActiveItemsProps>`

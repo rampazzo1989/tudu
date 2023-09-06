@@ -117,7 +117,6 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
               maxLength={30}
               onChangeText={handleTitleChange}
               ref={titleInputRef}
-              enterKeyHint="next"
             />
           </TitleContainer>
           <ListsContainer>
