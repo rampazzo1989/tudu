@@ -58,6 +58,13 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     setDeleteVisible(false);
   }, []);
 
+  const handleListPress = useCallback(
+    (listData: List) => {
+      navigation.navigate('List', {listId: listData.label});
+    },
+    [navigation],
+  );
+
   return (
     <Page>
       <HomeHeader />
@@ -78,7 +85,10 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             {groupedCustomLists.length ? (
               <>
                 <SectionTitle title={t('sectionTitles.myLists')} />
-                <CustomLists data={groupedCustomLists} />
+                <CustomLists
+                  data={groupedCustomLists}
+                  onListPress={handleListPress}
+                />
               </>
             ) : (
               <></>

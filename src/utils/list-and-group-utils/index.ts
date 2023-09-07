@@ -22,3 +22,43 @@ export const generateListAndGroupDeleteTitle = (
   }
   return t('messages.confirmListDelete', {itemType, listName});
 };
+
+const getNewNameWithCopyNumber = (name: string) => {
+  const hasCopyNumber = name.match(/^([A-Za-z\s]+) \((\d+)\)/);
+
+  const textPart = hasCopyNumber?.[1] ?? name;
+  const copyNumber = hasCopyNumber ? parseInt(hasCopyNumber[2], 10) + 1 : 1;
+
+  return `${textPart} (${copyNumber})`;
+};
+
+export const getDuplicateProofListTitle = (
+  list: DraggableItem<List>[],
+  newLabel: string,
+): string => {
+  const alreadyExists = list.some(draggable =>
+    draggable.data.some(item => item.label === newLabel),
+  );
+
+  if (alreadyExists) {
+    const newNameWithCopyNumber = getNewNameWithCopyNumber(newLabel);
+
+    return getDuplicateProofListTitle(list, newNameWithCopyNumber);
+  } else {
+    return newLabel;
+  }
+};
+
+export const getDuplicateProofGroupTitle = (
+  list: DraggableItem<List>[],
+  newName: string,
+): string => {
+  const alreadyExists = list.some(draggable => draggable.groupId === newName);
+  if (alreadyExists) {
+    const newNameWithCopyNumber = getNewNameWithCopyNumber(newName);
+
+    return getDuplicateProofGroupTitle(list, newNameWithCopyNumber);
+  } else {
+    return newName;
+  }
+};

@@ -6,13 +6,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {NewCounterModalProps} from './types';
 import {PopupModal} from '../../../../components/popup-modal';
-import {Counter, List} from '../../../home/types';
+import {List} from '../../../home/types';
 import {useTranslation} from 'react-i18next';
-import {HashIcon} from '../../../../components/animated-icons/hash-icon';
 import {PopupButton} from '../../../../components/popup-modal/types';
-import {Text, TextInput, View} from 'react-native';
+import {TextInput, View} from 'react-native';
 import {NewGroupIcon} from '../../../../components/animated-icons/new-group-icon';
 import {
   BottomFadingGradient,
@@ -34,6 +32,8 @@ import {ListDefaultIcon} from '../../../../components/animated-icons/list-defaul
 import {CheckboxSimple} from '../../../../components/checkbox-simple';
 import {useTheme} from 'styled-components/native';
 import {removeFromList} from '../../../../utils/array-utils';
+import {getUngroupedItems} from '../../../../modules/draggable/draggable-utils';
+import {getDuplicateProofGroupTitle} from '../../../../utils/list-and-group-utils';
 
 const NewGroupModal: React.FC<NewGroupModalProps> = memo(
   ({visible, editingGroupData, onRequestClose}) => {
@@ -48,14 +48,20 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
     const theme = useTheme();
 
     const ungroupedLists = useMemo(() => {
-      const allLists = draggableContext.data;
-      const ungrouped = allLists.filter(x => !x.groupId);
+      const ungrouped = getUngroupedItems(draggableContext.data);
       return ungrouped;
     }, [draggableContext.data]);
 
     const handleConfirmButtonPress = useCallback(() => {
       const allSelectedLists = selectedLists.flatMap(x => x.data);
-      const newGroup = new DraggableItem(allSelectedLists, title);
+      const duplicateProofListTitle = getDuplicateProofGroupTitle(
+        draggableContext.data,
+        title,
+      );
+      const newGroup = new DraggableItem(
+        allSelectedLists,
+        duplicateProofListTitle,
+      );
       const newData = draggableContext.data.slice();
       const newDataWithoutGroupedItems = removeFromList(newData, selectedLists);
       newDataWithoutGroupedItems.push(newGroup);
@@ -106,7 +112,6 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
               maxLength={30}
               onChangeText={handleTitleChange}
               ref={titleInputRef}
-              enterKeyHint="next"
             />
           </TitleContainer>
           <ListsContainer>

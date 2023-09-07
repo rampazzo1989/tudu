@@ -1,26 +1,20 @@
 import React, {memo} from 'react';
-import {Modal, TouchableOpacity} from 'react-native';
 import {BlurredModalProps} from './types';
-import {BlurView} from '@react-native-community/blur';
+import {Blur, ContentContainer, Modal} from './styles';
 
 const BlurredModal: React.FC<BlurredModalProps> = memo(
   ({onRequestClose, children, ...props}) => {
     return (
-      <Modal {...props} statusBarTranslucent style={{flex: 1}}>
-        <BlurView
-          style={{
-            flex: 1,
-          }}
+      <Modal {...props} statusBarTranslucent>
+        <Blur
           reducedTransparencyFallbackColor="grey"
           overlayColor="#00000020"
           blurType="dark"
           blurAmount={5}>
-          <TouchableOpacity
-            onPress={onRequestClose}
-            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <ContentContainer onPress={onRequestClose}>
             {children}
-          </TouchableOpacity>
-        </BlurView>
+          </ContentContainer>
+        </Blur>
       </Modal>
     );
   },

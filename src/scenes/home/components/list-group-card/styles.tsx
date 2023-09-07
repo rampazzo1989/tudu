@@ -19,6 +19,8 @@ export const Title = styled(Animated.Text)`
   line-height: 24px;
   color: ${({theme}) => theme.colors.text};
   margin-bottom: 8px;
+  /* border: 1px; */
+  width: 90%;
 `;
 
 export const SubListCard = styled(ListCard)`

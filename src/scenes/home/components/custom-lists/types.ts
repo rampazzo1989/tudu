@@ -3,4 +3,5 @@ import {List} from '../../types';
 
 export type CustomListsProps = {
   data: DraggableItem<List>[];
+  onListPress: (listData: List) => void;
 };

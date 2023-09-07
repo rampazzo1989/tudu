@@ -16,6 +16,7 @@ import {NewListModalProps} from './types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 import {insertNewItem} from '../../../../modules/draggable/draggable-utils';
 import {List} from '../../../home/types';
+import {getDuplicateProofListTitle} from '../../../../utils/list-and-group-utils';
 
 const NewListModal: React.FC<NewListModalProps> = memo(
   ({visible, onRequestClose}) => {
@@ -34,10 +35,14 @@ const NewListModal: React.FC<NewListModalProps> = memo(
       if (!internalListName) {
         return;
       }
-      console.log('NEW LIST CONFIRM');
+
+      const duplicateProofListTitle = getDuplicateProofListTitle(
+        draggableContext.data,
+        internalListName,
+      );
 
       const newList: List = {
-        label: internalListName,
+        label: duplicateProofListTitle,
         numberOfActiveItems: 0,
       };
 
@@ -77,6 +82,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         <Input
           value={internalListName}
           onChangeText={handleTextChange}
+          maxLength={30}
           ref={inputRef}
         />
       </PopupModal>
