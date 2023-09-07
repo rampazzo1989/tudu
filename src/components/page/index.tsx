@@ -1,10 +1,6 @@
 import React, {memo, useEffect, useRef} from 'react';
 import {PageProps} from './types';
-import {
-  StatusBar,
-  StyledKeyboardAvoidingView,
-  StyledSafeAreaView,
-} from './styles';
+import {StatusBar, StyledSafeAreaView} from './styles';
 import {useTheme} from 'styled-components/native';
 import {useIdle} from '../../contexts/idle-context';
 import {useRecoilValue} from 'recoil';
@@ -15,10 +11,7 @@ import {
   TIME_BETWEEN_IDLE_ANIMATIONS_MEDIUM_DENSITY,
 } from '../../constants';
 import {generateShuffledArray} from '../../utils/array-utils';
-import {Platform} from 'react-native';
-import changeNavigationBarColor, {
-  showNavigationBar,
-} from 'react-native-navigation-bar-color';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 const Page: React.FC<PageProps> = memo(({children}) => {
   const theme = useTheme();

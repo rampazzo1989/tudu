@@ -82,7 +82,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         <Input
           value={internalListName}
           onChangeText={handleTextChange}
-          maxLength={40}
+          maxLength={30}
           ref={inputRef}
         />
       </PopupModal>

@@ -1,6 +1,7 @@
 type StackNavigatorParamList = {
   Home: undefined;
-  Details: undefined;
+  List: {listId: string};
+  SplashScreen: undefined;
 };
 
 export type {StackNavigatorParamList};

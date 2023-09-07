@@ -35,6 +35,7 @@ const ListCard: React.FC<ListCardProps> = memo(
       <ListCardContainer
         isHighlighted={isHighlighted}
         activeOpacity={0.8}
+        delayPressEvent={150}
         disabled={!onPress}
         scaleFactor={0.02}
         style={style}

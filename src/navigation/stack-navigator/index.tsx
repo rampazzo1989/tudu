@@ -6,6 +6,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {TransitionSpec} from '@react-navigation/stack/lib/typescript/src/types';
 import {SplashScreen} from '../../scenes/splash-screen';
 import {useTheme} from 'styled-components/native';
+import {ListPage} from '../../scenes/list';
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 
@@ -28,10 +29,10 @@ const StackNavigator = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="Details"
-      screenOptions={{headerShown: false}}>
+      initialRouteName="SplashScreen"
+      screenOptions={{headerShown: false, detachPreviousScreen: false}}>
       <Stack.Screen
-        name="Details"
+        name="SplashScreen"
         component={SplashScreen}
         options={{
           transitionSpec: {
@@ -43,6 +44,17 @@ const StackNavigator = () => {
       <Stack.Screen
         name="Home"
         component={HomePage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: config,
+            close: config,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="List"
+        component={ListPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {
