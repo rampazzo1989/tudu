@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import ReactNativeRecoilPersist from 'react-native-recoil-persist';
-import {atom} from 'recoil';
+import {atom, selector} from 'recoil';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
 import {SunIcon} from '../../components/animated-icons/sun-icon';
@@ -86,4 +86,23 @@ export const myLists = atom<List[]>({
     },
   ],
   effects: [ReactNativeRecoilPersist.persistAtom],
+});
+
+export const getListByLabel = selector({
+  key: 'getObjectByLabel',
+  get:
+    ({get}) =>
+    (label: string) => {
+      const defaultLists = get(homeDefaultLists);
+      const myListsData = get(myLists);
+
+      const selectedListFromDefault = defaultLists.find(
+        list => list.label === label,
+      );
+
+      return (
+        selectedListFromDefault ??
+        myListsData.find(list => list.label === label)
+      );
+    },
 });

@@ -1,4 +1,5 @@
 import React, {memo} from 'react';
+import {SwipeableCard} from '../swipeable-card';
 import {
   Container,
   ControlComponentContainer,
@@ -30,31 +31,34 @@ const ListCard: React.FC<ListCardProps> = memo(
     onPress,
     ControlComponent,
     isHighlighted = false,
+    swipeEnabled = true,
   }) => {
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}
-        activeOpacity={0.8}
+        activeOpacity={1}
         delayPressEvent={150}
         disabled={!onPress}
         scaleFactor={0.02}
         style={style}
         onPress={onPress}>
-        <IconLabelContainer>
-          {ControlComponent && (
-            <ControlComponentContainer>
-              {ControlComponent}
-            </ControlComponentContainer>
-          )}
-          <Icon />
-          <Label isHighlighted={isHighlighted} numberOfLines={1}>
-            {label}
-          </Label>
-        </IconLabelContainer>
-        <NumberOfActiveItems
-          numberOfActiveItems={numberOfActiveItems}
-          isHighlighted={isHighlighted}
-        />
+        <SwipeableCard enabled={swipeEnabled}>
+          <IconLabelContainer>
+            {ControlComponent && (
+              <ControlComponentContainer>
+                {ControlComponent}
+              </ControlComponentContainer>
+            )}
+            <Icon />
+            <Label isHighlighted={isHighlighted} numberOfLines={1}>
+              {label}
+            </Label>
+          </IconLabelContainer>
+          <NumberOfActiveItems
+            numberOfActiveItems={numberOfActiveItems}
+            isHighlighted={isHighlighted}
+          />
+        </SwipeableCard>
       </ListCardContainer>
     );
   },

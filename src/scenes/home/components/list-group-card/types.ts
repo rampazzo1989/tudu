@@ -3,4 +3,5 @@ import {List} from '../../types';
 
 export type ListGroupProps = {
   groupData: DraggableItem<List>;
+  onListPress: (listData: List) => void;
 };

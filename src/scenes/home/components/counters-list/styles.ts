@@ -20,20 +20,6 @@ export const Container = styled.View`
   margin-top: 14px;
 `;
 
-export const RightFadingGradient = styled(LinearGradient)`
-  position: absolute;
-  end: 0;
-  width: 20px;
-  height: 100%;
-`;
-
-export const LeftFadingGradient = styled(LinearGradient)`
-  position: absolute;
-  start: 0;
-  width: 20px;
-  height: 100%;
-`;
-
 export const styles = StyleSheet.create({
   list: {
     flexGrow: 0,

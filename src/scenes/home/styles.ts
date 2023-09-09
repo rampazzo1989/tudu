@@ -34,3 +34,19 @@ export const BottomFadingGradient = styled(LinearGradient)`
   height: 28px;
   z-index: 9999;
 `;
+
+export const RightFadingGradient = styled(LinearGradient)`
+  position: absolute;
+  end: 0;
+  top: 16px;
+  width: 20px;
+  height: 100%;
+`;
+
+export const LeftFadingGradient = styled(LinearGradient)`
+  position: absolute;
+  start: 0;
+  top: 16px;
+  width: 20px;
+  height: 100%;
+`;

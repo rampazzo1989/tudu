@@ -9,7 +9,7 @@ export const ContentRow = styled.View`
 export const TitleContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  max-width: 80%;
+  max-width: 70%;
 `;
 
 export const Title = styled.Text`
