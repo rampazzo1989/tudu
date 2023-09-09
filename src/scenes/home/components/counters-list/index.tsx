@@ -39,18 +39,6 @@ const CountersList: React.FC<CounterListProps> = memo(({list}) => {
         ItemSeparatorComponent={HorizontalSeparator}
         keyboardShouldPersistTaps="handled"
       />
-      <LeftFadingGradient
-        start={{x: 1, y: 0}}
-        end={{x: 0, y: 0}}
-        colors={theme.colors.scrollFadeGradientColorsPageBackground}
-        pointerEvents={'none'}
-      />
-      <RightFadingGradient
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-        colors={theme.colors.scrollFadeGradientColorsPageBackground}
-        pointerEvents={'none'}
-      />
     </Container>
   );
 });

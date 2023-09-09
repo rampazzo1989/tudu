@@ -169,6 +169,7 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
 
   const startCloseEditingTimeout = useCallback(() => {
     idleTime.current = setTimeout(() => {
+      clearTimeout(idleTime.current);
       idleTime.current = undefined;
       setEditing(false);
     }, EDITING_TIMEOUT_MS);

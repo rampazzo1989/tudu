@@ -9,6 +9,8 @@ import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
 import {
   BottomFadingGradient,
+  LeftFadingGradient,
+  RightFadingGradient,
   SectionTitle,
   styles,
   TopFadingGradient,
@@ -79,7 +81,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContentContainer}
             scrollEnabled>
-            <DefaultLists lists={lists} />
+            <DefaultLists lists={lists} onListPress={handleListPress} />
             <SectionTitle title={t('sectionTitles.counters')} />
             <CountersList list={counterList} />
             {groupedCustomLists.length ? (
@@ -103,6 +105,18 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           <BottomFadingGradient
             start={{x: 0, y: 0}}
             end={{x: 0, y: 1}}
+            colors={theme.colors.scrollFadeGradientColorsPageBackground}
+            pointerEvents={'none'}
+          />
+          <LeftFadingGradient
+            start={{x: 1, y: 0}}
+            end={{x: 0, y: 0}}
+            colors={theme.colors.scrollFadeGradientColorsPageBackground}
+            pointerEvents={'none'}
+          />
+          <RightFadingGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
             colors={theme.colors.scrollFadeGradientColorsPageBackground}
             pointerEvents={'none'}
           />

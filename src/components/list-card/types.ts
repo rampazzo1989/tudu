@@ -10,6 +10,7 @@ export type ListCardProps = {
   color?: string;
   onPress?: () => void;
   ControlComponent?: React.ReactNode;
+  swipeEnabled?: boolean;
 };
 
 export type NumberOfActiveItemsProps = Pick<

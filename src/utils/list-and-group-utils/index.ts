@@ -2,6 +2,7 @@ import {t} from 'i18next';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
 import {List} from '../../scenes/home/types';
+import en from '../../locale/en.json';
 
 export const generateListAndGroupDeleteTitle = (
   item?: DraggableItem<List> | List,
@@ -36,9 +37,15 @@ export const getDuplicateProofListTitle = (
   list: DraggableItem<List>[],
   newLabel: string,
 ): string => {
-  const alreadyExists = list.some(draggable =>
+  let alreadyExists = list.some(draggable =>
     draggable.data.some(item => item.label === newLabel),
   );
+
+  if (!alreadyExists) {
+    for (let defaultListTitle of Object.values(en.listTitles)) {
+      alreadyExists = alreadyExists || defaultListTitle === newLabel;
+    }
+  }
 
   if (alreadyExists) {
     const newNameWithCopyNumber = getNewNameWithCopyNumber(newLabel);

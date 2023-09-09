@@ -26,7 +26,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
               )}
               payload={item}
               isReceiver>
-              <ListGroupCard groupData={item} />
+              <ListGroupCard groupData={item} onListPress={onListPress} />
             </DraggableView>
           );
         } else {

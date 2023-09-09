@@ -1,3 +1,4 @@
+import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
 export const HeaderContent = styled.View`
@@ -5,15 +6,15 @@ export const HeaderContent = styled.View`
   height: 82px;
   margin-bottom: -16px;
   background-color: ${({theme}) => theme.colors.primary};
-  padding-bottom: 32px;
+  padding-bottom: 16px;
   padding-left: 18px;
   padding-right: 18px;
-  justify-content: flex-end;
+  justify-content: center;
 `;
 
-export const TitleBackground = styled.View`
+export const TitleBackground = styled(Animated.View)<{titleWidth: number}>`
   height: 82px;
-  width: 130px;
+  width: ${({titleWidth}) => (titleWidth ? 85 + titleWidth : 130)}px;
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
   position: absolute;
