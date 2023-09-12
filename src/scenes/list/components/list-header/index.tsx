@@ -1,4 +1,5 @@
 import React, {memo, useRef, useState} from 'react';
+import {FadeIn} from 'react-native-reanimated';
 import {BackButton} from '../../../../components/back-button';
 import {Header} from '../../../../components/header';
 import {ContentRow, Title, TitleContainer} from './styles';
@@ -22,7 +23,7 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
 
     return (
       <Header titleWidth={titleWidth}>
-        <ContentRow>
+        <ContentRow entering={FadeIn.duration(500)}>
           <TitleContainer>
             <BackButton onPress={onBackButtonPress} />
             <Title

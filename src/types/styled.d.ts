@@ -28,6 +28,15 @@ declare module 'styled-components/native' {
       scrollFadeGradientColorsPageBackground: string[];
       defaultSeparatorGradientColors: string[];
       menuSeparatorGradientColors: string[];
+      swipeableCard: {
+        background: string;
+        optionsBackground: string;
+      };
+      defaultToast: {
+        borderLeft: string;
+        background: string;
+        text: string;
+      };
     };
     fonts: {
       header: string;

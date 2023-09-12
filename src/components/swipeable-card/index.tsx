@@ -6,16 +6,10 @@ import {styles} from './styles';
 import {SwipeableCardProps} from './types';
 
 const SwipeableCard: React.FC<SwipeableCardProps> = memo(
-  ({children, enabled = true}) => {
+  ({children, backgroundColor, optionsBackgroundColor, enabled = true}) => {
     const swipeableRef = useRef<Swipeable>(null);
 
     const renderRightActions = (progress, dragX) => {
-      const trans = dragX.interpolate({
-        inputRange: [-100, 0],
-        outputRange: [1, 0],
-        // extrapolate: 'clamp',
-      });
-
       return (
         <TouchableOpacity onPress={() => console.log('delete')}>
           <View
@@ -34,12 +28,6 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
     };
 
     const renderLeftActions = useCallback((progress, dragX) => {
-      const trans = dragX.interpolate({
-        inputRange: [-100, 0],
-        outputRange: [1, 0],
-        // extrapolate: 'clamp',
-      });
-
       return (
         <TouchableOpacity onPress={() => console.log('delete')}>
           <View
@@ -63,7 +51,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
       <Swipeable
         enabled={enabled}
         ref={swipeableRef}
-        friction={2}
+        friction={3}
         overshootFriction={2}
         onSwipeableOpen={direction => {
           openTime.current = setTimeout(() => {
@@ -78,8 +66,11 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
             clearTimeout(openTime.current);
           }
         }}
-        containerStyle={styles.parent}
-        childrenContainerStyle={styles.contentContainer}
+        containerStyle={[
+          styles.parent,
+          {backgroundColor: optionsBackgroundColor},
+        ]}
+        childrenContainerStyle={[styles.contentContainer, {backgroundColor}]}
         renderRightActions={renderRightActions}
         renderLeftActions={renderLeftActions}>
         {children}

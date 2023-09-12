@@ -96,6 +96,25 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
       setTitle(text);
     }, []);
 
+    const handleCheckboxPressGenerator = useCallback(
+      (list: DraggableItem<List>) => () => {
+        setSelectedLists(current => {
+          const itemIndex = current.indexOf(list);
+
+          const newList = current.slice();
+
+          if (itemIndex >= 0) {
+            newList.splice(itemIndex, 1);
+          } else {
+            newList.push(list);
+          }
+
+          return newList;
+        });
+      },
+      [],
+    );
+
     return (
       <PopupModal
         visible={visible}
@@ -133,25 +152,10 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
                       ControlComponent={
                         <CheckboxSimple
                           checked={selectedLists.includes(list)}
-                          onPress={() => {
-                            setSelectedLists(current => {
-                              const itemIndex = current.indexOf(list);
-
-                              const newList = current.slice();
-
-                              if (itemIndex >= 0) {
-                                newList.splice(itemIndex, 1);
-                              } else {
-                                newList.push(list);
-                              }
-
-                              return newList;
-                            });
-                          }}
+                          onPress={handleCheckboxPressGenerator(list)}
                         />
                       }
                     />
-                    // <Text key={list.data[0].label}>{list.data[0].label}</Text>
                   );
                 })}
               </View>

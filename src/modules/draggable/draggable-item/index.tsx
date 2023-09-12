@@ -64,7 +64,7 @@ const DraggableItem: React.FC<DraggableItemProps> = memo(
       <DraxView
         animateSnapback={draggedViewSnapBackAnimationOn}
         draggable
-        longPressDelay={500}
+        longPressDelay={700}
         draggingStyle={styles.itemDragging}
         hoverStyle={isOverDeleter ? styles.itemHoverDeleter : styles.itemHover}
         receivingStyle={styles.itemReceiving}
