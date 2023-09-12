@@ -35,6 +35,15 @@ const darkTheme: DefaultTheme = {
     ],
     defaultSeparatorGradientColors: ['#3C414A', '#FFFFFF20', '#3C414A'],
     menuSeparatorGradientColors: ['#2B3139', '#FFFFFF20', '#2B3139'],
+    swipeableCard: {
+      background: '#3C414A',
+      optionsBackground: '#7956BF',
+    },
+    defaultToast: {
+      borderLeft: '#7956BF',
+      background: '#444B56',
+      text: '#FFFFFF',
+    },
   },
   fonts: {
     header: 'Inter-SemiBold',

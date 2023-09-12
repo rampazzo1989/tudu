@@ -1,9 +1,10 @@
 import {StyleSheet} from 'react-native';
+import {CurrentTheme} from '../../themes';
 
 export const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: '#7956BF',
+    backgroundColor: CurrentTheme.colors.swipeableCard.optionsBackground,
     borderRadius: 10,
     overflow: 'visible',
   },
@@ -11,7 +12,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     paddingHorizontal: 12,
-    backgroundColor: '#3C414A',
+    backgroundColor: CurrentTheme.colors.swipeableCard.background,
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 10,

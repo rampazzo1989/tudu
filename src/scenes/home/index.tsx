@@ -95,6 +95,19 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             ) : (
               <></>
             )}
+
+            <LeftFadingGradient
+              start={{x: 1, y: 0}}
+              end={{x: 0, y: 0}}
+              colors={theme.colors.scrollFadeGradientColorsPageBackground}
+              pointerEvents={'none'}
+            />
+            <RightFadingGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              colors={theme.colors.scrollFadeGradientColorsPageBackground}
+              pointerEvents={'none'}
+            />
           </PageContent>
           <TopFadingGradient
             start={{x: 0, y: 1}}
@@ -105,18 +118,6 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           <BottomFadingGradient
             start={{x: 0, y: 0}}
             end={{x: 0, y: 1}}
-            colors={theme.colors.scrollFadeGradientColorsPageBackground}
-            pointerEvents={'none'}
-          />
-          <LeftFadingGradient
-            start={{x: 1, y: 0}}
-            end={{x: 0, y: 0}}
-            colors={theme.colors.scrollFadeGradientColorsPageBackground}
-            pointerEvents={'none'}
-          />
-          <RightFadingGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
             colors={theme.colors.scrollFadeGradientColorsPageBackground}
             pointerEvents={'none'}
           />

@@ -1,4 +1,5 @@
 import React, {memo} from 'react';
+import {useTheme} from 'styled-components/native';
 import {SwipeableCard} from '../swipeable-card';
 import {
   Container,
@@ -33,6 +34,7 @@ const ListCard: React.FC<ListCardProps> = memo(
     isHighlighted = false,
     swipeEnabled = true,
   }) => {
+    const theme = useTheme();
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}
@@ -42,7 +44,14 @@ const ListCard: React.FC<ListCardProps> = memo(
         scaleFactor={0.02}
         style={style}
         onPress={onPress}>
-        <SwipeableCard enabled={swipeEnabled}>
+        <SwipeableCard
+          enabled={swipeEnabled}
+          backgroundColor={
+            isHighlighted
+              ? theme.colors.listCardHighlighted
+              : theme.colors.listCard
+          }
+          optionsBackgroundColor={theme.colors.primary}>
           <IconLabelContainer>
             {ControlComponent && (
               <ControlComponentContainer>

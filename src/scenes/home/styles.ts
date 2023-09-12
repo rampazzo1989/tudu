@@ -38,7 +38,6 @@ export const BottomFadingGradient = styled(LinearGradient)`
 export const RightFadingGradient = styled(LinearGradient)`
   position: absolute;
   end: 0;
-  top: 16px;
   width: 20px;
   height: 100%;
 `;
@@ -46,7 +45,6 @@ export const RightFadingGradient = styled(LinearGradient)`
 export const LeftFadingGradient = styled(LinearGradient)`
   position: absolute;
   start: 0;
-  top: 16px;
   width: 20px;
   height: 100%;
 `;
