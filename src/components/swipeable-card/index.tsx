@@ -1,51 +1,78 @@
 import React, {memo, useCallback, useRef} from 'react';
-import {TouchableOpacity, View} from 'react-native';
 import {Swipeable} from 'react-native-gesture-handler';
-import {DeleteIcon} from '../animated-icons/delete-icon';
-import {styles} from './styles';
-import {SwipeableCardProps} from './types';
+import {OptionsContainer, styles} from './styles';
+import {SwipeableOptionButton} from './swipeable-option-button';
+import {SwipeableCardProps, SwipeableOption} from './types';
+
+const TIME_TO_CLOSE_OPTIONS = 5000;
 
 const SwipeableCard: React.FC<SwipeableCardProps> = memo(
-  ({children, backgroundColor, optionsBackgroundColor, enabled = true}) => {
+  ({
+    children,
+    backgroundColor,
+    optionsBackgroundColor,
+    leftOptions,
+    rightOptions,
+    fullWidthOnLeftOptions,
+    fullWidthOnRightOptions,
+    enabled = true,
+  }) => {
     const swipeableRef = useRef<Swipeable>(null);
 
-    const renderRightActions = (progress, dragX) => {
-      return (
-        <TouchableOpacity onPress={() => console.log('delete')}>
-          <View
-            style={{
-              backgroundColor: '#7956BF',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: 100,
-              borderRadius: 10,
-              height: '100%',
-            }}>
-            <DeleteIcon autoPlay loop />
-          </View>
-        </TouchableOpacity>
-      );
-    };
+    const getOptions = useCallback(
+      (options: SwipeableOption[], fullWidth: boolean) => {
+        return (
+          <OptionsContainer fullWidth={fullWidth}>
+            {options.map(option => {
+              return (
+                <SwipeableOptionButton
+                  Icon={option.Icon}
+                  text={option.text}
+                  backgroundColor={
+                    option.backgroundColor ?? optionsBackgroundColor
+                  }
+                  onPress={option.onPress}
+                />
+              );
+            })}
+          </OptionsContainer>
+        );
+      },
+      [optionsBackgroundColor],
+    );
 
-    const renderLeftActions = useCallback((progress, dragX) => {
-      return (
-        <TouchableOpacity onPress={() => console.log('delete')}>
-          <View
-            style={{
-              backgroundColor: '#7956BF',
-              justifyContent: 'center',
-              borderRadius: 10,
-              alignItems: 'center',
-              width: 100,
-              height: '100%',
-            }}>
-            <DeleteIcon autoPlay loop />
-          </View>
-        </TouchableOpacity>
-      );
-    }, []);
+    const renderRightActions = useCallback(
+      () =>
+        rightOptions
+          ? getOptions(rightOptions, !!fullWidthOnRightOptions)
+          : undefined,
+      [fullWidthOnRightOptions, getOptions, rightOptions],
+    );
+
+    const renderLeftActions = useCallback(
+      () =>
+        leftOptions
+          ? getOptions(leftOptions, !!fullWidthOnLeftOptions)
+          : undefined,
+      [fullWidthOnLeftOptions, getOptions, leftOptions],
+    );
 
     const openTime = useRef<NodeJS.Timeout>();
+
+    const handleSwipeableOpen = useCallback(() => {
+      openTime.current = setTimeout(() => {
+        clearTimeout(openTime.current);
+
+        openTime.current = undefined;
+        swipeableRef.current?.close();
+      }, TIME_TO_CLOSE_OPTIONS);
+    }, []);
+
+    const handleSwipeableClose = useCallback(() => {
+      if (openTime.current) {
+        clearTimeout(openTime.current);
+      }
+    }, []);
 
     return (
       <Swipeable
@@ -53,19 +80,9 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
         ref={swipeableRef}
         friction={3}
         overshootFriction={2}
-        onSwipeableOpen={direction => {
-          openTime.current = setTimeout(() => {
-            clearTimeout(openTime.current);
-
-            openTime.current = undefined;
-            swipeableRef.current?.close();
-          }, 5000);
-        }}
-        onSwipeableClose={direction => {
-          if (openTime.current) {
-            clearTimeout(openTime.current);
-          }
-        }}
+        onSwipeableOpen={handleSwipeableOpen}
+        onSwipeableClose={handleSwipeableClose}
+        leftThreshold={90}
         containerStyle={[
           styles.parent,
           {backgroundColor: optionsBackgroundColor},
