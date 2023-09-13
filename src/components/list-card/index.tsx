@@ -9,6 +9,7 @@ import {
   ListCardContainer,
   Number,
 } from './styles';
+import {SwipeableListCard} from './swipeable-list-card';
 import {ListCardProps, NumberOfActiveItemsProps} from './types';
 
 const NumberOfActiveItems: React.FC<NumberOfActiveItemsProps> = memo(
@@ -44,14 +45,7 @@ const ListCard: React.FC<ListCardProps> = memo(
         scaleFactor={0.02}
         style={style}
         onPress={onPress}>
-        <SwipeableCard
-          enabled={swipeEnabled}
-          backgroundColor={
-            isHighlighted
-              ? theme.colors.listCardHighlighted
-              : theme.colors.listCard
-          }
-          optionsBackgroundColor={theme.colors.primary}>
+        <SwipeableListCard enabled={swipeEnabled} isHighlighted={isHighlighted}>
           <IconLabelContainer>
             {ControlComponent && (
               <ControlComponentContainer>
@@ -67,7 +61,7 @@ const ListCard: React.FC<ListCardProps> = memo(
             numberOfActiveItems={numberOfActiveItems}
             isHighlighted={isHighlighted}
           />
-        </SwipeableCard>
+        </SwipeableListCard>
       </ListCardContainer>
     );
   },
