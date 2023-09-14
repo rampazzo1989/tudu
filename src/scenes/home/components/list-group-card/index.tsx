@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useRef, useState} from 'react';
+import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {DraggableItem} from '../../../../modules/draggable/draggable-item';
@@ -42,11 +42,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
           hitSlop={20}
           scaleFactor={0}>
           <OptionsIconContainer>
-            <OptionsArrowDownIcon
-              ref={iconRef}
-              animateWhenIdle={false}
-              speed={2}
-            />
+            <OptionsArrowDownIcon ref={iconRef} speed={2} />
           </OptionsIconContainer>
         </OptionsTouchable>
       ),
@@ -59,6 +55,29 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
       },
       [onListPress],
     );
+
+    const handleRename = useCallback(() => setRenamePopupVisible(true), []);
+
+    const items = useMemo(() => {
+      return (
+        <>
+          {groupData.data.map(list => {
+            return (
+              <DraggableItem
+                key={generateRandomHash(`${list.label}${groupData.groupId}`)}
+                payload={list}>
+                <SubListCard
+                  Icon={ListDefaultIcon}
+                  label={list.label}
+                  numberOfActiveItems={list.numberOfActiveItems}
+                  onPress={listPressHandlerGenerator(list)}
+                />
+              </DraggableItem>
+            );
+          })}
+        </>
+      );
+    }, [groupData.data, groupData.groupId, listPressHandlerGenerator]);
 
     return (
       <ListGroupContainer>
@@ -74,24 +93,11 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
             <GroupOptions
               groupData={groupData}
               closeMenu={handlePopoverMenuRequestClose}
-              onRename={() => setRenamePopupVisible(true)}
+              onRename={handleRename}
             />
           </PopoverMenu>
         </TitleContainer>
-        {groupData.data.map(list => {
-          return (
-            <DraggableItem
-              key={generateRandomHash(`${list.label}${groupData.groupId}`)}
-              payload={list}>
-              <SubListCard
-                Icon={ListDefaultIcon}
-                label={list.label}
-                numberOfActiveItems={list.numberOfActiveItems}
-                onPress={listPressHandlerGenerator(list)}
-              />
-            </DraggableItem>
-          );
-        })}
+        {items}
         <RenameModal
           visible={renamePopupVisible}
           onRequestClose={() => setRenamePopupVisible(false)}

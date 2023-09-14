@@ -29,6 +29,7 @@ import {useTheme} from 'styled-components/native';
 import {generateListAndGroupDeleteTitle} from '../../utils/list-and-group-utils';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
 import {HomeActionMenuOptions} from './components/button-actions';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -55,7 +56,11 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     ) as DraggableItem<List>[];
   }, [customLists]);
 
-  const handleListDragStart = useCallback(() => setDeleteVisible(true), []);
+  const handleListDragStart = useCallback(() => {
+    RNReactNativeHapticFeedback.trigger('soft');
+    setDeleteVisible(true);
+  }, []);
+
   const handleListDragEnd = useCallback(() => {
     setDeleteVisible(false);
   }, []);

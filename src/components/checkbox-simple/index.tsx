@@ -20,7 +20,6 @@ const CheckboxSimple: React.FC<CheckboxSimpleProps> = memo(
       <Touchable onPress={onPress}>
         <BaseAnimatedIcon
           loop={false}
-          animateWhenIdle={false}
           ref={iconRef}
           source={require('../../assets/lottie/checkbox.json')}
           componentName="CheckboxSimple"

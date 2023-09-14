@@ -5,7 +5,10 @@ import {SwipeableOptionProps, SwipeableOptionRef} from './types';
 
 const SwipeableOptionButton = memo(
   forwardRef<SwipeableOptionRef, SwipeableOptionProps>(
-    ({Icon, backgroundColor, onPress, text, progress, dragX}, ref) => {
+    (
+      {Icon, backgroundColor, onPress, optionSize = 100, text, progress, dragX},
+      ref,
+    ) => {
       const iconRef = useRef<AnimatedIconRef>(null);
 
       useImperativeHandle(ref, () => {
@@ -17,8 +20,11 @@ const SwipeableOptionButton = memo(
       });
 
       return (
-        <Touchable backgroundColor={backgroundColor} onPress={onPress}>
-          <Icon ref={iconRef} />
+        <Touchable
+          backgroundColor={backgroundColor}
+          onPress={onPress}
+          size={optionSize}>
+          <Icon ref={iconRef} size={24} />
           <Label>{text}</Label>
         </Touchable>
       );

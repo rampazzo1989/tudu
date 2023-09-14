@@ -29,7 +29,6 @@ const AdjustIcon = memo(
         source={require('../../../assets/lottie/adjust.json')}
         loop={false}
         componentName="AdjustIcon"
-        animateWhenIdle
         initialFrame={90}
         ref={iconRef}
         {...props}

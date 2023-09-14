@@ -29,7 +29,6 @@ const NewGroupIcon = memo(
         source={require('../../../assets/lottie/new_group.json')}
         loop={false}
         componentName="NewGroupIcon"
-        animateWhenIdle
         initialFrame={60}
         staticStateFrame={60}
         ref={iconRef}

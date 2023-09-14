@@ -10,6 +10,7 @@ export type SwipeableOptionProps = {
   >;
   backgroundColor: string;
   onPress: () => void;
+  optionSize?: number | '100%';
   text?: string;
   progress?: Animated.AnimatedInterpolation<string | number>;
   dragX?: Animated.AnimatedInterpolation<string | number>;

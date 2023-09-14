@@ -12,7 +12,6 @@ import React, {
 import {useHashGenerator} from '../../../hooks/useHashGenerator';
 import {useIdlyAnimatedComponent} from '../../../hooks/useIdlyAnimatedComponent';
 import {
-  AnimationOptions,
   BaseAnimatedIconProps,
   BaseAnimatedIconRef,
   BaseAnimationOptions,

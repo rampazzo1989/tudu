@@ -62,8 +62,9 @@ const DraggableItem: React.FC<DraggableItemProps> = memo(
 
     return (
       <DraxView
-        animateSnapback={draggedViewSnapBackAnimationOn}
+        animateSnapback={true}
         draggable
+        onSnapbackEnd={draggableContext?.onDragEnd}
         longPressDelay={700}
         draggingStyle={styles.itemDragging}
         hoverStyle={isOverDeleter ? styles.itemHoverDeleter : styles.itemHover}
@@ -71,7 +72,6 @@ const DraggableItem: React.FC<DraggableItemProps> = memo(
         onDragEnter={handleItemDragEnter}
         onDragExit={handleItemDragExit}
         onDragStart={draggableContext?.onDragStart}
-        onDragEnd={draggableContext?.onDragEnd}
         onDragDrop={handleItemDragDrop}
         style={styles.item}
         {...props}>

@@ -1,8 +1,7 @@
 import React, {memo, useMemo} from 'react';
 import {useTheme} from 'styled-components/native';
-import {OptionsIcon} from '../../../assets/static/options';
-import {DeleteIcon} from '../../animated-icons/delete-icon';
 import {FolderIcon} from '../../animated-icons/folder-icon';
+import {OptionsArrowDownIcon} from '../../animated-icons/options-arrow-down-icon';
 import {SwipeableCard} from '../../swipeable-card';
 import {SwipeableOption} from '../../swipeable-card/types';
 import {SwipeableListCardProps} from './types';
@@ -14,7 +13,7 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
     const rightOptions = useMemo<SwipeableOption[]>(
       () => [
         {
-          Icon: OptionsIcon,
+          Icon: OptionsArrowDownIcon,
           text: 'Options',
           onPress: () => console.log('Options'),
         },
@@ -44,6 +43,7 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
         rightOptions={rightOptions}
         leftOptions={leftOptions}
         fullWidthOnLeftOptions
+        onSwipeRight={() => console.log('swipeRight')}
         optionsBackgroundColor={theme.colors.primary}>
         {children}
       </SwipeableCard>

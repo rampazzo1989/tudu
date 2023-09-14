@@ -1,6 +1,5 @@
 import React, {memo} from 'react';
 import {useTheme} from 'styled-components/native';
-import {SwipeableCard} from '../swipeable-card';
 import {
   Container,
   ControlComponentContainer,
@@ -52,7 +51,7 @@ const ListCard: React.FC<ListCardProps> = memo(
                 {ControlComponent}
               </ControlComponentContainer>
             )}
-            <Icon />
+            <Icon animateWhenIdle />
             <Label isHighlighted={isHighlighted} numberOfLines={1}>
               {label}
             </Label>

@@ -14,6 +14,8 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
     rightOptions,
     fullWidthOnLeftOptions,
     fullWidthOnRightOptions,
+    onSwipeLeft,
+    onSwipeRight,
     enabled = true,
   }) => {
     const swipeableRef = useRef<Swipeable>(null);
@@ -38,8 +40,11 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
                   backgroundColor={
                     option.backgroundColor ?? optionsBackgroundColor
                   }
+                  optionSize={fullWidth ? '100%' : 100}
                   ref={ref => {
-                    iconsRefs.current.push(ref);
+                    if (ref) {
+                      iconsRefs.current.push(ref);
+                    }
                   }}
                   onPress={option.onPress}
                 />
@@ -69,13 +74,22 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
 
     // const openTime = useRef<NodeJS.Timeout>();
 
-    const handleSwipeableOpen = useCallback((direction: 'left' | 'right') => {
-      const iconsRefs = direction === 'left' ? leftIconsRefs : rightIconsRefs;
-      console.log('start open', {direction, iconsRefs});
-      for (const ref of iconsRefs.current) {
-        ref?.playAnimation?.();
-      }
-    }, []);
+    const handleSwipeableStartDrag = useCallback(
+      (direction: 'left' | 'right') => {
+        const iconsRefs = direction === 'left' ? leftIconsRefs : rightIconsRefs;
+        for (const ref of iconsRefs.current) {
+          ref?.playAnimation?.();
+        }
+      },
+      [],
+    );
+
+    const handleSwipeableOpen = useCallback(
+      (direction: 'left' | 'right') => {
+        return direction === 'left' ? onSwipeRight?.() : onSwipeLeft?.();
+      },
+      [onSwipeLeft, onSwipeRight],
+    );
 
     const handleSwipeableClose = useCallback(() => {}, []);
 
@@ -85,8 +99,9 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
         ref={swipeableRef}
         friction={2}
         overshootFriction={2}
+        onSwipeableOpen={handleSwipeableOpen}
         onSwipeableClose={handleSwipeableClose}
-        onSwipeableStartReveal={handleSwipeableOpen}
+        onSwipeableStartDrag={handleSwipeableStartDrag}
         leftThreshold={90}
         containerStyle={[
           styles.parent,

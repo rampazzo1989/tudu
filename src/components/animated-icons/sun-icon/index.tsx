@@ -8,7 +8,6 @@ const SunIcon: React.FC<AnimatedIconProps> = memo(props => {
       source={require('../../../assets/lottie/sun.json')}
       loop={false}
       componentName="SunIcon"
-      animateWhenIdle
       autoPlay
       {...props}
     />

@@ -21,4 +21,6 @@ export type SwipeableCardProps = {
   enabled?: boolean;
   fullWidthOnLeftOptions?: boolean;
   fullWidthOnRightOptions?: boolean;
+  onSwipeRight?: () => void;
+  onSwipeLeft?: () => void;
 };

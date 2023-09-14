@@ -18,7 +18,6 @@ const DeleteIcon: React.FC<DeleteIconProps> = memo(props => {
     <AnimatedIcon
       source={require('../../../assets/lottie/trash.json')}
       componentName="DeleteIcon"
-      animateWhenIdle
       loop={false}
       ref={ref}
       {...props}

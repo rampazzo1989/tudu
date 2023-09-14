@@ -52,7 +52,6 @@ const TuduIcon = memo(
         source={require('../../../assets/lottie/checked.json')}
         loop={false}
         componentName="TuduIcon"
-        animateWhenIdle={false}
         initialFrame={85}
         staticStateFrame={85}
         ref={iconRef}

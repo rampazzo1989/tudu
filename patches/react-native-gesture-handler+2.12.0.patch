@@ -9,7 +9,7 @@ index bf879c9..4056d59 100644
 +    /**
 +     * Called when action panel starts being shown on open.
 +     */
-+    onSwipeableStartReveal?: (direction: 'left' | 'right') => void,
++    onSwipeableStartDrag?: (direction: 'left' | 'right') => void,
      /**
       *
       * This map describes the values to use as inputRange for extra interpolation:
@@ -24,7 +24,7 @@ index 0b801da..a5439a7 100644
 +  /**
 +   * Called when action panel starts being shown on open.
 +   */
-+  onSwipeableStartReveal?: (direction: 'left' | 'right') => void,
++  onSwipeableStartDrag?: (direction: 'left' | 'right') => void,
 +
    /**
     *
@@ -53,7 +53,7 @@ index 0b801da..a5439a7 100644
 +      }
 +
 +      if (direction) {
-+        this.props.onSwipeableStartReveal && this.props.onSwipeableStartReveal(direction);
++        this.props.onSwipeableStartDrag && this.props.onSwipeableStartDrag(direction);
 +      }
 +    }
    };

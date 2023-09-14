@@ -32,8 +32,8 @@ const HomeHeader: React.FC = memo(() => {
           <LogoTitle />
         </LogoAndTitle>
         <SearchAndProfile>
-          <SearchIcon size={30} />
-          <StyledProfileIcon size={30} />
+          <SearchIcon animateWhenIdle size={30} />
+          <StyledProfileIcon animateWhenIdle size={30} />
         </SearchAndProfile>
       </ContentRow>
     </Header>
