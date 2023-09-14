@@ -1,0 +1,61 @@
+diff --git a/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts b/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts
+index bf879c9..4056d59 100644
+--- a/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts
++++ b/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts
+@@ -99,6 +99,10 @@ export interface SwipeableProps extends Pick<PanGestureHandlerProps, SwipeableEx
+      * Called when action panel starts animating on close.
+      */
+     onSwipeableWillClose?: (direction: 'left' | 'right') => void;
++    /**
++     * Called when action panel starts being shown on open.
++     */
++    onSwipeableStartReveal?: (direction: 'left' | 'right') => void,
+     /**
+      *
+      * This map describes the values to use as inputRange for extra interpolation:
+diff --git a/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx b/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx
+index 0b801da..a5439a7 100644
+--- a/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx
++++ b/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx
+@@ -157,6 +157,11 @@ export interface SwipeableProps
+    */
+   onSwipeableWillClose?: (direction: 'left' | 'right') => void;
+ 
++  /**
++   * Called when action panel starts being shown on open.
++   */
++  onSwipeableStartReveal?: (direction: 'left' | 'right') => void,
++
+   /**
+    *
+    * This map describes the values to use as inputRange for extra interpolation:
+@@ -334,6 +339,29 @@ export default class Swipeable extends Component<
+     if (ev.nativeEvent.oldState === State.ACTIVE) {
+       this.handleRelease(ev);
+     }
++    if (ev.nativeEvent.state === State.ACTIVE) {
++      const { velocityX, translationX: dragX } = ev.nativeEvent;
++
++      const { rowState } = this.state;
++
++      const {
++        friction,
++      } = this.props;
++      const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
++      
++      let direction: 'left' | 'right' | undefined = undefined;
++
++      /**
++       * Is opening (swipeable is closed)
++       */
++      if (rowState === 0) {
++        direction = translationX > 0 ? 'left' : 'right';
++      }
++
++      if (direction) {
++        this.props.onSwipeableStartReveal && this.props.onSwipeableStartReveal(direction);
++      }
++    }
+   };
+ 
+   private handleRelease = (

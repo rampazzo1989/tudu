@@ -3,8 +3,7 @@ import {Swipeable} from 'react-native-gesture-handler';
 import {OptionsContainer, styles} from './styles';
 import {SwipeableOptionButton} from './swipeable-option-button';
 import {SwipeableCardProps, SwipeableOption} from './types';
-
-const TIME_TO_CLOSE_OPTIONS = 5000;
+import {SwipeableOptionRef} from './swipeable-option-button/types';
 
 const SwipeableCard: React.FC<SwipeableCardProps> = memo(
   ({
@@ -18,19 +17,30 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
     enabled = true,
   }) => {
     const swipeableRef = useRef<Swipeable>(null);
+    const rightIconsRefs = useRef<SwipeableOptionRef[]>([]);
+    const leftIconsRefs = useRef<SwipeableOptionRef[]>([]);
 
     const getOptions = useCallback(
-      (options: SwipeableOption[], fullWidth: boolean) => {
+      (
+        options: SwipeableOption[],
+        fullWidth: boolean,
+        iconsRefs: React.MutableRefObject<SwipeableOptionRef[]>,
+      ) => {
+        iconsRefs.current = [];
         return (
           <OptionsContainer fullWidth={fullWidth}>
-            {options.map(option => {
+            {options.map((option, index) => {
               return (
                 <SwipeableOptionButton
                   Icon={option.Icon}
+                  key={`${option.text}${index}`}
                   text={option.text}
                   backgroundColor={
                     option.backgroundColor ?? optionsBackgroundColor
                   }
+                  ref={ref => {
+                    iconsRefs.current.push(ref);
+                  }}
                   onPress={option.onPress}
                 />
               );
@@ -44,7 +54,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
     const renderRightActions = useCallback(
       () =>
         rightOptions
-          ? getOptions(rightOptions, !!fullWidthOnRightOptions)
+          ? getOptions(rightOptions, !!fullWidthOnRightOptions, rightIconsRefs)
           : undefined,
       [fullWidthOnRightOptions, getOptions, rightOptions],
     );
@@ -52,36 +62,31 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
     const renderLeftActions = useCallback(
       () =>
         leftOptions
-          ? getOptions(leftOptions, !!fullWidthOnLeftOptions)
+          ? getOptions(leftOptions, !!fullWidthOnLeftOptions, leftIconsRefs)
           : undefined,
       [fullWidthOnLeftOptions, getOptions, leftOptions],
     );
 
-    const openTime = useRef<NodeJS.Timeout>();
+    // const openTime = useRef<NodeJS.Timeout>();
 
-    const handleSwipeableOpen = useCallback(() => {
-      openTime.current = setTimeout(() => {
-        clearTimeout(openTime.current);
-
-        openTime.current = undefined;
-        swipeableRef.current?.close();
-      }, TIME_TO_CLOSE_OPTIONS);
-    }, []);
-
-    const handleSwipeableClose = useCallback(() => {
-      if (openTime.current) {
-        clearTimeout(openTime.current);
+    const handleSwipeableOpen = useCallback((direction: 'left' | 'right') => {
+      const iconsRefs = direction === 'left' ? leftIconsRefs : rightIconsRefs;
+      console.log('start open', {direction, iconsRefs});
+      for (const ref of iconsRefs.current) {
+        ref?.playAnimation?.();
       }
     }, []);
+
+    const handleSwipeableClose = useCallback(() => {}, []);
 
     return (
       <Swipeable
         enabled={enabled}
         ref={swipeableRef}
-        friction={3}
+        friction={2}
         overshootFriction={2}
-        onSwipeableOpen={handleSwipeableOpen}
         onSwipeableClose={handleSwipeableClose}
+        onSwipeableStartReveal={handleSwipeableOpen}
         leftThreshold={90}
         containerStyle={[
           styles.parent,
