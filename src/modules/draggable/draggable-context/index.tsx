@@ -17,27 +17,27 @@ const DraggableContextProvider = <T,>({
   onDragStart,
   onDragEnd,
 }: DraggableContextProviderProps<T>) => {
-  const [modal, setModal] = useState(false);
-  const [deletingItem, setDeletingItem] = useState<DraggableItem<T>>();
+  const [modal, setModal] = useState<{visible: boolean, action: 'delete' | 'archive'}>();
+  const [dealingItem, setDealingItem] = useState<DraggableItem<T>>();
   const [confirmationPopupTitleBuilder, setConfirmationPopupTitleBuilder] =
     useState<(item?: DraggableItem<T>) => string>();
 
-  const handleConfirmDelete = useCallback(() => {
-    deleteItem(data, onSetData, deletingItem);
+  const handleConfirmAction = useCallback(() => {
+    deleteItem(data, onSetData, dealingItem);
     setModal(false);
-  }, [data, onSetData, deletingItem]);
+  }, [data, onSetData, dealingItem]);
 
-  const handleCancelDelete = useCallback(() => {
-    setDeletingItem(undefined);
+  const handleCancelAction = useCallback(() => {
+    setDealingItem(undefined);
     setModal(false);
   }, []);
 
-  const showDeleteConfirmationModal = useCallback(
+  const showConfirmationModal = useCallback(
     (
-      itemToDelete: DraggableItem<T>,
+      itemToDealWith: DraggableItem<T>,
       titleBuilderFn: (item?: DraggableItem<T>) => string,
     ) => {
-      setDeletingItem(itemToDelete);
+      setDealingItem(itemToDealWith);
       setConfirmationPopupTitleBuilder(() => titleBuilderFn);
       setModal(true);
     },
@@ -51,16 +51,16 @@ const DraggableContextProvider = <T,>({
         setData: onSetData,
         onDragStart,
         onDragEnd,
-        showDeleteConfirmationModal,
+        showDeleteConfirmationModal: showConfirmationModal,
       }}>
       {children}
       <PopupModal
-        visible={modal}
-        onRequestClose={() => setModal(false)}
-        title={confirmationPopupTitleBuilder?.(deletingItem)}
+        visible={modal?.visible}
+        onRequestClose={() => setModal(undefined)}
+        title={confirmationPopupTitleBuilder?.(dealingItem)}
         buttons={[
-          {label: 'Yes', onPress: handleConfirmDelete},
-          {label: 'No', onPress: handleCancelDelete},
+          {label: 'Yes', onPress: handleConfirmAction},
+          {label: 'No', onPress: handleCancelAction},
         ]}
         Icon={DeleteIcon}
         shakeOnShow
