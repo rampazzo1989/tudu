@@ -54,7 +54,6 @@ const FolderIcon = memo(
         source={require('../../../assets/lottie/folder.json')}
         loop={false}
         componentName="FolderIcon"
-        animateWhenIdle={false}
         initialFrame={80}
         staticStateFrame={80}
         finalFrame={150}

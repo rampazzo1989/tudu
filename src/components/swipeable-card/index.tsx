@@ -72,8 +72,6 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
       [fullWidthOnLeftOptions, getOptions, leftOptions],
     );
 
-    // const openTime = useRef<NodeJS.Timeout>();
-
     const handleSwipeableStartDrag = useCallback(
       (direction: 'left' | 'right') => {
         const iconsRefs = direction === 'left' ? leftIconsRefs : rightIconsRefs;
@@ -101,7 +99,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = memo(
         overshootFriction={2}
         onSwipeableOpen={handleSwipeableOpen}
         onSwipeableClose={handleSwipeableClose}
-        onSwipeableStartDrag={handleSwipeableStartDrag}
+        onSwipeableOpenStartDrag={handleSwipeableStartDrag}
         leftThreshold={90}
         containerStyle={[
           styles.parent,

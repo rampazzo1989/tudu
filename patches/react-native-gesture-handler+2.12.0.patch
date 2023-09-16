@@ -1,35 +1,44 @@
 diff --git a/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts b/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts
-index bf879c9..4056d59 100644
+index bf879c9..65c0bac 100644
 --- a/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts
 +++ b/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts
-@@ -99,6 +99,10 @@ export interface SwipeableProps extends Pick<PanGestureHandlerProps, SwipeableEx
+@@ -99,6 +99,14 @@ export interface SwipeableProps extends Pick<PanGestureHandlerProps, SwipeableEx
       * Called when action panel starts animating on close.
       */
      onSwipeableWillClose?: (direction: 'left' | 'right') => void;
 +    /**
-+     * Called when action panel starts being shown on open.
++     * Called when action panel starts being shown on dragging to open.
 +     */
-+    onSwipeableStartDrag?: (direction: 'left' | 'right') => void,
++    onSwipeableOpenStartDrag?: (direction: 'left' | 'right') => void,
++    /**
++     * Called when action panel starts being shown on dragging to close.
++     */
++    onSwipeableCloseStartDrag?: (direction: 'left' | 'right') => void,
      /**
       *
       * This map describes the values to use as inputRange for extra interpolation:
 diff --git a/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx b/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx
-index 0b801da..a5439a7 100644
+index 0b801da..4ae717a 100644
 --- a/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx
 +++ b/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx
-@@ -157,6 +157,11 @@ export interface SwipeableProps
+@@ -157,6 +157,16 @@ export interface SwipeableProps
     */
    onSwipeableWillClose?: (direction: 'left' | 'right') => void;
  
 +  /**
-+   * Called when action panel starts being shown on open.
++   * Called when action panel starts being shown on dragging to open.
 +   */
-+  onSwipeableStartDrag?: (direction: 'left' | 'right') => void,
++  onSwipeableOpenStartDrag?: (direction: 'left' | 'right') => void,
++
++  /**
++   * Called when action panel starts being shown on dragging to close.
++   */
++  onSwipeableCloseStartDrag?: (direction: 'left' | 'right') => void,
 +
    /**
     *
     * This map describes the values to use as inputRange for extra interpolation:
-@@ -334,6 +339,29 @@ export default class Swipeable extends Component<
+@@ -334,6 +344,34 @@ export default class Swipeable extends Component<
      if (ev.nativeEvent.oldState === State.ACTIVE) {
        this.handleRelease(ev);
      }
@@ -45,15 +54,20 @@ index 0b801da..a5439a7 100644
 +      
 +      let direction: 'left' | 'right' | undefined = undefined;
 +
-+      /**
-+       * Is opening (swipeable is closed)
-+       */
 +      if (rowState === 0) {
 +        direction = translationX > 0 ? 'left' : 'right';
++      } else if (rowState === 1) {
++        direction = 'left';
++      } else if (rowState === -1) {
++        direction = 'right';
 +      }
 +
 +      if (direction) {
-+        this.props.onSwipeableStartDrag && this.props.onSwipeableStartDrag(direction);
++        if (rowState === 0) {
++          this.props.onSwipeableOpenStartDrag && this.props.onSwipeableOpenStartDrag(direction);
++        } else {
++          this.props.onSwipeableCloseStartDrag && this.props.onSwipeableCloseStartDrag(direction);
++        }
 +      }
 +    }
    };

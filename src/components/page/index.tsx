@@ -36,12 +36,6 @@ const Page: React.FC<PageProps> = memo(({children}) => {
 
         idleTimerId.current = setInterval(() => {
           const position = shuffledOrder[animationPosition.current];
-          console.log({
-            shuffledOrder,
-            position,
-            animationPosition: animationPosition.current,
-            calc: (animationPosition.current + 1) % idlyAnimatedRefs.length,
-          });
 
           // Increments the position but resets it to zero when reaching the end.
           animationPosition.current =
