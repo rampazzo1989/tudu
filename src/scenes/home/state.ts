@@ -88,6 +88,12 @@ export const myLists = atom<List[]>({
   effects: [ReactNativeRecoilPersist.persistAtom],
 });
 
+export const archivedLists = atom<List[]>({
+  key: 'archivedLists',
+  default: [],
+  effects: [ReactNativeRecoilPersist.persistAtom],
+});
+
 export const getListByLabel = selector({
   key: 'getObjectByLabel',
   get:

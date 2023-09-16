@@ -29,7 +29,6 @@ const UngroupIcon = memo(
         source={require('../../../assets/lottie/ungroup.json')}
         loop={false}
         componentName="UngroupIcon"
-        animateWhenIdle
         initialFrame={70}
         staticStateFrame={70}
         ref={iconRef}

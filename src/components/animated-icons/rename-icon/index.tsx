@@ -50,7 +50,6 @@ const RenameIcon = memo(
         source={require('../../../assets/lottie/rename.json')}
         loop={false}
         componentName="RenameIcon"
-        animateWhenIdle
         initialFrame={70}
         staticStateFrame={70}
         ref={iconRef}

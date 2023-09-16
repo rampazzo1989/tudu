@@ -1,7 +1,12 @@
-import {AnimatedIconProps} from '../animated-icons/animated-icon/types';
+import {
+  AnimatedIconProps,
+  AnimatedIconRef,
+} from '../animated-icons/animated-icon/types';
 
 export type SwipeableOption = {
-  Icon: React.FC<AnimatedIconProps>;
+  Icon: React.ForwardRefExoticComponent<
+    AnimatedIconProps & React.RefAttributes<AnimatedIconRef>
+  >;
   onPress: () => void;
   backgroundColor?: string;
   text?: string;
@@ -16,4 +21,6 @@ export type SwipeableCardProps = {
   enabled?: boolean;
   fullWidthOnLeftOptions?: boolean;
   fullWidthOnRightOptions?: boolean;
+  onSwipeRight?: () => void;
+  onSwipeLeft?: () => void;
 };

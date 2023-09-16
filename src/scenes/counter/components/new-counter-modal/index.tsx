@@ -20,14 +20,7 @@ import {HashIcon} from '../../../../components/animated-icons/hash-icon';
 import {PopupButton} from '../../../../components/popup-modal/types';
 import {useSetRecoilState} from 'recoil';
 import {counters} from '../../../home/state';
-import {
-  Keyboard,
-  NativeSyntheticEvent,
-  TextInput,
-  TextInputFocusEventData,
-  TextInputSubmitEditingEventData,
-  View,
-} from 'react-native';
+import {Keyboard, TextInput, View} from 'react-native';
 import {getDuplicateProofCounterTitle} from '../../../../utils/counter-utils';
 
 const emptyCounter: Counter = {title: '', value: 0, pace: 1};

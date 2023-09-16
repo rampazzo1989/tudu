@@ -37,7 +37,6 @@ const BackIcon = memo(
         source={require('../../../assets/lottie/back.json')}
         loop={false}
         componentName="BackIcon"
-        animateWhenIdle={false}
         initialFrame={0}
         staticStateFrame={0}
         ref={iconRef}

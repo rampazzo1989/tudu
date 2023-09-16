@@ -29,7 +29,6 @@ const ProfileIcon = memo(
         source={require('../../../assets/lottie/account.json')}
         loop={false}
         componentName="ProfileIcon"
-        animateWhenIdle
         initialFrame={70}
         staticStateFrame={70}
         ref={iconRef}

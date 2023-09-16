@@ -46,7 +46,7 @@ const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
   return (
     <TileTitleContainer>
       <IconContainer>
-        <HashIcon autoPlay size={14} />
+        <HashIcon autoPlay size={14} animateWhenIdle />
       </IconContainer>
       <Title numberOfLines={2}>{title}</Title>
     </TileTitleContainer>
@@ -110,11 +110,7 @@ const MoreOptionsButton: React.FC<OptionsButtonProps> = memo(
           hitSlop={20}
           scaleFactor={0}>
           <OptionsIconContainer>
-            <OptionsArrowDownIcon
-              ref={iconRef}
-              animateWhenIdle={false}
-              speed={2}
-            />
+            <OptionsArrowDownIcon ref={iconRef} speed={2} />
           </OptionsIconContainer>
         </OptionsTouchable>
       ),

@@ -10,7 +10,6 @@ const DropHere: React.FC<AnimatedIconProps> = memo(props => {
       componentName="DropHere"
       initialFrame={0}
       finalFrame={180}
-      animateWhenIdle
       {...props}
     />
   );

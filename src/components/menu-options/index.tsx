@@ -16,13 +16,12 @@ const MenuOptions: React.FC<MenuOptionsProps> = memo(({options}) => {
     <>
       {options.map(({Icon, label, onPress}, index, {length}) => {
         const isLastItem = index === length - 1;
-        console.log({isLastItem});
 
         return (
           <OptionContainer key={label}>
             <OptionLine onPress={onPress}>
               <IconContainer>
-                <Icon animateWhenIdle={false} style={styles.icon} />
+                <Icon style={styles.icon} />
               </IconContainer>
               <Label>{label}</Label>
             </OptionLine>

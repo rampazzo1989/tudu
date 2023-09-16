@@ -3,6 +3,8 @@ import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
 import {List} from '../../scenes/home/types';
 import en from '../../locale/en.json';
+import {SetterOrUpdater} from 'recoil';
+import {removeFromList} from '../array-utils';
 
 export const generateListAndGroupDeleteTitle = (
   item?: DraggableItem<List> | List,
@@ -68,4 +70,16 @@ export const getDuplicateProofGroupTitle = (
   } else {
     return newName;
   }
+};
+
+export const archiveList = (
+  archiveSetter: SetterOrUpdater<List[]>,
+  customListsSetter: SetterOrUpdater<List[]>,
+  list: List,
+) => {
+  archiveSetter(x => [...x, list]);
+
+  customListsSetter(x => {
+    return removeFromList(x, [list]);
+  });
 };

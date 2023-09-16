@@ -8,7 +8,6 @@ const StarIcon: React.FC<AnimatedIconProps> = memo(props => {
       source={require('../../../assets/lottie/star.json')}
       loop={false}
       componentName="StarIcon"
-      animateWhenIdle
       {...props}
     />
   );

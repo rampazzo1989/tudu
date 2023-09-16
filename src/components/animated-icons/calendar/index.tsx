@@ -10,7 +10,6 @@ const CalendarIcon: React.FC<AnimatedIconProps> = memo(props => {
       componentName="CalendarIcon"
       initialFrame={60}
       finalFrame={150}
-      animateWhenIdle
       {...props}
     />
   );

@@ -17,7 +17,7 @@ const useIdlyAnimatedComponent = ({
   componentKey,
   initialFrame = 0,
   finalFrame = 500,
-  shouldAnimate = true,
+  shouldAnimate = false,
   staticStateFrame = 0,
 }: UseIdlyAnimatedComponent) => {
   const setIdlyAnimatedComponent = useSetRecoilState(idlyAnimatedComponents);

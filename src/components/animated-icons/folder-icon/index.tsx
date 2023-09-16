@@ -18,7 +18,7 @@ const FolderIcon = memo(
           play(options?: AnimationOptions) {
             if (options?.animationLayer === 'toggleOn') {
               iconRef.current?.play({
-                initialFrame: 170,
+                initialFrame: 180,
                 finalFrame: 240,
                 delay: options.delay,
                 onAnimationFinish: options.onAnimationFinish,
@@ -26,7 +26,7 @@ const FolderIcon = memo(
             } else if (options?.animationLayer === 'toggleOff') {
               iconRef.current?.play({
                 initialFrame: 240,
-                finalFrame: 170,
+                finalFrame: 180,
                 delay: options.delay,
                 onAnimationFinish: options.onAnimationFinish,
               });
@@ -54,7 +54,6 @@ const FolderIcon = memo(
         source={require('../../../assets/lottie/folder.json')}
         loop={false}
         componentName="FolderIcon"
-        animateWhenIdle={false}
         initialFrame={80}
         staticStateFrame={80}
         finalFrame={150}

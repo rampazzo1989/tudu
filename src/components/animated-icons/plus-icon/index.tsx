@@ -27,7 +27,6 @@ const PlusIcon = memo(
         source={require('../../../assets/lottie/plus.json')}
         loop={false}
         componentName="PlusIcon"
-        animateWhenIdle={false}
         ref={iconRef}
         staticStateFrame={0}
         {...props}

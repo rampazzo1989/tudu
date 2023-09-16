@@ -8,7 +8,6 @@ const ListDefaultIcon: React.FC<AnimatedIconProps> = memo(props => {
       source={require('../../../assets/lottie/list_icon.json')}
       loop={false}
       componentName="ListDefaultIcon"
-      animateWhenIdle
       staticStateFrame={500}
       {...props}
     />

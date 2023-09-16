@@ -25,4 +25,5 @@ type FullWidthComponent = {fullWidth?: boolean};
 export const OptionsContainer = styled.View<FullWidthComponent>`
   flex-direction: row;
   width: ${({fullWidth}) => (fullWidth ? '100%' : 'auto')};
+  padding: 0 10px;
 `;
