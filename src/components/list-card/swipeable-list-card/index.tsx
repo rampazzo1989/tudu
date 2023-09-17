@@ -1,20 +1,20 @@
-import React, {memo, useMemo} from 'react';
+import React, {memo, useCallback, useMemo, useRef} from 'react';
 import {useTheme} from 'styled-components/native';
 import {FolderIcon} from '../../animated-icons/folder-icon';
-import {OptionsArrowDownIcon} from '../../animated-icons/options-arrow-down-icon';
+import {MenuToggleIcon} from '../../animated-icons/menu-toggle-icon';
 import {SwipeableCard} from '../../swipeable-card';
-import {SwipeableOption} from '../../swipeable-card/types';
+import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
 import {SwipeableListCardProps} from './types';
 
 const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
-  ({children, isHighlighted, enabled = false}) => {
+  ({children, isHighlighted, onArchive, onDelete, enabled = false}) => {
     const theme = useTheme();
+    const swipeableRef = useRef<SwipeableCardRef>(null);
 
     const rightOptions = useMemo<SwipeableOption[]>(
       () => [
         {
-          Icon: OptionsArrowDownIcon,
-          text: 'Options',
+          Icon: MenuToggleIcon,
           onPress: () => console.log('Options'),
         },
       ],
@@ -32,9 +32,18 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
       [],
     );
 
+    const handleSwipeRight = useCallback(() => {
+      onArchive(swipeableRef);
+    }, [onArchive]);
+
+    const handleSwipeLeft = useCallback(() => {
+      onDelete(swipeableRef);
+    }, [onDelete]);
+
     return (
       <SwipeableCard
         enabled={enabled}
+        ref={swipeableRef}
         backgroundColor={
           isHighlighted
             ? theme.colors.listCardHighlighted
@@ -43,7 +52,8 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
         rightOptions={rightOptions}
         leftOptions={leftOptions}
         fullWidthOnLeftOptions
-        onSwipeRight={() => console.log('swipeRight')}
+        onSwipeRight={handleSwipeRight}
+        onSwipeLeft={handleSwipeLeft}
         optionsBackgroundColor={theme.colors.primary}>
         {children}
       </SwipeableCard>

@@ -32,9 +32,10 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
 
     const handleDrop = useCallback(
       (data: DraxDragWithReceiverEventData) => {
-        return draggableContext.showDeleteConfirmationModal(
+        return draggableContext.showConfirmationModal(
           data.dragged.payload,
           confirmationPopupTitleBuilder,
+          'delete',
         );
       },
       [confirmationPopupTitleBuilder, draggableContext],

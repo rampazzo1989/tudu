@@ -1,5 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import {DeleteIcon} from '../../../components/animated-icons/delete-icon';
+import {FolderIcon} from '../../../components/animated-icons/folder-icon';
 import {PopupModal} from '../../../components/popup-modal';
 import {deleteItem} from '../draggable-utils';
 import {
@@ -10,6 +11,8 @@ import {
 
 const DraggableContext = React.createContext({} as DraggableContextType<T>);
 
+type EmptyFnType = () => void;
+
 const DraggableContextProvider = <T,>({
   children,
   data,
@@ -17,29 +20,46 @@ const DraggableContextProvider = <T,>({
   onDragStart,
   onDragEnd,
 }: DraggableContextProviderProps<T>) => {
-  const [modal, setModal] = useState<{visible: boolean, action: 'delete' | 'archive'}>();
-  const [dealingItem, setDealingItem] = useState<DraggableItem<T>>();
+  const [modal, setModal] = useState<{
+    visible: true;
+    action: 'delete' | 'archive';
+  }>();
+  const [dealingItem, setDealingItem] = useState<DraggableItem<T> | T>();
+  const [onModalCancel, setOnModalCancel] = useState<EmptyFnType>();
   const [confirmationPopupTitleBuilder, setConfirmationPopupTitleBuilder] =
-    useState<(item?: DraggableItem<T>) => string>();
+    useState<(item?: DraggableItem<T> | T) => string>();
 
   const handleConfirmAction = useCallback(() => {
-    deleteItem(data, onSetData, dealingItem);
-    setModal(false);
+    setModal(x => {
+      if (x?.action === 'delete') {
+        deleteItem(data, onSetData, dealingItem);
+      } else {
+        console.log('Archive >> ');
+      }
+      return undefined;
+    });
   }, [data, onSetData, dealingItem]);
 
   const handleCancelAction = useCallback(() => {
     setDealingItem(undefined);
-    setModal(false);
+    setModal(undefined);
+    setOnModalCancel(x => {
+      x?.();
+      return undefined;
+    });
   }, []);
 
   const showConfirmationModal = useCallback(
     (
-      itemToDealWith: DraggableItem<T>,
+      itemToDealWith: DraggableItem<T> | T,
       titleBuilderFn: (item?: DraggableItem<T>) => string,
+      action: 'delete' | 'archive',
+      onCancel?: () => void,
     ) => {
       setDealingItem(itemToDealWith);
       setConfirmationPopupTitleBuilder(() => titleBuilderFn);
-      setModal(true);
+      setModal({action, visible: true});
+      setOnModalCancel(() => onCancel);
     },
     [],
   );
@@ -51,18 +71,18 @@ const DraggableContextProvider = <T,>({
         setData: onSetData,
         onDragStart,
         onDragEnd,
-        showDeleteConfirmationModal: showConfirmationModal,
+        showConfirmationModal,
       }}>
       {children}
       <PopupModal
-        visible={modal?.visible}
+        visible={!!modal?.visible}
         onRequestClose={() => setModal(undefined)}
         title={confirmationPopupTitleBuilder?.(dealingItem)}
         buttons={[
           {label: 'Yes', onPress: handleConfirmAction},
           {label: 'No', onPress: handleCancelAction},
         ]}
-        Icon={DeleteIcon}
+        Icon={modal?.action === 'delete' ? DeleteIcon : FolderIcon}
         shakeOnShow
         haptics
       />

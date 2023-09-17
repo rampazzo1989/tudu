@@ -6,7 +6,7 @@ import {SwipeableOptionProps, SwipeableOptionRef} from './types';
 const SwipeableOptionButton = memo(
   forwardRef<SwipeableOptionRef, SwipeableOptionProps>(
     (
-      {Icon, backgroundColor, onPress, optionSize = 100, text, progress, dragX},
+      {Icon, backgroundColor, onPress, optionSize, text, progress, dragX},
       ref,
     ) => {
       const iconRef = useRef<AnimatedIconRef>(null);

@@ -16,6 +16,7 @@
   },
   "messages": {
     "confirmListDelete": "Confirm deletion of {{itemType}} {{listName}}?",
+    "confirmListArchive": "Confirm archive of {{itemType}} {{listName}}?",
     "confirmListDeleteItemType": {
       "list": "list",
       "group": "group"
