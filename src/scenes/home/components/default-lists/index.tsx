@@ -22,7 +22,6 @@ const DefaultLists: React.FC<DefaultListsProps> = memo(
             isHighlighted={list.isHighlighted}
             key={list.label}
             onPress={listPressHandlerGenerator(list)}
-            swipeEnabled={false}
           />
         ))}
       </>

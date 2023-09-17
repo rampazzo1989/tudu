@@ -11,7 +11,7 @@ export const ListCardContainer = styled(
 )<HighlightableComponentProps>`
   height: 46px;
   width: 100%;
-  // padding: 12px 16px;
+  padding: 12px 16px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;

@@ -1,5 +1,6 @@
 import {StyleProp, ViewStyle} from 'react-native/types';
 import {AnimatedIconProps} from '../animated-icons/animated-icon/types';
+import {SwipeableCardRef} from '../swipeable-card/types';
 
 export type ListCardProps = {
   label: string;
@@ -10,7 +11,12 @@ export type ListCardProps = {
   color?: string;
   onPress?: () => void;
   ControlComponent?: React.ReactNode;
+};
+
+export type EditableListCardProps = ListCardProps & {
   swipeEnabled?: boolean;
+  onArchive: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
+  onDelete: () => void;
 };
 
 export type NumberOfActiveItemsProps = Pick<

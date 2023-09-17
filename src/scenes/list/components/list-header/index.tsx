@@ -29,7 +29,6 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
             <Title
               adjustsFontSizeToFit
               onLayout={e => {
-                console.log('LOG >>>>>>>>> ', e.nativeEvent.layout.width);
                 setTitleWidth(e.nativeEvent.layout.width);
               }}
               numberOfLines={2}

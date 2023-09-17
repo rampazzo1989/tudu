@@ -24,3 +24,5 @@ export type SwipeableCardProps = {
   onSwipeRight?: () => void;
   onSwipeLeft?: () => void;
 };
+
+export type SwipeableCardRef = {closeOptions: () => void};

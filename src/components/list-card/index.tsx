@@ -8,7 +8,6 @@ import {
   ListCardContainer,
   Number,
 } from './styles';
-import {SwipeableListCard} from './swipeable-list-card';
 import {ListCardProps, NumberOfActiveItemsProps} from './types';
 
 const NumberOfActiveItems: React.FC<NumberOfActiveItemsProps> = memo(
@@ -32,7 +31,6 @@ const ListCard: React.FC<ListCardProps> = memo(
     onPress,
     ControlComponent,
     isHighlighted = false,
-    swipeEnabled = true,
   }) => {
     const theme = useTheme();
     return (
@@ -44,26 +42,24 @@ const ListCard: React.FC<ListCardProps> = memo(
         scaleFactor={0.02}
         style={style}
         onPress={onPress}>
-        <SwipeableListCard enabled={swipeEnabled} isHighlighted={isHighlighted}>
-          <IconLabelContainer>
-            {ControlComponent && (
-              <ControlComponentContainer>
-                {ControlComponent}
-              </ControlComponentContainer>
-            )}
-            <Icon animateWhenIdle />
-            <Label isHighlighted={isHighlighted} numberOfLines={1}>
-              {label}
-            </Label>
-          </IconLabelContainer>
-          <NumberOfActiveItems
-            numberOfActiveItems={numberOfActiveItems}
-            isHighlighted={isHighlighted}
-          />
-        </SwipeableListCard>
+        <IconLabelContainer>
+          {ControlComponent && (
+            <ControlComponentContainer>
+              {ControlComponent}
+            </ControlComponentContainer>
+          )}
+          <Icon animateWhenIdle />
+          <Label isHighlighted={isHighlighted} numberOfLines={1}>
+            {label}
+          </Label>
+        </IconLabelContainer>
+        <NumberOfActiveItems
+          numberOfActiveItems={numberOfActiveItems}
+          isHighlighted={isHighlighted}
+        />
       </ListCardContainer>
     );
   },
 );
 
-export {ListCard};
+export {ListCard, NumberOfActiveItems};

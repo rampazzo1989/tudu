@@ -86,7 +86,7 @@ export const isNestedItem = <T>(item: DraggableItem<T> | T): item is T => {
 export const deleteItem = <T>(
   list: DraggableItem<T>[],
   listSetter: (newData: DraggableItem<T>[]) => void,
-  deletingItem?: DraggableItem<T>,
+  deletingItem?: DraggableItem<T> | T,
 ) => {
   if (!deletingItem) {
     return;

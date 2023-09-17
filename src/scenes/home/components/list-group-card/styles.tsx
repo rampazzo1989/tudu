@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
-import {ListCard} from '../../../../components/list-card';
 import Animated from 'react-native-reanimated';
 import {ShrinkableView} from '../../../../components/shrinkable-view';
+import {EditableListCard} from '../../../../components/list-card/editable-list-card';
 
 export const ListGroupContainer = styled.View`
   border-radius: 10px;
@@ -23,7 +23,7 @@ export const Title = styled(Animated.Text)`
   width: 90%;
 `;
 
-export const SubListCard = styled(ListCard)`
+export const SubListCard = styled(EditableListCard)`
   elevation: 15;
   margin-bottom: 8px;
 `;

@@ -1,6 +1,5 @@
 import React, {memo, useCallback, useContext, useMemo} from 'react';
 import {DeleteIcon} from '../../../../../../components/animated-icons/delete-icon';
-import {ListDefaultIcon} from '../../../../../../components/animated-icons/list-default-icon';
 import {MenuOptions} from '../../../../../../components/menu-options';
 import {MenuOption} from '../../../../../../components/menu-options/types';
 import {DraggableContext} from '../../../../../../modules/draggable/draggable-context';
@@ -15,9 +14,10 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
     const draggableContext = useContext(DraggableContext);
 
     const handleDeleteOptionPress = useCallback(() => {
-      draggableContext.showDeleteConfirmationModal(
+      draggableContext.showConfirmationModal(
         groupData,
         generateListAndGroupDeleteTitle,
+        'delete',
       );
       closeMenu();
     }, [closeMenu, draggableContext, groupData]);
