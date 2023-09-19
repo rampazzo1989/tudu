@@ -2,14 +2,16 @@ import {
   AnimatedIconProps,
   AnimatedIconRef,
 } from '../animated-icons/animated-icon/types';
+import {MenuOption} from '../menu-options/types';
 
 export type SwipeableOption = {
   Icon: React.ForwardRefExoticComponent<
     AnimatedIconProps & React.RefAttributes<AnimatedIconRef>
   >;
-  onPress: () => void;
+  onPress?: () => void;
   backgroundColor?: string;
   text?: string;
+  popoverMenuOptions?: MenuOption[];
 };
 
 export type SwipeableCardProps = {

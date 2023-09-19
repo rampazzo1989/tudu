@@ -55,12 +55,13 @@ const SwipeableCard = memo(
                       option.backgroundColor ?? optionsBackgroundColor
                     }
                     optionSize={fullWidth ? '100%' : undefined}
-                    ref={ref => {
-                      if (ref) {
-                        iconsRefs.current.push(ref);
+                    ref={r => {
+                      if (r) {
+                        iconsRefs.current.push(r);
                       }
                     }}
                     onPress={option.onPress}
+                    popoverMenuOptions={option.popoverMenuOptions}
                   />
                 );
               })}
@@ -94,8 +95,9 @@ const SwipeableCard = memo(
         (direction: 'left' | 'right') => {
           const iconsRefs =
             direction === 'left' ? leftIconsRefs : rightIconsRefs;
-          for (const ref of iconsRefs.current) {
-            ref?.playAnimation?.();
+          for (const iconRef of iconsRefs.current) {
+            iconRef?.playAnimation?.();
+            iconRef?.showPopoverMenu?.();
           }
         },
         [],
