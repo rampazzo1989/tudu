@@ -2,15 +2,32 @@ import i18next from 'i18next';
 import ReactNativeRecoilPersist from 'react-native-recoil-persist';
 import {atom, selector} from 'recoil';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
+import {MoonIcon} from '../../components/animated-icons/moon-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
 import {SunIcon} from '../../components/animated-icons/sun-icon';
 import {Counter, BuiltInList, List} from './types';
+
+const getDaytimeIcon = () => {
+  const currentTime = new Date();
+
+  const sunsetTime = new Date();
+  sunsetTime.setHours(18);
+  sunsetTime.setMinutes(30); // Assuming sunset is at 6:30 PM
+
+  const sunriseTime = new Date();
+  sunriseTime.setHours(6);
+  sunriseTime.setMinutes(0); // Assuming sunrise is at 6 AM
+
+  return currentTime >= sunsetTime || currentTime < sunriseTime
+    ? MoonIcon
+    : SunIcon;
+};
 
 export const homeDefaultLists = atom<BuiltInList[]>({
   key: 'homeDefaultLists',
   default: [
     {
-      icon: SunIcon,
+      icon: getDaytimeIcon(),
       label: i18next.t('listTitles.today'),
       isHighlighted: true,
       numberOfActiveItems: 0,
@@ -28,7 +45,7 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       numberOfActiveItems: 0,
     },
   ],
-  effects: [ReactNativeRecoilPersist.persistAtom],
+  // effects: [ReactNativeRecoilPersist.persistAtom],
 });
 
 export const counters = atom<Counter[]>({
