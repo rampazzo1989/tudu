@@ -16,6 +16,7 @@ export type SwipeableOptionProps = {
   progress?: Animated.AnimatedInterpolation<string | number>;
   dragX?: Animated.AnimatedInterpolation<string | number>;
   popoverMenuOptions?: MenuOption[];
+  onPopoverMenuClose?: () => void;
 };
 
 export type SwipeableOptionRef = {

@@ -1,6 +1,7 @@
 import React, {
   forwardRef,
   memo,
+  useCallback,
   useImperativeHandle,
   useRef,
   useState,
@@ -24,6 +25,7 @@ const SwipeableOptionButton = memo(
         progress,
         dragX,
         popoverMenuOptions,
+        onPopoverMenuClose,
       },
       ref,
     ) => {
@@ -42,6 +44,10 @@ const SwipeableOptionButton = memo(
         };
       });
 
+      const closeMenu = useCallback(() => {
+        setPopoverMenuVisible(false);
+      }, []);
+
       return (
         <Touchable
           backgroundColor={backgroundColor}
@@ -53,11 +59,10 @@ const SwipeableOptionButton = memo(
           {!!popoverMenuOptions && !!touchableRef.current && (
             <PopoverMenu
               isVisible={popoverMenuVisible}
-              onRequestClose={() => {
-                setPopoverMenuVisible(false);
-              }}
+              onRequestClose={closeMenu}
+              onCloseComplete={onPopoverMenuClose}
               from={touchableRef}>
-              <MenuOptions options={popoverMenuOptions} />
+              <MenuOptions options={popoverMenuOptions} closeMenu={closeMenu} />
             </PopoverMenu>
           )}
         </Touchable>

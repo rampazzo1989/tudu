@@ -32,6 +32,10 @@ const SwipeableCard = memo(
       const rightIconsRefs = useRef<SwipeableOptionRef[]>([]);
       const leftIconsRefs = useRef<SwipeableOptionRef[]>([]);
 
+      const handleOptionMenuClose = useCallback(() => {
+        swipeableRef.current?.close();
+      }, []);
+
       useImperativeHandle(ref, () => ({
         closeOptions: () => swipeableRef.current?.close(),
       }));
@@ -62,13 +66,14 @@ const SwipeableCard = memo(
                     }}
                     onPress={option.onPress}
                     popoverMenuOptions={option.popoverMenuOptions}
+                    onPopoverMenuClose={handleOptionMenuClose}
                   />
                 );
               })}
             </OptionsContainer>
           );
         },
-        [optionsBackgroundColor],
+        [handleOptionMenuClose, optionsBackgroundColor],
       );
 
       const renderRightActions = useCallback(

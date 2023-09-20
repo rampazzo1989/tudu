@@ -39,7 +39,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
             'archive',
             () => swipeableRef.current?.closeOptions(),
           );
-        }, 40);
+        }, 0);
       },
     [draggableContext],
   );

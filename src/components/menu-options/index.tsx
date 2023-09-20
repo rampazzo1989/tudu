@@ -10,16 +10,21 @@ import {
 } from './styles';
 import {MenuOptionsProps} from './types';
 
-const MenuOptions: React.FC<MenuOptionsProps> = memo(({options}) => {
+const MenuOptions: React.FC<MenuOptionsProps> = memo(({options, closeMenu}) => {
   const theme = useTheme();
   return (
     <>
       {options.map(({Icon, label, onPress}, index, {length}) => {
         const isLastItem = index === length - 1;
 
+        const handlePress = () => {
+          onPress();
+          closeMenu?.();
+        };
+
         return (
           <OptionContainer key={label}>
-            <OptionLine onPress={onPress}>
+            <OptionLine onPress={handlePress}>
               <IconContainer>
                 <Icon style={styles.icon} />
               </IconContainer>
