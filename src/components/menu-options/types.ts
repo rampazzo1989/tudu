@@ -8,4 +8,5 @@ export type MenuOption = {
 
 export type MenuOptionsProps = {
   options: MenuOption[];
+  closeMenu?: () => void;
 };
