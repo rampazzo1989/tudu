@@ -1,10 +1,6 @@
 import React, {memo} from 'react';
 import {FadingViewProps} from './types';
-import Animated, {
-  FadeInUp,
-  FadeOutDown,
-  FadeOutUp,
-} from 'react-native-reanimated';
+import Animated, {FadeInUp, FadeOutUp} from 'react-native-reanimated';
 
 const FadingView: React.FC<FadingViewProps> = memo(
   ({visible, children, style}) => {

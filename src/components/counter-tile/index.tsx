@@ -20,12 +20,13 @@ import {
   OptionsTouchable,
   OptionsIconContainer,
   ShrinkableContainer,
+  EditingTextContainer,
 } from './styles';
 import {
   ActionButtonProps,
-  AdjustButtonProps,
   CounterTileProps,
   CounterValueProps,
+  EditingCounterValueProps,
   OptionsButtonProps,
   TileTitleProps,
 } from './types';
@@ -61,32 +62,29 @@ const CounterValue: React.FC<CounterValueProps> = memo(({value}) => {
   );
 });
 
-const EditingCounterValue: React.FC<CounterValueProps> = memo(({value}) => {
-  return (
-    <EditingCounterText adjustsFontSizeToFit numberOfLines={1}>
-      {value}
-    </EditingCounterText>
-  );
-});
-
-const AdjustButton: React.FC<AdjustButtonProps> = memo(
-  ({onChangeButtonPress}) => {
-    const iconRef = useRef<BaseAnimatedIconRef>(null);
-
-    const handleChangeButtonPress = () => {
-      iconRef?.current?.play();
-      onChangeButtonPress();
-    };
-
+const EditingCounterValue: React.FC<EditingCounterValueProps> = memo(
+  ({value, onEditOption}) => {
     return (
-      <ButtonContainer exiting={FadeOutDown.duration(300)}>
-        <Button onPress={handleChangeButtonPress} hitSlop={20}>
-          <AdjustIcon ref={iconRef} autoPlay />
-        </Button>
-      </ButtonContainer>
+      <EditingTextContainer onPress={onEditOption}>
+        <EditingCounterText adjustsFontSizeToFit numberOfLines={1}>
+          {value}
+        </EditingCounterText>
+      </EditingTextContainer>
     );
   },
 );
+
+const AdjustButton: React.FC = memo(() => {
+  const iconRef = useRef<BaseAnimatedIconRef>(null);
+
+  return (
+    <ButtonContainer exiting={FadeOutDown.duration(300)}>
+      <Button>
+        <AdjustIcon ref={iconRef} autoPlay />
+      </Button>
+    </ButtonContainer>
+  );
+});
 
 const MoreOptionsButton: React.FC<OptionsButtonProps> = memo(
   ({counterData, onDeleteOption, onEditOption}) => {
@@ -246,7 +244,7 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
           onPress={handleChangeButtonPress}>
           <TileTitle title={counterData.title} />
           <CounterValue value={counterData.value} />
-          <AdjustButton onChangeButtonPress={handleChangeButtonPress} />
+          <AdjustButton />
         </ShrinkableContainer>
       </ReplacebleContainer>
 
@@ -256,7 +254,10 @@ const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
           onEditOption={handleEditCounter}
           onDeleteOption={handleDeleteCounter}
         />
-        <EditingCounterValue value={counterData.value} />
+        <EditingCounterValue
+          value={counterData.value}
+          onEditOption={handleEditCounter}
+        />
         <ActionButtonsContainer>
           <DecrementButton onAction={handleDecrement} />
           <IncrementButton onAction={handleIncrement} />

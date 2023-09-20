@@ -123,9 +123,10 @@ export const getListByLabel = selector({
         list => list.label === label,
       );
 
-      return (
-        selectedListFromDefault ??
-        myListsData.find(list => list.label === label)
-      );
+      if (selectedListFromDefault) {
+        return selectedListFromDefault;
+      }
+
+      return myListsData.find(list => list.label === label);
     },
 });

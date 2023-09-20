@@ -25,7 +25,10 @@ import {BaseAnimatedIconRef} from '../../../../components/animated-icons/animate
 import {RenameModal} from './components/rename-modal';
 import {FadeIn} from 'react-native-reanimated';
 import {List} from '../../types';
-import {generateListAndGroupArchiveTitle} from '../../../../utils/list-and-group-utils';
+import {
+  generateListAndGroupArchiveTitle,
+  generateListAndGroupDeleteTitle,
+} from '../../../../utils/list-and-group-utils';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
 
@@ -71,9 +74,13 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
 
     const handleDeleteGenerator = useCallback(
       (list: List) => () => {
-        console.log('Delete', list.label);
+        draggableContext.showConfirmationModal(
+          list,
+          generateListAndGroupDeleteTitle,
+          'delete',
+        );
       },
-      [],
+      [draggableContext],
     );
 
     const handleArchiveGenerator = useCallback(

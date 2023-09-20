@@ -9,7 +9,10 @@ import {List} from '../../types';
 import {EditableListCard} from '../../../../components/list-card/editable-list-card';
 import {DraggableItem} from '../../../../modules/draggable/draggable-context/types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
-import {generateListAndGroupArchiveTitle} from '../../../../utils/list-and-group-utils';
+import {
+  generateListAndGroupArchiveTitle,
+  generateListAndGroupDeleteTitle,
+} from '../../../../utils/list-and-group-utils';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
 
 const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
@@ -24,22 +27,26 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
 
   const handleDeleteGenerator = useCallback(
     (draggableList: DraggableItem<List>) => () => {
-      console.log('Delete', draggableList.data[0].label);
+      draggableContext.showConfirmationModal(
+        draggableList,
+        generateListAndGroupDeleteTitle,
+        'delete',
+      );
     },
-    [],
+    [draggableContext],
   );
 
   const handleArchiveGenerator = useCallback(
     (draggableList: DraggableItem<List>) =>
       (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-        return setTimeout(() => {
-          draggableContext.showConfirmationModal(
-            draggableList,
-            generateListAndGroupArchiveTitle,
-            'archive',
-            () => swipeableRef.current?.closeOptions(),
-          );
-        }, 0);
+        // return setTimeout(() => {
+        return draggableContext.showConfirmationModal(
+          draggableList,
+          generateListAndGroupArchiveTitle,
+          'archive',
+          () => swipeableRef.current?.closeOptions(),
+        );
+        // }, 0);
       },
     [draggableContext],
   );

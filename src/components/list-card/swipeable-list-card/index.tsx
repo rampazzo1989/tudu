@@ -26,13 +26,13 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
             },
             {
               Icon: DeleteIcon,
-              label: 'Delete Group',
-              onPress: () => console.log('Delete'),
+              label: 'Delete',
+              onPress: () => onDelete(swipeableRef),
             },
           ],
         },
       ],
-      [],
+      [onDelete],
     );
 
     const leftOptions = useMemo<SwipeableOption[]>(
@@ -50,9 +50,7 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
       onArchive(swipeableRef);
     }, [onArchive]);
 
-    const handleSwipeLeft = useCallback(() => {
-      onDelete(swipeableRef);
-    }, [onDelete]);
+    const handleSwipeLeft = useCallback(() => {}, []);
 
     return (
       <SwipeableCard

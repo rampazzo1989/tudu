@@ -1,5 +1,6 @@
-import React, {memo, useRef, useState} from 'react';
+import React, {memo, useMemo, useRef, useState} from 'react';
 import {FadeIn} from 'react-native-reanimated';
+import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {BackButton} from '../../../../components/back-button';
 import {Header} from '../../../../components/header';
 import {ContentRow, Title, TitleContainer} from './styles';
@@ -21,6 +22,10 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
 
     const [titleWidth, setTitleWidth] = useState(0);
 
+    const ListIcon = useMemo(() => {
+      return listData.icon ?? ListDefaultIcon;
+    }, [listData.icon]);
+
     return (
       <Header titleWidth={titleWidth}>
         <ContentRow entering={FadeIn.duration(500)}>
@@ -36,6 +41,11 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               {listData.label}
             </Title>
           </TitleContainer>
+          <ListIcon
+            size={70}
+            autoPlay
+            style={{opacity: 0.3, marginRight: -15, marginTop: 0}}
+          />
         </ContentRow>
       </Header>
     );
