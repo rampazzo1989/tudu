@@ -1,3 +1,4 @@
+import {StyleSheet} from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
@@ -18,3 +19,7 @@ export const Title = styled.Text`
   font-size: 24px;
   margin-left: 10px;
 `;
+
+export const styles = StyleSheet.create({
+  pageIcon: {marginRight: -15, marginTop: 0},
+});

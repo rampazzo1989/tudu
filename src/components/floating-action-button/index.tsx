@@ -33,9 +33,10 @@ const FloatingActionButton = memo(
       // Animates the current icon when option is set
       useEffect(() => {
         if (animateNextIcon.current) {
-          iconRef.current?.play(() =>
-            setTimeout(() => setCurrentIcon(DefaultIcon), 500),
-          );
+          iconRef.current?.play({
+            onAnimationFinish: () =>
+              setTimeout(() => setCurrentIcon(DefaultIcon), 500),
+          });
           animateNextIcon.current = false;
         } else {
           iconRef.current?.pause();
@@ -72,7 +73,7 @@ const FloatingActionButton = memo(
             onPress={handlePress}
             scaleFactor={0.05}
             entering={ZoomIn.delay(100)}>
-            <CurrentIcon ref={iconRef} speed={1.4} />
+            <CurrentIcon ref={iconRef} speed={1.4} size="max" />
           </FloatingButton>
         ),
         [CurrentIcon, handlePress],

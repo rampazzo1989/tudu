@@ -18,7 +18,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     navigation.goBack();
   }, [navigation]);
 
-  const list: BuiltInList | undefined = useMemo(() => {
+  const list: BuiltInList | List | undefined = useMemo(() => {
     const selectedListFromDefault = defaultLists.find(x => x.label === listId);
 
     if (selectedListFromDefault) {

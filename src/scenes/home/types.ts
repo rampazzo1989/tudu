@@ -11,6 +11,7 @@ export type List = {
   numberOfActiveItems: number;
   color?: string;
   groupName?: string;
+  id: string;
 };
 
 export type BuiltInList = List & {

@@ -1,6 +1,6 @@
-import {BuiltInList} from '../../../home/types';
+import {BuiltInList, List} from '../../../home/types';
 
 export type ListHeaderProps = {
-  listData: BuiltInList;
+  listData?: BuiltInList | List;
   onBackButtonPress: () => void;
 };

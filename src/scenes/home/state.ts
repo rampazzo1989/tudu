@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import ReactNativeRecoilPersist from 'react-native-recoil-persist';
 import {atom, selector} from 'recoil';
+import {FolderIcon} from '../../components/animated-icons/folder-icon';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {MoonIcon} from '../../components/animated-icons/moon-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
@@ -19,7 +20,7 @@ const getDaytimeIcon = () => {
   sunriseTime.setMinutes(0); // Assuming sunrise is at 6 AM
 
   return currentTime >= sunsetTime || currentTime < sunriseTime
-    ? MoonIcon
+    ? SunIcon
     : SunIcon;
 };
 
@@ -27,18 +28,28 @@ export const homeDefaultLists = atom<BuiltInList[]>({
   key: 'homeDefaultLists',
   default: [
     {
+      id: 'todayList',
       icon: getDaytimeIcon(),
       label: i18next.t('listTitles.today'),
       isHighlighted: true,
       numberOfActiveItems: 0,
     },
     {
+      id: 'allTasksList',
       icon: ListDefaultIcon,
       label: i18next.t('listTitles.allTasks'),
       isHighlighted: false,
       numberOfActiveItems: 0,
     },
     {
+      id: 'archivedListsList',
+      icon: FolderIcon,
+      label: i18next.t('listTitles.archived'),
+      isHighlighted: false,
+      numberOfActiveItems: 0,
+    },
+    {
+      id: 'starredList',
       icon: StarIcon,
       label: i18next.t('listTitles.starred'),
       isHighlighted: false,
@@ -74,28 +85,33 @@ export const myLists = atom<List[]>({
   key: 'myLists',
   default: [
     {
+      id: '1',
       label: 'Movies',
       color: 'green',
       numberOfActiveItems: 1,
     },
     {
+      id: '2',
       label: 'Shop List',
       color: 'red',
       numberOfActiveItems: 3,
       groupName: 'Test',
     },
     {
+      id: '3',
       label: 'Gift Ideias',
       color: '#7956BF',
       numberOfActiveItems: 12,
     },
     {
+      id: '4',
       label: 'America',
       color: 'red',
       numberOfActiveItems: 10,
       groupName: 'Travel',
     },
     {
+      id: '5',
       label: 'Europe',
       color: 'blue',
       numberOfActiveItems: 12,

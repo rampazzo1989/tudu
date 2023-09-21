@@ -1,13 +1,14 @@
-import {AnimatedLottieViewProps} from 'lottie-react-native';
+import {LottieViewProps} from 'lottie-react-native';
 
-export interface BaseAnimatedIconProps extends AnimatedLottieViewProps {
+export interface BaseAnimatedIconProps extends LottieViewProps {
   componentName: string;
   initialFrame?: number;
   finalFrame?: number;
   animateWhenIdle?: boolean;
   autoPlayDelay?: number;
   staticStateFrame?: number;
-  size?: number;
+  size?: number | 'max';
+  overrideColor?: string;
 }
 
 export type AnimatedIconProps = Omit<
