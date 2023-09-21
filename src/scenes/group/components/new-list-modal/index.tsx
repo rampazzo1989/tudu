@@ -17,6 +17,7 @@ import {DraggableContext} from '../../../../modules/draggable/draggable-context'
 import {insertNewItem} from '../../../../modules/draggable/draggable-utils';
 import {List} from '../../../home/types';
 import {getDuplicateProofListTitle} from '../../../../utils/list-and-group-utils';
+import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 
 const NewListModal: React.FC<NewListModalProps> = memo(
   ({visible, onRequestClose}) => {
@@ -42,6 +43,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
       );
 
       const newList: List = {
+        id: generateRandomHash(duplicateProofListTitle),
         label: duplicateProofListTitle,
         numberOfActiveItems: 0,
       };

@@ -8,15 +8,14 @@ export type TileTitleProps = Pick<Counter, 'title'>;
 
 export type CounterValueProps = Pick<Counter, 'value'>;
 
-export type AdjustButtonProps = {
-  onChangeButtonPress: () => void;
-};
-
 export type OptionsButtonProps = {
   counterData: Counter;
   onEditOption: () => void;
   onDeleteOption: () => void;
 };
+
+export type EditingCounterValueProps = CounterValueProps &
+  Pick<OptionsButtonProps, 'onEditOption'>;
 
 export type ActionButtonProps = {
   onAction: () => void;

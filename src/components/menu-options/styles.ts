@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 import styled from 'styled-components/native';
 
 export const OptionLine = styled.TouchableOpacity`
@@ -21,10 +21,16 @@ export const OptionContainer = styled.View`
 `;
 
 export const IconContainer = styled.View`
-  height: 16px;
-  width: 16px;
+  height: 18px;
+  width: 18px;
+  align-items: stretch;
+  justify-content: center;
 `;
 
 export const styles = StyleSheet.create({
-  icon: {maxHeight: 20, height: 'auto', width: 'auto'},
+  icon: {
+    maxHeight: 16,
+    width: 16,
+    height: 16,
+  },
 });

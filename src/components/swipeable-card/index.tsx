@@ -102,7 +102,6 @@ const SwipeableCard = memo(
             direction === 'left' ? leftIconsRefs : rightIconsRefs;
           for (const iconRef of iconsRefs.current) {
             iconRef?.playAnimation?.();
-            iconRef?.showPopoverMenu?.();
           }
         },
         [],
@@ -110,7 +109,14 @@ const SwipeableCard = memo(
 
       const handleSwipeableWillOpen = useCallback(
         (direction: 'left' | 'right') => {
-          return direction === 'left' ? onSwipeRight?.() : onSwipeLeft?.();
+          setTimeout(() => {
+            direction === 'left' ? onSwipeRight?.() : onSwipeLeft?.();
+            const iconsRefs =
+              direction === 'left' ? leftIconsRefs : rightIconsRefs;
+            for (const iconRef of iconsRefs.current) {
+              iconRef?.showPopoverMenu?.();
+            }
+          }, 50);
         },
         [onSwipeLeft, onSwipeRight],
       );

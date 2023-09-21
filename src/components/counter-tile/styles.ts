@@ -56,7 +56,7 @@ export const ButtonContainer = styled(Animated.View)`
   width: 100%;
 `;
 
-export const Button = styled.TouchableOpacity`
+export const Button = styled.View`
   height: 14px;
   width: 26px;
   background-color: ${({theme}) => theme.colors.primary};
@@ -114,3 +114,5 @@ export const OptionsIconContainer = styled.View`
   height: 20px;
   width: 20px;
 `;
+
+export const EditingTextContainer = styled(ShrinkableView)``;

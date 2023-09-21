@@ -3,22 +3,30 @@ import {DraxProvider} from 'react-native-drax';
 import {useRecoilValue} from 'recoil';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
-import {getListByLabel} from '../home/state';
+import {homeDefaultLists, myLists} from '../home/state';
+import {BuiltInList, List} from '../home/types';
 import {ListHeader} from './components/list-header';
 import {ListPageProps} from './types';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
 
-  const getList = useRecoilValue(getListByLabel);
+  const defaultLists = useRecoilValue(homeDefaultLists);
+  const customLists = useRecoilValue(myLists);
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
-  const list = useMemo(() => {
-    return getList(listId);
-  }, [getList, listId]);
+  const list: BuiltInList | List | undefined = useMemo(() => {
+    const selectedListFromDefault = defaultLists.find(x => x.label === listId);
+
+    if (selectedListFromDefault) {
+      return selectedListFromDefault;
+    }
+
+    return customLists.find(x => x.label === listId);
+  }, [customLists, defaultLists, listId]);
 
   return (
     <Page>

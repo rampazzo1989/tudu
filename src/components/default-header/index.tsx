@@ -3,17 +3,28 @@ import {FadeIn} from 'react-native-reanimated';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {BackButton} from '../../../../components/back-button';
 import {Header} from '../../../../components/header';
-import {BuiltInList} from '../../../home/types';
-import {ContentRow, styles, Title, TitleContainer} from './styles';
+import {ContentRow, Title, TitleContainer} from './styles';
 import {ListHeaderProps} from './types';
 
-const ListHeader: React.FC<ListHeaderProps> = memo(
+const DefaultHeader: React.FC<ListHeaderProps> = memo(
   ({listData, onBackButtonPress}) => {
+    //   const iconRef = useRef<AnimatedIconRef>(null);
+
+    //   useEffect(() => {
+    //     iconRef.current?.play({
+    //       animationLayer: 'toggleOff',
+    //       delay: 2000,
+    //       onAnimationFinish: () => {
+    //         iconRef.current?.play({animationLayer: 'toggleOn'});
+    //       },
+    //     });
+    //   }, []);
+
     const [titleWidth, setTitleWidth] = useState(0);
 
     const ListIcon = useMemo(() => {
-      return (listData as BuiltInList)?.icon ?? ListDefaultIcon;
-    }, [listData]);
+      return listData?.icon ?? ListDefaultIcon;
+    }, [listData?.icon]);
 
     return (
       <Header titleWidth={titleWidth}>
@@ -33,8 +44,7 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
           <ListIcon
             size={70}
             autoPlay
-            style={styles.pageIcon}
-            overrideColor="#A188D2"
+            style={{opacity: 0.3, marginRight: -15, marginTop: 0}}
           />
         </ContentRow>
       </Header>
@@ -42,4 +52,4 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
   },
 );
 
-export {ListHeader};
+export {DefaultHeader};

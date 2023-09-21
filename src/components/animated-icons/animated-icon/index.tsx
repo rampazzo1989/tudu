@@ -27,6 +27,7 @@ const BaseAnimatedIcon = memo(
         animateWhenIdle = false,
         staticStateFrame = 0,
         size,
+        overrideColor,
         ...props
       },
       ref,
@@ -98,18 +99,65 @@ const BaseAnimatedIcon = memo(
       });
 
       const sizedStyle = useMemo(() => {
-        if (size) {
-          return {height: size, width: size};
-        } else {
-          return {};
-        }
+        return size === 'max'
+          ? {flex: 1}
+          : size
+          ? {height: size, width: size}
+          : {};
       }, [size]);
+
+      function extractLayerNames(jsonData: any): string[] {
+        const layerNames: string[] = [];
+
+        // Traverse the JSON data to extract layer names
+        function traverseLayers(layers: any[]) {
+          for (const layer of layers) {
+            if (layer.nm && typeof layer.nm === 'string') {
+              // Check if the layer has a valid name (nm property)
+              layerNames.push(layer.nm);
+            }
+            if (layer.layers && Array.isArray(layer.layers)) {
+              // If the layer has sublayers, traverse them
+              traverseLayers(layer.layers);
+            }
+          }
+        }
+
+        // Start traversing the layers in the Lottie JSON data
+        if (jsonData.layers && Array.isArray(jsonData.layers)) {
+          traverseLayers(jsonData.layers);
+        }
+
+        return layerNames;
+      }
+
+      const removeInvalidJSONTokens = (json: any) => {
+        const cleanJSONString = JSON.stringify(json)
+          .replace(/\$/g, '')
+          .replace(/;/g, '')
+          .replace(/\n/g, '');
+        return JSON.parse(cleanJSONString);
+      };
+
+      const getColorFilters = (color?: string) => {
+        if (!color) {
+          return;
+        }
+        try {
+          const cleanJSON = removeInvalidJSONTokens(props.source);
+          const layersNames = extractLayerNames(cleanJSON);
+          return layersNames.map(x => ({keypath: x, color}));
+        } catch (error) {
+          return undefined;
+        }
+      };
 
       return (
         <Lottie
           loop={false}
           {...props}
           style={[props.style, sizedStyle]}
+          colorFilters={getColorFilters(overrideColor)}
           ref={animationRef}
           onAnimationFinish={handleAnimationFinish}
         />
