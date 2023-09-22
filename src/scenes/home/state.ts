@@ -20,7 +20,7 @@ const getDaytimeIcon = () => {
   sunriseTime.setMinutes(0); // Assuming sunrise is at 6 AM
 
   return currentTime >= sunsetTime || currentTime < sunriseTime
-    ? SunIcon
+    ? MoonIcon
     : SunIcon;
 };
 
@@ -47,6 +47,7 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       label: i18next.t('listTitles.archived'),
       isHighlighted: false,
       numberOfActiveItems: 0,
+      navigateToPage: 'Archived',
     },
     {
       id: 'starredList',

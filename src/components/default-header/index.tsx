@@ -1,30 +1,19 @@
-import React, {memo, useMemo, useRef, useState} from 'react';
+import React, {memo, useEffect, useRef, useState} from 'react';
 import {FadeIn} from 'react-native-reanimated';
-import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
-import {BackButton} from '../../../../components/back-button';
-import {Header} from '../../../../components/header';
-import {ContentRow, Title, TitleContainer} from './styles';
-import {ListHeaderProps} from './types';
+import {BackButton} from '../back-button';
+import {Header} from '../header';
+import {ContentRow, styles, Title, TitleContainer} from './styles';
+import {DefaultHeaderProps} from './types';
+import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
 
-const DefaultHeader: React.FC<ListHeaderProps> = memo(
-  ({listData, onBackButtonPress}) => {
-    //   const iconRef = useRef<AnimatedIconRef>(null);
-
-    //   useEffect(() => {
-    //     iconRef.current?.play({
-    //       animationLayer: 'toggleOff',
-    //       delay: 2000,
-    //       onAnimationFinish: () => {
-    //         iconRef.current?.play({animationLayer: 'toggleOn'});
-    //       },
-    //     });
-    //   }, []);
-
+const DefaultHeader: React.FC<DefaultHeaderProps> = memo(
+  ({title, Icon, onBackButtonPress}) => {
     const [titleWidth, setTitleWidth] = useState(0);
+    const iconRef = useRef<AnimatedIconRef>(null);
 
-    const ListIcon = useMemo(() => {
-      return listData?.icon ?? ListDefaultIcon;
-    }, [listData?.icon]);
+    useEffect(() => {
+      iconRef.current?.play();
+    }, []);
 
     return (
       <Header titleWidth={titleWidth}>
@@ -38,13 +27,14 @@ const DefaultHeader: React.FC<ListHeaderProps> = memo(
               }}
               numberOfLines={2}
               minimumFontScale={0.6}>
-              {listData?.label}
+              {title}
             </Title>
           </TitleContainer>
-          <ListIcon
-            size={70}
-            autoPlay
-            style={{opacity: 0.3, marginRight: -15, marginTop: 0}}
+          <Icon
+            size={55}
+            style={styles.pageIcon}
+            ref={iconRef}
+            overrideColor="#A188D2"
           />
         </ContentRow>
       </Header>

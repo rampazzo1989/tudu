@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {HomePageProps, List} from './types';
+import {BuiltInList, HomePageProps, List} from './types';
 import {PageContent} from '../../components/page-content';
 import {Page} from '../../components/page';
 import {DefaultLists} from './components/default-lists';
@@ -72,6 +72,17 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     [navigation],
   );
 
+  const handleDefaultListPress = useCallback(
+    (listData: BuiltInList) => {
+      if (listData.navigateToPage) {
+        navigation.navigate(listData.navigateToPage);
+      } else {
+        handleListPress(listData);
+      }
+    },
+    [handleListPress, navigation],
+  );
+
   return (
     <Page>
       <HomeHeader />
@@ -86,7 +97,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContentContainer}
             scrollEnabled>
-            <DefaultLists lists={lists} onListPress={handleListPress} />
+            <DefaultLists lists={lists} onListPress={handleDefaultListPress} />
             <SectionTitle title={t('sectionTitles.counters')} />
             <CountersList list={counterList} />
             {groupedCustomLists.length ? (
