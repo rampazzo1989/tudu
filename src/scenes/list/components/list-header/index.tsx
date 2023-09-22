@@ -1,4 +1,4 @@
-import React, {memo, useMemo, useRef, useState} from 'react';
+import React, {memo, useMemo, useState} from 'react';
 import {FadeIn} from 'react-native-reanimated';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {BackButton} from '../../../../components/back-button';

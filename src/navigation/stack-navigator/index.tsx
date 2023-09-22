@@ -7,6 +7,7 @@ import {TransitionSpec} from '@react-navigation/stack/lib/typescript/src/types';
 import {SplashScreen} from '../../scenes/splash-screen';
 import {useTheme} from 'styled-components/native';
 import {ListPage} from '../../scenes/list';
+import {ArchivedPage} from '../../scenes/archived';
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 
@@ -55,6 +56,17 @@ const StackNavigator = () => {
       <Stack.Screen
         name="List"
         component={ListPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: config,
+            close: config,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Archived"
+        component={ArchivedPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {

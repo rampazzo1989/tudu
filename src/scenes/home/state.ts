@@ -47,6 +47,7 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       label: i18next.t('listTitles.archived'),
       isHighlighted: false,
       numberOfActiveItems: 0,
+      navigateToPage: 'Archived',
     },
     {
       id: 'starredList',

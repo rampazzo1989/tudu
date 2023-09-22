@@ -17,6 +17,7 @@ export type List = {
 export type BuiltInList = List & {
   icon: React.FC<AnimatedIconProps>;
   isHighlighted: boolean;
+  navigateToPage?: keyof StackNavigatorParamList;
 };
 
 export type ListGroup = {
