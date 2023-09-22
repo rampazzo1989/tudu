@@ -33,7 +33,7 @@ const FolderIcon = memo(
             } else {
               iconRef.current?.play({
                 initialFrame: 80,
-                finalFrame: 150,
+                finalFrame: 125,
                 onAnimationFinish: options?.onAnimationFinish,
               });
             }
@@ -54,8 +54,8 @@ const FolderIcon = memo(
         source={require('../../../assets/lottie/folder.json')}
         loop={false}
         componentName="FolderIcon"
-        initialFrame={80}
-        staticStateFrame={80}
+        initialFrame={85}
+        staticStateFrame={85}
         finalFrame={150}
         size={24}
         ref={iconRef}

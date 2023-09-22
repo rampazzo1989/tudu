@@ -1,13 +1,19 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useEffect, useRef, useState} from 'react';
 import {FadeIn} from 'react-native-reanimated';
 import {BackButton} from '../back-button';
 import {Header} from '../header';
 import {ContentRow, styles, Title, TitleContainer} from './styles';
 import {DefaultHeaderProps} from './types';
+import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
 
 const DefaultHeader: React.FC<DefaultHeaderProps> = memo(
   ({title, Icon, onBackButtonPress}) => {
     const [titleWidth, setTitleWidth] = useState(0);
+    const iconRef = useRef<AnimatedIconRef>(null);
+
+    useEffect(() => {
+      iconRef.current?.play();
+    }, []);
 
     return (
       <Header titleWidth={titleWidth}>
@@ -26,8 +32,8 @@ const DefaultHeader: React.FC<DefaultHeaderProps> = memo(
           </TitleContainer>
           <Icon
             size={55}
-            autoPlay
             style={styles.pageIcon}
+            ref={iconRef}
             overrideColor="#A188D2"
           />
         </ContentRow>
