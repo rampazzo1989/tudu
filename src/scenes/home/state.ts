@@ -20,7 +20,7 @@ const getDaytimeIcon = () => {
   sunriseTime.setMinutes(0); // Assuming sunrise is at 6 AM
 
   return currentTime >= sunsetTime || currentTime < sunriseTime
-    ? SunIcon
+    ? MoonIcon
     : SunIcon;
 };
 

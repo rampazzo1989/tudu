@@ -109,21 +109,17 @@ const BaseAnimatedIcon = memo(
       function extractLayerNames(jsonData: any): string[] {
         const layerNames: string[] = [];
 
-        // Traverse the JSON data to extract layer names
         function traverseLayers(layers: any[]) {
           for (const layer of layers) {
             if (layer.nm && typeof layer.nm === 'string') {
-              // Check if the layer has a valid name (nm property)
               layerNames.push(layer.nm);
             }
             if (layer.layers && Array.isArray(layer.layers)) {
-              // If the layer has sublayers, traverse them
               traverseLayers(layer.layers);
             }
           }
         }
 
-        // Start traversing the layers in the Lottie JSON data
         if (jsonData.layers && Array.isArray(jsonData.layers)) {
           traverseLayers(jsonData.layers);
         }
