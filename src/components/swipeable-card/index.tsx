@@ -45,6 +45,7 @@ const SwipeableCard = memo(
           options: SwipeableOption[],
           fullWidth: boolean,
           iconsRefs: React.MutableRefObject<SwipeableOptionRef[]>,
+          alignTo: 'left' | 'right',
         ) => {
           iconsRefs.current = [];
           return (
@@ -67,6 +68,7 @@ const SwipeableCard = memo(
                     onPress={option.onPress}
                     popoverMenuOptions={option.popoverMenuOptions}
                     onPopoverMenuClose={handleOptionMenuClose}
+                    alignTo={alignTo}
                   />
                 );
               })}
@@ -83,6 +85,7 @@ const SwipeableCard = memo(
                 rightOptions,
                 !!fullWidthOnRightOptions,
                 rightIconsRefs,
+                'right',
               )
             : undefined,
         [fullWidthOnRightOptions, getOptions, rightOptions],
@@ -91,7 +94,12 @@ const SwipeableCard = memo(
       const renderLeftActions = useCallback(
         () =>
           leftOptions
-            ? getOptions(leftOptions, !!fullWidthOnLeftOptions, leftIconsRefs)
+            ? getOptions(
+                leftOptions,
+                !!fullWidthOnLeftOptions,
+                leftIconsRefs,
+                'left',
+              )
             : undefined,
         [fullWidthOnLeftOptions, getOptions, leftOptions],
       );

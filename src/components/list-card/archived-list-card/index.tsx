@@ -1,11 +1,11 @@
 import React, {memo} from 'react';
 import {NumberOfActiveItems} from '..';
 import {ControlComponentContainer, IconLabelContainer, Label} from '../styles';
-import {SwipeableListCard} from '../swipeable-list-card';
-import {EditableListCardProps} from '../types';
+import {ArchivedListCardProps} from '../types';
+import {SwipeableListCardArchived} from '../swipeable-list-card-archived';
 import {ListCardContainer} from './styles';
 
-const EditableListCard: React.FC<EditableListCardProps> = memo(
+const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
   ({
     Icon,
     label,
@@ -13,24 +13,21 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
     style,
     onPress,
     ControlComponent,
-    isHighlighted = false,
     swipeEnabled = true,
-    onArchive,
+    onUnarchive,
     onDelete,
   }) => {
     return (
       <ListCardContainer
-        isHighlighted={isHighlighted}
         activeOpacity={1}
         delayPressEvent={150}
         disabled={!onPress}
         scaleFactor={0.02}
         style={style}
         onPress={onPress}>
-        <SwipeableListCard
+        <SwipeableListCardArchived
           enabled={swipeEnabled}
-          isHighlighted={isHighlighted}
-          onArchive={onArchive}
+          onUnarchive={onUnarchive}
           onDelete={onDelete}>
           <IconLabelContainer>
             {ControlComponent && (
@@ -39,18 +36,13 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
               </ControlComponentContainer>
             )}
             <Icon animateWhenIdle />
-            <Label isHighlighted={isHighlighted} numberOfLines={1}>
-              {label}
-            </Label>
+            <Label numberOfLines={1}>{label}</Label>
           </IconLabelContainer>
-          <NumberOfActiveItems
-            numberOfActiveItems={numberOfActiveItems}
-            isHighlighted={isHighlighted}
-          />
-        </SwipeableListCard>
+          <NumberOfActiveItems numberOfActiveItems={numberOfActiveItems} />
+        </SwipeableListCardArchived>
       </ListCardContainer>
     );
   },
 );
 
-export {EditableListCard};
+export {ArchivedListCard};

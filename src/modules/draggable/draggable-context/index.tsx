@@ -25,7 +25,8 @@ const DraggableContextProvider = <T,>({
     action: 'delete' | 'archive';
   }>();
   const [dealingItem, setDealingItem] = useState<DraggableItem<T> | T>();
-  const [onModalCancel, setOnModalCancel] = useState<EmptyFnType>();
+  const [_, setOnModalCancel] = useState<EmptyFnType>();
+  const [onCustomAction, setOnCustomAction] = useState<EmptyFnType>();
   const [confirmationPopupTitleBuilder, setConfirmationPopupTitleBuilder] =
     useState<(item?: DraggableItem<T> | T) => string>();
 
@@ -34,11 +35,11 @@ const DraggableContextProvider = <T,>({
       if (x?.action === 'delete') {
         deleteItem(data, onSetData, dealingItem);
       } else {
-        console.log('Archive >> ');
+        onCustomAction?.();
       }
       return undefined;
     });
-  }, [data, onSetData, dealingItem]);
+  }, [data, onSetData, dealingItem, onCustomAction]);
 
   const handleCancelAction = useCallback(() => {
     setDealingItem(undefined);
@@ -52,14 +53,16 @@ const DraggableContextProvider = <T,>({
   const showConfirmationModal = useCallback(
     (
       itemToDealWith: DraggableItem<T> | T,
-      titleBuilderFn: (item?: DraggableItem<T>) => string,
+      titleBuilderFn: (item?: DraggableItem<T> | T) => string,
       action: 'delete' | 'archive',
       onCancel?: () => void,
+      onAction?: () => void,
     ) => {
       setDealingItem(itemToDealWith);
       setConfirmationPopupTitleBuilder(() => titleBuilderFn);
       setModal({action, visible: true});
       setOnModalCancel(() => onCancel);
+      setOnCustomAction(() => onAction);
     },
     [],
   );

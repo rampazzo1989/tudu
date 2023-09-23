@@ -2,8 +2,12 @@ import React, {memo, useCallback, useMemo} from 'react';
 import {DraxProvider} from 'react-native-drax';
 import {useRecoilValue} from 'recoil';
 import {Page} from '../../components/page';
-import {PageContent} from '../../components/page-content';
-import {homeDefaultLists, myLists} from '../home/state';
+import {DraggablePageContent} from '../../components/draggable-page-content';
+import {
+  archivedLists as archivedListsState,
+  homeDefaultLists,
+  myLists,
+} from '../home/state';
 import {BuiltInList, List} from '../home/types';
 import {ListHeader} from './components/list-header';
 import {ListPageProps} from './types';
@@ -13,6 +17,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
 
   const defaultLists = useRecoilValue(homeDefaultLists);
   const customLists = useRecoilValue(myLists);
+  const archivedLists = useRecoilValue(archivedListsState);
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -25,14 +30,20 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       return selectedListFromDefault;
     }
 
-    return customLists.find(x => x.label === listId);
-  }, [customLists, defaultLists, listId]);
+    const customList = customLists.find(x => x.label === listId);
+
+    if (customList) {
+      return customList;
+    }
+
+    return archivedLists.find(x => x.label === listId);
+  }, [archivedLists, customLists, defaultLists, listId]);
 
   return (
     <Page>
       <ListHeader listData={list} onBackButtonPress={handleBackButtonPress} />
       <DraxProvider>
-        <PageContent />
+        <DraggablePageContent />
       </DraxProvider>
     </Page>
   );

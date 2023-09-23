@@ -4,7 +4,9 @@
     "jsx": "react",
     "types": [
       "@types/styled-components-react-native"
-    ]
+    ],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "paths": {
     "~/*": [

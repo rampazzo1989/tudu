@@ -26,6 +26,7 @@ const SwipeableOptionButton = memo(
         dragX,
         popoverMenuOptions,
         onPopoverMenuClose,
+        alignTo = 'left',
       },
       ref,
     ) => {
@@ -52,6 +53,7 @@ const SwipeableOptionButton = memo(
         <Touchable
           backgroundColor={backgroundColor}
           onPress={onPress}
+          alignTo={alignTo}
           ref={touchableRef}
           size={optionSize}>
           <Icon ref={iconRef} size={24} />

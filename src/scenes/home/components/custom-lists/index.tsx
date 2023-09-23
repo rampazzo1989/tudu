@@ -1,7 +1,6 @@
 import React, {memo, useCallback, useContext, useMemo} from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {DraggableView} from '../../../../modules/draggable/draggable-view';
-import {ListCard} from '../../../../components/list-card';
 import {ListGroupCard} from '../list-group-card';
 import {CustomListsProps} from './types';
 import {Container} from './styles';
@@ -10,13 +9,18 @@ import {EditableListCard} from '../../../../components/list-card/editable-list-c
 import {DraggableItem} from '../../../../modules/draggable/draggable-context/types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 import {
+  archiveList,
   generateListAndGroupArchiveTitle,
   generateListAndGroupDeleteTitle,
 } from '../../../../utils/list-and-group-utils';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
+import {useSetRecoilState} from 'recoil';
+import {archivedLists, myLists} from '../../state';
 
 const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
   const draggableContext = useContext(DraggableContext);
+  const setArchivedLists = useSetRecoilState(archivedLists);
+  const setCustomLists = useSetRecoilState(myLists);
 
   const listPressHandlerGenerator = useCallback(
     (listData: List) => () => {
@@ -39,16 +43,20 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
   const handleArchiveGenerator = useCallback(
     (draggableList: DraggableItem<List>) =>
       (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-        // return setTimeout(() => {
         return draggableContext.showConfirmationModal(
           draggableList,
           generateListAndGroupArchiveTitle,
           'archive',
           () => swipeableRef.current?.closeOptions(),
+          () =>
+            archiveList(
+              setArchivedLists,
+              setCustomLists,
+              draggableList.data[0],
+            ),
         );
-        // }, 0);
       },
-    [draggableContext],
+    [draggableContext, setArchivedLists, setCustomLists],
   );
 
   const memoizedItems = useMemo(() => {

@@ -17,6 +17,7 @@ export type SwipeableOptionProps = {
   dragX?: Animated.AnimatedInterpolation<string | number>;
   popoverMenuOptions?: MenuOption[];
   onPopoverMenuClose?: () => void;
+  alignTo?: 'left' | 'right';
 };
 
 export type SwipeableOptionRef = {

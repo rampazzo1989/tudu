@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {BuiltInList, HomePageProps, List} from './types';
-import {PageContent} from '../../components/page-content';
+import {DraggablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
 import {DefaultLists} from './components/default-lists';
 import {useRecoilState, useRecoilValue} from 'recoil';
@@ -8,12 +8,10 @@ import {counters, homeDefaultLists, myLists} from './state';
 import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
 import {
-  BottomFadingGradient,
   LeftFadingGradient,
   RightFadingGradient,
   SectionTitle,
   styles,
-  TopFadingGradient,
 } from './styles';
 import {CountersList} from './components/counters-list';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
@@ -92,7 +90,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           onSetData={handleSetCustomLists}
           onDragStart={handleListDragStart}
           onDragEnd={handleListDragEnd}>
-          <PageContent
+          <DraggablePageContent
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContentContainer}
@@ -124,19 +122,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
               colors={theme.colors.scrollFadeGradientColorsPageBackground}
               pointerEvents={'none'}
             />
-          </PageContent>
-          <TopFadingGradient
-            start={{x: 0, y: 1}}
-            end={{x: 0, y: 0}}
-            colors={theme.colors.scrollFadeGradientColorsPageBackground}
-            pointerEvents={'none'}
-          />
-          <BottomFadingGradient
-            start={{x: 0, y: 0}}
-            end={{x: 0, y: 1}}
-            colors={theme.colors.scrollFadeGradientColorsPageBackground}
-            pointerEvents={'none'}
-          />
+          </DraggablePageContent>
           <FloatingDelete
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}

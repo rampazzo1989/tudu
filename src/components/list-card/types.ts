@@ -19,6 +19,12 @@ export type EditableListCardProps = ListCardProps & {
   onDelete: () => void;
 };
 
+export type ArchivedListCardProps = ListCardProps & {
+  swipeEnabled?: boolean;
+  onUnarchive: () => void;
+  onDelete: () => void;
+};
+
 export type NumberOfActiveItemsProps = Pick<
   ListCardProps,
   'numberOfActiveItems' | 'isHighlighted'
