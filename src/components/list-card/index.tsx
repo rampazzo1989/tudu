@@ -1,5 +1,4 @@
 import React, {memo} from 'react';
-import {useTheme} from 'styled-components/native';
 import {
   Container,
   ControlComponentContainer,
@@ -22,6 +21,12 @@ const NumberOfActiveItems: React.FC<NumberOfActiveItemsProps> = memo(
   },
 );
 
+const autoAnimateIcons = ['Today'];
+
+const checkIfAutoAnimateIcon = (label: string) => {
+  return autoAnimateIcons.includes(label);
+};
+
 const ListCard: React.FC<ListCardProps> = memo(
   ({
     Icon,
@@ -32,7 +37,6 @@ const ListCard: React.FC<ListCardProps> = memo(
     ControlComponent,
     isHighlighted = false,
   }) => {
-    const theme = useTheme();
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}
@@ -48,7 +52,7 @@ const ListCard: React.FC<ListCardProps> = memo(
               {ControlComponent}
             </ControlComponentContainer>
           )}
-          <Icon animateWhenIdle />
+          <Icon animateWhenIdle autoPlay={checkIfAutoAnimateIcon(label)} />
           <Label isHighlighted={isHighlighted} numberOfLines={1}>
             {label}
           </Label>

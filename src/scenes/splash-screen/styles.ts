@@ -5,15 +5,13 @@ import {LogoText} from '../../assets/static/logo_text';
 import {TuduIcon} from '../../components/animated-icons/tudu-icon';
 
 export const Spacer = styled.View`
-  height: ${22 + StatusBar.length}px;
+  height: ${40 + StatusBar.length}px;
 `;
 
-export const AppIcon = styled(TuduIcon)`
-  margin-top: 5px;
-`;
+export const AppIcon = styled(TuduIcon)``;
 
 export const Logo = styled(LogoText)`
-  margin-right: 2px;
+  margin-top: -5px;
 `;
 
 export const StyledSafeAreaView = styled(SafeAreaView)`

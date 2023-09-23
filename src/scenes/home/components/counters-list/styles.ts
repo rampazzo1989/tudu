@@ -1,7 +1,7 @@
 import {FlatList, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
-import {DEFAULT_PAGE_HORIZONTAL_PADDING} from '../../../../components/page-content/styles';
+import {DEFAULT_PAGE_HORIZONTAL_PADDING} from '../../../../components/draggable-page-content/styles';
 import {Counter} from '../../types';
 
 export const HorizontalSeparator = styled.View`

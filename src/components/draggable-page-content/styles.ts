@@ -1,9 +1,10 @@
+import {DraxScrollView} from 'react-native-drax';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
 
 export const DEFAULT_PAGE_HORIZONTAL_PADDING = 20;
 
-export const PageContentContainer = styled.ScrollView`
+export const PageContentContainer = styled(DraxScrollView)`
   flex: 1;
   background-color: ${({theme}) => theme.colors.pageBackground};
   border-top-right-radius: 16px;

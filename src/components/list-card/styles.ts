@@ -3,7 +3,7 @@ import {NumberOfActiveItemsProps} from './types';
 import {ShrinkableView} from '../shrinkable-view';
 
 type HighlightableComponentProps = {
-  isHighlighted: boolean;
+  isHighlighted?: boolean;
 };
 
 export const ListCardContainer = styled(

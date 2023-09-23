@@ -6,6 +6,7 @@ export type DraggableContextType<T> = {
     titleBuilderFn: (item?: DraggableItem<T> | undefined) => string,
     action: 'delete' | 'archive',
     onCancel?: () => void,
+    onAction?: () => void,
   ) => void;
   onDragStart?: () => void;
   onDragEnd?: () => void;

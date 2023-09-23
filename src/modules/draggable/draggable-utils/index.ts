@@ -80,7 +80,7 @@ export const removeSubItem = <T>(list: DraggableItem<T>[], item: T) => {
 };
 
 export const isNestedItem = <T>(item: DraggableItem<T> | T): item is T => {
-  return !(item instanceof DraggableItem<T>);
+  return !(item instanceof DraggableItem);
 };
 
 export const deleteItem = <T>(
@@ -104,7 +104,7 @@ export const deleteItem = <T>(
 };
 
 export const castItem = <T>(item: any) => {
-  return item instanceof DraggableItem<T>
+  return item instanceof DraggableItem
     ? (item as DraggableItem<T>)
     : new DraggableItem([item as T]);
 };

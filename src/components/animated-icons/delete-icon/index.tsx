@@ -1,28 +1,47 @@
-import React, {memo, useEffect, useRef} from 'react';
-import {BaseAnimatedIconRef} from '../animated-icon/types';
-import {AnimatedIcon} from './styles';
-import {DeleteIconProps} from './types';
+import React, {forwardRef, memo, useImperativeHandle, useRef} from 'react';
+import {BaseAnimatedIcon} from '../animated-icon';
+import {
+  AnimatedIconProps,
+  AnimatedIconRef,
+  AnimationOptions,
+  BaseAnimatedIconRef,
+} from '../animated-icon/types';
 
-const DeleteIcon: React.FC<DeleteIconProps> = memo(props => {
-  const ref = useRef<BaseAnimatedIconRef>(null);
+const DeleteIcon = memo(
+  forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
+    const iconRef = useRef<BaseAnimatedIconRef>(null);
 
-  useEffect(() => {
-    if (props.animate) {
-      ref.current?.play();
-    } else {
-      ref.current?.pause();
-    }
-  }, [props.animate]);
+    useImperativeHandle(
+      ref,
+      () => {
+        return {
+          play(options?: AnimationOptions) {
+            iconRef.current?.play({
+              onAnimationFinish: options?.onAnimationFinish,
+              delay: options?.delay,
+            });
+          },
+          pause() {
+            iconRef.current?.pause();
+          },
+          toggle() {
+            iconRef.current?.toggle();
+          },
+        };
+      },
+      [],
+    );
 
-  return (
-    <AnimatedIcon
-      source={require('../../../assets/lottie/trash.json')}
-      componentName="DeleteIcon"
-      loop={false}
-      ref={ref}
-      {...props}
-    />
-  );
-});
+    return (
+      <BaseAnimatedIcon
+        source={require('../../../assets/lottie/trash.json')}
+        loop={false}
+        componentName="DeleteIcon"
+        ref={iconRef}
+        {...props}
+      />
+    );
+  }),
+);
 
 export {DeleteIcon};

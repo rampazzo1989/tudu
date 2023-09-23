@@ -7,7 +7,6 @@ import React, {
   useState,
 } from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
-import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {DraggableItem} from '../../../../modules/draggable/draggable-item';
 import {
   ListGroupContainer,
@@ -26,11 +25,14 @@ import {RenameModal} from './components/rename-modal';
 import {FadeIn} from 'react-native-reanimated';
 import {List} from '../../types';
 import {
+  archiveList,
   generateListAndGroupArchiveTitle,
   generateListAndGroupDeleteTitle,
 } from '../../../../utils/list-and-group-utils';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
+import {useSetRecoilState} from 'recoil';
+import {archivedLists, myLists} from '../../state';
 
 const ListGroupCard: React.FC<ListGroupProps> = memo(
   ({groupData, onListPress}) => {
@@ -38,6 +40,8 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
     const [renamePopupVisible, setRenamePopupVisible] = useState(false);
     const draggableContext = useContext(DraggableContext);
+    const setArchivedLists = useSetRecoilState(archivedLists);
+    const setCustomLists = useSetRecoilState(myLists);
 
     const handleOptionsButtonPress = useCallback(() => {
       iconRef.current?.toggle();
@@ -85,18 +89,15 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
 
     const handleArchiveGenerator = useCallback(
       (list: List) => (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-        return setTimeout(
-          () =>
-            draggableContext.showConfirmationModal(
-              list,
-              generateListAndGroupArchiveTitle,
-              'archive',
-              () => swipeableRef.current?.closeOptions(),
-            ),
-          40,
+        return draggableContext.showConfirmationModal(
+          list,
+          generateListAndGroupArchiveTitle,
+          'archive',
+          () => swipeableRef.current?.closeOptions(),
+          () => archiveList(setArchivedLists, setCustomLists, list),
         );
       },
-      [draggableContext],
+      [draggableContext, setArchivedLists, setCustomLists],
     );
 
     const items = useMemo(() => {

@@ -99,7 +99,23 @@ export const archiveList = (
 ) => {
   archiveSetter(x => [...x, list]);
 
+  console.log('Archiving', {list});
+
   customListsSetter(x => {
+    return removeFromList(x, [list]);
+  });
+};
+
+export const unarchiveList = (
+  archiveSetter: SetterOrUpdater<List[]>,
+  customListsSetter: SetterOrUpdater<List[]>,
+  list: List,
+) => {
+  customListsSetter(x => [...x, list]);
+
+  console.log('Unarchiving', {list});
+
+  archiveSetter(x => {
     return removeFromList(x, [list]);
   });
 };
