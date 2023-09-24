@@ -34,6 +34,7 @@
   "popupTitles": {
     "renameGroup": "Rename Group",
     "newList": "Create new list",
+    "editList": "Edit list",
     "newCounter": "Create new counter",
     "editCounter": "Edit counter",
     "newGroup": "Create new group"

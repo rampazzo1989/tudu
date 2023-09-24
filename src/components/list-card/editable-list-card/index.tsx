@@ -17,6 +17,7 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
     swipeEnabled = true,
     onArchive,
     onDelete,
+    onEdit,
   }) => {
     return (
       <ListCardContainer
@@ -31,7 +32,8 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
           enabled={swipeEnabled}
           isHighlighted={isHighlighted}
           onArchive={onArchive}
-          onDelete={onDelete}>
+          onDelete={onDelete}
+          onEdit={onEdit}>
           <IconLabelContainer>
             {ControlComponent && (
               <ControlComponentContainer>

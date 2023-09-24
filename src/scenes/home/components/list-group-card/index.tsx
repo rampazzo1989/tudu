@@ -1,11 +1,4 @@
-import React, {
-  memo,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {DraggableItem} from '../../../../modules/draggable/draggable-item';
 import {
@@ -24,24 +17,18 @@ import {BaseAnimatedIconRef} from '../../../../components/animated-icons/animate
 import {RenameModal} from './components/rename-modal';
 import {FadeIn} from 'react-native-reanimated';
 import {List} from '../../types';
-import {
-  archiveList,
-  generateListAndGroupArchiveTitle,
-  generateListAndGroupDeleteTitle,
-} from '../../../../utils/list-and-group-utils';
-import {DraggableContext} from '../../../../modules/draggable/draggable-context';
-import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
-import {useSetRecoilState} from 'recoil';
-import {archivedLists, myLists} from '../../state';
 
 const ListGroupCard: React.FC<ListGroupProps> = memo(
-  ({groupData, onListPress}) => {
+  ({
+    groupData,
+    onListPress,
+    handleArchiveGenerator,
+    handleDeleteGenerator,
+    handleEditListGenerator,
+  }) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
     const [renamePopupVisible, setRenamePopupVisible] = useState(false);
-    const draggableContext = useContext(DraggableContext);
-    const setArchivedLists = useSetRecoilState(archivedLists);
-    const setCustomLists = useSetRecoilState(myLists);
 
     const handleOptionsButtonPress = useCallback(() => {
       iconRef.current?.toggle();
@@ -76,30 +63,6 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
 
     const handleRename = useCallback(() => setRenamePopupVisible(true), []);
 
-    const handleDeleteGenerator = useCallback(
-      (list: List) => () => {
-        draggableContext.showConfirmationModal(
-          list,
-          generateListAndGroupDeleteTitle,
-          'delete',
-        );
-      },
-      [draggableContext],
-    );
-
-    const handleArchiveGenerator = useCallback(
-      (list: List) => (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-        return draggableContext.showConfirmationModal(
-          list,
-          generateListAndGroupArchiveTitle,
-          'archive',
-          () => swipeableRef.current?.closeOptions(),
-          () => archiveList(setArchivedLists, setCustomLists, list),
-        );
-      },
-      [draggableContext, setArchivedLists, setCustomLists],
-    );
-
     const items = useMemo(() => {
       return (
         <>
@@ -115,6 +78,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
                   onPress={listPressHandlerGenerator(list)}
                   onDelete={handleDeleteGenerator(list)}
                   onArchive={handleArchiveGenerator(list)}
+                  onEdit={handleEditListGenerator(list)}
                 />
               </DraggableItem>
             );
@@ -126,6 +90,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
       groupData.groupId,
       handleArchiveGenerator,
       handleDeleteGenerator,
+      handleEditListGenerator,
       listPressHandlerGenerator,
     ]);
 

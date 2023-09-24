@@ -1,15 +1,15 @@
 import React, {memo, useCallback, useMemo, useRef} from 'react';
 import {useTheme} from 'styled-components/native';
 import {DeleteIcon} from '../../animated-icons/delete-icon';
-import {FolderIcon} from '../../animated-icons/folder-icon';
 import {MenuToggleIcon} from '../../animated-icons/menu-toggle-icon';
 import {RenameIcon} from '../../animated-icons/rename-icon';
 import {SwipeableCard} from '../../swipeable-card';
 import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
 import {SwipeableListCardProps} from './types';
+import {FolderAddIcon} from '../../animated-icons/folder-add-icon';
 
 const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
-  ({children, isHighlighted, onArchive, onDelete, enabled = false}) => {
+  ({children, isHighlighted, onArchive, onDelete, onEdit, enabled = false}) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
 
@@ -21,8 +21,8 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
           popoverMenuOptions: [
             {
               Icon: RenameIcon,
-              label: 'Rename',
-              onPress: () => console.log('Rename'),
+              label: 'Edit',
+              onPress: () => onEdit(swipeableRef),
             },
             {
               Icon: DeleteIcon,
@@ -32,15 +32,14 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
           ],
         },
       ],
-      [onDelete],
+      [onDelete, onEdit],
     );
 
     const leftOptions = useMemo<SwipeableOption[]>(
       () => [
         {
-          Icon: FolderIcon,
+          Icon: FolderAddIcon,
           text: 'Archive',
-          onPress: () => console.log('Archive'),
         },
       ],
       [],
