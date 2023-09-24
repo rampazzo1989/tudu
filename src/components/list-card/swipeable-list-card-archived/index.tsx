@@ -31,7 +31,7 @@ const SwipeableListCardArchived: React.FC<SwipeableListCardArchivedProps> =
     );
 
     const handleSwipeRight = useCallback(() => {
-      onUnarchive(swipeableRef);
+      setTimeout(() => onUnarchive(swipeableRef), 500);
     }, [onUnarchive]);
 
     const handleSwipeLeft = useCallback(() => {

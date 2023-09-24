@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useContext, useMemo} from 'react';
+import React, {memo, useCallback, useContext, useMemo, useState} from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {DraggableView} from '../../../../modules/draggable/draggable-view';
 import {ListGroupCard} from '../list-group-card';
@@ -16,11 +16,15 @@ import {
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
 import {useSetRecoilState} from 'recoil';
 import {archivedLists, myLists} from '../../state';
+import {NewListModal} from '../../../group/components/new-list-modal';
 
 const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
   const draggableContext = useContext(DraggableContext);
   const setArchivedLists = useSetRecoilState(archivedLists);
   const setCustomLists = useSetRecoilState(myLists);
+
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingList, setEditingList] = useState<List>();
 
   const listPressHandlerGenerator = useCallback(
     (listData: List) => () => {
@@ -30,9 +34,9 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
   );
 
   const handleDeleteGenerator = useCallback(
-    (draggableList: DraggableItem<List>) => () => {
+    (listOrDraggableList: DraggableItem<List> | List) => () => {
       draggableContext.showConfirmationModal(
-        draggableList,
+        listOrDraggableList,
         generateListAndGroupDeleteTitle,
         'delete',
       );
@@ -41,22 +45,33 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
   );
 
   const handleArchiveGenerator = useCallback(
-    (draggableList: DraggableItem<List>) =>
+    (listOrDraggableList: DraggableItem<List> | List) =>
       (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+        const list =
+          listOrDraggableList instanceof DraggableItem<List>
+            ? listOrDraggableList.data[0]
+            : listOrDraggableList;
         return draggableContext.showConfirmationModal(
-          draggableList,
+          listOrDraggableList,
           generateListAndGroupArchiveTitle,
           'archive',
           () => swipeableRef.current?.closeOptions(),
-          () =>
-            archiveList(
-              setArchivedLists,
-              setCustomLists,
-              draggableList.data[0],
-            ),
+          () => archiveList(setArchivedLists, setCustomLists, list),
         );
       },
     [draggableContext, setArchivedLists, setCustomLists],
+  );
+
+  const handleEditListGenerator = useCallback(
+    (listOrDraggableList: DraggableItem<List> | List) => () => {
+      const list =
+        listOrDraggableList instanceof DraggableItem<List>
+          ? listOrDraggableList.data[0]
+          : listOrDraggableList;
+      setEditingList(list);
+      setEditModalVisible(true);
+    },
+    [],
   );
 
   const memoizedItems = useMemo(() => {
@@ -69,7 +84,13 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
                 key={`${item.groupId}${index}${item.data.length}`}
                 payload={item}
                 isReceiver>
-                <ListGroupCard groupData={item} onListPress={onListPress} />
+                <ListGroupCard
+                  handleArchiveGenerator={handleArchiveGenerator}
+                  handleDeleteGenerator={handleDeleteGenerator}
+                  handleEditListGenerator={handleEditListGenerator}
+                  groupData={item}
+                  onListPress={onListPress}
+                />
               </DraggableView>
             );
           } else {
@@ -84,17 +105,29 @@ const CustomLists: React.FC<CustomListsProps> = memo(({data, onListPress}) => {
                   onPress={listPressHandlerGenerator(onlyItem)}
                   onDelete={handleDeleteGenerator(item)}
                   onArchive={handleArchiveGenerator(item)}
+                  onEdit={handleEditListGenerator(item)}
                 />
               </DraggableView>
             );
           }
         })}
+        <NewListModal
+          visible={editModalVisible}
+          editingList={editingList}
+          onRequestClose={() => {
+            setEditModalVisible(false);
+            setEditingList(undefined);
+          }}
+        />
       </>
     );
   }, [
     data,
+    editModalVisible,
+    editingList,
     handleArchiveGenerator,
     handleDeleteGenerator,
+    handleEditListGenerator,
     listPressHandlerGenerator,
     onListPress,
   ]);

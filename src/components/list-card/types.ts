@@ -17,12 +17,13 @@ export type EditableListCardProps = ListCardProps & {
   swipeEnabled?: boolean;
   onArchive: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   onDelete: () => void;
+  onEdit: () => void;
 };
 
 export type ArchivedListCardProps = ListCardProps & {
   swipeEnabled?: boolean;
   onUnarchive: () => void;
-  onDelete: () => void;
+  onDelete: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
 };
 
 export type NumberOfActiveItemsProps = Pick<

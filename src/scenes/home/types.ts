@@ -9,9 +9,9 @@ export type {HomePageProps};
 export type List = {
   label: string;
   numberOfActiveItems: number;
+  id: string;
   color?: string;
   groupName?: string;
-  id: string;
 };
 
 export type BuiltInList = List & {

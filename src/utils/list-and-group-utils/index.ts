@@ -56,18 +56,10 @@ const getNewNameWithCopyNumber = (name: string) => {
 };
 
 export const getDuplicateProofListTitle = (
-  list: DraggableItem<List>[],
+  list: List[],
   newLabel: string,
 ): string => {
-  let alreadyExists = list.some(draggable =>
-    draggable.data.some(item => item.label === newLabel),
-  );
-
-  if (!alreadyExists) {
-    for (let defaultListTitle of Object.values(en.listTitles)) {
-      alreadyExists = alreadyExists || defaultListTitle === newLabel;
-    }
-  }
+  let alreadyExists = list.some(x => x.label === newLabel);
 
   if (alreadyExists) {
     const newNameWithCopyNumber = getNewNameWithCopyNumber(newLabel);
@@ -113,9 +105,54 @@ export const unarchiveList = (
 ) => {
   customListsSetter(x => [...x, list]);
 
-  console.log('Unarchiving', {list});
-
   archiveSetter(x => {
     return removeFromList(x, [list]);
+  });
+};
+
+export const insertList = (
+  customListsSetter: SetterOrUpdater<List[]>,
+  list: List,
+) => {
+  customListsSetter(x => [list, ...x]);
+};
+
+export const updateList = (
+  customListsSetter: SetterOrUpdater<List[]>,
+  list: List,
+) => {
+  customListsSetter(x => {
+    const cloneList = x.slice();
+    const itemIndex = cloneList.findIndex(item => item.id === list.id);
+
+    console.log({list, itemIndex});
+
+    if (itemIndex < 0) {
+      return x;
+    }
+
+    cloneList.splice(itemIndex, 1, list);
+
+    return cloneList;
+  });
+};
+
+export const deleteList = (
+  customListsSetter: SetterOrUpdater<List[]>,
+  list: List,
+) => {
+  customListsSetter(x => {
+    const cloneList = x.slice();
+    const itemIndex = cloneList.findIndex(item => item.id === list.id);
+
+    console.log({list, itemIndex});
+
+    if (itemIndex < 0) {
+      return x;
+    }
+
+    cloneList.splice(itemIndex, 1);
+
+    return cloneList;
   });
 };
