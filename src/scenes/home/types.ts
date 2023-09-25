@@ -1,5 +1,8 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {AnimatedIconProps} from '../../components/animated-icons/animated-icon/types';
+import {
+  AnimatedIconProps,
+  AnimatedIconRef,
+} from '../../components/animated-icons/animated-icon/types';
 import {StackNavigatorParamList} from '../../navigation/stack-navigator/types';
 
 type HomePageProps = NativeStackScreenProps<StackNavigatorParamList, 'Home'>;
@@ -15,7 +18,9 @@ export type List = {
 };
 
 export type BuiltInList = List & {
-  icon: React.FC<AnimatedIconProps>;
+  icon: React.ForwardRefExoticComponent<
+    AnimatedIconProps & React.RefAttributes<AnimatedIconRef>
+  >;
   isHighlighted: boolean;
   navigateToPage?: keyof StackNavigatorParamList;
 };

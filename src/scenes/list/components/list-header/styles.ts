@@ -20,6 +20,12 @@ export const Title = styled.Text`
   margin-left: 10px;
 `;
 
+export const Emoji = styled.Text`
+  color: ${({theme}) => theme.colors.headerText};
+  font-size: 56px;
+  opacity: 0.4;
+`;
+
 export const styles = StyleSheet.create({
   pageIcon: {marginRight: -15, marginTop: 0},
 });
