@@ -1,5 +1,11 @@
 import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
-import {FadeIn} from 'react-native-reanimated';
+import {
+  BounceInDown,
+  FadeIn,
+  FadeInDown,
+  FlipInXDown,
+  ZoomInRotate,
+} from 'react-native-reanimated';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {BackButton} from '../../../../components/back-button';
 import {Header} from '../../../../components/header';
@@ -58,7 +64,9 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
             </Title>
           </TitleContainer>
           {titleEmoji ? (
-            <Emoji adjustsFontSizeToFit>{titleEmoji}</Emoji>
+            <Emoji adjustsFontSizeToFit entering={ZoomInRotate.springify()}>
+              {titleEmoji}
+            </Emoji>
           ) : (
             <ListIcon
               size={70}
