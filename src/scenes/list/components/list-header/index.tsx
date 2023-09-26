@@ -1,11 +1,5 @@
 import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
-import {
-  BounceInDown,
-  FadeIn,
-  FadeInDown,
-  FlipInXDown,
-  ZoomInRotate,
-} from 'react-native-reanimated';
+import {FadeIn, ZoomInRotate} from 'react-native-reanimated';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {BackButton} from '../../../../components/back-button';
 import {Header} from '../../../../components/header';
@@ -13,6 +7,7 @@ import {BuiltInList} from '../../../home/types';
 import {ContentRow, Emoji, styles, Title, TitleContainer} from './styles';
 import {ListHeaderProps} from './types';
 import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
+import {useTheme} from 'styled-components/native';
 
 const EMOJI_REGEX = /^[\p{Emoji}\u200d]+/gu;
 
@@ -20,6 +15,7 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
   ({listData, onBackButtonPress}) => {
     const [titleWidth, setTitleWidth] = useState(0);
     const iconRef = useRef<AnimatedIconRef>(null);
+    const theme = useTheme();
 
     useEffect(() => {
       iconRef.current?.play();
@@ -72,7 +68,7 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               size={70}
               ref={iconRef}
               style={styles.pageIcon}
-              overrideColor="#A188D2"
+              overrideColor={theme.colors.iconOverlay}
             />
           )}
         </ContentRow>

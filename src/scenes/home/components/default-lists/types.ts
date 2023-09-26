@@ -1,6 +1,6 @@
-import {BuiltInList, List} from '../../types';
+import {BuiltInList} from '../../types';
 
 export type DefaultListsProps = {
   lists: BuiltInList[];
-  onListPress: (listData: List) => void;
+  onListPress: (listData: BuiltInList) => void;
 };

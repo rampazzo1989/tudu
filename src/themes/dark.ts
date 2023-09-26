@@ -4,6 +4,7 @@ const darkTheme: DefaultTheme = {
   colors: {
     primary: '#7956BF',
     secondary: '#6B49B7',
+    iconOverlay: '#A188D2',
     pageBackground: '#25303D',
     contrastColor: '#FFFFFF',
     text: '#FFFFFF',

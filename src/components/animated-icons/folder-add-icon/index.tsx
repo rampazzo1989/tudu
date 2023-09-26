@@ -63,4 +63,10 @@ const FolderAddIcon = memo(
   }),
 );
 
-export {FolderAddIcon};
+const FolderAddIconActionAnimation = memo(
+  forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
+    return <FolderAddIcon {...props} size={30} ref={ref} />;
+  }),
+);
+
+export {FolderAddIcon, FolderAddIconActionAnimation};

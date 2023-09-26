@@ -10,4 +10,13 @@ export const FloatingButton = styled(ShrinkableView)`
   right: 20px;
   bottom: 30px;
   elevation: 10;
+  /* align-items: center; */
+  align-content: center;
+  justify-content: center;
+`;
+
+export const IconContainer = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
 `;
