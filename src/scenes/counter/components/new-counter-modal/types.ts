@@ -4,4 +4,5 @@ export type NewCounterModalProps = {
   visible: boolean;
   onRequestClose: () => void;
   editingCounterData?: Counter;
+  onInsertNewCounter?: () => void;
 };

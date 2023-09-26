@@ -28,7 +28,7 @@ const emptyCounter: Counter = {title: '', value: 0, pace: 1};
 const defaultPaceOptions = [1, 5, 10];
 
 const NewCounterModal: React.FC<NewCounterModalProps> = memo(
-  ({visible, editingCounterData, onRequestClose}) => {
+  ({visible, editingCounterData, onRequestClose, onInsertNewCounter}) => {
     const [internalCounterData, setInternalCounterData] = useState<Counter>(
       editingCounterData ?? emptyCounter,
     );
@@ -115,6 +115,8 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
 
       insertOrUpdateCounter(internalCounterData, isEditing);
 
+      onInsertNewCounter?.();
+
       onRequestClose();
     }, [
       customPaceInputVisible,
@@ -122,6 +124,7 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
       insertOrUpdateCounter,
       internalCounterData,
       isEditing,
+      onInsertNewCounter,
       onRequestClose,
     ]);
 

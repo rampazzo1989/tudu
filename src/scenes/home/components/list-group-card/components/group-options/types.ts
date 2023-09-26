@@ -5,4 +5,5 @@ export type GroupOptionsProps = {
   groupData: DraggableItem<List>;
   closeMenu: () => void;
   onRename: () => void;
+  onDeleteCallback?: () => void;
 };

@@ -102,7 +102,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             scrollEnabled>
             <DefaultLists lists={lists} onListPress={handleDefaultListPress} />
             <SectionTitle title={t('sectionTitles.counters')} />
-            <CountersList list={counterList} />
+            <CountersList list={counterList} animateIcon={animateThisIcon} />
             {groupedCustomLists.length ? (
               <>
                 <SectionTitle title={t('sectionTitles.myLists')} />
@@ -132,6 +132,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           <FloatingDelete
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
+            animateIcon={animateThisIcon}
           />
           <HomeActionMenuOptions ref={actionButtonRef} />
         </DraggableContextProvider>

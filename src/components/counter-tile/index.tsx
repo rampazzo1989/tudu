@@ -3,7 +3,7 @@ import {FadeOutDown} from 'react-native-reanimated';
 import {toggle} from '../../utils/state-utils';
 import {AdjustIcon} from '../animated-icons/adjust-icon';
 import {BaseAnimatedIconRef} from '../animated-icons/animated-icon/types';
-import {HashIcon} from '../animated-icons/hash-icon';
+import {HashIcon, HashIconActionAnimation} from '../animated-icons/hash-icon';
 import {
   ButtonContainer,
   Button,
@@ -40,7 +40,10 @@ import {CounterOptions} from '../../scenes/counter/components/counter-options';
 import {OptionsArrowDownIcon} from '../animated-icons/options-arrow-down-icon';
 import {NewCounterModal} from '../../scenes/counter/components/new-counter-modal';
 import {PopupModal} from '../popup-modal';
-import {DeleteIcon} from '../animated-icons/delete-icon';
+import {
+  DeleteIcon,
+  DeleteIconActionAnimation,
+} from '../animated-icons/delete-icon';
 import {useTranslation} from 'react-i18next';
 
 const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
@@ -151,139 +154,147 @@ const IncrementButton: React.FC<ActionButtonProps> = memo(({onAction}) => {
 
 const EDITING_TIMEOUT_MS = 7000;
 
-const CounterTile: React.FC<CounterTileProps> = memo(({counterData}) => {
-  const [isEditing, setEditing] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const setCountersList = useSetRecoilState(counters);
+const CounterTile: React.FC<CounterTileProps> = memo(
+  ({counterData, animateIcon}) => {
+    const [isEditing, setEditing] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const setCountersList = useSetRecoilState(counters);
 
-  const {t} = useTranslation();
+    const {t} = useTranslation();
 
-  const idleTime = useRef<NodeJS.Timeout>();
+    const idleTime = useRef<NodeJS.Timeout>();
 
-  const startCloseEditingTimeout = useCallback(() => {
-    idleTime.current = setTimeout(() => {
-      clearTimeout(idleTime.current);
-      idleTime.current = undefined;
+    const startCloseEditingTimeout = useCallback(() => {
+      idleTime.current = setTimeout(() => {
+        clearTimeout(idleTime.current);
+        idleTime.current = undefined;
+        setEditing(false);
+      }, EDITING_TIMEOUT_MS);
+    }, []);
+
+    const handleChangeButtonPress = useCallback(() => {
+      startCloseEditingTimeout();
+      setEditing(toggle);
+    }, [startCloseEditingTimeout]);
+
+    const handleChangeValue = useCallback(
+      (operation: 'increment' | 'decrement') => {
+        const newValue =
+          operation === 'increment'
+            ? counterData.value + counterData.pace
+            : counterData.value - counterData.pace;
+        const newCounter: Counter = {...counterData, value: newValue};
+
+        setCountersList(current => {
+          const currentIndex = current.indexOf(counterData);
+          const newList = [...current];
+          newList.splice(currentIndex, 1, newCounter);
+          return newList;
+        });
+      },
+      [counterData, setCountersList],
+    );
+
+    const handleIncrement = useCallback(
+      () => handleChangeValue('increment'),
+      [handleChangeValue],
+    );
+
+    const handleDecrement = useCallback(
+      () => handleChangeValue('decrement'),
+      [handleChangeValue],
+    );
+
+    const handleEditCounter = useCallback(() => {
+      setEditModalVisible(true);
+    }, []);
+
+    const handleDeleteCounter = useCallback(() => {
+      setDeleteModalVisible(true);
+    }, []);
+
+    const handleConfirmDelete = useCallback(() => {
+      setDeleteModalVisible(false);
+      if (idleTime.current) {
+        clearTimeout(idleTime.current);
+      }
       setEditing(false);
-    }, EDITING_TIMEOUT_MS);
-  }, []);
-
-  const handleChangeButtonPress = useCallback(() => {
-    startCloseEditingTimeout();
-    setEditing(toggle);
-  }, [startCloseEditingTimeout]);
-
-  const handleChangeValue = useCallback(
-    (operation: 'increment' | 'decrement') => {
-      const newValue =
-        operation === 'increment'
-          ? counterData.value + counterData.pace
-          : counterData.value - counterData.pace;
-      const newCounter: Counter = {...counterData, value: newValue};
-
       setCountersList(current => {
         const currentIndex = current.indexOf(counterData);
         const newList = [...current];
-        newList.splice(currentIndex, 1, newCounter);
+        newList.splice(currentIndex, 1);
         return newList;
       });
-    },
-    [counterData, setCountersList],
-  );
+      animateIcon?.(DeleteIconActionAnimation);
+    }, [animateIcon, counterData, setCountersList]);
 
-  const handleIncrement = useCallback(
-    () => handleChangeValue('increment'),
-    [handleChangeValue],
-  );
+    const handleCancelDelete = useCallback(() => {
+      setDeleteModalVisible(false);
+    }, []);
 
-  const handleDecrement = useCallback(
-    () => handleChangeValue('decrement'),
-    [handleChangeValue],
-  );
+    const handleInsertNewCounter = useCallback(() => {
+      animateIcon?.(HashIconActionAnimation);
+    }, [animateIcon]);
 
-  const handleEditCounter = useCallback(() => {
-    setEditModalVisible(true);
-  }, []);
+    return (
+      <Tile
+        onStartShouldSetResponderCapture={() => {
+          if (idleTime.current) {
+            clearTimeout(idleTime.current);
+            startCloseEditingTimeout();
+          }
+          return false;
+        }}>
+        <ReplacebleContainer visible={!isEditing}>
+          <ShrinkableContainer
+            scaleFactor={0.05}
+            delayPressEvent={100}
+            onPress={handleChangeButtonPress}>
+            <TileTitle title={counterData.title} />
+            <CounterValue value={counterData.value} />
+            <AdjustButton />
+          </ShrinkableContainer>
+        </ReplacebleContainer>
 
-  const handleDeleteCounter = useCallback(() => {
-    setDeleteModalVisible(true);
-  }, []);
-
-  const handleConfirmDelete = useCallback(() => {
-    setDeleteModalVisible(false);
-    if (idleTime.current) {
-      clearTimeout(idleTime.current);
-    }
-    setEditing(false);
-    setCountersList(current => {
-      const currentIndex = current.indexOf(counterData);
-      const newList = [...current];
-      newList.splice(currentIndex, 1);
-      return newList;
-    });
-  }, [counterData, setCountersList]);
-
-  const handleCancelDelete = useCallback(() => {
-    setDeleteModalVisible(false);
-  }, []);
-
-  return (
-    <Tile
-      onStartShouldSetResponderCapture={() => {
-        if (idleTime.current) {
-          clearTimeout(idleTime.current);
-          startCloseEditingTimeout();
-        }
-        return false;
-      }}>
-      <ReplacebleContainer visible={!isEditing}>
-        <ShrinkableContainer
-          scaleFactor={0.05}
-          delayPressEvent={100}
-          onPress={handleChangeButtonPress}>
-          <TileTitle title={counterData.title} />
-          <CounterValue value={counterData.value} />
-          <AdjustButton />
-        </ShrinkableContainer>
-      </ReplacebleContainer>
-
-      <EditingContainer visible={isEditing}>
-        <MoreOptionsButton
-          counterData={counterData}
-          onEditOption={handleEditCounter}
-          onDeleteOption={handleDeleteCounter}
+        <EditingContainer visible={isEditing}>
+          <MoreOptionsButton
+            counterData={counterData}
+            onEditOption={handleEditCounter}
+            onDeleteOption={handleDeleteCounter}
+          />
+          <EditingCounterValue
+            value={counterData.value}
+            onEditOption={handleEditCounter}
+          />
+          <ActionButtonsContainer>
+            <DecrementButton onAction={handleDecrement} />
+            <IncrementButton onAction={handleIncrement} />
+          </ActionButtonsContainer>
+        </EditingContainer>
+        <NewCounterModal
+          visible={editModalVisible}
+          onRequestClose={() => setEditModalVisible(false)}
+          editingCounterData={counterData}
+          onInsertNewCounter={handleInsertNewCounter}
         />
-        <EditingCounterValue
-          value={counterData.value}
-          onEditOption={handleEditCounter}
+        <PopupModal
+          visible={deleteModalVisible}
+          onRequestClose={() => setDeleteModalVisible(false)}
+          title={t('messages.confirmCounterDelete', {
+            counterTitle: counterData.title,
+          })}
+          buttons={[
+            {label: t('buttons.yes'), onPress: handleConfirmDelete},
+            {label: t('buttons.no'), onPress: handleCancelDelete},
+          ]}
+          Icon={DeleteIcon}
+          shakeOnShow
+          haptics
         />
-        <ActionButtonsContainer>
-          <DecrementButton onAction={handleDecrement} />
-          <IncrementButton onAction={handleIncrement} />
-        </ActionButtonsContainer>
-      </EditingContainer>
-      <NewCounterModal
-        visible={editModalVisible}
-        onRequestClose={() => setEditModalVisible(false)}
-        editingCounterData={counterData}
-      />
-      <PopupModal
-        visible={deleteModalVisible}
-        onRequestClose={() => setDeleteModalVisible(false)}
-        title={t('messages.confirmCounterDelete', {
-          counterTitle: counterData.title,
-        })}
-        buttons={[
-          {label: t('buttons.yes'), onPress: handleConfirmDelete},
-          {label: t('buttons.no'), onPress: handleCancelDelete},
-        ]}
-        Icon={DeleteIcon}
-        shakeOnShow
-        haptics
-      />
-    </Tile>
-  );
-});
+      </Tile>
+    );
+  },
+);
 
 export {CounterTile};

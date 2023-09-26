@@ -17,10 +17,8 @@ import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
 import {useSetRecoilState} from 'recoil';
 import {archivedLists, myLists} from '../../state';
 import {NewListModal} from '../../../group/components/new-list-modal';
-import {
-  FolderAddIcon,
-  FolderAddIconActionAnimation,
-} from '../../../../components/animated-icons/folder-add-icon';
+import {FolderAddIconActionAnimation} from '../../../../components/animated-icons/folder-add-icon';
+import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({data, onListPress, animateIcon}) => {
@@ -44,9 +42,11 @@ const CustomLists: React.FC<CustomListsProps> = memo(
           listOrDraggableList,
           generateListAndGroupDeleteTitle,
           'delete',
+          undefined,
+          () => animateIcon?.(DeleteIconActionAnimation),
         );
       },
-      [draggableContext],
+      [animateIcon, draggableContext],
     );
 
     const archive = useCallback(
@@ -103,6 +103,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                     handleEditListGenerator={handleEditListGenerator}
                     groupData={item}
                     onListPress={onListPress}
+                    animateIcon={animateIcon}
                   />
                 </DraggableView>
               );

@@ -1,9 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {
-  AnimatedIconProps,
-  AnimatedIconRef,
-  ForwardedRefAnimatedIcon,
-} from '../../components/animated-icons/animated-icon/types';
+import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated-icon/types';
 import {StackNavigatorParamList} from '../../navigation/stack-navigator/types';
 
 type HomePageProps = NativeStackScreenProps<StackNavigatorParamList, 'Home'>;

@@ -34,6 +34,7 @@ const DraggableContextProvider = <T,>({
     setModal(x => {
       if (x?.action === 'delete') {
         deleteItem(data, onSetData, dealingItem);
+        onCustomAction?.();
       } else {
         onCustomAction?.();
       }

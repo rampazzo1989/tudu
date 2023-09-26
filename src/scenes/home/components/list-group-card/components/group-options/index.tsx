@@ -10,7 +10,7 @@ import {RenameIcon} from '../../../../../../components/animated-icons/rename-ico
 import {UngroupIcon} from '../../../../../../components/animated-icons/ungroup-icon';
 
 const GroupOptions: React.FC<GroupOptionsProps> = memo(
-  ({groupData, closeMenu, onRename}) => {
+  ({groupData, closeMenu, onRename, onDeleteCallback}) => {
     const draggableContext = useContext(DraggableContext);
 
     const handleDeleteOptionPress = useCallback(() => {
@@ -18,9 +18,11 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
         groupData,
         generateListAndGroupDeleteTitle,
         'delete',
+        undefined,
+        onDeleteCallback,
       );
       closeMenu();
-    }, [closeMenu, draggableContext, groupData]);
+    }, [closeMenu, draggableContext, groupData, onDeleteCallback]);
 
     const handleUngroupOptionPress = useCallback(() => {
       closeMenu();

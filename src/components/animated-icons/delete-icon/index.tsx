@@ -34,14 +34,25 @@ const DeleteIcon = memo(
 
     return (
       <BaseAnimatedIcon
-        source={require('../../../assets/lottie/trash.json')}
+        source={require('../../../assets/lottie/trash2.json')}
         loop={false}
         componentName="DeleteIcon"
         ref={iconRef}
+        initialFrame={80}
+        finalFrame={150}
+        staticStateFrame={80}
         {...props}
       />
     );
   }),
 );
 
-export {DeleteIcon};
+const DeleteIconActionAnimation = memo(
+  forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
+    return (
+      <DeleteIcon size={30} ref={ref} initialFrame={160} finalFrame={240} />
+    );
+  }),
+);
+
+export {DeleteIcon, DeleteIconActionAnimation};
