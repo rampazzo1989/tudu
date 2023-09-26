@@ -1,12 +1,7 @@
-import {
-  AnimatedIconProps,
-  AnimatedIconRef,
-} from '../animated-icons/animated-icon/types';
+import {ForwardedRefAnimatedIcon} from '../animated-icons/animated-icon/types';
 
 export type DefaultHeaderProps = {
   title?: string;
-  Icon: React.ForwardRefExoticComponent<
-    AnimatedIconProps & React.RefAttributes<AnimatedIconRef>
-  >;
+  Icon: ForwardedRefAnimatedIcon;
   onBackButtonPress: () => void;
 };

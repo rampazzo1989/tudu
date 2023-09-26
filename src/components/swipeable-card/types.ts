@@ -1,13 +1,8 @@
-import {
-  AnimatedIconProps,
-  AnimatedIconRef,
-} from '../animated-icons/animated-icon/types';
+import {ForwardedRefAnimatedIcon} from '../animated-icons/animated-icon/types';
 import {MenuOption} from '../menu-options/types';
 
 export type SwipeableOption = {
-  Icon: React.ForwardRefExoticComponent<
-    AnimatedIconProps & React.RefAttributes<AnimatedIconRef>
-  >;
+  Icon: ForwardedRefAnimatedIcon;
   onPress?: () => void;
   backgroundColor?: string;
   text?: string;
