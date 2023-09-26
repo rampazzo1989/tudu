@@ -1,3 +1,4 @@
+import {ForwardedRefAnimatedIcon} from '../../../../components/animated-icons/animated-icon/types';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
 import {DraggableItem} from '../../../../modules/draggable/draggable-context/types';
 import {List} from '../../types';
@@ -14,4 +15,5 @@ export type ListGroupProps = {
   handleDeleteGenerator: (
     listOrDraggableList: DraggableItem<List> | List,
   ) => () => void;
+  animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };

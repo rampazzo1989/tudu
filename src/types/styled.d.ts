@@ -5,6 +5,7 @@ declare module 'styled-components/native' {
     colors: {
       primary: string;
       secondary: string;
+      iconOverlay: string;
       pageBackground: string;
       contrastColor: string;
       text: string;

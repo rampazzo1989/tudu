@@ -8,10 +8,10 @@ import React, {
   useState,
 } from 'react';
 import {FloatingActionButtonProps, FloatingActionButtonRef} from './types';
-import {FloatingButton} from './styles';
+import {FloatingButton, IconContainer} from './styles';
 import {
-  AnimatedIconProps,
   BaseAnimatedIconRef,
+  ForwardedRefAnimatedIcon,
 } from '../animated-icons/animated-icon/types';
 import {ZoomIn} from 'react-native-reanimated';
 import {PopoverMenu} from '../popover-menu';
@@ -24,11 +24,7 @@ const FloatingActionButton = memo(
       const animateNextIcon = useRef(true);
       const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
       const [CurrentIcon, setCurrentIcon] =
-        useState<
-          React.ForwardRefExoticComponent<
-            AnimatedIconProps & React.RefAttributes<BaseAnimatedIconRef>
-          >
-        >(DefaultIcon);
+        useState<ForwardedRefAnimatedIcon>(DefaultIcon);
 
       // Animates the current icon when option is set
       useEffect(() => {
@@ -73,7 +69,9 @@ const FloatingActionButton = memo(
             onPress={handlePress}
             scaleFactor={0.05}
             entering={ZoomIn.delay(100)}>
-            <CurrentIcon ref={iconRef} speed={1.4} size="max" />
+            <IconContainer>
+              <CurrentIcon ref={iconRef} speed={1.5} size={40} />
+            </IconContainer>
           </FloatingButton>
         ),
         [CurrentIcon, handlePress],

@@ -14,7 +14,10 @@ import {HomeActionMenuOptionsProps} from './types';
 import {FloatingActionButtonRef} from '../../../../components/floating-action-button/types';
 import {PlusIcon} from '../../../../components/animated-icons/plus-icon';
 import {FloatingActionButton} from '../../../../components/floating-action-button';
-import {HashIcon} from '../../../../components/animated-icons/hash-icon';
+import {
+  HashIcon,
+  HashIconActionAnimation,
+} from '../../../../components/animated-icons/hash-icon';
 import {NewListModal} from '../../../group/components/new-list-modal';
 import {NewCounterModal} from '../../../counter/components/new-counter-modal';
 import {useTranslation} from 'react-i18next';
@@ -114,6 +117,9 @@ const HomeActionMenuOptions = memo(
           <NewCounterModal
             visible={newCounterPopupVisible}
             onRequestClose={() => setNewCounterPopupVisible(false)}
+            onInsertNewCounter={() =>
+              parentRef.current?.animateThisIcon(HashIconActionAnimation)
+            }
           />
           <NewGroupModal
             visible={newGroupPopupVisible}

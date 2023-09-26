@@ -17,6 +17,7 @@ import {BaseAnimatedIconRef} from '../../../../components/animated-icons/animate
 import {RenameModal} from './components/rename-modal';
 import {FadeIn} from 'react-native-reanimated';
 import {List} from '../../types';
+import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
 
 const ListGroupCard: React.FC<ListGroupProps> = memo(
   ({
@@ -25,6 +26,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
     handleArchiveGenerator,
     handleDeleteGenerator,
     handleEditListGenerator,
+    animateIcon,
   }) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
@@ -94,6 +96,10 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
       listPressHandlerGenerator,
     ]);
 
+    const handleAnimateIconOnDelete = useCallback(() => {
+      animateIcon?.(DeleteIconActionAnimation);
+    }, [animateIcon]);
+
     return (
       <ListGroupContainer>
         <TitleContainer>
@@ -109,6 +115,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
               groupData={groupData}
               closeMenu={handlePopoverMenuRequestClose}
               onRename={handleRename}
+              onDeleteCallback={handleAnimateIconOnDelete}
             />
           </PopoverMenu>
         </TitleContainer>

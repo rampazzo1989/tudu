@@ -1,14 +1,9 @@
 import {Animated} from 'react-native';
-import {
-  AnimatedIconProps,
-  AnimatedIconRef,
-} from '../../animated-icons/animated-icon/types';
+import {ForwardedRefAnimatedIcon} from '../../animated-icons/animated-icon/types';
 import {MenuOption} from '../../menu-options/types';
 
 export type SwipeableOptionProps = {
-  Icon: React.ForwardRefExoticComponent<
-    AnimatedIconProps & React.RefAttributes<AnimatedIconRef>
-  >;
+  Icon: ForwardedRefAnimatedIcon;
   backgroundColor: string;
   onPress?: () => void;
   optionSize?: number | '100%';

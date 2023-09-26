@@ -40,3 +40,7 @@ export type AnimatedIconRef = {
   pause: () => void;
   toggle: () => void;
 };
+
+export type ForwardedRefAnimatedIcon = React.ForwardRefExoticComponent<
+  AnimatedIconProps & React.RefAttributes<AnimatedIconRef>
+>;

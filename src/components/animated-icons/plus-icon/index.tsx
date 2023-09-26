@@ -1,9 +1,13 @@
 import React, {forwardRef, memo, useImperativeHandle, useRef} from 'react';
-import {AnimatedIconProps, BaseAnimatedIconRef} from '../animated-icon/types';
+import {
+  AnimatedIconProps,
+  AnimatedIconRef,
+  BaseAnimatedIconRef,
+} from '../animated-icon/types';
 import {AnimatedIcon} from './styles';
 
 const PlusIcon = memo(
-  forwardRef<BaseAnimatedIconRef, AnimatedIconProps>((props, ref) => {
+  forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
 
     useImperativeHandle(
@@ -24,7 +28,7 @@ const PlusIcon = memo(
 
     return (
       <AnimatedIcon
-        source={require('../../../assets/lottie/plus.json')}
+        source={require('../../../assets/lottie/plus2.json')}
         loop={false}
         componentName="PlusIcon"
         ref={iconRef}

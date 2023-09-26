@@ -28,6 +28,7 @@ import {generateListAndGroupDeleteTitle} from '../../utils/list-and-group-utils'
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
 import {HomeActionMenuOptions} from './components/button-actions';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated-icon/types';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
@@ -37,6 +38,10 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const {t} = useTranslation();
   const theme = useTheme();
+
+  const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
+    actionButtonRef.current?.animateThisIcon(Icon);
+  }, []);
 
   const handleSetCustomLists = useCallback(
     (newOrderList: DraggableItem<List>[]) => {
@@ -97,13 +102,14 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             scrollEnabled>
             <DefaultLists lists={lists} onListPress={handleDefaultListPress} />
             <SectionTitle title={t('sectionTitles.counters')} />
-            <CountersList list={counterList} />
+            <CountersList list={counterList} animateIcon={animateThisIcon} />
             {groupedCustomLists.length ? (
               <>
                 <SectionTitle title={t('sectionTitles.myLists')} />
                 <CustomLists
                   data={groupedCustomLists}
                   onListPress={handleListPress}
+                  animateIcon={animateThisIcon}
                 />
               </>
             ) : (
@@ -126,6 +132,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           <FloatingDelete
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
+            animateIcon={animateThisIcon}
           />
           <HomeActionMenuOptions ref={actionButtonRef} />
         </DraggableContextProvider>
