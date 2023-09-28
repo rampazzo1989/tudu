@@ -4,6 +4,7 @@ import {StatusBar} from 'react-native';
 import {AnimatedIconRef} from '../../components/animated-icons/animated-icon/types';
 import {AppIcon, Logo, Spacer, StyledSafeAreaView} from './styles';
 import {StackNavigatorParamList} from '../../navigation/stack-navigator/types';
+import {useTheme} from 'styled-components/native';
 
 const SplashScreen = React.memo(
   ({
@@ -11,15 +12,12 @@ const SplashScreen = React.memo(
   }: NativeStackScreenProps<StackNavigatorParamList, 'SplashScreen'>) => {
     const iconRef = useRef<AnimatedIconRef>(null);
 
+    const theme = useTheme();
+
     useEffect(() => {
       if (navigation) {
         iconRef.current?.play({
-          animationLayer: 'toggleOff',
-          onAnimationFinish: () =>
-            iconRef.current?.play({
-              animationLayer: 'toggleOn',
-              onAnimationFinish: () => navigation.replace('Home'),
-            }),
+          onAnimationFinish: () => navigation.replace('Home'),
         });
       }
     });
@@ -27,7 +25,7 @@ const SplashScreen = React.memo(
     return (
       <StyledSafeAreaView>
         <StatusBar
-          backgroundColor={'#6B49B7'}
+          backgroundColor={theme.colors.secondary}
           barStyle="light-content"
           translucent={false}
         />

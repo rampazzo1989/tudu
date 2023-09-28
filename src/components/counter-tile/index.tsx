@@ -3,7 +3,7 @@ import {FadeOutDown} from 'react-native-reanimated';
 import {toggle} from '../../utils/state-utils';
 import {AdjustIcon} from '../animated-icons/adjust-icon';
 import {BaseAnimatedIconRef} from '../animated-icons/animated-icon/types';
-import {HashIcon, HashIconActionAnimation} from '../animated-icons/hash-icon';
+import {HashIcon} from '../animated-icons/hash-icon';
 import {
   ButtonContainer,
   Button,
@@ -233,10 +233,6 @@ const CounterTile: React.FC<CounterTileProps> = memo(
       setDeleteModalVisible(false);
     }, []);
 
-    const handleInsertNewCounter = useCallback(() => {
-      animateIcon?.(HashIconActionAnimation);
-    }, [animateIcon]);
-
     return (
       <Tile
         onStartShouldSetResponderCapture={() => {
@@ -276,7 +272,6 @@ const CounterTile: React.FC<CounterTileProps> = memo(
           visible={editModalVisible}
           onRequestClose={() => setEditModalVisible(false)}
           editingCounterData={counterData}
-          onInsertNewCounter={handleInsertNewCounter}
         />
         <PopupModal
           visible={deleteModalVisible}

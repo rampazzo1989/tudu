@@ -30,6 +30,7 @@ export const IconContainer = styled.View`
 
 export const Title = styled.Text`
   font-family: ${({theme}) => theme.fonts.counterTitle};
+  color: ${({theme}) => theme.colors.text};
   font-size: 11px;
   line-height: 13px;
   margin-left: 6px;

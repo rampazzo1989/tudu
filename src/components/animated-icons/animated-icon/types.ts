@@ -30,7 +30,7 @@ export type BaseAnimatedIconRef = {
 };
 
 export type AnimationOptions = {
-  animationLayer: 'intro' | 'hover' | 'toggleOn' | 'toggleOff';
+  animationLayer?: 'intro' | 'hover' | 'toggleOn' | 'toggleOff';
   onAnimationFinish?: () => void;
   delay?: number;
 };

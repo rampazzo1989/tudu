@@ -32,7 +32,15 @@ const TuduIcon = memo(
               });
             } else {
               iconRef.current?.play({
-                onAnimationFinish: options?.onAnimationFinish,
+                initialFrame: 85,
+                finalFrame: 175,
+                delay: options?.delay,
+                onAnimationFinish: () =>
+                  iconRef.current?.play({
+                    initialFrame: 0,
+                    finalFrame: 85,
+                    onAnimationFinish: options?.onAnimationFinish,
+                  }),
               });
             }
           },
