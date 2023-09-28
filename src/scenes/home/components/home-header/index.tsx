@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useRef} from 'react';
+import React, {memo, useRef} from 'react';
 import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {SearchIcon} from '../../../../components/animated-icons/search';
 import {Header} from '../../../../components/header';
@@ -14,15 +14,15 @@ import {
 const HomeHeader: React.FC = memo(() => {
   const iconRef = useRef<AnimatedIconRef>(null);
 
-  useEffect(() => {
-    iconRef.current?.play({
-      animationLayer: 'toggleOff',
-      delay: 2000,
-      onAnimationFinish: () => {
-        iconRef.current?.play({animationLayer: 'toggleOn'});
-      },
-    });
-  }, []);
+  // useEffect(() => {
+  //   iconRef.current?.play({
+  //     animationLayer: 'toggleOff',
+  //     delay: 2000,
+  //     onAnimationFinish: () => {
+  //       iconRef.current?.play({animationLayer: 'toggleOn'});
+  //     },
+  //   });
+  // }, []);
 
   return (
     <Header>

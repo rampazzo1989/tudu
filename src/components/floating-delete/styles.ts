@@ -16,6 +16,7 @@ export const Container = styled(DraxView)`
 
 export const Label = styled.Text`
   font-family: ${({theme}) => theme.fonts.default};
+  color: ${({theme}) => theme.colors.text};
   font-size: 18px;
   line-height: 18px;
   margin-left: 6px;

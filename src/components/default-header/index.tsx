@@ -5,11 +5,13 @@ import {Header} from '../header';
 import {ContentRow, styles, Title, TitleContainer} from './styles';
 import {DefaultHeaderProps} from './types';
 import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
+import {useTheme} from 'styled-components/native';
 
 const DefaultHeader: React.FC<DefaultHeaderProps> = memo(
   ({title, Icon, onBackButtonPress}) => {
     const [titleWidth, setTitleWidth] = useState(0);
     const iconRef = useRef<AnimatedIconRef>(null);
+    const theme = useTheme();
 
     useEffect(() => {
       iconRef.current?.play();
@@ -34,7 +36,7 @@ const DefaultHeader: React.FC<DefaultHeaderProps> = memo(
             size={55}
             style={styles.pageIcon}
             ref={iconRef}
-            overrideColor="#A188D2"
+            overrideColor={theme.colors.iconOverlay}
           />
         </ContentRow>
       </Header>

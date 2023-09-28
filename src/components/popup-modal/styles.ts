@@ -20,6 +20,7 @@ export const PopupContainer = styled(AnimatedTouchable).attrs({
 
 export const PopupTitle = styled.Text`
   font-family: ${({theme}) => theme.fonts.default};
+  color: ${({theme}) => theme.colors.headerText};
   font-size: 16px;
   line-height: 18px;
   text-align: left;
@@ -63,6 +64,7 @@ export const PopupButton = styled.TouchableOpacity<HighlightableComponent>`
 
 export const ButtonLabel = styled.Text`
   font-family: ${({theme}) => theme.fonts.default};
+  color: ${({theme}) => theme.colors.text};
   font-size: 14px;
 `;
 
