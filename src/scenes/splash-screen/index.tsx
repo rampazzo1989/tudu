@@ -1,6 +1,6 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useRef} from 'react';
-import {StatusBar} from 'react-native';
+import {Dimensions, StatusBar} from 'react-native';
 import {AnimatedIconRef} from '../../components/animated-icons/animated-icon/types';
 import {AppIcon, Logo, Spacer, StyledSafeAreaView} from './styles';
 import {StackNavigatorParamList} from '../../navigation/stack-navigator/types';
@@ -19,6 +19,11 @@ const SplashScreen = React.memo(
         iconRef.current?.play({
           onAnimationFinish: () => navigation.replace('Home'),
         });
+        console.log(
+          Dimensions.get('window').height,
+          Dimensions.get('screen').height,
+          StatusBar.currentHeight,
+        );
       }
     });
 
