@@ -28,16 +28,18 @@ const SplashScreen = React.memo(
     });
 
     return (
-      <StyledSafeAreaView>
-        <StatusBar
-          backgroundColor={theme.colors.secondary}
-          barStyle="light-content"
-          translucent={false}
-        />
-        <Spacer />
-        <AppIcon size={100} resizeMode="cover" speed={2} ref={iconRef} />
-        <Logo height={61} width={56} />
-      </StyledSafeAreaView>
+      <>
+        {/* <Spacer /> */}
+        <StyledSafeAreaView>
+          <StatusBar
+            backgroundColor={theme.colors.secondary}
+            barStyle="light-content"
+            translucent={false}
+          />
+          <AppIcon size={100} resizeMode="cover" speed={2} ref={iconRef} />
+          <Logo height={61} width={56} />
+        </StyledSafeAreaView>
+      </>
     );
   },
 );
