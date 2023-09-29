@@ -6,10 +6,16 @@ type HomePageProps = NativeStackScreenProps<StackNavigatorParamList, 'Home'>;
 
 export type {HomePageProps};
 
+export type TuduItem = {
+  label: string;
+  done: boolean;
+};
+
 export type List = {
   label: string;
   numberOfActiveItems: number;
   id: string;
+  tudus?: TuduItem[];
   color?: string;
   groupName?: string;
 };
