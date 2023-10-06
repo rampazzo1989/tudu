@@ -8,8 +8,11 @@ import {ContentRow, Emoji, styles, Title, TitleContainer} from './styles';
 import {ListHeaderProps} from './types';
 import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {useTheme} from 'styled-components/native';
-
-const EMOJI_REGEX = /^[\p{Emoji}\u200d]+/gu;
+import {
+  EMOJI_REGEX,
+  getEmojiFromBeginning,
+  removeEmojiFromBeginning,
+} from '../../../../utils/emoji-utils';
 
 const ListHeader: React.FC<ListHeaderProps> = memo(
   ({listData, onBackButtonPress}) => {
@@ -21,24 +24,15 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
       iconRef.current?.play();
     }, []);
 
-    const titleEmoji = useMemo(() => {
-      const emojis = listData?.label?.match(EMOJI_REGEX);
-      console.log(emojis?.length, emojis);
-      if (!emojis?.length || emojis.length > 3) {
-        return;
-      }
-      let emojiList: string[] = [];
+    const titleEmoji = useMemo(
+      () => getEmojiFromBeginning(listData?.label ?? ''),
+      [listData?.label],
+    );
 
-      for (const emoji of emojis) {
-        emojiList.push(emoji);
-      }
-
-      return emojiList.join('');
-    }, [listData?.label]);
-
-    const textWithNoFirstEmoji = useMemo(() => {
-      return listData?.label?.replace(EMOJI_REGEX, '')?.trim();
-    }, [listData?.label]);
+    const textWithNoFirstEmoji = useMemo(
+      () => removeEmojiFromBeginning(listData?.label ?? ''),
+      [listData?.label],
+    );
 
     const ListIcon = useMemo(() => {
       return (listData as BuiltInList)?.icon ?? ListDefaultIcon;

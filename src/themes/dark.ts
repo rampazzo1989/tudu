@@ -16,6 +16,7 @@ const darkTheme: DefaultTheme = {
     listCardNumberHighlighted: '#3C414A',
     listCardGroup: '#3C414A',
     tuduCard: '#3C414A',
+    tuduCardDone: '#25303D',
     button: '#3C414A',
     buttonHighlight: '#444B56',
     profileThumbBackground: '#FFFFFF',

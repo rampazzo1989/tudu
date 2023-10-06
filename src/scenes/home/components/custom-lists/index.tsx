@@ -136,6 +136,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
         </>
       );
     }, [
+      animateIcon,
       data,
       editModalVisible,
       editingList,

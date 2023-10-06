@@ -17,6 +17,7 @@ declare module 'styled-components/native' {
       listCardNumberHighlighted: string;
       listCardGroup: string;
       tuduCard: string;
+      tuduCardDone: string;
       button: string;
       buttonHighlight: string;
       profileThumbBackground: string;

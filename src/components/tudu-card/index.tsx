@@ -1,14 +1,19 @@
 import React, {memo} from 'react';
 import {Card, CheckAndTextContainer, Label} from './styles';
+import {SwipeableTuduCard} from './swipeable-tudu-card';
 import {TuduCardProps} from './types';
 
 const TuduCard = memo<TuduCardProps>(({data}) => {
   return (
     <Card>
-      <SwipeableTuduCard>
+      <SwipeableTuduCard
+        done={data.done}
+        onDelete={() => console.log('Delete')}
+        onEdit={() => console.log('Edit')}
+        onSendOrRemoveFromToday={() => console.log('Today')}>
         <CheckAndTextContainer>
-          {/* <TuduCheck /> */}
           <Label>{data.label}</Label>
+          {/* <TuduCheck /> */}
         </CheckAndTextContainer>
         {/* <Favorite /> */}
       </SwipeableTuduCard>

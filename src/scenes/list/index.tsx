@@ -11,6 +11,7 @@ import {
 import {BuiltInList, List} from '../home/types';
 import {ListHeader} from './components/list-header';
 import {ListPageProps} from './types';
+import {TudusList} from './components/tudus-list';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
@@ -43,7 +44,9 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     <Page>
       <ListHeader listData={list} onBackButtonPress={handleBackButtonPress} />
       <DraxProvider>
-        <DraggablePageContent />
+        <DraggablePageContent>
+          {!!list?.tudus && <TudusList data={list.tudus} />}
+        </DraggablePageContent>
       </DraxProvider>
     </Page>
   );

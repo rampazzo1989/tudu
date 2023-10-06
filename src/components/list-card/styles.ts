@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import {NumberOfActiveItemsProps} from './types';
 import {ShrinkableView} from '../shrinkable-view';
+import Animated from 'react-native-reanimated';
 
 type HighlightableComponentProps = {
   isHighlighted?: boolean;
@@ -58,4 +59,10 @@ export const Number = styled.Text`
 
 export const ControlComponentContainer = styled.View`
   margin-right: 6px;
+`;
+
+export const Emoji = styled(Animated.Text)`
+  color: ${({theme}) => theme.colors.headerText};
+  font-size: 56px;
+  opacity: 0.4;
 `;

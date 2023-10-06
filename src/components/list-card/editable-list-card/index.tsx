@@ -1,9 +1,13 @@
-import React, {memo} from 'react';
+import React, {memo, useMemo} from 'react';
 import {NumberOfActiveItems} from '..';
+import {
+  getEmojiFromBeginning,
+  removeEmojiFromBeginning,
+} from '../../../utils/emoji-utils';
 import {ControlComponentContainer, IconLabelContainer, Label} from '../styles';
 import {SwipeableListCard} from '../swipeable-list-card';
 import {EditableListCardProps} from '../types';
-import {ListCardContainer} from './styles';
+import {Emoji, ListCardContainer} from './styles';
 
 const EditableListCard: React.FC<EditableListCardProps> = memo(
   ({
@@ -19,6 +23,13 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
     onDelete,
     onEdit,
   }) => {
+    const labelEmoji = useMemo(() => getEmojiFromBeginning(label), [label]);
+
+    const trimmedLabel = useMemo(
+      () => removeEmojiFromBeginning(label),
+      [label],
+    );
+
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}
@@ -40,9 +51,13 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
                 {ControlComponent}
               </ControlComponentContainer>
             )}
-            <Icon animateWhenIdle />
+            {labelEmoji ? (
+              <Emoji adjustsFontSizeToFit>{labelEmoji}</Emoji>
+            ) : (
+              <Icon animateWhenIdle />
+            )}
             <Label isHighlighted={isHighlighted} numberOfLines={1}>
-              {label}
+              {trimmedLabel}
             </Label>
           </IconLabelContainer>
           <NumberOfActiveItems
