@@ -63,6 +63,5 @@ export const ControlComponentContainer = styled.View`
 
 export const Emoji = styled(Animated.Text)`
   color: ${({theme}) => theme.colors.headerText};
-  font-size: 56px;
-  opacity: 0.4;
+  font-size: 18px;
 `;
