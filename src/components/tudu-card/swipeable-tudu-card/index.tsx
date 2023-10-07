@@ -4,11 +4,11 @@ import {DeleteIcon} from '../../animated-icons/delete-icon';
 import {RenameIcon} from '../../animated-icons/rename-icon';
 import {SwipeableCard} from '../../swipeable-card';
 import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
-import {SwipeableListCardProps} from './types';
-import {FolderAddIcon} from '../../animated-icons/folder-add-icon';
+import {SunIcon} from '../../animated-icons/sun-icon';
+import {SwipeableTuduCardProps} from './types';
 
-const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
-  ({children, isHighlighted, onArchive, onDelete, onEdit, enabled = false}) => {
+const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
+  ({children, onSendOrRemoveFromToday, onDelete, onEdit, done}) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
 
@@ -29,30 +29,29 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
     const leftOptions = useMemo<SwipeableOption[]>(
       () => [
         {
-          Icon: FolderAddIcon,
-          text: 'Archive',
+          Icon: SunIcon,
+          text: 'Send to Today',
         },
       ],
       [],
     );
 
     const handleSwipeRight = useCallback(() => {
-      onArchive(swipeableRef);
-    }, [onArchive]);
+      onSendOrRemoveFromToday(swipeableRef);
+    }, [onSendOrRemoveFromToday]);
 
     const handleSwipeLeft = useCallback(() => {}, []);
 
     return (
       <SwipeableCard
-        enabled={enabled}
+        enabled={!done}
         ref={swipeableRef}
         backgroundColor={
-          isHighlighted
-            ? theme.colors.listCardHighlighted
-            : theme.colors.listCard
+          done ? theme.colors.tuduCardDone : theme.colors.tuduCard
         }
         rightOptions={rightOptions}
         leftOptions={leftOptions}
+        optionsSize="large"
         fullWidthOnLeftOptions
         onSwipeRight={handleSwipeRight}
         onSwipeLeft={handleSwipeLeft}
@@ -63,4 +62,4 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
   },
 );
 
-export {SwipeableListCard};
+export {SwipeableTuduCard};

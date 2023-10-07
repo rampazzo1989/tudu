@@ -1,9 +1,18 @@
-import React, {memo} from 'react';
+import React, {memo, useMemo} from 'react';
 import {NumberOfActiveItems} from '..';
-import {ControlComponentContainer, IconLabelContainer, Label} from '../styles';
+import {
+  ControlComponentContainer,
+  Emoji,
+  IconLabelContainer,
+  Label,
+} from '../styles';
 import {ArchivedListCardProps} from '../types';
 import {SwipeableListCardArchived} from '../swipeable-list-card-archived';
 import {ListCardContainer} from './styles';
+import {
+  getEmojiFromBeginning,
+  removeEmojiFromBeginning,
+} from '../../../utils/emoji-utils';
 
 const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
   ({
@@ -17,6 +26,12 @@ const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
     onUnarchive,
     onDelete,
   }) => {
+    const labelEmoji = useMemo(() => getEmojiFromBeginning(label), [label]);
+
+    const trimmedLabel = useMemo(
+      () => removeEmojiFromBeginning(label),
+      [label],
+    );
     return (
       <ListCardContainer
         activeOpacity={1}
@@ -35,8 +50,12 @@ const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
                 {ControlComponent}
               </ControlComponentContainer>
             )}
-            <Icon animateWhenIdle />
-            <Label numberOfLines={1}>{label}</Label>
+            {labelEmoji ? (
+              <Emoji adjustsFontSizeToFit>{labelEmoji}</Emoji>
+            ) : (
+              <Icon animateWhenIdle />
+            )}
+            <Label numberOfLines={1}>{trimmedLabel}</Label>
           </IconLabelContainer>
           <NumberOfActiveItems numberOfActiveItems={numberOfActiveItems} />
         </SwipeableListCardArchived>

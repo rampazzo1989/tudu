@@ -1,49 +1,61 @@
 import React, {memo, useCallback, useMemo} from 'react';
 import {DraxProvider} from 'react-native-drax';
-import {useRecoilValue} from 'recoil';
 import {Page} from '../../components/page';
 import {DraggablePageContent} from '../../components/draggable-page-content';
-import {
-  archivedLists as archivedListsState,
-  homeDefaultLists,
-  myLists,
-} from '../home/state';
-import {BuiltInList, List} from '../home/types';
+import {TuduItem} from '../home/types';
 import {ListHeader} from './components/list-header';
 import {ListPageProps} from './types';
+import {TudusList} from './components/tudus-list';
+import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
+import {DraggableItem} from '../../modules/draggable/draggable-context/types';
+import {useListStateHelper} from '../../hooks/useListStateHelper';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import {styles} from './styles';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
 
-  const defaultLists = useRecoilValue(homeDefaultLists);
-  const customLists = useRecoilValue(myLists);
-  const archivedLists = useRecoilValue(archivedListsState);
+  const {updateList, getListById} = useListStateHelper();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
-  const list: BuiltInList | List | undefined = useMemo(() => {
-    const selectedListFromDefault = defaultLists.find(x => x.label === listId);
+  const list = useMemo(() => getListById(listId), [getListById, listId]);
 
-    if (selectedListFromDefault) {
-      return selectedListFromDefault;
-    }
+  const draggableTudus = useMemo(
+    () => list?.tudus?.map(tudu => new DraggableItem([tudu])) ?? [],
+    [list],
+  );
 
-    const customList = customLists.find(x => x.label === listId);
+  const setTudus = useCallback(
+    (draggable: DraggableItem<TuduItem>[]) => {
+      if (!list) {
+        return;
+      }
+      list.tudus = draggable.flatMap(x => x.data);
+      updateList(list);
+    },
+    [list, updateList],
+  );
 
-    if (customList) {
-      return customList;
-    }
-
-    return archivedLists.find(x => x.label === listId);
-  }, [archivedLists, customLists, defaultLists, listId]);
+  const handleListDragStart = useCallback(() => {
+    RNReactNativeHapticFeedback.trigger('soft');
+  }, []);
 
   return (
     <Page>
       <ListHeader listData={list} onBackButtonPress={handleBackButtonPress} />
       <DraxProvider>
-        <DraggablePageContent />
+        <DraggableContextProvider<TuduItem>
+          data={draggableTudus}
+          onSetData={setTudus}
+          onDragStart={handleListDragStart}>
+          <DraggablePageContent
+            contentContainerStyle={styles.scrollContentContainer}>
+            {!!list?.tudus && <TudusList />}
+          </DraggablePageContent>
+        </DraggableContextProvider>
       </DraxProvider>
     </Page>
   );

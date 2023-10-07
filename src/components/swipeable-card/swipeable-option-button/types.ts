@@ -6,7 +6,8 @@ export type SwipeableOptionProps = {
   Icon: ForwardedRefAnimatedIcon;
   backgroundColor: string;
   onPress?: () => void;
-  optionSize?: number | '100%';
+  optionWidth?: number | '100%';
+  optionSize?: 'medium' | 'large';
   text?: string;
   progress?: Animated.AnimatedInterpolation<string | number>;
   dragX?: Animated.AnimatedInterpolation<string | number>;

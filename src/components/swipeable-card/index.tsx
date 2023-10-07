@@ -10,6 +10,7 @@ import {OptionsContainer, styles} from './styles';
 import {SwipeableOptionButton} from './swipeable-option-button';
 import {SwipeableCardProps, SwipeableCardRef, SwipeableOption} from './types';
 import {SwipeableOptionRef} from './swipeable-option-button/types';
+import {getLastItem} from '../../utils/array-utils';
 
 const SwipeableCard = memo(
   forwardRef<SwipeableCardRef, SwipeableCardProps>(
@@ -24,6 +25,7 @@ const SwipeableCard = memo(
         fullWidthOnRightOptions,
         onSwipeLeft,
         onSwipeRight,
+        optionsSize = 'medium',
         enabled = true,
       },
       ref,
@@ -59,7 +61,8 @@ const SwipeableCard = memo(
                     backgroundColor={
                       option.backgroundColor ?? optionsBackgroundColor
                     }
-                    optionSize={fullWidth ? '100%' : undefined}
+                    optionWidth={fullWidth ? '100%' : undefined}
+                    optionSize={optionsSize}
                     ref={r => {
                       if (r) {
                         iconsRefs.current.push(r);
@@ -75,7 +78,7 @@ const SwipeableCard = memo(
             </OptionsContainer>
           );
         },
-        [handleOptionMenuClose, optionsBackgroundColor],
+        [handleOptionMenuClose, optionsBackgroundColor, optionsSize],
       );
 
       const renderRightActions = useCallback(
@@ -108,9 +111,9 @@ const SwipeableCard = memo(
         (direction: 'left' | 'right') => {
           const iconsRefs =
             direction === 'left' ? leftIconsRefs : rightIconsRefs;
-          for (const iconRef of iconsRefs.current) {
-            iconRef?.playAnimation?.();
-          }
+
+          const lastIcon = getLastItem(iconsRefs.current);
+          lastIcon?.playAnimation?.();
         },
         [],
       );

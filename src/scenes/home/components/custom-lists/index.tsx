@@ -6,7 +6,10 @@ import {CustomListsProps} from './types';
 import {Container} from './styles';
 import {List} from '../../types';
 import {EditableListCard} from '../../../../components/list-card/editable-list-card';
-import {DraggableItem} from '../../../../modules/draggable/draggable-context/types';
+import {
+  DraggableContextType,
+  DraggableItem,
+} from '../../../../modules/draggable/draggable-context/types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 import {
   archiveList,
@@ -21,8 +24,9 @@ import {FolderAddIconActionAnimation} from '../../../../components/animated-icon
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
-  ({data, onListPress, animateIcon}) => {
-    const draggableContext = useContext(DraggableContext);
+  ({onListPress, animateIcon}) => {
+    const draggableContext =
+      useContext<DraggableContextType<List>>(DraggableContext);
     const setArchivedLists = useSetRecoilState(archivedLists);
     const setCustomLists = useSetRecoilState(myLists);
 
@@ -90,7 +94,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     const memoizedItems = useMemo(() => {
       return (
         <>
-          {data.map((item, index) => {
+          {draggableContext.data.map((item, index) => {
             if (item.groupId) {
               return (
                 <DraggableView
@@ -136,7 +140,8 @@ const CustomLists: React.FC<CustomListsProps> = memo(
         </>
       );
     }, [
-      data,
+      animateIcon,
+      draggableContext.data,
       editModalVisible,
       editingList,
       handleArchiveGenerator,

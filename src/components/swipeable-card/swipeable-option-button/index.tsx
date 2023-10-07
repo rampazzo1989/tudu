@@ -20,12 +20,13 @@ const SwipeableOptionButton = memo(
         Icon,
         backgroundColor,
         onPress,
-        optionSize,
+        optionWidth,
         text,
         progress,
         dragX,
         popoverMenuOptions,
         onPopoverMenuClose,
+        optionSize = 'medium',
         alignTo = 'left',
       },
       ref,
@@ -55,8 +56,8 @@ const SwipeableOptionButton = memo(
           onPress={onPress}
           alignTo={alignTo}
           ref={touchableRef}
-          size={optionSize}>
-          <Icon ref={iconRef} size={24} />
+          size={optionWidth}>
+          <Icon ref={iconRef} size={optionSize === 'medium' ? 24 : 28} />
           <Label>{text}</Label>
           {!!popoverMenuOptions && !!touchableRef.current && (
             <PopoverMenu

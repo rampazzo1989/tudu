@@ -1,3 +1,4 @@
+import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {ShrinkableView} from '../../shrinkable-view';
 
@@ -16,4 +17,9 @@ export const ListCardContainer = styled(
   background-color: ${({theme, isHighlighted}) =>
     isHighlighted ? theme.colors.listCardHighlighted : theme.colors.listCard};
   border-radius: 10px;
+`;
+
+export const Emoji = styled(Animated.Text)`
+  color: ${({theme}) => theme.colors.headerText};
+  font-size: 18px;
 `;
