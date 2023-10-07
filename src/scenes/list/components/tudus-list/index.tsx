@@ -1,18 +1,18 @@
-import React, {memo, useMemo} from 'react';
+import React, {memo, useContext, useMemo} from 'react';
 import {TuduCard} from '../../../../components/tudu-card';
-import {DraggableItem} from '../../../../modules/draggable/draggable-context/types';
+import {DraggableContext} from '../../../../modules/draggable/draggable-context';
+import {DraggableContextType} from '../../../../modules/draggable/draggable-context/types';
 import {DraggableView} from '../../../../modules/draggable/draggable-view';
+import {TuduItem} from '../../../home/types';
 import {Container} from './styles';
 import {TudusListProps} from './types';
 
-const TudusList: React.FC<TudusListProps> = memo(({data}) => {
-  const draggableTudus = useMemo(
-    () => data.map(tudu => new DraggableItem([tudu])),
-    [data],
-  );
+const TudusList: React.FC<TudusListProps> = memo(({}) => {
+  const draggableContext =
+    useContext<DraggableContextType<TuduItem>>(DraggableContext);
 
   const memoizedList = useMemo(() => {
-    return draggableTudus.map((draggableTudu, index) => {
+    return draggableContext.data.map((draggableTudu, index) => {
       const tudu = draggableTudu.data[0];
       return (
         <DraggableView key={`${tudu.label}${index}`} payload={draggableTudu}>
@@ -20,7 +20,7 @@ const TudusList: React.FC<TudusListProps> = memo(({data}) => {
         </DraggableView>
       );
     });
-  }, [draggableTudus]);
+  }, [draggableContext.data]);
 
   return <Container>{memoizedList}</Container>;
 });

@@ -16,4 +16,9 @@ export const CheckAndTextContainer = styled.View`
   justify-content: center;
 `;
 
-export const Label = styled.Text``;
+export const Label = styled.Text`
+  color: ${({theme}) => theme.colors.text};
+  font-size: 16px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+`;

@@ -33,6 +33,14 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       label: i18next.t('listTitles.today'),
       isHighlighted: true,
       numberOfActiveItems: 0,
+      tudus: [
+        {label: 'Do 50 pushups', done: false},
+        {
+          label:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed viverra nunc. Praesent lobortis arcu augue, sit amet luctus magna congue eu. Nullam interdum nulla sed consectetur eleifend. Donec pretium sem dui, non semper turpis cursus eget. Proin vel arcu libero. Vestibulum mattis lacus leo, eu suscipit sem molestie a. ',
+          done: false,
+        },
+      ],
     },
     {
       id: 'allTasksList',

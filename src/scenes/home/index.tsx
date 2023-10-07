@@ -107,7 +107,6 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
               <>
                 <SectionTitle title={t('sectionTitles.myLists')} />
                 <CustomLists
-                  data={groupedCustomLists}
                   onListPress={handleListPress}
                   animateIcon={animateThisIcon}
                 />

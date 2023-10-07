@@ -1,7 +1,6 @@
 import React, {memo, useCallback, useMemo, useRef} from 'react';
 import {useTheme} from 'styled-components/native';
 import {DeleteIcon} from '../../animated-icons/delete-icon';
-import {MenuToggleIcon} from '../../animated-icons/menu-toggle-icon';
 import {RenameIcon} from '../../animated-icons/rename-icon';
 import {SwipeableCard} from '../../swipeable-card';
 import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
@@ -16,20 +15,12 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
     const rightOptions = useMemo<SwipeableOption[]>(
       () => [
         {
-          Icon: MenuToggleIcon,
-          onPress: () => console.log('Options'),
-          popoverMenuOptions: [
-            {
-              Icon: RenameIcon,
-              label: 'Edit',
-              onPress: () => onEdit(swipeableRef),
-            },
-            {
-              Icon: DeleteIcon,
-              label: 'Delete',
-              onPress: () => onDelete(swipeableRef),
-            },
-          ],
+          Icon: RenameIcon,
+          onPress: () => onEdit(swipeableRef),
+        },
+        {
+          Icon: DeleteIcon,
+          onPress: () => onDelete(swipeableRef),
         },
       ],
       [onDelete, onEdit],

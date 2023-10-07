@@ -16,12 +16,10 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
       () => [
         {
           Icon: RenameIcon,
-          text: 'Edit',
           onPress: () => onEdit(swipeableRef),
         },
         {
           Icon: DeleteIcon,
-          text: 'Delete',
           onPress: () => onDelete(swipeableRef),
         },
       ],
@@ -53,6 +51,7 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
         }
         rightOptions={rightOptions}
         leftOptions={leftOptions}
+        optionsSize="large"
         fullWidthOnLeftOptions
         onSwipeRight={handleSwipeRight}
         onSwipeLeft={handleSwipeLeft}

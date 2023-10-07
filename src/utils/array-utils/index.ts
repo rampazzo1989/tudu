@@ -20,3 +20,7 @@ export function removeFromList<T>(list: T[], items: T[]) {
 
   return newList;
 }
+
+export function getLastItem<T>(list: T[]) {
+  return list.at(list.length - 1);
+}

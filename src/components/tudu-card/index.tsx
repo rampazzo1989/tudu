@@ -5,7 +5,7 @@ import {TuduCardProps} from './types';
 
 const TuduCard = memo<TuduCardProps>(({data}) => {
   return (
-    <Card>
+    <Card scaleFactor={0.03}>
       <SwipeableTuduCard
         done={data.done}
         onDelete={() => console.log('Delete')}
