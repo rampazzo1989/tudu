@@ -4,9 +4,12 @@ import {currentlyOpenSwipeableRef} from '../state/atoms';
 import {useRecoilState} from 'recoil';
 
 const useControlSwipeableState = (swipeableRef: React.RefObject<Swipeable>) => {
-  const [currentlyOpenSwipeable, setCurrentlyOpenSwipeable] = useRecoilState(currentlyOpenSwipeableRef);
+  const [currentlyOpenSwipeable, setCurrentlyOpenSwipeable] = useRecoilState(
+    currentlyOpenSwipeableRef,
+  );
 
   const setOpenSwipeable = useCallback(() => {
+    console.log('Swipeable ref');
     setCurrentlyOpenSwipeable(swipeableRef);
   }, [setCurrentlyOpenSwipeable, swipeableRef]);
 

@@ -62,7 +62,7 @@ const DraggableItem: React.FC<DraggableItemProps> = memo(
 
     return (
       <DraxView
-        animateSnapback={true}
+        animateSnapback={draggedViewSnapBackAnimationOn}
         draggable
         onSnapbackEnd={draggableContext?.onDragEnd}
         longPressDelay={700}

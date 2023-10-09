@@ -11,7 +11,7 @@ import {SwipeableOptionButton} from './swipeable-option-button';
 import {SwipeableCardProps, SwipeableCardRef, SwipeableOption} from './types';
 import {SwipeableOptionRef} from './swipeable-option-button/types';
 import {getLastItem} from '../../utils/array-utils';
-import { useControlSwipeableState } from '../../hooks/useControlSwipeableState';
+import {useControlSwipeableState} from '../../hooks/useControlSwipeableState';
 
 const SwipeableCard = memo(
   forwardRef<SwipeableCardRef, SwipeableCardProps>(

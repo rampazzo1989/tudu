@@ -8,6 +8,7 @@ export const Card = styled(ShrinkableView)`
   background-color: ${({theme}) => theme.colors.tuduCard};
   border-radius: 10px;
   min-height: 60px;
+  flex-grow: 1;
 `;
 
 export const CheckAndTextContainer = styled.View`

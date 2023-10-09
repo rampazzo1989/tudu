@@ -5,6 +5,7 @@
   "scripts": {
     "android": "react-native run-android --active-arch-only && react-native start",
     "clean": "cd android && ./gradlew clean && cd ..",
+    "build": "cd android && ./gradlew assembleRelease && cd ..",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
