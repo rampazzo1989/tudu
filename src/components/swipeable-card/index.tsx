@@ -11,6 +11,7 @@ import {SwipeableOptionButton} from './swipeable-option-button';
 import {SwipeableCardProps, SwipeableCardRef, SwipeableOption} from './types';
 import {SwipeableOptionRef} from './swipeable-option-button/types';
 import {getLastItem} from '../../utils/array-utils';
+import { useControlSwipeableState } from '../../hooks/useControlSwipeableState';
 
 const SwipeableCard = memo(
   forwardRef<SwipeableCardRef, SwipeableCardProps>(
@@ -33,6 +34,8 @@ const SwipeableCard = memo(
       const swipeableRef = useRef<Swipeable>(null);
       const rightIconsRefs = useRef<SwipeableOptionRef[]>([]);
       const leftIconsRefs = useRef<SwipeableOptionRef[]>([]);
+
+      const {setOpenSwipeable} = useControlSwipeableState(swipeableRef);
 
       const handleOptionMenuClose = useCallback(() => {
         swipeableRef.current?.close();
@@ -120,6 +123,7 @@ const SwipeableCard = memo(
 
       const handleSwipeableWillOpen = useCallback(
         (direction: 'left' | 'right') => {
+          setOpenSwipeable();
           setTimeout(() => {
             direction === 'left' ? onSwipeRight?.() : onSwipeLeft?.();
             const iconsRefs =
@@ -129,7 +133,7 @@ const SwipeableCard = memo(
             }
           }, 50);
         },
-        [onSwipeLeft, onSwipeRight],
+        [onSwipeLeft, onSwipeRight, setOpenSwipeable],
       );
 
       const handleSwipeableClose = useCallback(() => {}, []);
