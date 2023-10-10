@@ -36,6 +36,7 @@ const useListStateHelper = () => {
 
   const updateList = useCallback(
     (list: BuiltInList | List) => {
+      console.log({list: list.tudus});
       const isDefaultList = defaultLists.some(x => x.id === list.id);
       const isCustomList = customLists.some(x => x.id === list.id);
       const isArchivedList = archivedLists.find(x => x.id === list.id);

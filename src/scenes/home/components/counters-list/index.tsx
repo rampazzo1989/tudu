@@ -1,6 +1,5 @@
 import React, {memo, useCallback} from 'react';
 import {FlatList, ListRenderItem} from 'react-native';
-import {FadeIn} from 'react-native-reanimated';
 import {CounterTile} from '../../../../components/counter-tile';
 import {Counter} from '../../types';
 import {Container, HorizontalSeparator, styles} from './styles';
@@ -18,7 +17,7 @@ const CountersList: React.FC<CounterListProps> = memo(({list, animateIcon}) => {
   );
 
   return (
-    <Container entering={FadeIn}>
+    <Container>
       <FlatList
         data={list}
         horizontal

@@ -21,19 +21,28 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     navigation.goBack();
   }, [navigation]);
 
-  const list = useMemo(() => getListById(listId), [getListById, listId]);
+  const list = useMemo(() => {
+    console.log('RENDER');
+    return getListById(listId);
+  }, [getListById, listId]);
 
-  const draggableTudus = useMemo(
-    () => list?.tudus?.map(tudu => new DraggableItem([tudu])) ?? [],
-    [list],
-  );
+  const draggableTudus = useMemo(() => {
+    console.log('RENDER 2');
+
+    return list?.tudus?.map(tudu => new DraggableItem([tudu])) ?? [];
+  }, [list?.tudus]);
 
   const setTudus = useCallback(
     (draggable: DraggableItem<TuduItem>[]) => {
       if (!list) {
         return;
       }
+
       list.tudus = draggable.flatMap(x => x.data);
+      // console.log({
+      //   draggable: draggable.flatMap(x => x.data),
+      //   listTudus: list.tudus,
+      // });
       updateList(list);
     },
     [list, updateList],

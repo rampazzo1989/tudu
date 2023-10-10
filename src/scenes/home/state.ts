@@ -35,6 +35,9 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       numberOfActiveItems: 0,
       tudus: [
         {label: 'Do 50 pushups', done: false},
+        {label: 'Do 30 situps', done: false},
+        {label: 'Do 20 abs', done: false},
+        {label: 'Do 40 lombar abs', done: false},
         {
           label:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed viverra nunc. Praesent lobortis arcu augue, sit amet luctus magna congue eu. Nullam interdum nulla sed consectetur eleifend. Donec pretium sem dui, non semper turpis cursus eget. Proin vel arcu libero. Vestibulum mattis lacus leo, eu suscipit sem molestie a. ',
@@ -65,6 +68,7 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       numberOfActiveItems: 0,
     },
   ],
+  dangerouslyAllowMutability: true,
   // effects: [ReactNativeRecoilPersist.persistAtom],
 });
 

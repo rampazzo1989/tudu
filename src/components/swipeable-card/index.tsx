@@ -123,7 +123,6 @@ const SwipeableCard = memo(
 
       const handleSwipeableWillOpen = useCallback(
         (direction: 'left' | 'right') => {
-          setOpenSwipeable();
           setTimeout(() => {
             direction === 'left' ? onSwipeRight?.() : onSwipeLeft?.();
             const iconsRefs =
@@ -133,8 +132,12 @@ const SwipeableCard = memo(
             }
           }, 50);
         },
-        [onSwipeLeft, onSwipeRight, setOpenSwipeable],
+        [onSwipeLeft, onSwipeRight],
       );
+
+      const handleSwipeableOpen = useCallback(() => {
+        setOpenSwipeable();
+      }, [setOpenSwipeable]);
 
       const handleSwipeableClose = useCallback(() => {}, []);
 
@@ -145,6 +148,7 @@ const SwipeableCard = memo(
           friction={2}
           overshootFriction={2}
           onSwipeableWillOpen={handleSwipeableWillOpen}
+          onSwipeableOpen={handleSwipeableOpen}
           onSwipeableClose={handleSwipeableClose}
           onSwipeableOpenStartDrag={handleSwipeableStartDrag}
           leftThreshold={90}

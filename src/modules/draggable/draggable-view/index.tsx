@@ -7,7 +7,12 @@ import {DraggableViewProps} from './types';
 import {useDraggableViewHooks} from './useDraggableViewHooks';
 
 const DraggableView = memo(
-  <T,>({payload, isReceiver = false, children}: DraggableViewProps<T>) => {
+  <T,>({
+    payload,
+    enteringAnimation,
+    isReceiver = false,
+    children,
+  }: DraggableViewProps<T>) => {
     const {
       handleWrapperViewLayout,
       animatedStyle,
@@ -19,7 +24,8 @@ const DraggableView = memo(
 
     return (
       <Animated.View
-        layout={Layout.springify()}
+        layout={enteringAnimation ? undefined : Layout.springify()}
+        entering={enteringAnimation}
         style={animatedStyle}
         onLayout={handleWrapperViewLayout}>
         <DraxView
