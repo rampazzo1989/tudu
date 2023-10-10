@@ -6,6 +6,7 @@ import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon
 import {MoonIcon} from '../../components/animated-icons/moon-icon';
 import {StarIcon} from '../../components/animated-icons/star-icon';
 import {SunIcon} from '../../components/animated-icons/sun-icon';
+import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
 import {Counter, BuiltInList, List} from './types';
 
 const getDaytimeIcon = () => {
@@ -69,7 +70,7 @@ export const homeDefaultLists = atom<BuiltInList[]>({
     },
   ],
   dangerouslyAllowMutability: true,
-  // effects: [ReactNativeRecoilPersist.persistAtom],
+  effects: [mmkvPersistAtom('homeDefaultLists')],
 });
 
 export const counters = atom<Counter[]>({
@@ -91,7 +92,7 @@ export const counters = atom<Counter[]>({
       pace: 1,
     },
   ],
-  effects: [ReactNativeRecoilPersist.persistAtom],
+  effects: [mmkvPersistAtom('counters')],
 });
 
 export const myLists = atom<List[]>({
@@ -131,13 +132,13 @@ export const myLists = atom<List[]>({
       groupName: 'Travel',
     },
   ],
-  effects: [ReactNativeRecoilPersist.persistAtom],
+  effects: [mmkvPersistAtom('myLists')],
 });
 
 export const archivedLists = atom<List[]>({
   key: 'archivedLists',
   default: [],
-  effects: [ReactNativeRecoilPersist.persistAtom],
+  effects: [mmkvPersistAtom('archivedLists')],
 });
 
 export const getListByLabel = selector({
