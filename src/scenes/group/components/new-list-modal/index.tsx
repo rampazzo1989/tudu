@@ -51,10 +51,6 @@ const NewListModal: React.FC<NewListModalProps> = memo(
 
     const inputRef = useRef<TextInput>(null);
 
-    useEffect(() => {
-      console.log({internalListData});
-    }, [internalListData]);
-
     const handleTextChange = useCallback((text: string) => {
       setInternalListData(x => ({...x, label: text}));
     }, []);

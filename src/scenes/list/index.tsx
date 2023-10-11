@@ -22,13 +22,10 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, [navigation]);
 
   const list = useMemo(() => {
-    console.log('RENDER');
     return getListById(listId);
   }, [getListById, listId]);
 
   const draggableTudus = useMemo(() => {
-    console.log('RENDER 2');
-
     return list?.tudus?.map(tudu => new DraggableItem([tudu])) ?? [];
   }, [list?.tudus]);
 
@@ -39,10 +36,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       }
 
       list.tudus = draggable.flatMap(x => x.data);
-      // console.log({
-      //   draggable: draggable.flatMap(x => x.data),
-      //   listTudus: list.tudus,
-      // });
+
       updateList(list);
     },
     [list, updateList],

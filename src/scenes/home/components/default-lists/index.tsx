@@ -1,12 +1,13 @@
 import React, {memo, useCallback} from 'react';
-import {List} from '../../types';
+import {ListIcons} from '../../../list/constants';
+import {BuiltInList} from '../../types';
 import {StyledListCard} from './styles';
 import {DefaultListsProps} from './types';
 
 const DefaultLists: React.FC<DefaultListsProps> = memo(
   ({lists, onListPress}) => {
     const listPressHandlerGenerator = useCallback(
-      (listData: List) => () => {
+      (listData: BuiltInList) => () => {
         onListPress(listData);
       },
       [onListPress],
@@ -16,7 +17,7 @@ const DefaultLists: React.FC<DefaultListsProps> = memo(
       <>
         {lists.map(list => (
           <StyledListCard
-            Icon={list.icon}
+            Icon={ListIcons[list.icon]}
             label={list.label}
             numberOfActiveItems={list.numberOfActiveItems}
             isHighlighted={list.isHighlighted}

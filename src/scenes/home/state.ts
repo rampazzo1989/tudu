@@ -1,36 +1,14 @@
 import i18next from 'i18next';
-import ReactNativeRecoilPersist from 'react-native-recoil-persist';
 import {atom, selector} from 'recoil';
-import {FolderIcon} from '../../components/animated-icons/folder-icon';
-import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
-import {MoonIcon} from '../../components/animated-icons/moon-icon';
-import {StarIcon} from '../../components/animated-icons/star-icon';
-import {SunIcon} from '../../components/animated-icons/sun-icon';
 import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
 import {Counter, BuiltInList, List} from './types';
-
-const getDaytimeIcon = () => {
-  const currentTime = new Date();
-
-  const sunsetTime = new Date();
-  sunsetTime.setHours(18);
-  sunsetTime.setMinutes(30); // Assuming sunset is at 6:30 PM
-
-  const sunriseTime = new Date();
-  sunriseTime.setHours(6);
-  sunriseTime.setMinutes(0); // Assuming sunrise is at 6 AM
-
-  return currentTime >= sunsetTime || currentTime < sunriseTime
-    ? MoonIcon
-    : SunIcon;
-};
 
 export const homeDefaultLists = atom<BuiltInList[]>({
   key: 'homeDefaultLists',
   default: [
     {
       id: 'todayList',
-      icon: getDaytimeIcon(),
+      icon: 'today',
       label: i18next.t('listTitles.today'),
       isHighlighted: true,
       numberOfActiveItems: 0,
@@ -48,14 +26,14 @@ export const homeDefaultLists = atom<BuiltInList[]>({
     },
     {
       id: 'allTasksList',
-      icon: ListDefaultIcon,
+      icon: 'default',
       label: i18next.t('listTitles.allTasks'),
       isHighlighted: false,
       numberOfActiveItems: 0,
     },
     {
       id: 'archivedListsList',
-      icon: FolderIcon,
+      icon: 'archived',
       label: i18next.t('listTitles.archived'),
       isHighlighted: false,
       numberOfActiveItems: 0,
@@ -63,7 +41,7 @@ export const homeDefaultLists = atom<BuiltInList[]>({
     },
     {
       id: 'starredList',
-      icon: StarIcon,
+      icon: 'star',
       label: i18next.t('listTitles.starred'),
       isHighlighted: false,
       numberOfActiveItems: 0,

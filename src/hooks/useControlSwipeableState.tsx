@@ -9,7 +9,6 @@ const useControlSwipeableState = (swipeableRef: React.RefObject<Swipeable>) => {
   );
 
   const setOpenSwipeable = useCallback(() => {
-    console.log('Swipeable ref');
     setCurrentlyOpenSwipeable(swipeableRef);
   }, [setCurrentlyOpenSwipeable, swipeableRef]);
 
