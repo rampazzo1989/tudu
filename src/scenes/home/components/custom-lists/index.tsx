@@ -30,6 +30,7 @@ import {NewListModal} from '../../../group/components/new-list-modal';
 import {FolderAddIconActionAnimation} from '../../../../components/animated-icons/folder-add-icon';
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
 import {SlideInRight} from 'react-native-reanimated';
+import {useCloseCurrentlyOpenSwipeable} from '../../../../hooks/useCloseAllSwipeables';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({onListPress, animateIcon}) => {
@@ -40,6 +41,8 @@ const CustomLists: React.FC<CustomListsProps> = memo(
 
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [editingList, setEditingList] = useState<List>();
+
+    const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
     const [enteringAnimation, setEnteringAnimation] = useState<
       typeof SlideInRight | undefined
@@ -57,15 +60,16 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     );
 
     const handleDeleteGenerator = useCallback(
-      (listOrDraggableList: DraggableItem<List> | List) => () => {
-        draggableContext.showConfirmationModal(
-          listOrDraggableList,
-          generateListAndGroupDeleteTitle,
-          'delete',
-          undefined,
-          () => animateIcon?.(DeleteIconActionAnimation),
-        );
-      },
+      (listOrDraggableList: DraggableItem<List> | List) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          draggableContext.showConfirmationModal(
+            listOrDraggableList,
+            generateListAndGroupDeleteTitle,
+            'delete',
+            () => swipeableRef.current?.closeOptions(),
+            () => animateIcon?.(DeleteIconActionAnimation),
+          );
+        },
       [animateIcon, draggableContext],
     );
 
@@ -159,15 +163,18 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             onRequestClose={() => {
               setEditModalVisible(false);
               setEditingList(undefined);
+              closeCurrentlyOpenSwipeable();
             }}
           />
         </>
       );
     }, [
       animateIcon,
+      closeCurrentlyOpenSwipeable,
       draggableContext.data,
       editModalVisible,
       editingList,
+      enteringAnimation,
       handleArchiveGenerator,
       handleDeleteGenerator,
       handleEditListGenerator,
