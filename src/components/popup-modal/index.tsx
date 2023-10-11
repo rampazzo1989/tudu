@@ -78,7 +78,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                       autoPlay
                       autoPlayDelay={iconAnimationDelay}
                       style={styles.icon}
-                      size={24}
+                      size={22}
                     />
                   )}
                   <PopupTitle>{`${title}`}</PopupTitle>

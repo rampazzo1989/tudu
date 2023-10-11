@@ -66,7 +66,11 @@ const ListCard: React.FC<ListCardProps> = memo(
           {labelEmoji ? (
             <Emoji adjustsFontSizeToFit>{labelEmoji}</Emoji>
           ) : (
-            <Icon animateWhenIdle autoPlay={checkIfAutoAnimateIcon(label)} />
+            <Icon
+              animateWhenIdle
+              autoPlay={checkIfAutoAnimateIcon(label)}
+              size={24}
+            />
           )}
           <Label isHighlighted={isHighlighted} numberOfLines={1}>
             {trimmedLabel}

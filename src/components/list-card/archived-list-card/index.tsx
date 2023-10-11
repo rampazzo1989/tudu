@@ -53,7 +53,7 @@ const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
             {labelEmoji ? (
               <Emoji adjustsFontSizeToFit>{labelEmoji}</Emoji>
             ) : (
-              <Icon animateWhenIdle />
+              <Icon animateWhenIdle size={20} />
             )}
             <Label numberOfLines={1}>{trimmedLabel}</Label>
           </IconLabelContainer>
