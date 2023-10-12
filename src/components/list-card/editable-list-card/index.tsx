@@ -54,7 +54,7 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
             {labelEmoji ? (
               <Emoji adjustsFontSizeToFit>{labelEmoji}</Emoji>
             ) : (
-              <Icon animateWhenIdle />
+              <Icon animateWhenIdle size={20} />
             )}
             <Label isHighlighted={isHighlighted} numberOfLines={1}>
               {trimmedLabel}

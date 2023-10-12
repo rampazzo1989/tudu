@@ -172,8 +172,6 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
           pace: customPace,
           label: customPace ? `+${customPace}...` : 'other...',
           onPress: () => {
-            console.log('AQUI');
-
             setCustomPaceInputVisible(true);
             setTimeout(() => {
               customPaceInputRef.current?.focus();

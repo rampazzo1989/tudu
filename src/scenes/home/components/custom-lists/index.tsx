@@ -1,4 +1,11 @@
-import React, {memo, useCallback, useContext, useMemo, useState} from 'react';
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {DraggableView} from '../../../../modules/draggable/draggable-view';
 import {ListGroupCard} from '../list-group-card';
@@ -22,6 +29,8 @@ import {archivedLists, myLists} from '../../state';
 import {NewListModal} from '../../../group/components/new-list-modal';
 import {FolderAddIconActionAnimation} from '../../../../components/animated-icons/folder-add-icon';
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
+import {SlideInRight} from 'react-native-reanimated';
+import {useCloseCurrentlyOpenSwipeable} from '../../../../hooks/useCloseAllSwipeables';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({onListPress, animateIcon}) => {
@@ -33,6 +42,16 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [editingList, setEditingList] = useState<List>();
 
+    const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+
+    const [enteringAnimation, setEnteringAnimation] = useState<
+      typeof SlideInRight | undefined
+    >(() => SlideInRight);
+
+    useEffect(() => {
+      setEnteringAnimation(undefined);
+    }, []);
+
     const listPressHandlerGenerator = useCallback(
       (listData: List) => () => {
         onListPress(listData);
@@ -41,15 +60,16 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     );
 
     const handleDeleteGenerator = useCallback(
-      (listOrDraggableList: DraggableItem<List> | List) => () => {
-        draggableContext.showConfirmationModal(
-          listOrDraggableList,
-          generateListAndGroupDeleteTitle,
-          'delete',
-          undefined,
-          () => animateIcon?.(DeleteIconActionAnimation),
-        );
-      },
+      (listOrDraggableList: DraggableItem<List> | List) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          draggableContext.showConfirmationModal(
+            listOrDraggableList,
+            generateListAndGroupDeleteTitle,
+            'delete',
+            () => swipeableRef.current?.closeOptions(),
+            () => animateIcon?.(DeleteIconActionAnimation),
+          );
+        },
       [animateIcon, draggableContext],
     );
 
@@ -100,6 +120,9 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                 <DraggableView
                   key={`${item.groupId}${index}${item.data.length}`}
                   payload={item}
+                  enteringAnimation={enteringAnimation
+                    ?.duration(200)
+                    .delay(index * 50)}
                   isReceiver>
                   <ListGroupCard
                     handleArchiveGenerator={handleArchiveGenerator}
@@ -114,7 +137,12 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             } else {
               const onlyItem = item.data[0];
               return (
-                <DraggableView key={`${onlyItem.label}${index}`} payload={item}>
+                <DraggableView
+                  key={`${onlyItem.label}${index}`}
+                  payload={item}
+                  enteringAnimation={enteringAnimation
+                    ?.duration(200)
+                    .delay(index * 50)}>
                   <EditableListCard
                     Icon={ListDefaultIcon}
                     label={onlyItem.label}
@@ -135,15 +163,18 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             onRequestClose={() => {
               setEditModalVisible(false);
               setEditingList(undefined);
+              closeCurrentlyOpenSwipeable();
             }}
           />
         </>
       );
     }, [
       animateIcon,
+      closeCurrentlyOpenSwipeable,
       draggableContext.data,
       editModalVisible,
       editingList,
+      enteringAnimation,
       handleArchiveGenerator,
       handleDeleteGenerator,
       handleEditListGenerator,

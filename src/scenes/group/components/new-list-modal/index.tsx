@@ -1,11 +1,4 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {TextInput} from 'react-native';
 import {PopupModal} from '../../../../components/popup-modal';
@@ -50,10 +43,6 @@ const NewListModal: React.FC<NewListModalProps> = memo(
     );
 
     const inputRef = useRef<TextInput>(null);
-
-    useEffect(() => {
-      console.log({internalListData});
-    }, [internalListData]);
 
     const handleTextChange = useCallback((text: string) => {
       setInternalListData(x => ({...x, label: text}));

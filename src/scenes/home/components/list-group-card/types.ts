@@ -14,6 +14,6 @@ export type ListGroupProps = {
   ) => (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   handleDeleteGenerator: (
     listOrDraggableList: DraggableItem<List> | List,
-  ) => () => void;
+  ) => (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };

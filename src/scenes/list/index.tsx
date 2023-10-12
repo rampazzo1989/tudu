@@ -21,19 +21,22 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     navigation.goBack();
   }, [navigation]);
 
-  const list = useMemo(() => getListById(listId), [getListById, listId]);
+  const list = useMemo(() => {
+    return getListById(listId);
+  }, [getListById, listId]);
 
-  const draggableTudus = useMemo(
-    () => list?.tudus?.map(tudu => new DraggableItem([tudu])) ?? [],
-    [list],
-  );
+  const draggableTudus = useMemo(() => {
+    return list?.tudus?.map(tudu => new DraggableItem([tudu])) ?? [];
+  }, [list?.tudus]);
 
   const setTudus = useCallback(
     (draggable: DraggableItem<TuduItem>[]) => {
       if (!list) {
         return;
       }
+
       list.tudus = draggable.flatMap(x => x.data);
+
       updateList(list);
     },
     [list, updateList],
@@ -42,6 +45,18 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const handleListDragStart = useCallback(() => {
     RNReactNativeHapticFeedback.trigger('soft');
   }, []);
+
+  const handleTuduPress = useCallback(
+    (tudu: TuduItem) => {
+      if (!list) {
+        return;
+      }
+      tudu.done = !tudu.done;
+      console.log(tudu.done);
+      updateList(list);
+    },
+    [list, updateList],
+  );
 
   return (
     <Page>
@@ -53,7 +68,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
           onDragStart={handleListDragStart}>
           <DraggablePageContent
             contentContainerStyle={styles.scrollContentContainer}>
-            {!!list?.tudus && <TudusList />}
+            {!!list?.tudus && <TudusList onTuduPress={handleTuduPress} />}
           </DraggablePageContent>
         </DraggableContextProvider>
       </DraxProvider>

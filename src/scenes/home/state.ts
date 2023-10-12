@@ -1,40 +1,22 @@
 import i18next from 'i18next';
-import ReactNativeRecoilPersist from 'react-native-recoil-persist';
 import {atom, selector} from 'recoil';
-import {FolderIcon} from '../../components/animated-icons/folder-icon';
-import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
-import {MoonIcon} from '../../components/animated-icons/moon-icon';
-import {StarIcon} from '../../components/animated-icons/star-icon';
-import {SunIcon} from '../../components/animated-icons/sun-icon';
+import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
 import {Counter, BuiltInList, List} from './types';
-
-const getDaytimeIcon = () => {
-  const currentTime = new Date();
-
-  const sunsetTime = new Date();
-  sunsetTime.setHours(18);
-  sunsetTime.setMinutes(30); // Assuming sunset is at 6:30 PM
-
-  const sunriseTime = new Date();
-  sunriseTime.setHours(6);
-  sunriseTime.setMinutes(0); // Assuming sunrise is at 6 AM
-
-  return currentTime >= sunsetTime || currentTime < sunriseTime
-    ? MoonIcon
-    : SunIcon;
-};
 
 export const homeDefaultLists = atom<BuiltInList[]>({
   key: 'homeDefaultLists',
   default: [
     {
       id: 'todayList',
-      icon: getDaytimeIcon(),
+      icon: 'today',
       label: i18next.t('listTitles.today'),
       isHighlighted: true,
       numberOfActiveItems: 0,
       tudus: [
         {label: 'Do 50 pushups', done: false},
+        {label: 'Do 30 situps', done: false},
+        {label: 'Do 20 abs', done: false},
+        {label: 'Do 40 lombar abs', done: false},
         {
           label:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed viverra nunc. Praesent lobortis arcu augue, sit amet luctus magna congue eu. Nullam interdum nulla sed consectetur eleifend. Donec pretium sem dui, non semper turpis cursus eget. Proin vel arcu libero. Vestibulum mattis lacus leo, eu suscipit sem molestie a. ',
@@ -44,14 +26,14 @@ export const homeDefaultLists = atom<BuiltInList[]>({
     },
     {
       id: 'allTasksList',
-      icon: ListDefaultIcon,
+      icon: 'default',
       label: i18next.t('listTitles.allTasks'),
       isHighlighted: false,
       numberOfActiveItems: 0,
     },
     {
       id: 'archivedListsList',
-      icon: FolderIcon,
+      icon: 'archived',
       label: i18next.t('listTitles.archived'),
       isHighlighted: false,
       numberOfActiveItems: 0,
@@ -59,13 +41,14 @@ export const homeDefaultLists = atom<BuiltInList[]>({
     },
     {
       id: 'starredList',
-      icon: StarIcon,
+      icon: 'star',
       label: i18next.t('listTitles.starred'),
       isHighlighted: false,
       numberOfActiveItems: 0,
     },
   ],
-  // effects: [ReactNativeRecoilPersist.persistAtom],
+  dangerouslyAllowMutability: true,
+  effects: [mmkvPersistAtom('homeDefaultLists')],
 });
 
 export const counters = atom<Counter[]>({
@@ -87,7 +70,7 @@ export const counters = atom<Counter[]>({
       pace: 1,
     },
   ],
-  effects: [ReactNativeRecoilPersist.persistAtom],
+  effects: [mmkvPersistAtom('counters')],
 });
 
 export const myLists = atom<List[]>({
@@ -127,13 +110,13 @@ export const myLists = atom<List[]>({
       groupName: 'Travel',
     },
   ],
-  effects: [ReactNativeRecoilPersist.persistAtom],
+  effects: [mmkvPersistAtom('myLists')],
 });
 
 export const archivedLists = atom<List[]>({
   key: 'archivedLists',
   default: [],
-  effects: [ReactNativeRecoilPersist.persistAtom],
+  effects: [mmkvPersistAtom('archivedLists')],
 });
 
 export const getListByLabel = selector({

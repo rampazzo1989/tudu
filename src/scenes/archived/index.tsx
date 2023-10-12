@@ -14,10 +14,6 @@ const ArchivedPage: React.FC<ArchivedPageProps> = ({navigation}) => {
   const [archivedListsState, setArchivedListsState] =
     useRecoilState(archivedLists);
 
-  useEffect(() => {
-    console.log('State', archivedListsState);
-  }, [archivedListsState]);
-
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);

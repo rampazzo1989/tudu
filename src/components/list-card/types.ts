@@ -16,7 +16,7 @@ export type ListCardProps = {
 export type EditableListCardProps = ListCardProps & {
   swipeEnabled?: boolean;
   onArchive: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
-  onDelete: () => void;
+  onDelete: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   onEdit: () => void;
 };
 

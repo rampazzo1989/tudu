@@ -15,6 +15,7 @@ const SwipeableListCardArchived: React.FC<SwipeableListCardArchivedProps> =
       () => [
         {
           Icon: DeleteIcon,
+          text: 'Delete',
         },
       ],
       [],

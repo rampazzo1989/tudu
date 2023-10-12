@@ -91,8 +91,6 @@ export const archiveList = (
 ) => {
   archiveSetter(x => [...x, list]);
 
-  console.log('Archiving', {list});
-
   customListsSetter(x => {
     return removeFromList(x, [list]);
   });
@@ -125,8 +123,6 @@ export const updateList = (
     const cloneList = x.slice();
     const itemIndex = cloneList.findIndex(item => item.id === list.id);
 
-    console.log({list, itemIndex});
-
     if (itemIndex < 0) {
       return x;
     }
@@ -144,8 +140,6 @@ export const deleteList = (
   customListsSetter(x => {
     const cloneList = x.slice();
     const itemIndex = cloneList.findIndex(item => item.id === list.id);
-
-    console.log({list, itemIndex});
 
     if (itemIndex < 0) {
       return x;

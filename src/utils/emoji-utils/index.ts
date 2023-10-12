@@ -2,7 +2,6 @@ export const EMOJI_REGEX = /^[\p{Emoji}\u200d]+/gu;
 
 export const getEmojiFromBeginning = (text: string) => {
   const emojis = text.match(EMOJI_REGEX);
-  console.log(emojis?.length, emojis);
   if (!emojis?.length || emojis.length > 3) {
     return;
   }

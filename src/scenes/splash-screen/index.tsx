@@ -19,11 +19,6 @@ const SplashScreen = React.memo(
         iconRef.current?.play({
           onAnimationFinish: () => navigation.replace('Home'),
         });
-        console.log(
-          Dimensions.get('window').height,
-          Dimensions.get('screen').height,
-          StatusBar.currentHeight,
-        );
       }
     });
 
