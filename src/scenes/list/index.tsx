@@ -46,6 +46,18 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     RNReactNativeHapticFeedback.trigger('soft');
   }, []);
 
+  const handleTuduPress = useCallback(
+    (tudu: TuduItem) => {
+      if (!list) {
+        return;
+      }
+      tudu.done = !tudu.done;
+      console.log(tudu.done);
+      updateList(list);
+    },
+    [list, updateList],
+  );
+
   return (
     <Page>
       <ListHeader listData={list} onBackButtonPress={handleBackButtonPress} />
@@ -56,7 +68,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
           onDragStart={handleListDragStart}>
           <DraggablePageContent
             contentContainerStyle={styles.scrollContentContainer}>
-            {!!list?.tudus && <TudusList />}
+            {!!list?.tudus && <TudusList onTuduPress={handleTuduPress} />}
           </DraggablePageContent>
         </DraggableContextProvider>
       </DraxProvider>
