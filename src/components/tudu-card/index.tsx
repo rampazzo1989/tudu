@@ -11,6 +11,9 @@ const TuduCard = memo<TuduCardProps>(({data, onPress}) => {
       onPress={() => {
         onPress(data);
       }}
+      onLongPress={() => {
+        return undefined;
+      }}
       done={data.done}>
       <SwipeableTuduCard
         done={data.done}

@@ -68,7 +68,9 @@ const TudusList: React.FC<TudusListProps> = memo(({onTuduPress}) => {
   return (
     <Container>
       {memoizedTuduList}
-      {!!memoizedDoneList?.length && <SectionTitle title="Done" />}
+      {!!memoizedDoneList?.length && (
+        <SectionTitle title={memoizedTuduList.length ? 'Done' : 'All done'} />
+      )}
       {memoizedDoneList}
     </Container>
   );

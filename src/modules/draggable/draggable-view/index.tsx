@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {DraxView} from 'react-native-drax';
-import Animated, {Layout} from 'react-native-reanimated';
+import Animated, {FadeOut, Layout} from 'react-native-reanimated';
 import {DraggableItem} from '../draggable-item';
 import {styles} from './styles';
 import {DraggableViewProps} from './types';
