@@ -25,7 +25,7 @@ const DraggableView = memo(
 
     return (
       <Animated.View
-        layout={enteringAnimation ? undefined : Layout}
+        layout={enteringAnimation ? undefined : Layout.duration(200)}
         entering={enteringAnimation}
         style={animatedStyle}
         onLayout={handleWrapperViewLayout}>

@@ -6,6 +6,7 @@ export const TitleContainer = styled.View`
   border-color: ${({theme}) => theme.colors.sectionTitleBorder};
   justify-content: center;
   align-items: center;
+  flex-direction: row;
 `;
 
 export const Title = styled.Text`
@@ -15,4 +16,13 @@ export const Title = styled.Text`
   font-weight: 800;
   margin-top: 4px;
   margin-bottom: 4px;
+`;
+
+export const ControlContainer = styled.View`
+  position: absolute;
+  right: 10px;
+  height: 100%;
+  width: 28px;
+  align-items: center;
+  justify-content: center;
 `;

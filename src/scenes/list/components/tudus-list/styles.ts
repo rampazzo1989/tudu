@@ -7,7 +7,6 @@ export const Container = styled.View`
 
 export const SectionTitle = styled(Title)`
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   padding-left: 16px;
-  margin-top: 18px;
 `;

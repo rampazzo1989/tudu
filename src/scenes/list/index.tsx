@@ -13,7 +13,7 @@ import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {styles} from './styles';
 import {CheersAnimation} from '../../components/animated-components/cheers';
 import {AnimatedIconRef} from '../../components/animated-icons/animated-icon/types';
-import {Dimensions, View} from 'react-native';
+import {Dimensions, Vibration, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
@@ -50,6 +50,12 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     RNReactNativeHapticFeedback.trigger('soft');
   }, []);
 
+  const handleListCompleted = useCallback(() => {
+    cheersRef.current?.play();
+    RNReactNativeHapticFeedback.trigger('notificationSuccess');
+    // Vibration.vibrate(600);
+  }, []);
+
   const handleTuduPress = useCallback(
     (tudu: TuduItem) => {
       if (!list) {
@@ -61,10 +67,10 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
 
       const allDone = !!list.tudus?.every(x => x.done);
       if (allDone) {
-        cheersRef.current?.play();
+        handleListCompleted();
       }
     },
-    [list, updateList],
+    [handleListCompleted, list, updateList],
   );
 
   const cheersRef = useRef<AnimatedIconRef>(null);

@@ -34,7 +34,7 @@ const CheersAnimation = memo(
 
     return (
       <BaseAnimatedIcon
-        source={require('../../../assets/lottie/cheers.lottie')}
+        source={require('../../../assets/lottie/cheers-purple.lottie')}
         loop={false}
         componentName="CheersAnimation"
         finalFrame={110}

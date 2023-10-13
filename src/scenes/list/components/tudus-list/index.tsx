@@ -6,7 +6,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import {View} from 'react-native';
 import {SlideInRight} from 'react-native-reanimated';
+import {CheckMarkIcon} from '../../../../components/animated-icons/check-mark';
 import {TuduCard} from '../../../../components/tudu-card';
 import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
@@ -67,9 +69,20 @@ const TudusList: React.FC<TudusListProps> = memo(({onTuduPress}) => {
 
   return (
     <Container>
-      {memoizedTuduList}
+      {!!memoizedTuduList?.length && (
+        <View style={{marginBottom: 18, marginTop: -6}}>
+          {memoizedTuduList}
+        </View>
+      )}
       {!!memoizedDoneList?.length && (
-        <SectionTitle title={memoizedTuduList.length ? 'Done' : 'All done'} />
+        <SectionTitle
+          title={memoizedTuduList.length ? 'Done' : 'All done'}
+          ControlComponent={
+            memoizedTuduList.length ? undefined : (
+              <CheckMarkIcon autoPlay speed={3} />
+            )
+          }
+        />
       )}
       {memoizedDoneList}
     </Container>
