@@ -12,6 +12,7 @@ const DraggableView = memo(
     enteringAnimation,
     isReceiver = false,
     children,
+    draggableEnabled = true,
   }: DraggableViewProps<T>) => {
     const {
       handleWrapperViewLayout,
@@ -24,7 +25,7 @@ const DraggableView = memo(
 
     return (
       <Animated.View
-        layout={enteringAnimation ? undefined : Layout.springify()}
+        layout={enteringAnimation ? undefined : Layout}
         entering={enteringAnimation}
         style={animatedStyle}
         onLayout={handleWrapperViewLayout}>
@@ -35,7 +36,10 @@ const DraggableView = memo(
           onReceiveDragEnter={handleContainerReceiveDragEnter}
           onReceiveDragExit={handleContainerReceiveDragExit}
           style={styles.container}>
-          <DraggableItem isParent={isReceiver} payload={payload}>
+          <DraggableItem
+            isParent={isReceiver}
+            payload={payload}
+            draggable={draggableEnabled}>
             {children}
           </DraggableItem>
         </DraxView>

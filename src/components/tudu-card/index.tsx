@@ -1,14 +1,10 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo} from 'react';
 import {TuduCheckbox} from '../tudu-checkbox';
 import {Card, CheckAndTextContainer, Label} from './styles';
 import {SwipeableTuduCard} from './swipeable-tudu-card';
 import {TuduCardProps} from './types';
 
 const TuduCard = memo<TuduCardProps>(({data, onPress}) => {
-  // const onPress = useCallback(() => {
-  //   data.done = !data.done;
-  // }, [data]);
-
   return (
     <Card
       scaleFactor={0.03}
