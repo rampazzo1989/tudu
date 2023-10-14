@@ -7,15 +7,11 @@ import React, {
   useState,
 } from 'react';
 import {View} from 'react-native';
-import {SlideInRight} from 'react-native-reanimated';
+import Animated, {SlideInRight} from 'react-native-reanimated';
 import {CheckMarkIcon} from '../../../../components/animated-icons/check-mark';
 import {TuduCard} from '../../../../components/tudu-card';
-import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
-import {
-  DraggableContextType,
-  DraggableItem,
-} from '../../../../modules/draggable/draggable-context/types';
+import {DraggableContextType} from '../../../../modules/draggable/draggable-context/types';
 import {DraggableView} from '../../../../modules/draggable/draggable-view';
 import {TuduItem} from '../../../home/types';
 import {Container, SectionTitle} from './styles';
@@ -29,62 +25,105 @@ const TudusList: React.FC<TudusListProps> = memo(({onTuduPress}) => {
   >(() => SlideInRight);
   const [keyHash, setKeyHash] = useState('');
 
-  const updateHash = useCallback(() => {
-    setKeyHash(generateRandomHash(''));
-  }, []);
-
   useEffect(() => {
     setEnteringAnimation(undefined);
   }, []);
 
-  const getTuduList = useCallback(
-    (data: DraggableItem<TuduItem>[]) => {
-      return data.map((draggableTudu, index) => {
-        const tudu = draggableTudu.data[0];
-        return (
-          <DraggableView
-            key={`${tudu.label}${keyHash}`}
-            payload={draggableTudu}
-            draggableEnabled={!tudu.done}
-            enteringAnimation={enteringAnimation
-              ?.duration(100)
-              .delay(index * 50)}>
-            <TuduCard data={tudu} key={tudu.label} onPress={onTuduPress} />
-          </DraggableView>
-        );
-      });
+  const handleTuduPress = useCallback(
+    (tudu: TuduItem) => {
+      onTuduPress(tudu);
     },
-    [enteringAnimation, keyHash, onTuduPress],
+    [onTuduPress],
   );
 
-  const memoizedTuduList = useMemo(() => {
-    const tudus = draggableContext.data.filter(x => !x.data[0].done);
-    return getTuduList(tudus);
-  }, [draggableContext.data, getTuduList]);
+  const getSectionTitle = useCallback((undoneListLength: number) => {
+    return (
+      <SectionTitle
+        title={undoneListLength ? 'Done' : 'All done'}
+        key="allTudus"
+        style={{marginTop: undoneListLength ? 20 : 0}}
+        ControlComponent={
+          undoneListLength ? undefined : <CheckMarkIcon autoPlay speed={3} />
+        }
+      />
+    );
+  }, []);
 
-  const memoizedDoneList = useMemo(() => {
-    const doneTudus = draggableContext.data?.filter(x => x.data[0].done);
-    return getTuduList(doneTudus);
-  }, [draggableContext.data, getTuduList]);
+  const getTuduList = useMemo(() => {
+    const {data} = draggableContext;
+    const indexedTudu = data.map((x, index) => ({
+      x,
+      index,
+    }));
+
+    const sorted = indexedTudu.sort(
+      (a, b) => Number(a.x.data[0].done) - Number(b.x.data[0].done),
+    );
+
+    const undone = sorted.filter(x => !x.x.data[0].done);
+    const done = sorted.filter(x => x.x.data[0].done);
+
+    console.log('HASH', {keyHash});
+
+    const undoneComponents = undone.map((draggableTudu, index) => {
+      const tudu = draggableTudu.x.data[0];
+
+      return (
+        <DraggableView
+          payload={draggableTudu.x}
+          key={`${tudu.label}${draggableTudu.index}`}
+          draggableEnabled={!tudu.done}
+          draggableViewKey={`${tudu.label}${index}`}>
+          <Animated.View
+            entering={enteringAnimation?.duration(100).delay(index * 50)}
+            style={{flexGrow: 1, width: '100%'}}>
+            <TuduCard data={tudu} onPress={handleTuduPress} />
+          </Animated.View>
+        </DraggableView>
+      );
+    });
+
+    const doneComponents = done.map((draggableTudu, index) => {
+      const tudu = draggableTudu.x.data[0];
+      return (
+        <DraggableView
+          key={`${tudu.label}${keyHash}`}
+          payload={draggableTudu.x}
+          draggableEnabled={!tudu.done}
+          draggableViewKey={`${tudu.label}${index}`}
+          enteringAnimation={enteringAnimation
+            ?.duration(100)
+            .delay((undone.length + index) * 500)}>
+          <Animated.View
+            entering={enteringAnimation?.duration(100).delay(index * 50)}
+            style={{flexGrow: 1, width: '100%'}}>
+            <TuduCard data={tudu} onPress={onTuduPress} />
+          </Animated.View>
+        </DraggableView>
+      );
+    });
+
+    const allTudus = undoneComponents.concat(
+      doneComponents.length
+        ? [getSectionTitle(undoneComponents.length), ...doneComponents]
+        : [],
+    );
+
+    return allTudus;
+  }, [
+    draggableContext,
+    enteringAnimation,
+    getSectionTitle,
+    handleTuduPress,
+    keyHash,
+    onTuduPress,
+  ]);
 
   return (
     <Container>
-      {!!memoizedTuduList?.length && (
-        <View style={{marginBottom: 18, marginTop: -6}}>
-          {memoizedTuduList}
-        </View>
+      {!!getTuduList?.length && (
+        <View style={{marginBottom: 18, marginTop: -6}}>{getTuduList}</View>
       )}
-      {!!memoizedDoneList?.length && (
-        <SectionTitle
-          title={memoizedTuduList.length ? 'Done' : 'All done'}
-          ControlComponent={
-            memoizedTuduList.length ? undefined : (
-              <CheckMarkIcon autoPlay speed={3} />
-            )
-          }
-        />
-      )}
-      {memoizedDoneList}
     </Container>
   );
 });

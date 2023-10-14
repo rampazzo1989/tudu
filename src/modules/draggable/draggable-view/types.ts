@@ -18,6 +18,7 @@ export type DraggableViewProps<TItem> = {
   isReceiver?: boolean;
   enteringAnimation?: EntryExitAnimationType;
   draggableEnabled?: boolean;
+  draggableViewKey?: string;
 };
 
 export type UseDraggableViewHooksProps<T> = {

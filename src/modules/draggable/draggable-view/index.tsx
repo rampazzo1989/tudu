@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {DraxView} from 'react-native-drax';
-import Animated, {FadeOut, Layout} from 'react-native-reanimated';
+import Animated, {Layout} from 'react-native-reanimated';
 import {DraggableItem} from '../draggable-item';
 import {styles} from './styles';
 import {DraggableViewProps} from './types';
@@ -10,8 +10,9 @@ const DraggableView = memo(
   <T,>({
     payload,
     enteringAnimation,
-    isReceiver = false,
     children,
+    draggableViewKey,
+    isReceiver = false,
     draggableEnabled = true,
   }: DraggableViewProps<T>) => {
     const {
@@ -25,8 +26,8 @@ const DraggableView = memo(
 
     return (
       <Animated.View
-        layout={enteringAnimation ? undefined : Layout.duration(200)}
-        entering={enteringAnimation}
+        layout={Layout.duration(200)}
+        // entering={enteringAnimation}
         style={animatedStyle}
         onLayout={handleWrapperViewLayout}>
         <DraxView
@@ -35,6 +36,7 @@ const DraggableView = memo(
           onReceiveDragOver={handleContainerReceiveDragOver}
           onReceiveDragEnter={handleContainerReceiveDragEnter}
           onReceiveDragExit={handleContainerReceiveDragExit}
+          key={draggableViewKey}
           style={styles.container}>
           <DraggableItem
             isParent={isReceiver}
