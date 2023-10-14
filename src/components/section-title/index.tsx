@@ -1,13 +1,16 @@
 import React, {memo} from 'react';
-import {Title, TitleContainer} from './styles';
+import {ControlContainer, Title, TitleContainer} from './styles';
 import {SectionTitleProps} from './types';
 
-const SectionTitle: React.FC<SectionTitleProps> = memo(({title, ...props}) => {
-  return (
-    <TitleContainer {...props}>
-      <Title>{title}</Title>
-    </TitleContainer>
-  );
-});
+const SectionTitle: React.FC<SectionTitleProps> = memo(
+  ({title, ControlComponent, ...props}) => {
+    return (
+      <TitleContainer {...props}>
+        <Title>{title}</Title>
+        <ControlContainer>{ControlComponent}</ControlContainer>
+      </TitleContainer>
+    );
+  },
+);
 
 export {SectionTitle};
