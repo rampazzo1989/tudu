@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useRef} from 'react';
+import React, {memo, useEffect, useRef, useState} from 'react';
 import {BaseAnimatedIcon} from '../animated-icons/animated-icon';
 import {BaseAnimatedIconRef} from '../animated-icons/animated-icon/types';
 import {Touchable} from './styles';
@@ -6,8 +6,19 @@ import {TuduCheckboxProps} from './types';
 
 const TuduCheckbox: React.FC<TuduCheckboxProps> = memo(({checked, onPress}) => {
   const iconRef = useRef<BaseAnimatedIconRef>(null);
+  const [internalCheck, setInternalCheck] = useState(checked);
 
   useEffect(() => {
+    let didntChange = false;
+    setInternalCheck(x => {
+      didntChange = checked === x;
+      return didntChange ? x : checked;
+    });
+
+    if (didntChange) {
+      return;
+    }
+
     if (checked) {
       iconRef.current?.play({initialFrame: 0, finalFrame: 32});
     } else {
@@ -22,7 +33,7 @@ const TuduCheckbox: React.FC<TuduCheckboxProps> = memo(({checked, onPress}) => {
         ref={iconRef}
         source={require('../../assets/lottie/tudu_checkbox.json')}
         componentName="TuduCheckbox"
-        staticStateFrame={0}
+        staticStateFrame={internalCheck ? 32 : 81}
         initialFrame={0}
         finalFrame={81}
         size={20}
