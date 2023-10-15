@@ -9,7 +9,6 @@ import {useDraggableViewHooks} from './useDraggableViewHooks';
 const DraggableView = memo(
   <T,>({
     payload,
-    enteringAnimation,
     children,
     draggableViewKey,
     isReceiver = false,
@@ -27,11 +26,11 @@ const DraggableView = memo(
     return (
       <Animated.View
         layout={Layout.duration(200)}
-        // entering={enteringAnimation}
         style={animatedStyle}
         onLayout={handleWrapperViewLayout}>
         <DraxView
           isParent
+          receptive={draggableEnabled}
           onReceiveDragDrop={handleContainerReceiveDragDrop}
           onReceiveDragOver={handleContainerReceiveDragOver}
           onReceiveDragEnter={handleContainerReceiveDragEnter}
