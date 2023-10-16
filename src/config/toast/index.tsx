@@ -1,6 +1,11 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import {BaseToast, BaseToastProps} from 'react-native-toast-message';
+import {StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  BaseToast,
+  BaseToastProps,
+  ToastShowParams,
+} from 'react-native-toast-message';
 import {CurrentTheme} from '../../themes';
 
 const styles = StyleSheet.create({
@@ -14,6 +19,18 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: CurrentTheme.colors.defaultToast.text,
   },
+  actionSuccessStyle: {
+    width: '90%',
+    marginHorizontal: 20,
+    borderRadius: 6,
+    borderLeftColor: CurrentTheme.colors.defaultToast.borderLeft,
+    backgroundColor: '#585f69',
+    // borderLeftWidth: 4,
+    padding: 12,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 });
 
 const toastConfig = {
@@ -24,6 +41,18 @@ const toastConfig = {
       contentContainerStyle={styles.contentContainerStyle}
       text1Style={styles.text1Style}
     />
+  ),
+  actionSuccessWithUndo: ({props}: ToastShowParams) => (
+    <View
+      style={[
+        styles.actionSuccessStyle,
+        {flexDirection: 'row', justifyContent: 'space-between'},
+      ]}>
+      <Text style={styles.text1Style}>Tudú deleted</Text>
+      <TouchableOpacity onPress={props.onPress}>
+        <Text style={styles.text1Style}>UNDO</Text>
+      </TouchableOpacity>
+    </View>
   ),
 };
 

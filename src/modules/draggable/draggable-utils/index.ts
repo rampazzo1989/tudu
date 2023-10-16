@@ -147,6 +147,13 @@ export const insertNewItem = <T>(
   listSetter([newDraggableItem, ...list]);
 };
 
+export const refreshListState = <T>(
+  list: DraggableItem<T>[],
+  listSetter: (newData: DraggableItem<T>[]) => void,
+) => {
+  listSetter([...list]);
+};
+
 export const getUngroupedItems = <T>(list: DraggableItem<T>[]) => {
   const ungrouped = list.filter(x => !x.groupId);
   return ungrouped;

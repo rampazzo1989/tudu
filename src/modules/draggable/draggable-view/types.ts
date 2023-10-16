@@ -16,7 +16,6 @@ export type DraggableViewProps<TItem> = {
   payload: DraggableItem<TItem>;
   children: React.ReactNode;
   isReceiver?: boolean;
-  enteringAnimation?: EntryExitAnimationType;
   draggableEnabled?: boolean;
   draggableViewKey?: string;
 };
