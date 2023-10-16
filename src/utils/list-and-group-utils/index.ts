@@ -2,7 +2,6 @@ import {t} from 'i18next';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
 import {List} from '../../scenes/home/types';
-import en from '../../locale/en.json';
 import {SetterOrUpdater} from 'recoil';
 import {removeFromList} from '../array-utils';
 

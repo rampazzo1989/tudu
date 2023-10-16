@@ -9,9 +9,15 @@ import {FloatingDeleteProps} from './types';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {DraggableContext} from '../../modules/draggable/draggable-context';
 import {DraxDragWithReceiverEventData} from 'react-native-drax';
-import {SpecialDraggablePayload} from '../../modules/draggable/draggable-context/types';
+import {
+  DraggableItem,
+  SpecialDraggablePayload,
+} from '../../modules/draggable/draggable-context/types';
 import {useTranslation} from 'react-i18next';
 import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
+import Toast from 'react-native-toast-message';
+import {List} from '../../scenes/home/types';
+import {refreshListState} from '../../modules/draggable/draggable-utils';
 
 const deletePayload: SpecialDraggablePayload = {
   id: 'delete',
@@ -34,17 +40,54 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
       }
     }, [visible]);
 
+    const previousStateData = useRef(JSON.stringify(draggableContext.data));
+
+    const handleUndoDeletePress = useCallback(() => {
+      try {
+        const parsedOldState: DraggableItem<List>[] = JSON.parse(
+          previousStateData.current,
+        );
+
+        refreshListState(parsedOldState, draggableContext.setData);
+        Toast.hide();
+      } catch {
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          bottomOffset: 60,
+          text1: 'Unexpected error on trying to undo',
+        });
+      }
+    }, [draggableContext.setData]);
+
     const handleDrop = useCallback(
       (data: DraxDragWithReceiverEventData) => {
+        previousStateData.current = JSON.stringify(draggableContext.data);
         return draggableContext.showConfirmationModal(
           data.dragged.payload,
           confirmationPopupTitleBuilder,
           'delete',
           undefined,
-          () => animateIcon?.(DeleteIconActionAnimation),
+          () => {
+            animateIcon?.(DeleteIconActionAnimation);
+            return Toast.show({
+              type: 'actionSuccessWithUndo',
+              position: 'bottom',
+              bottomOffset: 60,
+              visibilityTime: 7000,
+              props: {
+                onPress: handleUndoDeletePress,
+              },
+            });
+          },
         );
       },
-      [animateIcon, confirmationPopupTitleBuilder, draggableContext],
+      [
+        animateIcon,
+        confirmationPopupTitleBuilder,
+        draggableContext,
+        handleUndoDeletePress,
+      ],
     );
 
     const handleReceiveDragExit = useCallback(

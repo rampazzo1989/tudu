@@ -22,7 +22,7 @@ const TuduCheckbox: React.FC<TuduCheckboxProps> = memo(({checked, onPress}) => {
     if (checked) {
       iconRef.current?.play({initialFrame: 0, finalFrame: 32});
     } else {
-      iconRef.current?.play({initialFrame: 38, finalFrame: 81});
+      iconRef.current?.play({initialFrame: 32, finalFrame: 81});
     }
   }, [checked]);
 

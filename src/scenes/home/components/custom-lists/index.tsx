@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
@@ -31,6 +32,8 @@ import {FolderAddIconActionAnimation} from '../../../../components/animated-icon
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
 import {SlideInRight} from 'react-native-reanimated';
 import {useCloseCurrentlyOpenSwipeable} from '../../../../hooks/useCloseAllSwipeables';
+import Toast from 'react-native-toast-message';
+import {refreshListState} from '../../../../modules/draggable/draggable-utils';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({onListPress, animateIcon}) => {
@@ -59,18 +62,57 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       [onListPress],
     );
 
+    // const [previousStateData, setPreviousStateData] = useState(
+    //   draggableContext.data,
+    // );
+
+    const previousStateData = useRef(JSON.stringify(draggableContext.data));
+
+    const handleUndoDeletePress = useCallback(() => {
+      console.log('inside', previousStateData.current?.[0]);
+
+      try {
+        const parsedOldState: DraggableItem<List>[] = JSON.parse(
+          previousStateData.current,
+        );
+
+        refreshListState(parsedOldState, draggableContext.setData);
+        Toast.hide();
+      } catch {
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          bottomOffset: 60,
+          text1: 'Unexpected error on trying to undo',
+        });
+      }
+    }, [draggableContext.setData]);
+
     const handleDeleteGenerator = useCallback(
       (listOrDraggableList: DraggableItem<List> | List) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          previousStateData.current = JSON.stringify(draggableContext.data);
+          console.log('holla', previousStateData.current?.[0]);
           draggableContext.showConfirmationModal(
             listOrDraggableList,
             generateListAndGroupDeleteTitle,
             'delete',
             () => swipeableRef.current?.closeOptions(),
-            () => animateIcon?.(DeleteIconActionAnimation),
+            () => {
+              animateIcon?.(DeleteIconActionAnimation);
+              return Toast.show({
+                type: 'actionSuccessWithUndo',
+                position: 'bottom',
+                bottomOffset: 60,
+                visibilityTime: 7000,
+                props: {
+                  onPress: handleUndoDeletePress,
+                },
+              });
+            },
           );
         },
-      [animateIcon, draggableContext],
+      [animateIcon, draggableContext, handleUndoDeletePress],
     );
 
     const archive = useCallback(

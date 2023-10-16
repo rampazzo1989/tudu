@@ -28,6 +28,9 @@ import Toast from 'react-native-toast-message';
 import {getUngroupedItems} from '../../../../modules/draggable/draggable-utils';
 import {List} from '../../types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
+import {SunIcon} from '../../../../components/animated-icons/sun-icon';
+import {MoonIcon} from '../../../../components/animated-icons/moon-icon';
+import {TuduIcon} from '../../../../components/animated-icons/tudu-icon';
 
 const HomeActionMenuOptions = memo(
   forwardRef<FloatingActionButtonRef, HomeActionMenuOptionsProps>(
@@ -66,6 +69,15 @@ const HomeActionMenuOptions = memo(
             position: 'bottom',
             bottomOffset: 60,
           });
+          // return Toast.show({
+          //   type: 'actionSuccessWithUndo',
+          //   position: 'bottom',
+          //   bottomOffset: 60,
+          //   visibilityTime: 7000,
+          //   props: {
+          //     onPress: () => console.log('Press'),
+          //   },
+          // });
         }
         setNewGroupPopupVisible(true);
         parentRef.current?.closeMenu();
