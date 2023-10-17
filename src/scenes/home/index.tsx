@@ -26,7 +26,7 @@ import {DraggableContextProvider} from '../../modules/draggable/draggable-contex
 import {useTheme} from 'styled-components/native';
 import {generateListAndGroupDeleteTitle} from '../../utils/list-and-group-utils';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
-import {HomeActionMenuOptions} from './components/button-actions';
+import {HomeActionButton} from './components/home-action-button';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated-icon/types';
 
@@ -133,7 +133,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
             animateIcon={animateThisIcon}
           />
-          <HomeActionMenuOptions ref={actionButtonRef} />
+          <HomeActionButton ref={actionButtonRef} />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>

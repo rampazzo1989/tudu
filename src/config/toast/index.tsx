@@ -45,7 +45,7 @@ const toastConfig = {
   actionSuccessWithUndo: ({props}: ToastShowParams) => (
     <View style={styles.actionSuccessStyle}>
       <Text style={styles.text1Style}>{props.message}</Text>
-      <TouchableOpacity onPress={props.onPress}>
+      <TouchableOpacity onPress={props.onPress} hitSlop={20}>
         <Text style={styles.text1Style}>{t('toast.undo')}</Text>
       </TouchableOpacity>
     </View>

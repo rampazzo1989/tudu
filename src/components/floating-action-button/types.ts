@@ -6,9 +6,10 @@ import {
 import {MenuOption} from '../menu-options/types';
 
 export type FloatingActionButtonProps = {
-  menuOptions: MenuOption[];
   DefaultIcon: ForwardedRefAnimatedIcon;
   animationMode?: 'play' | 'toggle';
+  menuOptions?: MenuOption[];
+  onPress?: () => void;
 };
 
 export type FloatingActionButtonRef = {

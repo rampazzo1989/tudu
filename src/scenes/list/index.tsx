@@ -12,12 +12,18 @@ import {useListStateHelper} from '../../hooks/useListStateHelper';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {styles} from './styles';
 import {CheersAnimation} from '../../components/animated-components/cheers';
-import {AnimatedIconRef} from '../../components/animated-icons/animated-icon/types';
+import {
+  AnimatedIconRef,
+  ForwardedRefAnimatedIcon,
+} from '../../components/animated-icons/animated-icon/types';
 import {Dimensions, Vibration, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ListActionButton} from './components/list-action-button';
+import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
+  const actionButtonRef = useRef<FloatingActionButtonRef>(null);
 
   const {updateList, getListById} = useListStateHelper();
 
@@ -73,6 +79,10 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     [handleListCompleted, list, updateList],
   );
 
+  const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
+    actionButtonRef.current?.animateThisIcon(Icon);
+  }, []);
+
   const cheersRef = useRef<AnimatedIconRef>(null);
 
   return (
@@ -84,9 +94,6 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
           onSetData={setTudus}
           onDragStart={handleListDragStart}>
           <View
-            // onStartShouldSetResponderCapture={() => {
-            //   return true;
-            // }}
             pointerEvents="none"
             style={{
               position: 'absolute',
@@ -106,8 +113,14 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
 
           <DraggablePageContent
             contentContainerStyle={styles.scrollContentContainer}>
-            {!!list?.tudus && <TudusList onTuduPress={handleTuduPress} />}
+            {!!list?.tudus && (
+              <TudusList
+                onTuduPress={handleTuduPress}
+                animateIcon={animateThisIcon}
+              />
+            )}
           </DraggablePageContent>
+          <ListActionButton ref={actionButtonRef} />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>

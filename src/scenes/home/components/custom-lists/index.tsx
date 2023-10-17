@@ -35,7 +35,7 @@ import {useCloseCurrentlyOpenSwipeable} from '../../../../hooks/useCloseAllSwipe
 import Toast from 'react-native-toast-message';
 import {refreshListState} from '../../../../modules/draggable/draggable-utils';
 import {showItemDeletedToast} from '../../../../utils/toast-utils';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({onListPress, animateIcon}) => {
@@ -66,15 +66,9 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       [onListPress],
     );
 
-    // const [previousStateData, setPreviousStateData] = useState(
-    //   draggableContext.data,
-    // );
-
     const previousStateData = useRef(JSON.stringify(draggableContext.data));
 
     const handleUndoDeletePress = useCallback(() => {
-      console.log('inside', previousStateData.current?.[0]);
-
       try {
         const parsedOldState: DraggableItem<List>[] = JSON.parse(
           previousStateData.current,
@@ -110,7 +104,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             },
           );
         },
-      [animateIcon, draggableContext, handleUndoDeletePress],
+      [animateIcon, draggableContext, handleUndoDeletePress, t],
     );
 
     const archive = useCallback(

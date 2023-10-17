@@ -8,7 +8,7 @@ export const showItemDeletedToast = (
     type: 'actionSuccessWithUndo',
     position: 'bottom',
     bottomOffset: 60,
-    visibilityTime: 7000,
+    visibilityTime: 60000,
     props: {
       onPress: onUndoPress,
       message,
