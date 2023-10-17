@@ -69,15 +69,6 @@ const HomeActionMenuOptions = memo(
             position: 'bottom',
             bottomOffset: 60,
           });
-          // return Toast.show({
-          //   type: 'actionSuccessWithUndo',
-          //   position: 'bottom',
-          //   bottomOffset: 60,
-          //   visibilityTime: 7000,
-          //   props: {
-          //     onPress: () => console.log('Press'),
-          //   },
-          // });
         }
         setNewGroupPopupVisible(true);
         parentRef.current?.closeMenu();

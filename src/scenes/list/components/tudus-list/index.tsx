@@ -25,6 +25,8 @@ import {TuduItem} from '../../../home/types';
 import {Container, SectionTitle} from './styles';
 import {TudusListProps} from './types';
 import Toast from 'react-native-toast-message';
+import {showItemDeletedToast} from '../../../../utils/toast-utils';
+import {useTranslation} from 'react-i18next';
 
 const TudusList: React.FC<TudusListProps> = memo(({onTuduPress}) => {
   const draggableContext =
@@ -33,6 +35,8 @@ const TudusList: React.FC<TudusListProps> = memo(({onTuduPress}) => {
     typeof SlideInRight | undefined
   >(() => SlideInRight);
   const [keyHash, setKeyHash] = useState('');
+
+  const {t} = useTranslation();
 
   useEffect(() => {
     setEnteringAnimation(undefined);
@@ -72,18 +76,11 @@ const TudusList: React.FC<TudusListProps> = memo(({onTuduPress}) => {
   const handleDeleteGenerator = useCallback(
     (deletingItem: DraggableItem<TuduItem>) => () => {
       deleteItem(draggableContext.data, draggableContext.setData, deletingItem);
-      return Toast.show({
-        type: 'actionSuccessWithUndo',
-        position: 'bottom',
-        bottomOffset: 60,
-        visibilityTime: 7000,
-        props: {
-          onPress: () =>
-            handleUndoDeletion(draggableContext.data, draggableContext.setData),
-        },
-      });
+      showItemDeletedToast(t('toast.tuduDeleted'), () =>
+        handleUndoDeletion(draggableContext.data, draggableContext.setData),
+      );
     },
-    [draggableContext.data, draggableContext.setData, handleUndoDeletion],
+    [draggableContext.data, draggableContext.setData, handleUndoDeletion, t],
   );
 
   const getTuduList = useMemo(() => {

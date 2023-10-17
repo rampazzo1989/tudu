@@ -24,6 +24,11 @@
     }, 
     "confirmCounterDelete": "Confirm deletion of counter '{{counterTitle}}'?"
   },
+  "toast": {
+    "tuduDeleted": "Tudú deleted",
+    "itemDeleted": "{{itemType}} deleted",
+    "undo": "UNDO"
+  },
   "buttons": {
     "ok": "OK",
     "cancel": "Cancel",

@@ -7,6 +7,7 @@ import {
   ToastShowParams,
 } from 'react-native-toast-message';
 import {CurrentTheme} from '../../themes';
+import {t} from 'i18next';
 
 const styles = StyleSheet.create({
   toastStyle: {
@@ -24,8 +25,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 6,
     borderLeftColor: CurrentTheme.colors.defaultToast.borderLeft,
-    backgroundColor: '#585f69',
-    // borderLeftWidth: 4,
+    backgroundColor: CurrentTheme.colors.actionMessageToast.background,
     padding: 12,
     paddingHorizontal: 16,
     flexDirection: 'row',
@@ -43,14 +43,10 @@ const toastConfig = {
     />
   ),
   actionSuccessWithUndo: ({props}: ToastShowParams) => (
-    <View
-      style={[
-        styles.actionSuccessStyle,
-        {flexDirection: 'row', justifyContent: 'space-between'},
-      ]}>
-      <Text style={styles.text1Style}>Tudú deleted</Text>
+    <View style={styles.actionSuccessStyle}>
+      <Text style={styles.text1Style}>{props.message}</Text>
       <TouchableOpacity onPress={props.onPress}>
-        <Text style={styles.text1Style}>UNDO</Text>
+        <Text style={styles.text1Style}>{t('toast.undo')}</Text>
       </TouchableOpacity>
     </View>
   ),
