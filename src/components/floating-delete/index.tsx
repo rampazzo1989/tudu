@@ -18,6 +18,9 @@ import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
 import Toast from 'react-native-toast-message';
 import {List} from '../../scenes/home/types';
 import {refreshListState} from '../../modules/draggable/draggable-utils';
+import {showItemDeletedToast} from '../../utils/toast-utils';
+import {getTypeItemOrGroup} from '../../utils/list-and-group-utils';
+import {capitalizeFirstLetter} from '../../utils/string-utils';
 
 const deletePayload: SpecialDraggablePayload = {
   id: 'delete',
@@ -63,6 +66,8 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
     const handleDrop = useCallback(
       (data: DraxDragWithReceiverEventData) => {
         previousStateData.current = JSON.stringify(draggableContext.data);
+        const itemType = getTypeItemOrGroup(data.dragged.payload);
+        const capitalizedItemType = capitalizeFirstLetter(itemType);
         return draggableContext.showConfirmationModal(
           data.dragged.payload,
           confirmationPopupTitleBuilder,
@@ -70,15 +75,10 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
           undefined,
           () => {
             animateIcon?.(DeleteIconActionAnimation);
-            return Toast.show({
-              type: 'actionSuccessWithUndo',
-              position: 'bottom',
-              bottomOffset: 60,
-              visibilityTime: 7000,
-              props: {
-                onPress: handleUndoDeletePress,
-              },
-            });
+            showItemDeletedToast(
+              t('toast.itemDeleted', {itemType: capitalizedItemType}),
+              handleUndoDeletePress,
+            );
           },
         );
       },
@@ -87,6 +87,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
         confirmationPopupTitleBuilder,
         draggableContext,
         handleUndoDeletePress,
+        t,
       ],
     );
 

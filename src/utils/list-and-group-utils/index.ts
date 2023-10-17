@@ -5,6 +5,19 @@ import {List} from '../../scenes/home/types';
 import {SetterOrUpdater} from 'recoil';
 import {removeFromList} from '../array-utils';
 
+export const getTypeItemOrGroup = (item: DraggableItem<List> | List) => {
+  let itemType: string = t('messages.confirmListDeleteItemType.list');
+
+  if (!isNestedItem(item)) {
+    const draggableItem = item as DraggableItem<List>;
+    itemType = draggableItem.groupId
+      ? t('messages.confirmListDeleteItemType.group')
+      : itemType;
+  }
+
+  return itemType;
+};
+
 export const generateListAndGroupDeleteTitle = (
   item?: DraggableItem<List> | List,
 ) => {
@@ -12,15 +25,12 @@ export const generateListAndGroupDeleteTitle = (
     return '';
   }
   let listName: string;
-  let itemType: string = t('messages.confirmListDeleteItemType.list');
+  const itemType = getTypeItemOrGroup(item);
   if (isNestedItem(item)) {
     listName = (item as List).label;
   } else {
     const draggableItem = item as DraggableItem<List>;
     listName = draggableItem.groupId ?? draggableItem.data[0].label;
-    itemType = draggableItem.groupId
-      ? t('messages.confirmListDeleteItemType.group')
-      : itemType;
   }
   return t('messages.confirmListDelete', {itemType, listName});
 };

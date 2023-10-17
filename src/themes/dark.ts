@@ -47,6 +47,9 @@ const darkTheme: DefaultTheme = {
       background: '#444B56',
       text: '#FFFFFF',
     },
+    actionMessageToast: {
+      background: '#585f69',
+    },
   },
   fonts: {
     header: 'Inter-SemiBold',

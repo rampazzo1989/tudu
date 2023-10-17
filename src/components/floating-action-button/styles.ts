@@ -10,7 +10,7 @@ export const FloatingButton = styled(ShrinkableView)`
   right: 20px;
   bottom: 30px;
   elevation: 10;
-  /* align-items: center; */
+  z-index: 10000;
   align-content: center;
   justify-content: center;
 `;

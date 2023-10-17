@@ -34,6 +34,8 @@ import {SlideInRight} from 'react-native-reanimated';
 import {useCloseCurrentlyOpenSwipeable} from '../../../../hooks/useCloseAllSwipeables';
 import Toast from 'react-native-toast-message';
 import {refreshListState} from '../../../../modules/draggable/draggable-utils';
+import {showItemDeletedToast} from '../../../../utils/toast-utils';
+import {useTranslation} from 'react-i18next';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({onListPress, animateIcon}) => {
@@ -51,6 +53,8 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       typeof SlideInRight | undefined
     >(() => SlideInRight);
 
+    const {t} = useTranslation();
+
     useEffect(() => {
       setEnteringAnimation(undefined);
     }, []);
@@ -62,15 +66,9 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       [onListPress],
     );
 
-    // const [previousStateData, setPreviousStateData] = useState(
-    //   draggableContext.data,
-    // );
-
     const previousStateData = useRef(JSON.stringify(draggableContext.data));
 
     const handleUndoDeletePress = useCallback(() => {
-      console.log('inside', previousStateData.current?.[0]);
-
       try {
         const parsedOldState: DraggableItem<List>[] = JSON.parse(
           previousStateData.current,
@@ -92,7 +90,6 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       (listOrDraggableList: DraggableItem<List> | List) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
           previousStateData.current = JSON.stringify(draggableContext.data);
-          console.log('holla', previousStateData.current?.[0]);
           draggableContext.showConfirmationModal(
             listOrDraggableList,
             generateListAndGroupDeleteTitle,
@@ -100,19 +97,14 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             () => swipeableRef.current?.closeOptions(),
             () => {
               animateIcon?.(DeleteIconActionAnimation);
-              return Toast.show({
-                type: 'actionSuccessWithUndo',
-                position: 'bottom',
-                bottomOffset: 60,
-                visibilityTime: 7000,
-                props: {
-                  onPress: handleUndoDeletePress,
-                },
-              });
+              showItemDeletedToast(
+                t('toast.itemDeleted', {itemType: 'List'}),
+                handleUndoDeletePress,
+              );
             },
           );
         },
-      [animateIcon, draggableContext, handleUndoDeletePress],
+      [animateIcon, draggableContext, handleUndoDeletePress, t],
     );
 
     const archive = useCallback(
@@ -162,9 +154,6 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                 <DraggableView
                   key={`${item.groupId}${index}${item.data.length}`}
                   payload={item}
-                  enteringAnimation={enteringAnimation
-                    ?.duration(200)
-                    .delay(index * 50)}
                   isReceiver>
                   <ListGroupCard
                     handleArchiveGenerator={handleArchiveGenerator}
