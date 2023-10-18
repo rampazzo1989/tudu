@@ -49,6 +49,7 @@
     "react-native-toast-message": "^2.1.6",
     "reactotron-react-native": "^5.0.3",
     "recoil": "^0.7.7",
+    "recoil-nexus": "^0.5.0",
     "stream-browserify": "^3.0.0",
     "styled-components": "^5.3.11"
   },

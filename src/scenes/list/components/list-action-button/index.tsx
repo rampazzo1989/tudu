@@ -1,7 +1,6 @@
 import React, {
   forwardRef,
   memo,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -13,41 +12,36 @@ import {FloatingActionButton} from '../../../../components/floating-action-butto
 import {ListActionButtonProps} from './types';
 
 const ListActionButton = memo(
-  forwardRef<FloatingActionButtonRef, ListActionButtonProps>((_, ref) => {
-    const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
-    const [visible, setVisible] = useState(false);
-    const parentRef = useRef<FloatingActionButtonRef>(null);
+  forwardRef<FloatingActionButtonRef, ListActionButtonProps>(
+    ({onInsertTuduPress}, ref) => {
+      const [visible, setVisible] = useState(false);
+      const parentRef = useRef<FloatingActionButtonRef>(null);
 
-    const handleCreateNewtudu = useCallback(() => {
-      setNewTuduPopupVisible(true);
-    }, []);
+      useImperativeHandle(ref, () => ({
+        animateThisIcon(Icon) {
+          parentRef.current?.animateThisIcon(Icon);
+        },
+        closeMenu() {},
+      }));
 
-    useImperativeHandle(ref, () => ({
-      animateThisIcon(Icon) {
-        parentRef.current?.animateThisIcon(Icon);
-      },
-      closeMenu() {},
-    }));
+      useEffect(() => {
+        setTimeout(() => setVisible(true), 100);
+      }, []);
 
-    useEffect(() => {
-      setTimeout(() => setVisible(true), 500);
-    }, []);
-
-    return visible ? (
-      <>
-        <FloatingActionButton
-          DefaultIcon={PlusIcon}
-          ref={parentRef}
-          animationMode="play"
-          onPress={handleCreateNewtudu}
-        />
-        {/* <NewTuduModal
-          visible={newTuduPopupVisible}
-          onRequestClose={() => setNewTuduPopupVisible(false)}
-        /> */}
-      </>
-    ) : undefined;
-  }),
+      return visible ? (
+        <>
+          <FloatingActionButton
+            DefaultIcon={PlusIcon}
+            ref={parentRef}
+            animationMode="play"
+            onPress={onInsertTuduPress}
+          />
+        </>
+      ) : (
+        <></>
+      );
+    },
+  ),
 );
 
 export {ListActionButton};

@@ -24,6 +24,7 @@ const getNewEmptyList = (): List => ({
   label: '',
   numberOfActiveItems: 0,
   id: generateRandomHash('New List'),
+  tudus: [],
 });
 
 const NewListModal: React.FC<NewListModalProps> = memo(

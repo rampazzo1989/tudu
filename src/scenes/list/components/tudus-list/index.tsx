@@ -17,7 +17,6 @@ import {
 } from '../../../../modules/draggable/draggable-context/types';
 import {
   deleteItem,
-  insertNewItem,
   refreshListState,
 } from '../../../../modules/draggable/draggable-utils';
 import {DraggableView} from '../../../../modules/draggable/draggable-view';
@@ -36,7 +35,6 @@ const TudusList: React.FC<TudusListProps> = memo(
     const [enteringAnimation, setEnteringAnimation] = useState<
       typeof SlideInRight | undefined
     >(() => SlideInRight);
-
     const {t} = useTranslation();
 
     useEffect(() => {

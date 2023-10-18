@@ -9,6 +9,7 @@ export type {HomePageProps};
 export type TuduItem = {
   label: string;
   done: boolean;
+  id: string;
 };
 
 export type List = {

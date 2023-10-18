@@ -16,6 +16,8 @@ import {
 import {ZoomIn} from 'react-native-reanimated';
 import {PopoverMenu} from '../popover-menu';
 import {MenuOptions} from '../menu-options';
+import {useRecoilValue} from 'recoil';
+import {toastSpan} from '../../state/atoms';
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
@@ -25,6 +27,8 @@ const FloatingActionButton = memo(
       const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
       const [CurrentIcon, setCurrentIcon] =
         useState<ForwardedRefAnimatedIcon>(DefaultIcon);
+
+      const toastBottomSpan = useRecoilValue(toastSpan);
 
       // Animates the current icon when option is set
       useEffect(() => {
@@ -73,13 +77,14 @@ const FloatingActionButton = memo(
           <FloatingButton
             onPress={handlePress}
             scaleFactor={0.05}
+            extraBottomMargin={toastBottomSpan}
             entering={ZoomIn.delay(100)}>
             <IconContainer>
               <CurrentIcon ref={iconRef} speed={1.5} size={40} />
             </IconContainer>
           </FloatingButton>
         ),
-        [CurrentIcon, handlePress],
+        [CurrentIcon, handlePress, toastBottomSpan],
       );
 
       return menuOptions ? (

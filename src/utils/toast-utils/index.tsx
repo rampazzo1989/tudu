@@ -1,4 +1,6 @@
 import Toast from 'react-native-toast-message';
+import {setRecoil} from 'recoil-nexus';
+import {toastSpan} from '../../state/atoms';
 
 export const showItemDeletedToast = (
   message: string,
@@ -13,5 +15,7 @@ export const showItemDeletedToast = (
       onPress: onUndoPress,
       message,
     },
+    onShow: () => setRecoil(toastSpan, 40),
+    onHide: () => setRecoil(toastSpan, 0),
   });
 };

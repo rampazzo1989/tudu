@@ -13,14 +13,15 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       isHighlighted: true,
       numberOfActiveItems: 0,
       tudus: [
-        {label: 'Do 50 pushups', done: false},
-        {label: 'Do 30 situps', done: false},
-        {label: 'Do 20 abs', done: false},
-        {label: 'Do 40 lombar abs', done: false},
+        {label: 'Do 50 pushups', done: false, id: '1'},
+        {label: 'Do 30 situps', done: false, id: '2'},
+        {label: 'Do 20 abs', done: false, id: '3'},
+        {label: 'Do 40 lombar abs', done: false, id: '4'},
         {
           label:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed viverra nunc. Praesent lobortis arcu augue, sit amet luctus magna congue eu. Nullam interdum nulla sed consectetur eleifend. Donec pretium sem dui, non semper turpis cursus eget. Proin vel arcu libero. Vestibulum mattis lacus leo, eu suscipit sem molestie a. ',
           done: false,
+          id: '5',
         },
       ],
     },
@@ -81,6 +82,7 @@ export const myLists = atom<List[]>({
       label: 'Movies',
       color: 'green',
       numberOfActiveItems: 1,
+      tudus: [],
     },
     {
       id: '2',
@@ -88,12 +90,14 @@ export const myLists = atom<List[]>({
       color: 'red',
       numberOfActiveItems: 3,
       groupName: 'Test',
+      tudus: [],
     },
     {
       id: '3',
       label: 'Gift Ideias',
       color: '#7956BF',
       numberOfActiveItems: 12,
+      tudus: [],
     },
     {
       id: '4',
@@ -101,6 +105,7 @@ export const myLists = atom<List[]>({
       color: 'red',
       numberOfActiveItems: 10,
       groupName: 'Travel',
+      tudus: [],
     },
     {
       id: '5',
@@ -108,6 +113,7 @@ export const myLists = atom<List[]>({
       color: 'blue',
       numberOfActiveItems: 12,
       groupName: 'Travel',
+      tudus: [],
     },
   ],
   effects: [mmkvPersistAtom('myLists')],

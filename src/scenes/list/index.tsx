@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo, useRef} from 'react';
+import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {DraxProvider} from 'react-native-drax';
 import {Page} from '../../components/page';
 import {DraggablePageContent} from '../../components/draggable-page-content';
@@ -16,14 +16,16 @@ import {
   AnimatedIconRef,
   ForwardedRefAnimatedIcon,
 } from '../../components/animated-icons/animated-icon/types';
-import {Dimensions, Vibration, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Dimensions, View} from 'react-native';
 import {ListActionButton} from './components/list-action-button';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
+import {CheckMarkIconActionAnimation} from '../../components/animated-icons/check-mark';
+import {NewTuduModal} from './components/new-tudu-modal';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
+  const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
 
   const {updateList, getListById} = useListStateHelper();
 
@@ -45,9 +47,11 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
         return;
       }
 
-      list.tudus = draggable.flatMap(x => x.data);
+      // list.tudus = draggable.flatMap(x => x.data);
+      const newList = {...list, tudus: draggable.flatMap(x => x.data)};
+      console.log('setTudus called', newList);
 
-      updateList(list);
+      updateList(newList);
     },
     [list, updateList],
   );
@@ -59,7 +63,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const handleListCompleted = useCallback(() => {
     cheersRef.current?.play();
     RNReactNativeHapticFeedback.trigger('notificationSuccess');
-    // Vibration.vibrate(600);
+    actionButtonRef.current?.animateThisIcon(CheckMarkIconActionAnimation);
   }, []);
 
   const handleTuduPress = useCallback(
@@ -67,11 +71,25 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       if (!list) {
         return;
       }
-      tudu.done = !tudu.done;
+      console.log('holla before', tudu.done);
 
-      updateList(list);
+      const newTudu = {...tudu, done: !tudu.done};
+      console.log('holla after', newTudu.done);
+      const tuduIndex = list.tudus?.findIndex(x => x.id === newTudu.id);
+      const newTuduList = list.tudus?.slice();
 
-      const allDone = !!list.tudus?.every(x => x.done);
+      if (tuduIndex === undefined || tuduIndex < 0 || !newTuduList) {
+        return;
+      }
+
+      newTuduList.splice(tuduIndex, 1, newTudu);
+      console.log('holla', newTudu.done, {tuduIndex, newTuduList});
+
+      const newList = {...list, tudus: newTuduList};
+
+      updateList(newList);
+
+      const allDone = !!newList.tudus?.every(x => x.done);
       if (allDone) {
         handleListCompleted();
       }
@@ -120,7 +138,14 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
               />
             )}
           </DraggablePageContent>
-          <ListActionButton ref={actionButtonRef} />
+          <NewTuduModal
+            visible={newTuduPopupVisible}
+            onRequestClose={() => setNewTuduPopupVisible(false)}
+          />
+          <ListActionButton
+            ref={actionButtonRef}
+            onInsertTuduPress={() => setNewTuduPopupVisible(true)}
+          />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>

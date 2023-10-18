@@ -14,6 +14,7 @@ import ReactNativeRecoilPersist, {
 import Toast from 'react-native-toast-message';
 import {CurrentTheme} from './src/themes';
 import {toastConfig} from './src/config/toast';
+import RecoilNexus from 'recoil-nexus';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -22,6 +23,7 @@ function App(): JSX.Element {
     <GestureHandlerRootView style={{flex: 1}}>
       <ThemeProvider theme={CurrentTheme}>
         <RecoilRoot>
+          <RecoilNexus />
           <ReactNativeRecoilPersistGate
             onInit={() => RNBootSplash.hide()}
             store={ReactNativeRecoilPersist}>
