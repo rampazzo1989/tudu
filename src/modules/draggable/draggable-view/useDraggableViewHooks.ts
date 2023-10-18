@@ -10,8 +10,6 @@ import {castItem, removeSubItem} from '../draggable-utils';
 import {draggedItemHeight} from '../state';
 import {UseDraggableViewHooksProps} from './types';
 
-const PLACEHOLDER_HEIGHT = 50;
-
 const useDraggableViewHooks = <T>({
   payload,
   isReceiver,

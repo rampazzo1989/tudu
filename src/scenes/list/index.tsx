@@ -21,13 +21,16 @@ import {ListActionButton} from './components/list-action-button';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
 import {CheckMarkIconActionAnimation} from '../../components/animated-icons/check-mark';
 import {NewTuduModal} from './components/new-tudu-modal';
+import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
+  const [editingTudu, setEditingTudu] = useState<TuduItem>();
 
   const {updateList, getListById} = useListStateHelper();
+  const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -46,11 +49,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       if (!list) {
         return;
       }
-
-      // list.tudus = draggable.flatMap(x => x.data);
       const newList = {...list, tudus: draggable.flatMap(x => x.data)};
-      console.log('setTudus called', newList);
-
       updateList(newList);
     },
     [list, updateList],
@@ -71,10 +70,8 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       if (!list) {
         return;
       }
-      console.log('holla before', tudu.done);
 
       const newTudu = {...tudu, done: !tudu.done};
-      console.log('holla after', newTudu.done);
       const tuduIndex = list.tudus?.findIndex(x => x.id === newTudu.id);
       const newTuduList = list.tudus?.slice();
 
@@ -83,7 +80,6 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       }
 
       newTuduList.splice(tuduIndex, 1, newTudu);
-      console.log('holla', newTudu.done, {tuduIndex, newTuduList});
 
       const newList = {...list, tudus: newTuduList};
 
@@ -135,12 +131,30 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
               <TudusList
                 onTuduPress={handleTuduPress}
                 animateIcon={animateThisIcon}
+                onEditPress={tudu => {
+                  setEditingTudu(tudu);
+                  setNewTuduPopupVisible(true);
+                }}
               />
             )}
           </DraggablePageContent>
+          {/* <NewListModal
+            visible={editModalVisible}
+            editingList={editingList}
+            onRequestClose={() => {
+              setEditModalVisible(false);
+              setEditingList(undefined);
+              closeCurrentlyOpenSwipeable();
+            }}
+          /> */}
           <NewTuduModal
             visible={newTuduPopupVisible}
-            onRequestClose={() => setNewTuduPopupVisible(false)}
+            onRequestClose={() => {
+              setNewTuduPopupVisible(false);
+              setEditingTudu(undefined);
+              closeCurrentlyOpenSwipeable();
+            }}
+            editingTudu={editingTudu}
           />
           <ListActionButton
             ref={actionButtonRef}

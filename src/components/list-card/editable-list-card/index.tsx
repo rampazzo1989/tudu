@@ -23,10 +23,13 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
     onDelete,
     onEdit,
   }) => {
-    const labelEmoji = useMemo(() => getEmojiFromBeginning(label), [label]);
+    const labelEmoji = useMemo(
+      () => getEmojiFromBeginning(label.trim()),
+      [label],
+    );
 
     const trimmedLabel = useMemo(
-      () => removeEmojiFromBeginning(label),
+      () => removeEmojiFromBeginning(label.trim()),
       [label],
     );
 

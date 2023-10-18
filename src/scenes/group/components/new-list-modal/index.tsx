@@ -75,7 +75,12 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         return;
       }
 
-      insertOrUpdateList(internalListData, isEditing);
+      const newList = {
+        ...internalListData,
+        label: internalListData.label.trim(),
+      };
+
+      insertOrUpdateList(newList, isEditing);
 
       onRequestClose();
     }, [insertOrUpdateList, internalListData, isEditing, onRequestClose]);

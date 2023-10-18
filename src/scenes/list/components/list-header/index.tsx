@@ -24,12 +24,12 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
     }, []);
 
     const titleEmoji = useMemo(
-      () => getEmojiFromBeginning(listData?.label ?? ''),
+      () => getEmojiFromBeginning(listData?.label?.trim() ?? ''),
       [listData?.label],
     );
 
     const textWithNoFirstEmoji = useMemo(
-      () => removeEmojiFromBeginning(listData?.label ?? ''),
+      () => removeEmojiFromBeginning(listData?.label?.trim() ?? ''),
       [listData?.label],
     );
 
