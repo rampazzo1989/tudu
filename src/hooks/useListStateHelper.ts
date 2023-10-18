@@ -52,7 +52,7 @@ const useListStateHelper = () => {
         // return syncToStorage(setCustomLists);
         setCustomLists(x => {
           const newList = x.slice();
-          newList.splice(isDefaultList, 1, list);
+          newList.splice(isCustomList, 1, list);
           return newList;
         });
       }
@@ -60,7 +60,7 @@ const useListStateHelper = () => {
         // return syncToStorage(setArchivedLists);
         setArchivedLists(x => {
           const newList = x.slice();
-          newList.splice(isDefaultList, 1, list);
+          newList.splice(isArchivedList, 1, list);
           return newList;
         });
       }
