@@ -1,8 +1,5 @@
 import React, {memo, useMemo} from 'react';
-import {
-  getEmojiFromBeginning,
-  removeEmojiFromBeginning,
-} from '../../utils/emoji-utils';
+import {getFirstEmoji, trimFirstEmoji} from '../../utils/emoji-utils';
 import {
   Container,
   ControlComponentContainer,
@@ -42,12 +39,9 @@ const ListCard: React.FC<ListCardProps> = memo(
     ControlComponent,
     isHighlighted = false,
   }) => {
-    const labelEmoji = useMemo(() => getEmojiFromBeginning(label), [label]);
+    const labelEmoji = useMemo(() => getFirstEmoji(label), [label]);
 
-    const trimmedLabel = useMemo(
-      () => removeEmojiFromBeginning(label),
-      [label],
-    );
+    const trimmedLabel = useMemo(() => trimFirstEmoji(label), [label]);
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}

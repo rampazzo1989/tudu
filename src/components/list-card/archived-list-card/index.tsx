@@ -9,10 +9,7 @@ import {
 import {ArchivedListCardProps} from '../types';
 import {SwipeableListCardArchived} from '../swipeable-list-card-archived';
 import {ListCardContainer} from './styles';
-import {
-  getEmojiFromBeginning,
-  removeEmojiFromBeginning,
-} from '../../../utils/emoji-utils';
+import {getFirstEmoji, trimFirstEmoji} from '../../../utils/emoji-utils';
 
 const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
   ({
@@ -26,12 +23,9 @@ const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
     onUnarchive,
     onDelete,
   }) => {
-    const labelEmoji = useMemo(() => getEmojiFromBeginning(label), [label]);
+    const labelEmoji = useMemo(() => getFirstEmoji(label), [label]);
 
-    const trimmedLabel = useMemo(
-      () => removeEmojiFromBeginning(label),
-      [label],
-    );
+    const trimmedLabel = useMemo(() => trimFirstEmoji(label), [label]);
     return (
       <ListCardContainer
         activeOpacity={1}
