@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import {atom, selector} from 'recoil';
 import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
-import {Counter, BuiltInList, List} from './types';
+import {Counter, BuiltInList, List, TuduItem} from './types';
 
 export const homeDefaultLists = atom<BuiltInList[]>({
   key: 'homeDefaultLists',
@@ -74,7 +74,7 @@ export const counters = atom<Counter[]>({
   effects: [mmkvPersistAtom('counters')],
 });
 
-export const myLists = atom<List[]>({
+export const OLD_myLists = atom<List[]>({
   key: 'myLists',
   default: [
     {
@@ -119,9 +119,69 @@ export const myLists = atom<List[]>({
   effects: [mmkvPersistAtom('myLists')],
 });
 
-export const archivedLists = atom<List[]>({
+export const myLists = atom<Map<string, List>>({
+  key: 'myLists',
+  default: new Map<string, List>([
+    [
+      '1',
+      {
+        id: '1',
+        label: 'Movies',
+        color: 'green',
+        numberOfActiveItems: 1,
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+    [
+      '2',
+      {
+        id: '2',
+        label: 'Shop List',
+        color: 'red',
+        numberOfActiveItems: 3,
+        groupName: 'Test',
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+    [
+      '3',
+      {
+        id: '3',
+        label: 'Gift Ideias',
+        color: '#7956BF',
+        numberOfActiveItems: 12,
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+    [
+      '4',
+      {
+        id: '4',
+        label: 'America',
+        color: 'red',
+        numberOfActiveItems: 10,
+        groupName: 'Travel',
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+    [
+      '5',
+      {
+        id: '5',
+        label: 'Europe',
+        color: 'blue',
+        numberOfActiveItems: 12,
+        groupName: 'Travel',
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+  ]),
+  effects: [mmkvPersistAtom('myLists')],
+});
+
+export const archivedLists = atom<Map<string, List>>({
   key: 'archivedLists',
-  default: [],
+  default: new Map<string, List>(),
   effects: [mmkvPersistAtom('archivedLists')],
 });
 

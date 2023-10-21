@@ -13,13 +13,13 @@ const compareBy =
   };
 
 export const mapListToDraggableItems = <T>(
-  list: T[],
+  list: Map<string, T>,
   groupProperty: keyof T,
   orderByProperty?: keyof T,
 ) => {
   const draggableList: DraggableItem<T>[] = [];
 
-  for (const item of list) {
+  for (const [_, item] of list) {
     const groupId =
       item[groupProperty] === undefined
         ? undefined
@@ -45,6 +45,7 @@ export const mapListToDraggableItems = <T>(
 export const mapDraggableItemsToList = <T extends object>(
   newOrderList: DraggableItem<T>[],
   groupIdProperty: keyof T,
+  idProperty: keyof T,
 ) => {
   for (let itemIndex in newOrderList) {
     const item = newOrderList[itemIndex];
@@ -65,7 +66,9 @@ export const mapDraggableItemsToList = <T extends object>(
     }
   }
 
-  return newOrderList.flatMap(item => item.data);
+  const flatMap = newOrderList.flatMap(item => item.data);
+
+  return flatMap.map<[string, T]>(x => [x[idProperty] as string, x]);
 };
 
 export const removeSubItem = <T>(list: DraggableItem<T>[], item: T) => {

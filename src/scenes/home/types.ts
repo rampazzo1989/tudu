@@ -16,7 +16,7 @@ export type List = {
   label: string;
   numberOfActiveItems: number;
   id: string;
-  tudus?: TuduItem[];
+  tudus?: Map<string, TuduItem>;
   color?: string;
   groupName?: string;
 };

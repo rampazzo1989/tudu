@@ -6,7 +6,6 @@ import {
   myLists,
 } from '../scenes/home/state';
 import {BuiltInList, List} from '../scenes/home/types';
-import {syncToStorage} from '../utils/state-utils';
 
 const useListStateHelper = () => {
   const [defaultLists, setDefaultLists] = useRecoilState(homeDefaultLists);
