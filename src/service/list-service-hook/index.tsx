@@ -4,7 +4,6 @@ import {
   LinkedTuduItem,
   List,
   ListOrigin,
-  TuduItem,
 } from '../../scenes/home/types';
 import {
   myLists,
@@ -47,10 +46,7 @@ const useListService = () => {
     const listState = getState(origin);
 
     if (!listState.has(id)) {
-      throw new ItemNotFoundError("The list id couldn't be found.", {
-        listId: id,
-        origin,
-      });
+      return;
     }
     const foundList = listState.get(id)!;
 
@@ -67,7 +63,7 @@ const useListService = () => {
 
     if (!list.tudus.has(id)) {
       throw new ItemNotFoundError("The tudu id couldn't be found.", {
-        listId: id,
+        listId: listId,
         tuduId: id,
         origin,
       });
@@ -79,15 +75,52 @@ const useListService = () => {
     return linkedTudu;
   };
 
-  const saveTudu = (tudu: TuduItem, listId: string) => {};
+  const saveTudu = (tudu: LinkedTuduItem) => {
+    // Can only save tudus if the list is not archived
+    setCustomLists(previousState => {
+      const foundList = previousState.get(tudu.listId);
+      if (!foundList) {
+        throw new ItemNotFoundError("The list couldn't be found.", tudu);
+      }
+      const newTuduMap = new Map(foundList.tudus);
+      newTuduMap.set(tudu.data.id, tudu.data);
+      const newList = {...foundList, tudus: newTuduMap};
 
-  const saveList = (list: List) => {};
+      const newState = new Map(previousState);
+      newState.set(newList.id, newList);
 
-  const archiveList = (list: List) => {
-    archiveSetter(x => [...x, list]);
+      return newState;
+    });
+  };
 
-    customListsSetter(x => {
-      return removeFromList(x, [list]);
+  const saveList = (list: LinkedListItem) => {
+    // Can only edit list if it's not archived
+    setCustomLists(previousState => {
+      const newState = new Map(previousState);
+      newState.set(list.data.id, list.data);
+
+      return newState;
+    });
+  };
+
+  const archiveList = (list: LinkedListItem) => {
+    const foundList = customLists.get(list.data.id);
+    if (!foundList) {
+      throw new ItemNotFoundError("The list couldn't be found.", list);
+    }
+
+    setArchivedLists(previousState => {
+      const newState = new Map(previousState);
+      newState.set(list.data.id, list.data);
+
+      return newState;
+    });
+
+    setCustomLists(previousState => {
+      const newState = new Map(previousState);
+      newState.delete(list.data.id);
+
+      return newState;
     });
   };
 
@@ -98,6 +131,7 @@ const useListService = () => {
     getTuduById,
     saveTudu,
     saveList,
+    archiveList,
   };
 };
 

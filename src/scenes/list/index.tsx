@@ -2,7 +2,7 @@ import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {DraxProvider} from 'react-native-drax';
 import {Page} from '../../components/page';
 import {DraggablePageContent} from '../../components/draggable-page-content';
-import {TuduItem} from '../home/types';
+import {LinkedListItem, LinkedTuduItem, TuduItem} from '../home/types';
 import {ListHeader} from './components/list-header';
 import {ListPageProps} from './types';
 import {TudusList} from './components/tudus-list';
@@ -22,6 +22,7 @@ import {FloatingActionButtonRef} from '../../components/floating-action-button/t
 import {CheckMarkIconActionAnimation} from '../../components/animated-icons/check-mark';
 import {NewTuduModal} from './components/new-tudu-modal';
 import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
+import {useListService} from '../../service/list-service-hook';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
@@ -29,8 +30,9 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduItem>();
 
-  const {updateList, getListById} = useListStateHelper();
   const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+
+  const {getListById, saveList} = useListService();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -41,18 +43,33 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, [getListById, listId]);
 
   const draggableTudus = useMemo(() => {
-    return list?.tudus?.map(tudu => new DraggableItem([tudu])) ?? [];
-  }, [list?.tudus]);
+    const tuduList = list?.data.tudus;
+    if (!tuduList) {
+      return [];
+    }
+    return [...tuduList].map(tudu => new DraggableItem([tudu])) ?? [];
+  }, [list?.data.tudus]);
 
   const setTudus = useCallback(
-    (draggable: DraggableItem<TuduItem>[]) => {
+    (draggable: DraggableItem<LinkedTuduItem>[]) => {
       if (!list) {
         return;
       }
-      const newList = {...list, tudus: draggable.flatMap(x => x.data)};
-      updateList(newList);
+      const newTuduMap = new Map<string, TuduItem>(
+        draggable
+          .flatMap(x => x.data)
+          .map<[string, TuduItem]>(x => [x.data.id, x.data]),
+      );
+      const newList: LinkedListItem = {
+        ...list,
+        data: {
+          ...list.data,
+          tudus: newTuduMap,
+        },
+      };
+      saveList(newList);
     },
-    [list, updateList],
+    [list, saveList],
   );
 
   const handleListDragStart = useCallback(() => {

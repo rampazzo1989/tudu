@@ -94,7 +94,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     <Page>
       <HomeHeader />
       <DraxProvider>
-        <DraggableContextProvider<List>
+        <DraggableContextProvider<LinkedListItem>
           data={groupedCustomLists}
           onSetData={handleSetCustomLists}
           onDragStart={handleListDragStart}
