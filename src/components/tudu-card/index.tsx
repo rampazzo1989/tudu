@@ -5,7 +5,7 @@ import {Card, CheckAndTextContainer, Label} from './styles';
 import {SwipeableTuduCard} from './swipeable-tudu-card';
 import {TuduCardProps} from './types';
 
-const TuduCard = memo<TuduCardProps>(({data, onPress, onDelete}) => {
+const TuduCard = memo<TuduCardProps>(({data, onPress, onDelete, onEdit}) => {
   const [internalDone, setInternalDone] = useState(data.done);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const TuduCard = memo<TuduCardProps>(({data, onPress, onDelete}) => {
       <SwipeableTuduCard
         done={internalDone}
         onDelete={onDelete}
-        onEdit={() => console.log('Edit')}
+        onEdit={onEdit}
         onSendOrRemoveFromToday={() => console.log('Today')}>
         <CheckAndTextContainer done={data.done}>
           <Label done={internalDone}>{data.label}</Label>

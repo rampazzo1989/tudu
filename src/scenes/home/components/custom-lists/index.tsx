@@ -168,12 +168,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             } else {
               const onlyItem = item.data[0];
               return (
-                <DraggableView
-                  key={`${onlyItem.label}${index}`}
-                  payload={item}
-                  enteringAnimation={enteringAnimation
-                    ?.duration(200)
-                    .delay(index * 50)}>
+                <DraggableView key={`${onlyItem.label}${index}`} payload={item}>
                   <EditableListCard
                     Icon={ListDefaultIcon}
                     label={onlyItem.label}

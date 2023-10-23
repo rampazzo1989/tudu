@@ -42,7 +42,9 @@
     "editList": "Edit list",
     "newCounter": "Create new counter",
     "editCounter": "Edit counter",
-    "newGroup": "Create new group"
+    "newGroup": "Create new group",
+    "newTudu": "Create new tudú",
+    "editTudu": "Edit tudú"
   },
   "inputLabels": {
     "description": "Description",

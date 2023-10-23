@@ -2,13 +2,13 @@ import {useCallback, useContext, useEffect} from 'react';
 import {LayoutChangeEvent} from 'react-native';
 import {DraxDragWithReceiverEventData} from 'react-native-drax';
 import {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import {useRecoilValue} from 'recoil';
 import {isEmpty} from '../../../utils/general-utils';
 import {DraggableContext} from '../draggable-context';
 import {DraggableItem} from '../draggable-context/types';
 import {castItem, removeSubItem} from '../draggable-utils';
+import {draggedItemHeight} from '../state';
 import {UseDraggableViewHooksProps} from './types';
-
-const PLACEHOLDER_HEIGHT = 50;
 
 const useDraggableViewHooks = <T>({
   payload,
@@ -16,13 +16,15 @@ const useDraggableViewHooks = <T>({
 }: UseDraggableViewHooksProps<T>) => {
   const draggableContext = useContext(DraggableContext);
 
+  const placeholderHeight = useRecoilValue(draggedItemHeight);
+
   const sortReceiverHeight = useSharedValue<number | undefined>(undefined);
   const isReceivingNestedItem = useSharedValue(false);
   const itemHeight = useSharedValue<number | undefined>(undefined);
 
   const showPlaceholder = useCallback(() => {
-    sortReceiverHeight.value = (itemHeight.value ?? 0) + PLACEHOLDER_HEIGHT;
-  }, [itemHeight.value, sortReceiverHeight]);
+    sortReceiverHeight.value = (itemHeight.value ?? 0) + placeholderHeight;
+  }, [itemHeight.value, placeholderHeight, sortReceiverHeight]);
 
   const hidePlaceholder = useCallback(() => {
     sortReceiverHeight.value = itemHeight.value;
@@ -127,7 +129,7 @@ const useDraggableViewHooks = <T>({
   const handleContainerReceiveDragOver = useCallback(
     (data: DraxDragWithReceiverEventData) => {
       if (isReceiver) {
-        if (data.receiver.receiveOffset.y > PLACEHOLDER_HEIGHT) {
+        if (data.receiver.receiveOffset.y > placeholderHeight) {
           isReceivingNestedItem.value = true;
           hidePlaceholder();
         } else {
@@ -145,6 +147,7 @@ const useDraggableViewHooks = <T>({
       isReceiver,
       isReceivingNestedItem,
       payload,
+      placeholderHeight,
       showPlaceholder,
     ],
   );

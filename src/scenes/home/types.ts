@@ -9,13 +9,14 @@ export type {HomePageProps};
 export type TuduItem = {
   label: string;
   done: boolean;
+  id: string;
 };
 
 export type List = {
   label: string;
   numberOfActiveItems: number;
   id: string;
-  tudus?: TuduItem[];
+  tudus?: Map<string, TuduItem>;
   color?: string;
   groupName?: string;
 };

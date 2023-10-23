@@ -45,8 +45,13 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   const handleSetCustomLists = useCallback(
     (newOrderList: DraggableItem<List>[]) => {
-      const mappedList = mapDraggableItemsToList(newOrderList, 'groupName');
-      setCustomLists(mappedList);
+      const mappedList = mapDraggableItemsToList(
+        newOrderList,
+        'groupName',
+        'id',
+      );
+      const map = new Map<string, List>(mappedList);
+      setCustomLists(map);
     },
     [setCustomLists],
   );

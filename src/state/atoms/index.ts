@@ -13,3 +13,8 @@ export const currentlyOpenSwipeableRef = atom<React.RefObject<Swipeable>>({
   default: undefined,
   dangerouslyAllowMutability: true,
 });
+
+export const toastSpan = atom<number>({
+  key: 'toastSpan',
+  default: 0,
+});

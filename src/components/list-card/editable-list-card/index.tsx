@@ -1,9 +1,6 @@
 import React, {memo, useMemo} from 'react';
 import {NumberOfActiveItems} from '..';
-import {
-  getEmojiFromBeginning,
-  removeEmojiFromBeginning,
-} from '../../../utils/emoji-utils';
+import {getFirstEmoji, trimFirstEmoji} from '../../../utils/emoji-utils';
 import {ControlComponentContainer, IconLabelContainer, Label} from '../styles';
 import {SwipeableListCard} from '../swipeable-list-card';
 import {EditableListCardProps} from '../types';
@@ -23,12 +20,9 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
     onDelete,
     onEdit,
   }) => {
-    const labelEmoji = useMemo(() => getEmojiFromBeginning(label), [label]);
+    const labelEmoji = useMemo(() => getFirstEmoji(label.trim()), [label]);
 
-    const trimmedLabel = useMemo(
-      () => removeEmojiFromBeginning(label),
-      [label],
-    );
+    const trimmedLabel = useMemo(() => trimFirstEmoji(label.trim()), [label]);
 
     return (
       <ListCardContainer

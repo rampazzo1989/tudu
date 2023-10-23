@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo, useRef} from 'react';
+import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {DraxProvider} from 'react-native-drax';
 import {Page} from '../../components/page';
 import {DraggablePageContent} from '../../components/draggable-page-content';
@@ -16,16 +16,21 @@ import {
   AnimatedIconRef,
   ForwardedRefAnimatedIcon,
 } from '../../components/animated-icons/animated-icon/types';
-import {Dimensions, Vibration, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Dimensions, View} from 'react-native';
 import {ListActionButton} from './components/list-action-button';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
+import {CheckMarkIconActionAnimation} from '../../components/animated-icons/check-mark';
+import {NewTuduModal} from './components/new-tudu-modal';
+import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
+  const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
+  const [editingTudu, setEditingTudu] = useState<TuduItem>();
 
   const {updateList, getListById} = useListStateHelper();
+  const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -44,10 +49,8 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       if (!list) {
         return;
       }
-
-      list.tudus = draggable.flatMap(x => x.data);
-
-      updateList(list);
+      const newList = {...list, tudus: draggable.flatMap(x => x.data)};
+      updateList(newList);
     },
     [list, updateList],
   );
@@ -59,7 +62,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const handleListCompleted = useCallback(() => {
     cheersRef.current?.play();
     RNReactNativeHapticFeedback.trigger('notificationSuccess');
-    // Vibration.vibrate(600);
+    actionButtonRef.current?.animateThisIcon(CheckMarkIconActionAnimation);
   }, []);
 
   const handleTuduPress = useCallback(
@@ -67,11 +70,22 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       if (!list) {
         return;
       }
-      tudu.done = !tudu.done;
 
-      updateList(list);
+      const newTudu = {...tudu, done: !tudu.done};
+      const tuduIndex = list.tudus?.findIndex(x => x.id === newTudu.id);
+      const newTuduList = list.tudus?.slice();
 
-      const allDone = !!list.tudus?.every(x => x.done);
+      if (tuduIndex === undefined || tuduIndex < 0 || !newTuduList) {
+        return;
+      }
+
+      newTuduList.splice(tuduIndex, 1, newTudu);
+
+      const newList = {...list, tudus: newTuduList};
+
+      updateList(newList);
+
+      const allDone = !!newList.tudus?.every(x => x.done);
       if (allDone) {
         handleListCompleted();
       }
@@ -117,10 +131,35 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
               <TudusList
                 onTuduPress={handleTuduPress}
                 animateIcon={animateThisIcon}
+                onEditPress={tudu => {
+                  setEditingTudu(tudu);
+                  setNewTuduPopupVisible(true);
+                }}
               />
             )}
           </DraggablePageContent>
-          <ListActionButton ref={actionButtonRef} />
+          {/* <NewListModal
+            visible={editModalVisible}
+            editingList={editingList}
+            onRequestClose={() => {
+              setEditModalVisible(false);
+              setEditingList(undefined);
+              closeCurrentlyOpenSwipeable();
+            }}
+          /> */}
+          <NewTuduModal
+            visible={newTuduPopupVisible}
+            onRequestClose={() => {
+              setNewTuduPopupVisible(false);
+              setEditingTudu(undefined);
+              closeCurrentlyOpenSwipeable();
+            }}
+            editingTudu={editingTudu}
+          />
+          <ListActionButton
+            ref={actionButtonRef}
+            onInsertTuduPress={() => setNewTuduPopupVisible(true)}
+          />
         </DraggableContextProvider>
       </DraxProvider>
     </Page>

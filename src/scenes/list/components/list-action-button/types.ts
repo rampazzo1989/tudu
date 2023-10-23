@@ -1,1 +1,3 @@
-export type ListActionButtonProps = {};
+export type ListActionButtonProps = {
+  onInsertTuduPress: () => void;
+};

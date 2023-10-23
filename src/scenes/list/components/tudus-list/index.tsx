@@ -17,7 +17,6 @@ import {
 } from '../../../../modules/draggable/draggable-context/types';
 import {
   deleteItem,
-  insertNewItem,
   refreshListState,
 } from '../../../../modules/draggable/draggable-utils';
 import {DraggableView} from '../../../../modules/draggable/draggable-view';
@@ -28,15 +27,15 @@ import Toast from 'react-native-toast-message';
 import {showItemDeletedToast} from '../../../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
+import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
 
 const TudusList: React.FC<TudusListProps> = memo(
-  ({onTuduPress, animateIcon}) => {
+  ({onTuduPress, onEditPress, animateIcon}) => {
     const draggableContext =
       useContext<DraggableContextType<TuduItem>>(DraggableContext);
     const [enteringAnimation, setEnteringAnimation] = useState<
       typeof SlideInRight | undefined
     >(() => SlideInRight);
-
     const {t} = useTranslation();
 
     useEffect(() => {
@@ -96,6 +95,15 @@ const TudusList: React.FC<TudusListProps> = memo(
       ],
     );
 
+    const handleEditGenerator = useCallback(
+      (editingItem: DraggableItem<TuduItem>) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          onEditPress(editingItem.data[0]);
+          swipeableRef.current?.closeOptions();
+        },
+      [onEditPress],
+    );
+
     const getTuduList = useMemo(() => {
       const {data} = draggableContext;
       const indexedTudu = data.map((x, index) => ({
@@ -126,6 +134,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                 data={tudu}
                 onPress={handleTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.x)}
+                onEdit={handleEditGenerator(draggableTudu.x)}
               />
             </Animated.View>
           </DraggableView>
@@ -147,6 +156,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                 data={tudu}
                 onPress={onTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.x)}
+                onEdit={handleEditGenerator(draggableTudu.x)}
               />
             </Animated.View>
           </DraggableView>
@@ -165,6 +175,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       enteringAnimation,
       getSectionTitle,
       handleDeleteGenerator,
+      handleEditGenerator,
       handleTuduPress,
       onTuduPress,
     ]);

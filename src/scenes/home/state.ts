@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import {atom, selector} from 'recoil';
 import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
-import {Counter, BuiltInList, List} from './types';
+import {Counter, BuiltInList, List, TuduItem} from './types';
 
 export const homeDefaultLists = atom<BuiltInList[]>({
   key: 'homeDefaultLists',
@@ -13,14 +13,15 @@ export const homeDefaultLists = atom<BuiltInList[]>({
       isHighlighted: true,
       numberOfActiveItems: 0,
       tudus: [
-        {label: 'Do 50 pushups', done: false},
-        {label: 'Do 30 situps', done: false},
-        {label: 'Do 20 abs', done: false},
-        {label: 'Do 40 lombar abs', done: false},
+        {label: 'Do 50 pushups', done: false, id: '1'},
+        {label: 'Do 30 situps', done: false, id: '2'},
+        {label: 'Do 20 abs', done: false, id: '3'},
+        {label: 'Do 40 lombar abs', done: false, id: '4'},
         {
           label:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed viverra nunc. Praesent lobortis arcu augue, sit amet luctus magna congue eu. Nullam interdum nulla sed consectetur eleifend. Donec pretium sem dui, non semper turpis cursus eget. Proin vel arcu libero. Vestibulum mattis lacus leo, eu suscipit sem molestie a. ',
           done: false,
+          id: '5',
         },
       ],
     },
@@ -73,7 +74,7 @@ export const counters = atom<Counter[]>({
   effects: [mmkvPersistAtom('counters')],
 });
 
-export const myLists = atom<List[]>({
+export const OLD_myLists = atom<List[]>({
   key: 'myLists',
   default: [
     {
@@ -81,6 +82,7 @@ export const myLists = atom<List[]>({
       label: 'Movies',
       color: 'green',
       numberOfActiveItems: 1,
+      tudus: [],
     },
     {
       id: '2',
@@ -88,12 +90,14 @@ export const myLists = atom<List[]>({
       color: 'red',
       numberOfActiveItems: 3,
       groupName: 'Test',
+      tudus: [],
     },
     {
       id: '3',
       label: 'Gift Ideias',
       color: '#7956BF',
       numberOfActiveItems: 12,
+      tudus: [],
     },
     {
       id: '4',
@@ -101,6 +105,7 @@ export const myLists = atom<List[]>({
       color: 'red',
       numberOfActiveItems: 10,
       groupName: 'Travel',
+      tudus: [],
     },
     {
       id: '5',
@@ -108,14 +113,75 @@ export const myLists = atom<List[]>({
       color: 'blue',
       numberOfActiveItems: 12,
       groupName: 'Travel',
+      tudus: [],
     },
   ],
   effects: [mmkvPersistAtom('myLists')],
 });
 
-export const archivedLists = atom<List[]>({
+export const myLists = atom<Map<string, List>>({
+  key: 'myLists',
+  default: new Map<string, List>([
+    [
+      '1',
+      {
+        id: '1',
+        label: 'Movies',
+        color: 'green',
+        numberOfActiveItems: 1,
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+    [
+      '2',
+      {
+        id: '2',
+        label: 'Shop List',
+        color: 'red',
+        numberOfActiveItems: 3,
+        groupName: 'Test',
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+    [
+      '3',
+      {
+        id: '3',
+        label: 'Gift Ideias',
+        color: '#7956BF',
+        numberOfActiveItems: 12,
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+    [
+      '4',
+      {
+        id: '4',
+        label: 'America',
+        color: 'red',
+        numberOfActiveItems: 10,
+        groupName: 'Travel',
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+    [
+      '5',
+      {
+        id: '5',
+        label: 'Europe',
+        color: 'blue',
+        numberOfActiveItems: 12,
+        groupName: 'Travel',
+        tudus: new Map<string, TuduItem>(),
+      },
+    ],
+  ]),
+  effects: [mmkvPersistAtom('myLists')],
+});
+
+export const archivedLists = atom<Map<string, List>>({
   key: 'archivedLists',
-  default: [],
+  default: new Map<string, List>(),
   effects: [mmkvPersistAtom('archivedLists')],
 });
 

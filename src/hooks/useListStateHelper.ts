@@ -6,7 +6,6 @@ import {
   myLists,
 } from '../scenes/home/state';
 import {BuiltInList, List} from '../scenes/home/types';
-import {syncToStorage} from '../utils/state-utils';
 
 const useListStateHelper = () => {
   const [defaultLists, setDefaultLists] = useRecoilState(homeDefaultLists);
@@ -36,18 +35,33 @@ const useListStateHelper = () => {
 
   const updateList = useCallback(
     (list: BuiltInList | List) => {
-      const isDefaultList = defaultLists.some(x => x.id === list.id);
-      const isCustomList = customLists.some(x => x.id === list.id);
-      const isArchivedList = archivedLists.find(x => x.id === list.id);
+      const isDefaultList = defaultLists.findIndex(x => x.id === list.id);
+      const isCustomList = customLists.findIndex(x => x.id === list.id);
+      const isArchivedList = archivedLists.findIndex(x => x.id === list.id);
 
-      if (isDefaultList) {
-        return syncToStorage(setDefaultLists);
+      if (isDefaultList >= 0) {
+        // return syncToStorage(setDefaultLists);
+        setDefaultLists(x => {
+          const newList = x.slice();
+          newList.splice(isDefaultList, 1, list as BuiltInList);
+          return newList;
+        });
       }
-      if (isCustomList) {
-        return syncToStorage(setCustomLists);
+      if (isCustomList >= 0) {
+        // return syncToStorage(setCustomLists);
+        setCustomLists(x => {
+          const newList = x.slice();
+          newList.splice(isCustomList, 1, list);
+          return newList;
+        });
       }
-      if (isArchivedList) {
-        return syncToStorage(setArchivedLists);
+      if (isArchivedList >= 0) {
+        // return syncToStorage(setArchivedLists);
+        setArchivedLists(x => {
+          const newList = x.slice();
+          newList.splice(isArchivedList, 1, list);
+          return newList;
+        });
       }
     },
     [

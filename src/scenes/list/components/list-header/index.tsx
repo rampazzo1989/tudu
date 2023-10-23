@@ -7,10 +7,7 @@ import {ContentRow, Emoji, styles, Title, TitleContainer} from './styles';
 import {ListHeaderProps} from './types';
 import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {useTheme} from 'styled-components/native';
-import {
-  getEmojiFromBeginning,
-  removeEmojiFromBeginning,
-} from '../../../../utils/emoji-utils';
+import {getFirstEmoji, trimFirstEmoji} from '../../../../utils/emoji-utils';
 import {ListIcons} from '../../constants';
 
 const ListHeader: React.FC<ListHeaderProps> = memo(
@@ -24,12 +21,12 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
     }, []);
 
     const titleEmoji = useMemo(
-      () => getEmojiFromBeginning(listData?.label ?? ''),
+      () => getFirstEmoji(listData?.label?.trim() ?? ''),
       [listData?.label],
     );
 
     const textWithNoFirstEmoji = useMemo(
-      () => removeEmojiFromBeginning(listData?.label ?? ''),
+      () => trimFirstEmoji(listData?.label?.trim() ?? ''),
       [listData?.label],
     );
 
