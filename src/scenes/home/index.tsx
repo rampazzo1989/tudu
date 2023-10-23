@@ -1,10 +1,10 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {BuiltInList, HomePageProps, List} from './types';
+import {BuiltInList, HomePageProps, LinkedListItem, List} from './types';
 import {DraggablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
 import {DefaultLists} from './components/default-lists';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import {counters, homeDefaultLists, myLists} from './state';
+import {useRecoilValue} from 'recoil';
+import {counters, homeDefaultLists} from './state';
 import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
 import {
@@ -29,40 +29,39 @@ import {FloatingActionButtonRef} from '../../components/floating-action-button/t
 import {HomeActionButton} from './components/home-action-button';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated-icon/types';
+import {useListService} from '../../service/list-service-hook';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const lists = useRecoilValue(homeDefaultLists);
-  const [customLists, setCustomLists] = useRecoilState(myLists);
   const counterList = useRecoilValue(counters);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const {t} = useTranslation();
   const theme = useTheme();
 
+  const {getAllLists, saveAllLists} = useListService();
+
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
     actionButtonRef.current?.animateThisIcon(Icon);
   }, []);
 
   const handleSetCustomLists = useCallback(
-    (newOrderList: DraggableItem<List>[]) => {
+    (newOrderList: DraggableItem<LinkedListItem>[]) => {
       const mappedList = mapDraggableItemsToList(
         newOrderList,
-        'groupName',
-        'id',
+        (list: LinkedListItem, groupName) => (list.data.groupName = groupName),
       );
-      const map = new Map<string, List>(mappedList);
-      setCustomLists(map);
+      saveAllLists(mappedList);
     },
-    [setCustomLists],
+    [saveAllLists],
   );
 
   const groupedCustomLists = useMemo(() => {
     return mapListToDraggableItems(
-      customLists,
-      'groupName',
-      'label',
-    ) as DraggableItem<List>[];
-  }, [customLists]);
+      getAllLists(),
+      (list: LinkedListItem) => list.data.groupName,
+    ) as DraggableItem<LinkedListItem>[];
+  }, [getAllLists]);
 
   const handleListDragStart = useCallback(() => {
     RNReactNativeHapticFeedback.trigger('soft');

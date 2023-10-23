@@ -12,14 +12,44 @@ export type TuduItem = {
   id: string;
 };
 
+// export type LinkedTuduItem = {
+//   data: TuduItem;
+//   listId: string;
+//   origin: ListOrigin;
+// };
+
+export class LinkedTuduItem {
+  data: TuduItem;
+  listId: string;
+  origin: ListOrigin;
+
+  constructor(data: TuduItem, listId: string, origin: ListOrigin = 'default') {
+    this.data = data;
+    this.listId = listId;
+    this.origin = origin;
+  }
+}
+
 export type List = {
   label: string;
   numberOfActiveItems: number;
   id: string;
-  tudus?: Map<string, TuduItem>;
+  tudus: Map<string, TuduItem>;
   color?: string;
   groupName?: string;
 };
+
+export type ListOrigin = 'archived' | 'default';
+
+export class LinkedListItem {
+  data: List;
+  origin: ListOrigin;
+
+  constructor(data: List, origin: ListOrigin = 'default') {
+    this.data = data;
+    this.origin = origin;
+  }
+}
 
 export type BuiltInList = List & {
   icon: ListIconType;

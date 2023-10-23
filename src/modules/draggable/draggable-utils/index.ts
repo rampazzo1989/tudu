@@ -13,17 +13,14 @@ const compareBy =
   };
 
 export const mapListToDraggableItems = <T>(
-  list: Map<string, T>,
-  groupProperty: keyof T,
+  list: T[],
+  groupPropertyExtractor: (obj: T) => string | undefined,
   orderByProperty?: keyof T,
 ) => {
   const draggableList: DraggableItem<T>[] = [];
 
-  for (const [_, item] of list) {
-    const groupId =
-      item[groupProperty] === undefined
-        ? undefined
-        : String(item[groupProperty]);
+  for (const item of list) {
+    const groupId = groupPropertyExtractor(item);
     if (groupId) {
       const alreadyAdded = draggableList.find(x => x.groupId === groupId);
       if (alreadyAdded) {
@@ -44,8 +41,7 @@ export const mapListToDraggableItems = <T>(
 
 export const mapDraggableItemsToList = <T extends object>(
   newOrderList: DraggableItem<T>[],
-  groupIdProperty: keyof T,
-  idProperty: keyof T,
+  groupPropertySetter: (obj: T, groupId: string | undefined) => void,
 ) => {
   for (let itemIndex in newOrderList) {
     const item = newOrderList[itemIndex];
@@ -54,21 +50,18 @@ export const mapDraggableItemsToList = <T extends object>(
       for (let subItemIndex in item.data) {
         const subItem = item.data[subItemIndex];
         const cloneItem = {...subItem};
-        cloneItem[groupIdProperty] = item.groupId as T[keyof T];
+        groupPropertySetter(cloneItem, item.groupId);
         item.data[subItemIndex] = cloneItem;
       }
     } else {
       item.groupId = undefined;
       const onlyItem = {...item.data[0]};
-      onlyItem[groupIdProperty] = undefined as T[keyof T];
-
+      groupPropertySetter(onlyItem, undefined);
       item.data = [onlyItem];
     }
   }
 
-  const flatMap = newOrderList.flatMap(item => item.data);
-
-  return flatMap.map<[string, T]>(x => [x[idProperty] as string, x]);
+  return newOrderList.flatMap(item => item.data);
 };
 
 export const removeSubItem = <T>(list: DraggableItem<T>[], item: T) => {
