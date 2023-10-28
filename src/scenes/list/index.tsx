@@ -2,13 +2,16 @@ import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {DraxProvider} from 'react-native-drax';
 import {Page} from '../../components/page';
 import {DraggablePageContent} from '../../components/draggable-page-content';
-import {LinkedListItem, LinkedTuduItem, TuduItem} from '../home/types';
+import {
+  LinkedListViewModel,
+  LinkedTuduViewModel,
+  TuduItem,
+} from '../home/types';
 import {ListHeader} from './components/list-header';
 import {ListPageProps} from './types';
 import {TudusList} from './components/tudus-list';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
-import {useListStateHelper} from '../../hooks/useListStateHelper';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {styles} from './styles';
 import {CheersAnimation} from '../../components/animated-components/cheers';
@@ -32,7 +35,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
 
   const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
-  const {getListById, saveList} = useListService();
+  const {getListById, saveList, saveTudu} = useListService();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -43,30 +46,21 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, [getListById, listId]);
 
   const draggableTudus = useMemo(() => {
-    const tuduList = list?.data.tudus;
-    if (!tuduList) {
+    if (!list?.tudus) {
       return [];
     }
-    return [...tuduList].map(tudu => new DraggableItem([tudu])) ?? [];
-  }, [list?.data.tudus]);
+    return [...list.tudus].map(tudu => new DraggableItem([tudu])) ?? [];
+  }, [list]);
 
   const setTudus = useCallback(
-    (draggable: DraggableItem<LinkedTuduItem>[]) => {
+    (draggable: DraggableItem<LinkedTuduViewModel>[]) => {
       if (!list) {
         return;
       }
-      const newTuduMap = new Map<string, TuduItem>(
-        draggable
-          .flatMap(x => x.data)
-          .map<[string, TuduItem]>(x => [x.data.id, x.data]),
-      );
-      const newList: LinkedListItem = {
-        ...list,
-        data: {
-          ...list.data,
-          tudus: newTuduMap,
-        },
-      };
+
+      const newTuduList = draggable.flatMap(x => x.data);
+      const newList = new LinkedListViewModel(list.mapBack(), list.origin);
+      newList.tudus = newTuduList;
       saveList(newList);
     },
     [list, saveList],
@@ -83,31 +77,23 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, []);
 
   const handleTuduPress = useCallback(
-    (tudu: TuduItem) => {
+    (tudu: LinkedTuduViewModel) => {
       if (!list) {
         return;
       }
 
-      const newTudu = {...tudu, done: !tudu.done};
-      const tuduIndex = list.tudus?.findIndex(x => x.id === newTudu.id);
-      const newTuduList = list.tudus?.slice();
+      tudu.done = !tudu.done;
 
-      if (tuduIndex === undefined || tuduIndex < 0 || !newTuduList) {
-        return;
-      }
+      saveTudu(tudu);
 
-      newTuduList.splice(tuduIndex, 1, newTudu);
-
-      const newList = {...list, tudus: newTuduList};
-
-      updateList(newList);
-
-      const allDone = !!newList.tudus?.every(x => x.done);
+      const allDone = !!list.tudus
+        ?.filter(x => x.id !== tudu.id)
+        .every(x => x.done);
       if (allDone) {
         handleListCompleted();
       }
     },
-    [handleListCompleted, list, updateList],
+    [handleListCompleted, list, saveTudu],
   );
 
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {

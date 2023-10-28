@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {BuiltInList, HomePageProps, LinkedListItem, List} from './types';
+import {BuiltInList, HomePageProps, LinkedListViewModel, List} from './types';
 import {DraggablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
 import {DefaultLists} from './components/default-lists';
@@ -46,10 +46,11 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   }, []);
 
   const handleSetCustomLists = useCallback(
-    (newOrderList: DraggableItem<LinkedListItem>[]) => {
+    (newOrderList: DraggableItem<LinkedListViewModel>[]) => {
       const mappedList = mapDraggableItemsToList(
         newOrderList,
-        (list: LinkedListItem, groupName) => (list.data.groupName = groupName),
+        (list: LinkedListViewModel, groupName) =>
+          (list.data.groupName = groupName),
       );
       saveAllLists(mappedList);
     },
@@ -59,8 +60,8 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const groupedCustomLists = useMemo(() => {
     return mapListToDraggableItems(
       getAllLists(),
-      (list: LinkedListItem) => list.data.groupName,
-    ) as DraggableItem<LinkedListItem>[];
+      (list: LinkedListViewModel) => list.data.groupName,
+    ) as DraggableItem<LinkedListViewModel>[];
   }, [getAllLists]);
 
   const handleListDragStart = useCallback(() => {
@@ -94,7 +95,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     <Page>
       <HomeHeader />
       <DraxProvider>
-        <DraggableContextProvider<LinkedListItem>
+        <DraggableContextProvider<LinkedListViewModel>
           data={groupedCustomLists}
           onSetData={handleSetCustomLists}
           onDragStart={handleListDragStart}

@@ -1,7 +1,11 @@
 import {t} from 'i18next';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
-import {List} from '../../scenes/home/types';
+import {
+  LinkedListViewModel,
+  LinkedTuduViewModel,
+  List,
+} from '../../scenes/home/types';
 import {SetterOrUpdater} from 'recoil';
 import {removeFromList} from '../array-utils';
 
@@ -158,4 +162,12 @@ export const deleteList = (
 
     return cloneList;
   });
+};
+
+export const getTuduViewModelsFromList = (list: LinkedListViewModel) => {
+  const mappedTudus = [...list.data.tudus].map(
+    ([_, tudu]) => new LinkedTuduViewModel(tudu, list.data.id, list.origin),
+  );
+
+  return mappedTudus;
 };
