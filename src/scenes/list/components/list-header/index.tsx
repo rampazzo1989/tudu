@@ -2,13 +2,12 @@ import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
 import {FadeIn, ZoomInRotate} from 'react-native-reanimated';
 import {BackButton} from '../../../../components/back-button';
 import {Header} from '../../../../components/header';
-import {BuiltInList} from '../../../home/types';
 import {ContentRow, Emoji, styles, Title, TitleContainer} from './styles';
 import {ListHeaderProps} from './types';
 import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {useTheme} from 'styled-components/native';
 import {getFirstEmoji, trimFirstEmoji} from '../../../../utils/emoji-utils';
-import {ListIcons} from '../../constants';
+import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 
 const ListHeader: React.FC<ListHeaderProps> = memo(
   ({listData, onBackButtonPress}) => {
@@ -25,14 +24,10 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
       [listData?.label],
     );
 
-    const textWithNoFirstEmoji = useMemo(
+    const titleRemovedMainEmoji = useMemo(
       () => trimFirstEmoji(listData?.label?.trim() ?? ''),
       [listData?.label],
     );
-
-    const ListIcon = useMemo(() => {
-      return ListIcons[(listData as BuiltInList)?.icon ?? 'default'];
-    }, [listData]);
 
     return (
       <Header titleWidth={titleWidth}>
@@ -46,7 +41,7 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               }}
               numberOfLines={2}
               minimumFontScale={0.6}>
-              {textWithNoFirstEmoji}
+              {titleRemovedMainEmoji}
             </Title>
           </TitleContainer>
           {titleEmoji ? (
@@ -54,7 +49,7 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               {titleEmoji}
             </Emoji>
           ) : (
-            <ListIcon
+            <ListDefaultIcon
               size={70}
               ref={iconRef}
               style={styles.pageIcon}

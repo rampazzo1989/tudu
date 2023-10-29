@@ -16,7 +16,7 @@ import {
 import {useTranslation} from 'react-i18next';
 import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
 import Toast from 'react-native-toast-message';
-import {List} from '../../scenes/home/types';
+import {ListViewModel} from '../../scenes/home/types';
 import {refreshListState} from '../../modules/draggable/draggable-utils';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {getTypeItemOrGroup} from '../../utils/list-and-group-utils';
@@ -47,7 +47,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
 
     const handleUndoDeletePress = useCallback(() => {
       try {
-        const parsedOldState: DraggableItem<List>[] = JSON.parse(
+        const parsedOldState: DraggableItem<ListViewModel>[] = JSON.parse(
           previousStateData.current,
         );
 

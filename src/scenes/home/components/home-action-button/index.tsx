@@ -26,7 +26,7 @@ import {NewGroupModal} from '../../../group/components/new-group-modal';
 import {DraggableContextType} from '../../../../modules/draggable/draggable-context/types';
 import Toast from 'react-native-toast-message';
 import {getUngroupedItems} from '../../../../modules/draggable/draggable-utils';
-import {List} from '../../types';
+import {ListViewModel} from '../../types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 
 const HomeActionButton = memo(
@@ -37,7 +37,7 @@ const HomeActionButton = memo(
     const [newGroupPopupVisible, setNewGroupPopupVisible] = useState(false);
     const parentRef = useRef<FloatingActionButtonRef>(null);
     const draggableContext =
-      useContext<DraggableContextType<List>>(DraggableContext);
+      useContext<DraggableContextType<ListViewModel>>(DraggableContext);
     const {t} = useTranslation();
 
     const handleCreateNewList = useCallback(() => {

@@ -6,54 +6,44 @@ import {ListDefaultIcon} from '../../../../components/animated-icons/list-defaul
 import {Input} from './styles';
 import {PopupButton} from '../../../../components/popup-modal/types';
 import {NewListModalProps} from './types';
-import {List} from '../../../home/types';
-import {
-  getDuplicateProofListTitle,
-  insertList,
-  updateList,
-} from '../../../../utils/list-and-group-utils';
+import {ListViewModel} from '../../../home/types';
+import {getDuplicateProofListTitle} from '../../../../utils/list-and-group-utils';
 import {generateRandomHash} from '../../../../hooks/useHashGenerator';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import {
-  archivedLists as archivedListsState,
-  homeDefaultLists,
-  myLists,
-} from '../../../home/state';
+import {useListService} from '../../../../service/list-service-hook/useListService';
 
-const getNewEmptyList = (): List => ({
-  label: '',
-  numberOfActiveItems: 0,
-  id: generateRandomHash('New List'),
-  tudus: [],
-});
+const getNewEmptyList = () =>
+  new ListViewModel({
+    label: '',
+    numberOfActiveItems: 0,
+    id: generateRandomHash('New List'),
+    tudus: new Map(),
+  });
 
 const NewListModal: React.FC<NewListModalProps> = memo(
   ({visible, editingList, onRequestClose}) => {
-    const [internalListData, setInternalListData] = useState<List>(
+    const [internalListData, setInternalListData] = useState<ListViewModel>(
       editingList ?? getNewEmptyList(),
     );
-    const [customLists, setCustomLists] = useRecoilState(myLists);
-    const defaultLists = useRecoilValue(homeDefaultLists);
-    const archivedLists = useRecoilValue(archivedListsState);
+    const {getAllLists, saveList} = useListService();
 
     const {t} = useTranslation();
-
-    const allLists = useMemo(
-      () => [...customLists, ...defaultLists, ...archivedLists],
-      [archivedLists, customLists, defaultLists],
-    );
 
     const inputRef = useRef<TextInput>(null);
 
     const handleTextChange = useCallback((text: string) => {
-      setInternalListData(x => ({...x, label: text}));
+      setInternalListData(x => {
+        x.label = text;
+        return x;
+      });
     }, []);
 
     const isEditing = useMemo(() => !!editingList, [editingList]);
 
     const insertOrUpdateList = useCallback(
-      (newList: List, update: boolean) => {
+      (newList: ListViewModel) => {
         const isUpdatingTitle = newList.label !== editingList?.label;
+
+        const allLists = getAllLists();
 
         const duplicateProofListTitle = isUpdatingTitle
           ? getDuplicateProofListTitle(allLists, internalListData.label)
@@ -61,13 +51,9 @@ const NewListModal: React.FC<NewListModalProps> = memo(
 
         newList.label = duplicateProofListTitle;
 
-        if (update) {
-          updateList(setCustomLists, newList);
-        } else {
-          insertList(setCustomLists, newList);
-        }
+        saveList(newList);
       },
-      [allLists, editingList?.label, internalListData.label, setCustomLists],
+      [editingList?.label, getAllLists, internalListData.label, saveList],
     );
 
     const handleConfirmButtonPress = useCallback(() => {
@@ -78,12 +64,12 @@ const NewListModal: React.FC<NewListModalProps> = memo(
       const newList = {
         ...internalListData,
         label: internalListData.label.trim(),
-      };
+      } as ListViewModel;
 
-      insertOrUpdateList(newList, isEditing);
+      insertOrUpdateList(newList);
 
       onRequestClose();
-    }, [insertOrUpdateList, internalListData, isEditing, onRequestClose]);
+    }, [insertOrUpdateList, internalListData, onRequestClose]);
 
     const buttonsData = useMemo<PopupButton[]>(
       () => [

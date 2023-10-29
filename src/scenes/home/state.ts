@@ -1,55 +1,37 @@
 import i18next from 'i18next';
 import {atom, selector} from 'recoil';
 import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
-import {Counter, BuiltInList, List, TuduItem} from './types';
+import {Counter, SmartList, List, TuduItem} from './types';
 
-export const homeDefaultLists = atom<BuiltInList[]>({
+export const homeDefaultLists = atom<SmartList[]>({
   key: 'homeDefaultLists',
   default: [
     {
-      id: 'todayList',
+      id: 'today',
       icon: 'today',
       label: i18next.t('listTitles.today'),
       isHighlighted: true,
-      numberOfActiveItems: 0,
-      tudus: [
-        {label: 'Do 50 pushups', done: false, id: '1'},
-        {label: 'Do 30 situps', done: false, id: '2'},
-        {label: 'Do 20 abs', done: false, id: '3'},
-        {label: 'Do 40 lombar abs', done: false, id: '4'},
-        {
-          label:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed viverra nunc. Praesent lobortis arcu augue, sit amet luctus magna congue eu. Nullam interdum nulla sed consectetur eleifend. Donec pretium sem dui, non semper turpis cursus eget. Proin vel arcu libero. Vestibulum mattis lacus leo, eu suscipit sem molestie a. ',
-          done: false,
-          id: '5',
-        },
-      ],
     },
     {
-      id: 'allTasksList',
+      id: 'all lists',
       icon: 'default',
       label: i18next.t('listTitles.allTasks'),
       isHighlighted: false,
-      numberOfActiveItems: 0,
     },
     {
-      id: 'archivedListsList',
+      id: 'archived',
       icon: 'archived',
       label: i18next.t('listTitles.archived'),
       isHighlighted: false,
-      numberOfActiveItems: 0,
       navigateToPage: 'Archived',
     },
     {
-      id: 'starredList',
+      id: 'starred',
       icon: 'star',
       label: i18next.t('listTitles.starred'),
       isHighlighted: false,
-      numberOfActiveItems: 0,
     },
   ],
-  dangerouslyAllowMutability: true,
-  effects: [mmkvPersistAtom('homeDefaultLists')],
 });
 
 export const counters = atom<Counter[]>({

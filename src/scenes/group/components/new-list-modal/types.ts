@@ -1,7 +1,7 @@
-import {List} from '../../../home/types';
+import {ListViewModel} from '../../../home/types';
 
 export type NewListModalProps = {
   visible: boolean;
-  editingList?: List;
+  editingList?: ListViewModel;
   onRequestClose: () => void;
 };

@@ -14,7 +14,7 @@ import {UngroupIcon} from '../../../../../../components/animated-icons/ungroup-i
 import {showItemDeletedToast} from '../../../../../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
 import {DraggableItem} from '../../../../../../modules/draggable/draggable-context/types';
-import {List} from '../../../../types';
+import {ListViewModel} from '../../../../types';
 import Toast from 'react-native-toast-message';
 
 const GroupOptions: React.FC<GroupOptionsProps> = memo(
@@ -27,7 +27,7 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
 
     const handleUndoDeletePress = useCallback(() => {
       try {
-        const parsedOldState: DraggableItem<List>[] = JSON.parse(
+        const parsedOldState: DraggableItem<ListViewModel>[] = JSON.parse(
           previousStateData.current,
         );
 

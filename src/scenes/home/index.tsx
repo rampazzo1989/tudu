@@ -1,10 +1,10 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {BuiltInList, HomePageProps, List} from './types';
+import {HomePageProps, ListViewModel, SmartList} from './types';
 import {DraggablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
 import {DefaultLists} from './components/default-lists';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import {counters, homeDefaultLists, myLists} from './state';
+import {useRecoilValue} from 'recoil';
+import {counters, homeDefaultLists} from './state';
 import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
 import {
@@ -29,40 +29,39 @@ import {FloatingActionButtonRef} from '../../components/floating-action-button/t
 import {HomeActionButton} from './components/home-action-button';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated-icon/types';
+import {useListService} from '../../service/list-service-hook/useListService';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
-  const lists = useRecoilValue(homeDefaultLists);
-  const [customLists, setCustomLists] = useRecoilState(myLists);
+  const smartLists = useRecoilValue(homeDefaultLists);
   const counterList = useRecoilValue(counters);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const {t} = useTranslation();
   const theme = useTheme();
 
+  const {getAllLists, saveAllLists} = useListService();
+
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
     actionButtonRef.current?.animateThisIcon(Icon);
   }, []);
 
   const handleSetCustomLists = useCallback(
-    (newOrderList: DraggableItem<List>[]) => {
+    (newOrderList: DraggableItem<ListViewModel>[]) => {
       const mappedList = mapDraggableItemsToList(
         newOrderList,
-        'groupName',
-        'id',
+        (list: ListViewModel, groupName) => (list.groupName = groupName),
       );
-      const map = new Map<string, List>(mappedList);
-      setCustomLists(map);
+      saveAllLists(mappedList);
     },
-    [setCustomLists],
+    [saveAllLists],
   );
 
   const groupedCustomLists = useMemo(() => {
     return mapListToDraggableItems(
-      customLists,
-      'groupName',
-      'label',
-    ) as DraggableItem<List>[];
-  }, [customLists]);
+      getAllLists(),
+      (list: ListViewModel) => list.groupName,
+    ) as DraggableItem<ListViewModel>[];
+  }, [getAllLists]);
 
   const handleListDragStart = useCallback(() => {
     RNReactNativeHapticFeedback.trigger('soft');
@@ -74,28 +73,31 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   }, []);
 
   const handleListPress = useCallback(
-    (listData: List) => {
-      navigation.navigate('List', {listId: listData.label});
+    (listData: ListViewModel) => {
+      navigation.navigate('List', {listId: listData.id});
+    },
+    [navigation],
+  );
+
+  const handleSmartListPress = useCallback(
+    (listData: SmartList) => {
+      navigation.navigate(listData.navigateToPage, {listId: listData.id});
     },
     [navigation],
   );
 
   const handleDefaultListPress = useCallback(
-    (listData: BuiltInList) => {
-      if (listData.navigateToPage) {
-        navigation.navigate(listData.navigateToPage);
-      } else {
-        handleListPress(listData);
-      }
+    (listData: SmartList) => {
+      handleSmartListPress(listData);
     },
-    [handleListPress, navigation],
+    [handleSmartListPress],
   );
 
   return (
     <Page>
       <HomeHeader />
       <DraxProvider>
-        <DraggableContextProvider<List>
+        <DraggableContextProvider<ListViewModel>
           data={groupedCustomLists}
           onSetData={handleSetCustomLists}
           onDragStart={handleListDragStart}
@@ -105,7 +107,10 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContentContainer}
             scrollEnabled>
-            <DefaultLists lists={lists} onListPress={handleDefaultListPress} />
+            <DefaultLists
+              lists={smartLists}
+              onListPress={handleDefaultListPress}
+            />
             <SectionTitle title={t('sectionTitles.counters')} />
             <CountersList list={counterList} animateIcon={animateThisIcon} />
             {groupedCustomLists.length ? (

@@ -1,19 +1,19 @@
 import {ForwardedRefAnimatedIcon} from '../../../../components/animated-icons/animated-icon/types';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
 import {DraggableItem} from '../../../../modules/draggable/draggable-context/types';
-import {List} from '../../types';
+import {ListViewModel} from '../../types';
 
 export type ListGroupProps = {
-  groupData: DraggableItem<List>;
-  onListPress: (listData: List) => void;
+  groupData: DraggableItem<ListViewModel>;
+  onListPress: (listData: ListViewModel) => void;
   handleEditListGenerator: (
-    listOrDraggableList: DraggableItem<List> | List,
+    listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel,
   ) => () => void;
   handleArchiveGenerator: (
-    listOrDraggableList: DraggableItem<List> | List,
+    listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel,
   ) => (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   handleDeleteGenerator: (
-    listOrDraggableList: DraggableItem<List> | List,
+    listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel,
   ) => (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };

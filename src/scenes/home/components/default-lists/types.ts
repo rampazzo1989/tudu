@@ -1,6 +1,6 @@
-import {BuiltInList} from '../../types';
+import {SmartList} from '../../types';
 
 export type DefaultListsProps = {
-  lists: BuiltInList[];
-  onListPress: (listData: BuiltInList) => void;
+  lists: SmartList[];
+  onListPress: (listData: SmartList) => void;
 };

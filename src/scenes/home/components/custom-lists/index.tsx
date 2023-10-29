@@ -12,7 +12,6 @@ import {DraggableView} from '../../../../modules/draggable/draggable-view';
 import {ListGroupCard} from '../list-group-card';
 import {CustomListsProps} from './types';
 import {Container} from './styles';
-import {List} from '../../types';
 import {EditableListCard} from '../../../../components/list-card/editable-list-card';
 import {
   DraggableContextType,
@@ -20,13 +19,10 @@ import {
 } from '../../../../modules/draggable/draggable-context/types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 import {
-  archiveList,
   generateListAndGroupArchiveTitle,
   generateListAndGroupDeleteTitle,
 } from '../../../../utils/list-and-group-utils';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
-import {useSetRecoilState} from 'recoil';
-import {archivedLists, myLists} from '../../state';
 import {NewListModal} from '../../../group/components/new-list-modal';
 import {FolderAddIconActionAnimation} from '../../../../components/animated-icons/folder-add-icon';
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
@@ -36,18 +32,20 @@ import Toast from 'react-native-toast-message';
 import {refreshListState} from '../../../../modules/draggable/draggable-utils';
 import {showItemDeletedToast} from '../../../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
+import {ListViewModel} from '../../types';
+import {useListService} from '../../../../service/list-service-hook/useListService';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({onListPress, animateIcon}) => {
     const draggableContext =
-      useContext<DraggableContextType<List>>(DraggableContext);
-    const setArchivedLists = useSetRecoilState(archivedLists);
-    const setCustomLists = useSetRecoilState(myLists);
+      useContext<DraggableContextType<ListViewModel>>(DraggableContext);
 
     const [editModalVisible, setEditModalVisible] = useState(false);
-    const [editingList, setEditingList] = useState<List>();
+    const [editingList, setEditingList] = useState<ListViewModel>();
 
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+
+    const {archiveList} = useListService();
 
     const [enteringAnimation, setEnteringAnimation] = useState<
       typeof SlideInRight | undefined
@@ -60,7 +58,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     }, []);
 
     const listPressHandlerGenerator = useCallback(
-      (listData: List) => () => {
+      (listData: ListViewModel) => () => {
         onListPress(listData);
       },
       [onListPress],
@@ -70,7 +68,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
 
     const handleUndoDeletePress = useCallback(() => {
       try {
-        const parsedOldState: DraggableItem<List>[] = JSON.parse(
+        const parsedOldState: DraggableItem<ListViewModel>[] = JSON.parse(
           previousStateData.current,
         );
 
@@ -87,7 +85,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     }, [draggableContext.setData]);
 
     const handleDeleteGenerator = useCallback(
-      (listOrDraggableList: DraggableItem<List> | List) =>
+      (listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
           previousStateData.current = JSON.stringify(draggableContext.data);
           draggableContext.showConfirmationModal(
@@ -98,7 +96,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             () => {
               animateIcon?.(DeleteIconActionAnimation);
               showItemDeletedToast(
-                t('toast.itemDeleted', {itemType: 'List'}),
+                t('toast.itemDeleted', {itemType: t('toast.itemType.list')}),
                 handleUndoDeletePress,
               );
             },
@@ -108,18 +106,18 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     );
 
     const archive = useCallback(
-      (list: List) => {
-        archiveList(setArchivedLists, setCustomLists, list);
+      (list: ListViewModel) => {
+        archiveList(list);
         animateIcon?.(FolderAddIconActionAnimation);
       },
-      [animateIcon, setArchivedLists, setCustomLists],
+      [animateIcon, archiveList],
     );
 
     const handleArchiveGenerator = useCallback(
-      (listOrDraggableList: DraggableItem<List> | List) =>
+      (listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
           const list =
-            listOrDraggableList instanceof DraggableItem<List>
+            listOrDraggableList instanceof DraggableItem<ListViewModel>
               ? listOrDraggableList.data[0]
               : listOrDraggableList;
           return draggableContext.showConfirmationModal(
@@ -134,14 +132,15 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     );
 
     const handleEditListGenerator = useCallback(
-      (listOrDraggableList: DraggableItem<List> | List) => () => {
-        const list =
-          listOrDraggableList instanceof DraggableItem<List>
-            ? listOrDraggableList.data[0]
-            : listOrDraggableList;
-        setEditingList(list);
-        setEditModalVisible(true);
-      },
+      (listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel) =>
+        () => {
+          const list =
+            listOrDraggableList instanceof DraggableItem<ListViewModel>
+              ? listOrDraggableList.data[0]
+              : listOrDraggableList;
+          setEditingList(list);
+          setEditModalVisible(true);
+        },
       [],
     );
 

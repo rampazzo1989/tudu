@@ -2,35 +2,36 @@ import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {DraxProvider} from 'react-native-drax';
 import {Page} from '../../components/page';
 import {DraggablePageContent} from '../../components/draggable-page-content';
-import {TuduItem} from '../home/types';
+import {ListViewModel, TuduViewModel} from '../home/types';
 import {ListHeader} from './components/list-header';
 import {ListPageProps} from './types';
 import {TudusList} from './components/tudus-list';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
-import {useListStateHelper} from '../../hooks/useListStateHelper';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {styles} from './styles';
+import {CheersAnimationContainer, styles} from './styles';
 import {CheersAnimation} from '../../components/animated-components/cheers';
 import {
   AnimatedIconRef,
   ForwardedRefAnimatedIcon,
 } from '../../components/animated-icons/animated-icon/types';
-import {Dimensions, View} from 'react-native';
+import {Dimensions} from 'react-native';
 import {ListActionButton} from './components/list-action-button';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
 import {CheckMarkIconActionAnimation} from '../../components/animated-icons/check-mark';
 import {NewTuduModal} from './components/new-tudu-modal';
 import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
+import {useListService} from '../../service/list-service-hook/useListService';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId} = route.params;
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
-  const [editingTudu, setEditingTudu] = useState<TuduItem>();
+  const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
 
-  const {updateList, getListById} = useListStateHelper();
   const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+
+  const {getListById, saveList, saveTudu} = useListService();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -41,18 +42,24 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, [getListById, listId]);
 
   const draggableTudus = useMemo(() => {
-    return list?.tudus?.map(tudu => new DraggableItem([tudu])) ?? [];
-  }, [list?.tudus]);
+    if (!list?.tudus) {
+      return [];
+    }
+    return [...list.tudus].map(tudu => new DraggableItem([tudu])) ?? [];
+  }, [list]);
 
   const setTudus = useCallback(
-    (draggable: DraggableItem<TuduItem>[]) => {
+    (draggable: DraggableItem<TuduViewModel>[]) => {
       if (!list) {
         return;
       }
-      const newList = {...list, tudus: draggable.flatMap(x => x.data)};
-      updateList(newList);
+
+      const newTuduList = draggable.flatMap(x => x.data);
+      const newList = new ListViewModel(list.mapBack(), list.origin);
+      newList.tudus = newTuduList;
+      saveList(newList);
     },
-    [list, updateList],
+    [list, saveList],
   );
 
   const handleListDragStart = useCallback(() => {
@@ -66,31 +73,23 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, []);
 
   const handleTuduPress = useCallback(
-    (tudu: TuduItem) => {
+    (tudu: TuduViewModel) => {
       if (!list) {
         return;
       }
 
-      const newTudu = {...tudu, done: !tudu.done};
-      const tuduIndex = list.tudus?.findIndex(x => x.id === newTudu.id);
-      const newTuduList = list.tudus?.slice();
+      tudu.done = !tudu.done;
 
-      if (tuduIndex === undefined || tuduIndex < 0 || !newTuduList) {
-        return;
-      }
+      saveTudu(tudu);
 
-      newTuduList.splice(tuduIndex, 1, newTudu);
-
-      const newList = {...list, tudus: newTuduList};
-
-      updateList(newList);
-
-      const allDone = !!newList.tudus?.every(x => x.done);
+      const allDone = !!list.tudus
+        ?.filter(x => x.id !== tudu.id)
+        .every(x => x.done);
       if (allDone) {
         handleListCompleted();
       }
     },
-    [handleListCompleted, list, updateList],
+    [handleListCompleted, list, saveTudu],
   );
 
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
@@ -103,18 +102,11 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     <Page>
       <ListHeader listData={list} onBackButtonPress={handleBackButtonPress} />
       <DraxProvider>
-        <DraggableContextProvider<TuduItem>
+        <DraggableContextProvider<TuduViewModel>
           data={draggableTudus}
           onSetData={setTudus}
           onDragStart={handleListDragStart}>
-          <View
-            pointerEvents="none"
-            style={{
-              position: 'absolute',
-              width: Dimensions.get('screen').width,
-              height: Dimensions.get('screen').height,
-              zIndex: 9999,
-            }}>
+          <CheersAnimationContainer pointerEvents="none">
             <CheersAnimation
               ref={cheersRef}
               speed={2}
@@ -123,7 +115,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
                 height: Dimensions.get('screen').height,
               }}
             />
-          </View>
+          </CheersAnimationContainer>
 
           <DraggablePageContent
             contentContainerStyle={styles.scrollContentContainer}>
@@ -138,15 +130,6 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
               />
             )}
           </DraggablePageContent>
-          {/* <NewListModal
-            visible={editModalVisible}
-            editingList={editingList}
-            onRequestClose={() => {
-              setEditModalVisible(false);
-              setEditingList(undefined);
-              closeCurrentlyOpenSwipeable();
-            }}
-          /> */}
           <NewTuduModal
             visible={newTuduPopupVisible}
             onRequestClose={() => {

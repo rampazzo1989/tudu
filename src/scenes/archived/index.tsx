@@ -1,25 +1,25 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {FolderIcon} from '../../components/animated-icons/folder-icon';
 import {DefaultHeader} from '../../components/default-header';
 import {Page} from '../../components/page';
 import {ArchivedPageProps} from './types';
 import {PageContent} from '../../components/page-content';
 import {ArchivedLists} from './components/archived-lists';
-import {useRecoilState} from 'recoil';
-import {archivedLists} from '../home/state';
-import {List} from '../home/types';
+import {ListViewModel} from '../home/types';
 import {styles} from '../home/styles';
+import {useListService} from '../../service/list-service-hook/useListService';
+import {useTranslation} from 'react-i18next';
 
 const ArchivedPage: React.FC<ArchivedPageProps> = ({navigation}) => {
-  const [archivedListsState, setArchivedListsState] =
-    useRecoilState(archivedLists);
+  const {getAllLists} = useListService();
+  const {t} = useTranslation();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
   const handleListPress = useCallback(
-    (listData: List) => {
+    (listData: ListViewModel) => {
       navigation.navigate('List', {listId: listData.label});
     },
     [navigation],
@@ -29,12 +29,12 @@ const ArchivedPage: React.FC<ArchivedPageProps> = ({navigation}) => {
     <Page>
       <DefaultHeader
         Icon={FolderIcon}
-        title={'Archived Lists'}
+        title={t('listPageTitles.archived')}
         onBackButtonPress={handleBackButtonPress}
       />
       <PageContent contentContainerStyle={styles.scrollContentContainer}>
         <ArchivedLists
-          data={archivedListsState}
+          data={getAllLists('archived')}
           onListPress={handleListPress}
         />
       </PageContent>
