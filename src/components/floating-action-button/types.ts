@@ -1,8 +1,4 @@
-import {
-  AnimatedIconProps,
-  BaseAnimatedIconRef,
-  ForwardedRefAnimatedIcon,
-} from '../animated-icons/animated-icon/types';
+import {ForwardedRefAnimatedIcon} from '../animated-icons/animated-icon/types';
 import {MenuOption} from '../menu-options/types';
 
 export type FloatingActionButtonProps = {

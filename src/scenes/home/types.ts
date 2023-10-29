@@ -12,7 +12,7 @@ export type TuduItem = {
   id: string;
 };
 
-export class LinkedTuduViewModel {
+export class TuduViewModel {
   listId: string;
   origin: ListOrigin;
   id: string;
@@ -49,18 +49,18 @@ export type List = {
 
 export type ListOrigin = 'archived' | 'default';
 
-export class LinkedListViewModel {
+export class ListViewModel {
   origin: ListOrigin;
   id: string;
   label: string;
   numberOfActiveItems: number;
-  tudus: LinkedTuduViewModel[];
+  tudus: TuduViewModel[];
   color?: string;
   groupName?: string;
 
   private getTuduViewModelsFromList = (list: List, origin: ListOrigin) => {
     const mappedTudus = [...list.tudus].map(
-      ([_, tudu]) => new LinkedTuduViewModel(tudu, list.id, origin),
+      ([_, tudu]) => new TuduViewModel(tudu, list.id, origin),
     );
     return mappedTudus;
   };
@@ -89,10 +89,14 @@ export class LinkedListViewModel {
   }
 }
 
-export type BuiltInList = List & {
+type BuiltInListType = 'today' | 'all lists' | 'starred' | 'archived';
+
+export type SmartList = {
+  id: BuiltInListType;
   icon: ListIconType;
   isHighlighted: boolean;
   navigateToPage?: keyof StackNavigatorParamList;
+  label: string;
 };
 
 export type ListGroup = {

@@ -1,6 +1,6 @@
-import {List} from '../../../home/types';
+import {ListViewModel} from '../../../home/types';
 
 export type ArchivedListsProps = {
-  data: List[];
-  onListPress: (listData: List) => void;
+  data: ListViewModel[];
+  onListPress: (listData: ListViewModel) => void;
 };

@@ -16,7 +16,7 @@ import {OptionsArrowDownIcon} from '../../../../components/animated-icons/option
 import {BaseAnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {RenameModal} from './components/rename-modal';
 import {FadeIn} from 'react-native-reanimated';
-import {List} from '../../types';
+import {ListViewModel} from '../../types';
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
 
 const ListGroupCard: React.FC<ListGroupProps> = memo(
@@ -57,7 +57,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
     );
 
     const listPressHandlerGenerator = useCallback(
-      (listData: List) => () => {
+      (listData: ListViewModel) => () => {
         onListPress(listData);
       },
       [onListPress],

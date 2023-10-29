@@ -5,6 +5,9 @@
     "starred": "Starred",
     "archived": "Archived"
   },
+  "listPageTitles": {
+    "archived": "Archived Lists"
+  },
   "sectionTitles": {
     "counters": "Counters",
     "myLists": "My Lists"
@@ -27,6 +30,10 @@
   "toast": {
     "tuduDeleted": "Tudú deleted",
     "itemDeleted": "{{itemType}} deleted",
+    "itemType": {
+      "list": "List",
+      "group": "Group"
+    },
     "undo": "UNDO"
   },
   "buttons": {

@@ -1,50 +1,47 @@
 import React, {memo, useCallback, useMemo, useState} from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
-import {
-  deleteList,
-  generateListAndGroupDeleteTitle,
-  unarchiveList,
-} from '../../../../utils/list-and-group-utils';
+import {generateListAndGroupDeleteTitle} from '../../../../utils/list-and-group-utils';
 import {ArchivedListsProps} from './types';
-import {List} from '../../../home/types';
 import {Container, StyledArchivedListCard} from './styles';
-import {useSetRecoilState} from 'recoil';
-import {archivedLists, myLists} from '../../../home/state';
 import {PopupModal} from '../../../../components/popup-modal';
 import {DeleteIcon} from '../../../../components/animated-icons/delete-icon';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
+import {ListViewModel} from '../../../home/types';
+import {useListService} from '../../../../service/list-service-hook/useListService';
+import {useTranslation} from 'react-i18next';
 
 const ArchivedLists: React.FC<ArchivedListsProps> = memo(
   ({data, onListPress}) => {
-    const setArchivedLists = useSetRecoilState(archivedLists);
-    const setCustomLists = useSetRecoilState(myLists);
     const [confirmationModalVisible, setConfirmationModalVisible] =
       useState(false);
-    const [deletingList, setDeletingList] = useState<List>();
+    const [deletingList, setDeletingList] = useState<ListViewModel>();
     const [deletingListRef, setDeletingListRef] =
       useState<React.RefObject<SwipeableCardRef>>();
+    const {unarchiveList, deleteList} = useListService();
+    const {t} = useTranslation();
 
     const listPressHandlerGenerator = useCallback(
-      (listData: List) => () => {
+      (listData: ListViewModel) => () => {
         onListPress(listData);
       },
       [onListPress],
     );
 
     const handleDeleteGenerator = useCallback(
-      (list: List) => (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-        setDeletingList(list);
-        setConfirmationModalVisible(true);
-        setDeletingListRef(swipeableRef);
-      },
+      (list: ListViewModel) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          setDeletingList(list);
+          setConfirmationModalVisible(true);
+          setDeletingListRef(swipeableRef);
+        },
       [],
     );
 
     const handleUnarchiveGenerator = useCallback(
-      (list: List) => () => {
-        unarchiveList(setArchivedLists, setCustomLists, list);
+      (list: ListViewModel) => () => {
+        unarchiveList(list);
       },
-      [setArchivedLists, setCustomLists],
+      [unarchiveList],
     );
 
     const memoizedItems = useMemo(() => {
@@ -83,9 +80,9 @@ const ArchivedLists: React.FC<ArchivedListsProps> = memo(
       if (!deletingList) {
         return;
       }
-      deleteList(setArchivedLists, deletingList);
+      deleteList(deletingList);
       handleCleanDeletingList();
-    }, [deletingList, handleCleanDeletingList, setArchivedLists]);
+    }, [deletingList, deleteList, handleCleanDeletingList]);
 
     const handleCancelDelete = useCallback(() => {
       handleCleanDeletingList();
@@ -100,8 +97,8 @@ const ArchivedLists: React.FC<ArchivedListsProps> = memo(
           onRequestClose={handleCleanDeletingList}
           title={generateListAndGroupDeleteTitle(deletingList)}
           buttons={[
-            {label: 'Yes', onPress: handleConfirmDelete},
-            {label: 'No', onPress: handleCancelDelete},
+            {label: t('buttons.yes'), onPress: handleConfirmDelete},
+            {label: t('buttons.no'), onPress: handleCancelDelete},
           ]}
           Icon={DeleteIcon}
           shakeOnShow

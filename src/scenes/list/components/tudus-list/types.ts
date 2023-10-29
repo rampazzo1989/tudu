@@ -1,8 +1,8 @@
 import {ForwardedRefAnimatedIcon} from '../../../../components/animated-icons/animated-icon/types';
-import {TuduItem} from '../../../home/types';
+import {TuduViewModel} from '../../../home/types';
 
 export type TudusListProps = {
-  onTuduPress: (tudu: TuduItem) => void;
-  onEditPress: (tudu: TuduItem) => void;
+  onTuduPress: (tudu: TuduViewModel) => void;
+  onEditPress: (tudu: TuduViewModel) => void;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };

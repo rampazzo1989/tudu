@@ -1,19 +1,17 @@
 import {t} from 'i18next';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
-import {
-  LinkedListViewModel,
-  LinkedTuduViewModel,
-  List,
-} from '../../scenes/home/types';
+import {ListViewModel, TuduViewModel, List} from '../../scenes/home/types';
 import {SetterOrUpdater} from 'recoil';
 import {removeFromList} from '../array-utils';
 
-export const getTypeItemOrGroup = (item: DraggableItem<List> | List) => {
+export const getTypeItemOrGroup = (
+  item: DraggableItem<ListViewModel> | ListViewModel,
+) => {
   let itemType: string = t('messages.confirmListDeleteItemType.list');
 
   if (!isNestedItem(item)) {
-    const draggableItem = item as DraggableItem<List>;
+    const draggableItem = item as DraggableItem<ListViewModel>;
     itemType = draggableItem.groupId
       ? t('messages.confirmListDeleteItemType.group')
       : itemType;
@@ -23,7 +21,7 @@ export const getTypeItemOrGroup = (item: DraggableItem<List> | List) => {
 };
 
 export const generateListAndGroupDeleteTitle = (
-  item?: DraggableItem<List> | List,
+  item?: DraggableItem<ListViewModel> | ListViewModel,
 ) => {
   if (!item) {
     return '';
@@ -31,16 +29,16 @@ export const generateListAndGroupDeleteTitle = (
   let listName: string;
   const itemType = getTypeItemOrGroup(item);
   if (isNestedItem(item)) {
-    listName = (item as List).label;
+    listName = (item as ListViewModel).label;
   } else {
-    const draggableItem = item as DraggableItem<List>;
+    const draggableItem = item as DraggableItem<ListViewModel>;
     listName = draggableItem.groupId ?? draggableItem.data[0].label;
   }
   return t('messages.confirmListDelete', {itemType, listName});
 };
 
 export const generateListAndGroupArchiveTitle = (
-  item?: DraggableItem<List> | List,
+  item?: DraggableItem<ListViewModel> | ListViewModel,
 ) => {
   if (!item) {
     return '';
@@ -48,9 +46,9 @@ export const generateListAndGroupArchiveTitle = (
   let listName: string;
   let itemType: string = t('messages.confirmListDeleteItemType.list');
   if (isNestedItem(item)) {
-    listName = (item as List).label;
+    listName = (item as ListViewModel).label;
   } else {
-    const draggableItem = item as DraggableItem<List>;
+    const draggableItem = item as DraggableItem<ListViewModel>;
     listName = draggableItem.groupId ?? draggableItem.data[0].label;
     itemType = draggableItem.groupId
       ? t('messages.confirmListDeleteItemType.group')
@@ -69,15 +67,15 @@ const getNewNameWithCopyNumber = (name: string) => {
 };
 
 export const getDuplicateProofListTitle = (
-  list: List[],
+  lists: ListViewModel[],
   newLabel: string,
 ): string => {
-  let alreadyExists = list.some(x => x.label === newLabel);
+  let alreadyExists = lists.some(x => x.label === newLabel);
 
   if (alreadyExists) {
     const newNameWithCopyNumber = getNewNameWithCopyNumber(newLabel);
 
-    return getDuplicateProofListTitle(list, newNameWithCopyNumber);
+    return getDuplicateProofListTitle(lists, newNameWithCopyNumber);
   } else {
     return newLabel;
   }
@@ -164,9 +162,9 @@ export const deleteList = (
   });
 };
 
-export const getTuduViewModelsFromList = (list: LinkedListViewModel) => {
+export const getTuduViewModelsFromList = (list: ListViewModel) => {
   const mappedTudus = [...list.data.tudus].map(
-    ([_, tudu]) => new LinkedTuduViewModel(tudu, list.data.id, list.origin),
+    ([_, tudu]) => new TuduViewModel(tudu, list.data.id, list.origin),
   );
 
   return mappedTudus;

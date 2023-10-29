@@ -10,7 +10,7 @@ import {useTranslation} from 'react-i18next';
 import {TextInput} from 'react-native';
 import {PopupModal} from '../../../../components/popup-modal';
 import {PopupButton} from '../../../../components/popup-modal/types';
-import {TuduItem} from '../../../home/types';
+import {TuduViewModel} from '../../../home/types';
 import {CheckMarkIcon} from '../../../../components/animated-icons/check-mark';
 import {Input} from './styles';
 import {NewTuduModalProps} from './types';
@@ -21,15 +21,20 @@ import {
 } from '../../../../modules/draggable/draggable-context/types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
 
-const getNewEmptyTudu = (): TuduItem => ({
-  label: '',
-  done: false,
-  id: generateRandomHash('New Tudu'),
-});
+const getNewEmptyTudu = () =>
+  new TuduViewModel(
+    {
+      label: '',
+      done: false,
+      id: generateRandomHash('New Tudu'),
+    },
+    '',
+    'default',
+  );
 
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
   ({visible, editingTudu, onRequestClose}) => {
-    const [internalTuduData, setInternalTuduData] = useState<TuduItem>(
+    const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
       editingTudu ?? getNewEmptyTudu(),
     );
 
@@ -38,16 +43,19 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const inputRef = useRef<TextInput>(null);
 
     const handleTextChange = useCallback((text: string) => {
-      setInternalTuduData(x => ({...x, label: text}));
+      setInternalTuduData(x => {
+        x.label = text;
+        return x;
+      });
     }, []);
 
     const isEditing = useMemo(() => !!editingTudu, [editingTudu]);
 
     const draggableContext =
-      useContext<DraggableContextType<TuduItem>>(DraggableContext);
+      useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
 
     const handleInsertOrUpdateTudu = useCallback(
-      (tudu: TuduItem) => {
+      (tudu: TuduViewModel) => {
         console.log({tudu, isEditing, data: draggableContext.data});
         const draggableTudu = new DraggableItem([tudu]);
         if (isEditing) {
@@ -60,8 +68,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
             draggableContext.setData(newList);
           }
         } else {
-          const a = draggableContext.data;
-          const newList = a.length
+          const draggableTudus = draggableContext.data;
+          const newList = draggableTudus.length
             ? [draggableTudu, ...draggableContext.data]
             : [draggableTudu];
           draggableContext.setData(newList);

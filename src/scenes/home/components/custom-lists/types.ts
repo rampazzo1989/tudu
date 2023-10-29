@@ -1,7 +1,7 @@
 import {ForwardedRefAnimatedIcon} from '../../../../components/animated-icons/animated-icon/types';
-import {List} from '../../types';
+import {ListViewModel} from '../../types';
 
 export type CustomListsProps = {
-  onListPress: (listData: List) => void;
+  onListPress: (listData: ListViewModel) => void;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };
