@@ -1,9 +1,7 @@
 import {t} from 'i18next';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
-import {ListViewModel, TuduViewModel, List} from '../../scenes/home/types';
-import {SetterOrUpdater} from 'recoil';
-import {removeFromList} from '../array-utils';
+import {ListViewModel} from '../../scenes/home/types';
 
 export const getTypeItemOrGroup = (
   item: DraggableItem<ListViewModel> | ListViewModel,
@@ -82,7 +80,7 @@ export const getDuplicateProofListTitle = (
 };
 
 export const getDuplicateProofGroupTitle = (
-  list: DraggableItem<List>[],
+  list: DraggableItem<ListViewModel>[],
   newName: string,
 ): string => {
   const alreadyExists = list.some(draggable => draggable.groupId === newName);
@@ -93,79 +91,4 @@ export const getDuplicateProofGroupTitle = (
   } else {
     return newName;
   }
-};
-
-export const archiveList = (
-  archiveSetter: SetterOrUpdater<List[]>,
-  customListsSetter: SetterOrUpdater<List[]>,
-  list: List,
-) => {
-  archiveSetter(x => [...x, list]);
-
-  customListsSetter(x => {
-    return removeFromList(x, [list]);
-  });
-};
-
-export const unarchiveList = (
-  archiveSetter: SetterOrUpdater<List[]>,
-  customListsSetter: SetterOrUpdater<List[]>,
-  list: List,
-) => {
-  customListsSetter(x => [...x, list]);
-
-  archiveSetter(x => {
-    return removeFromList(x, [list]);
-  });
-};
-
-export const insertList = (
-  customListsSetter: SetterOrUpdater<List[]>,
-  list: List,
-) => {
-  customListsSetter(x => [list, ...x]);
-};
-
-export const updateList = (
-  customListsSetter: SetterOrUpdater<List[]>,
-  list: List,
-) => {
-  customListsSetter(x => {
-    const cloneList = x.slice();
-    const itemIndex = cloneList.findIndex(item => item.id === list.id);
-
-    if (itemIndex < 0) {
-      return x;
-    }
-
-    cloneList.splice(itemIndex, 1, list);
-
-    return cloneList;
-  });
-};
-
-export const deleteList = (
-  customListsSetter: SetterOrUpdater<List[]>,
-  list: List,
-) => {
-  customListsSetter(x => {
-    const cloneList = x.slice();
-    const itemIndex = cloneList.findIndex(item => item.id === list.id);
-
-    if (itemIndex < 0) {
-      return x;
-    }
-
-    cloneList.splice(itemIndex, 1);
-
-    return cloneList;
-  });
-};
-
-export const getTuduViewModelsFromList = (list: ListViewModel) => {
-  const mappedTudus = [...list.data.tudus].map(
-    ([_, tudu]) => new TuduViewModel(tudu, list.data.id, list.origin),
-  );
-
-  return mappedTudus;
 };

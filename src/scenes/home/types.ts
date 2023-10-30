@@ -105,7 +105,33 @@ export type ListGroup = {
 };
 
 export type Counter = {
+  id: string;
   title: string;
   value: number;
   pace: number;
 };
+
+export class CounterViewModel {
+  id: string;
+  title: string;
+  value: number;
+  pace: number;
+
+  mapBack() {
+    const listModel: Counter = {
+      id: this.id,
+      title: this.title,
+      value: this.value,
+      pace: this.pace,
+    };
+
+    return listModel;
+  }
+
+  constructor(data: Counter) {
+    this.id = data.id;
+    this.title = data.title;
+    this.value = data.value;
+    this.pace = data.pace;
+  }
+}

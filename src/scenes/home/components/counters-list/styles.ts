@@ -2,14 +2,16 @@ import {FlatList, StyleSheet} from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {DEFAULT_PAGE_HORIZONTAL_PADDING} from '../../../../components/draggable-page-content/styles';
-import {Counter} from '../../types';
+import {CounterViewModel} from '../../types';
 
 export const HorizontalSeparator = styled.View`
   height: 100%;
   width: 12px;
 `;
 
-export const HorizontalList = styled(FlatList as new () => FlatList<Counter>)`
+export const HorizontalList = styled(
+  FlatList as new () => FlatList<CounterViewModel>,
+)`
   height: 100px;
 `;
 

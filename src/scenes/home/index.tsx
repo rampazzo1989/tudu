@@ -4,7 +4,7 @@ import {DraggablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
 import {DefaultLists} from './components/default-lists';
 import {useRecoilValue} from 'recoil';
-import {counters, homeDefaultLists} from './state';
+import {homeDefaultLists} from './state';
 import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
 import {
@@ -30,16 +30,17 @@ import {HomeActionButton} from './components/home-action-button';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated-icon/types';
 import {useListService} from '../../service/list-service-hook/useListService';
+import {useCounterService} from '../../service/counter-service-hook/useCounterService';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const smartLists = useRecoilValue(homeDefaultLists);
-  const counterList = useRecoilValue(counters);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const {t} = useTranslation();
   const theme = useTheme();
 
   const {getAllLists, saveAllLists} = useListService();
+  const {getAllCounters} = useCounterService();
 
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
     actionButtonRef.current?.animateThisIcon(Icon);
@@ -93,6 +94,8 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     [handleSmartListPress],
   );
 
+  const countersList = useMemo(() => getAllCounters(), [getAllCounters]);
+
   return (
     <Page>
       <HomeHeader />
@@ -112,7 +115,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
               onListPress={handleDefaultListPress}
             />
             <SectionTitle title={t('sectionTitles.counters')} />
-            <CountersList list={counterList} animateIcon={animateThisIcon} />
+            <CountersList list={countersList} animateIcon={animateThisIcon} />
             {groupedCustomLists.length ? (
               <>
                 <SectionTitle title={t('sectionTitles.myLists')} />

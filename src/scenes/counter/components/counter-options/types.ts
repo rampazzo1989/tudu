@@ -1,7 +1,7 @@
-import {Counter} from '../../../home/types';
+import {CounterViewModel} from '../../../home/types';
 
 export type CounterOptionsProps = {
-  counterData: Counter;
+  counterData: CounterViewModel;
   closeMenu: () => void;
   onEditOption: () => void;
   onDeleteOption: () => void;

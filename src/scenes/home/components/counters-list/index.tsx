@@ -1,18 +1,18 @@
 import React, {memo, useCallback} from 'react';
 import {FlatList, ListRenderItem} from 'react-native';
 import {CounterTile} from '../../../../components/counter-tile';
-import {Counter} from '../../types';
+import {CounterViewModel} from '../../types';
 import {Container, HorizontalSeparator, styles} from './styles';
 import {CounterListProps} from './types';
 
 const CountersList: React.FC<CounterListProps> = memo(({list, animateIcon}) => {
-  const renderItem: ListRenderItem<Counter> = useCallback(
+  const renderItem: ListRenderItem<CounterViewModel> = useCallback(
     ({item}) => <CounterTile counterData={item} animateIcon={animateIcon} />,
     [animateIcon],
   );
 
   const keyExtractor = useCallback(
-    (item: Counter, index: number) => `${item.title} ${index}`,
+    (item: CounterViewModel, index: number) => `${item.title} ${index}`,
     [],
   );
 

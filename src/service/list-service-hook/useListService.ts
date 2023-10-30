@@ -9,7 +9,7 @@ import {
   myLists,
   archivedLists as archivedListsState,
 } from '../../scenes/home/state';
-import {ItemNotFoundError} from './errors/item-not-found-error';
+import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback} from 'react';
 
 const useListService = () => {

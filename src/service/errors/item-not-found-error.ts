@@ -4,8 +4,4 @@ export class ItemNotFoundError extends Error {
 
     this.name = 'ItemNotFoundError';
   }
-
-  sayHello() {
-    return 'hello ' + this.message;
-  }
 }

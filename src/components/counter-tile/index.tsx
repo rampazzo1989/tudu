@@ -32,9 +32,7 @@ import {
 } from './types';
 import {ActionMinusIcon} from '../../assets/static/action_minus';
 import {ActionPlusIcon} from '../../assets/static/action_plus';
-import {useSetRecoilState} from 'recoil';
-import {counters} from '../../scenes/home/state';
-import {Counter} from '../../scenes/home/types';
+import {CounterViewModel} from '../../scenes/home/types';
 import {PopoverMenu} from '../popover-menu';
 import {CounterOptions} from '../../scenes/counter/components/counter-options';
 import {OptionsArrowDownIcon} from '../animated-icons/options-arrow-down-icon';
@@ -45,6 +43,7 @@ import {
   DeleteIconActionAnimation,
 } from '../animated-icons/delete-icon';
 import {useTranslation} from 'react-i18next';
+import {useCounterService} from '../../service/counter-service-hook/useCounterService';
 
 const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
   return (
@@ -159,8 +158,7 @@ const CounterTile: React.FC<CounterTileProps> = memo(
     const [isEditing, setEditing] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const setCountersList = useSetRecoilState(counters);
-
+    const {saveCounter, deleteCounter} = useCounterService();
     const {t} = useTranslation();
 
     const idleTime = useRef<NodeJS.Timeout>();
@@ -184,16 +182,14 @@ const CounterTile: React.FC<CounterTileProps> = memo(
           operation === 'increment'
             ? counterData.value + counterData.pace
             : counterData.value - counterData.pace;
-        const newCounter: Counter = {...counterData, value: newValue};
-
-        setCountersList(current => {
-          const currentIndex = current.indexOf(counterData);
-          const newList = [...current];
-          newList.splice(currentIndex, 1, newCounter);
-          return newList;
+        const newCounter = new CounterViewModel({
+          ...counterData.mapBack(),
+          value: newValue,
         });
+
+        saveCounter(newCounter);
       },
-      [counterData, setCountersList],
+      [counterData, saveCounter],
     );
 
     const handleIncrement = useCallback(
@@ -220,14 +216,9 @@ const CounterTile: React.FC<CounterTileProps> = memo(
         clearTimeout(idleTime.current);
       }
       setEditing(false);
-      setCountersList(current => {
-        const currentIndex = current.indexOf(counterData);
-        const newList = [...current];
-        newList.splice(currentIndex, 1);
-        return newList;
-      });
+      deleteCounter(counterData);
       animateIcon?.(DeleteIconActionAnimation);
-    }, [animateIcon, counterData, setCountersList]);
+    }, [animateIcon, counterData, deleteCounter]);
 
     const handleCancelDelete = useCallback(() => {
       setDeleteModalVisible(false);

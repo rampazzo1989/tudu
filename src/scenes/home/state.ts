@@ -34,71 +34,38 @@ export const homeDefaultLists = atom<SmartList[]>({
   ],
 });
 
-export const counters = atom<Counter[]>({
+export const counters = atom<Map<string, Counter>>({
   key: 'counters',
-  default: [
-    {
-      title: 'Glasses of water today',
-      value: 8,
-      pace: 1,
-    },
-    {
-      title: 'Money saved',
-      value: 2400000,
-      pace: 5,
-    },
-    {
-      title: 'Extra hours this week',
-      value: 7,
-      pace: 1,
-    },
-  ],
+  default: new Map<string, Counter>([
+    [
+      '1',
+      {
+        id: '1',
+        title: 'Glasses of water today',
+        value: 8,
+        pace: 1,
+      },
+    ],
+    [
+      '2',
+      {
+        id: '2',
+        title: 'Money saved',
+        value: 2400000,
+        pace: 5,
+      },
+    ],
+    [
+      '3',
+      {
+        id: '3',
+        title: 'Extra hours this week',
+        value: 7,
+        pace: 1,
+      },
+    ],
+  ]),
   effects: [mmkvPersistAtom('counters')],
-});
-
-export const OLD_myLists = atom<List[]>({
-  key: 'myLists',
-  default: [
-    {
-      id: '1',
-      label: 'Movies',
-      color: 'green',
-      numberOfActiveItems: 1,
-      tudus: [],
-    },
-    {
-      id: '2',
-      label: 'Shop List',
-      color: 'red',
-      numberOfActiveItems: 3,
-      groupName: 'Test',
-      tudus: [],
-    },
-    {
-      id: '3',
-      label: 'Gift Ideias',
-      color: '#7956BF',
-      numberOfActiveItems: 12,
-      tudus: [],
-    },
-    {
-      id: '4',
-      label: 'America',
-      color: 'red',
-      numberOfActiveItems: 10,
-      groupName: 'Travel',
-      tudus: [],
-    },
-    {
-      id: '5',
-      label: 'Europe',
-      color: 'blue',
-      numberOfActiveItems: 12,
-      groupName: 'Travel',
-      tudus: [],
-    },
-  ],
-  effects: [mmkvPersistAtom('myLists')],
 });
 
 export const myLists = atom<Map<string, List>>({
