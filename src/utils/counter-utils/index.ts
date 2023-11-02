@@ -1,4 +1,4 @@
-import {Counter} from '../../scenes/home/types';
+import {CounterViewModel} from '../../scenes/home/types';
 
 const getNewNameWithCopyNumber = (name: string) => {
   const hasCopyNumber = name.match(/^([A-Za-z\s]+) \((\d+)\)/);
@@ -10,15 +10,15 @@ const getNewNameWithCopyNumber = (name: string) => {
 };
 
 export const getDuplicateProofCounterTitle = (
-  list: Counter[],
+  counterList: CounterViewModel[],
   newTitle: string,
 ): string => {
-  const alreadyExists = list.some(counter => counter.title === newTitle);
+  const alreadyExists = counterList.some(counter => counter.title === newTitle);
 
   if (alreadyExists) {
     const newNameWithCopyNumber = getNewNameWithCopyNumber(newTitle);
 
-    return getDuplicateProofCounterTitle(list, newNameWithCopyNumber);
+    return getDuplicateProofCounterTitle(counterList, newNameWithCopyNumber);
   } else {
     return newTitle;
   }

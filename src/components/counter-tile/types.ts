@@ -1,17 +1,17 @@
-import {Counter} from '../../scenes/home/types';
+import {CounterViewModel} from '../../scenes/home/types';
 import {ForwardedRefAnimatedIcon} from '../animated-icons/animated-icon/types';
 
 export type CounterTileProps = {
-  counterData: Counter;
+  counterData: CounterViewModel;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };
 
-export type TileTitleProps = Pick<Counter, 'title'>;
+export type TileTitleProps = Pick<CounterViewModel, 'title'>;
 
-export type CounterValueProps = Pick<Counter, 'value'>;
+export type CounterValueProps = Pick<CounterViewModel, 'value'>;
 
 export type OptionsButtonProps = {
-  counterData: Counter;
+  counterData: CounterViewModel;
   onEditOption: () => void;
   onDeleteOption: () => void;
 };

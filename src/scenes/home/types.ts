@@ -7,34 +7,64 @@ type HomePageProps = NativeStackScreenProps<StackNavigatorParamList, 'Home'>;
 export type {HomePageProps};
 
 export type TuduItem = {
+  id: string;
   label: string;
   done: boolean;
-  id: string;
+  dueDate?: Date;
+  scheduledOrder?: number;
 };
 
-export class TuduViewModel {
+interface Clonable<T> {
+  clone(): T;
+}
+
+export class TuduViewModel implements Clonable<TuduViewModel> {
   listId: string;
   origin: ListOrigin;
   id: string;
   label: string;
   done: boolean;
+  dueDate?: Date;
+  scheduledOrder?: number;
+  listName?: string;
 
   public mapBack() {
     const listModel: TuduItem = {
       id: this.id,
       done: this.done,
       label: this.label,
+      dueDate: this.dueDate,
+      scheduledOrder: this.scheduledOrder,
     };
 
     return listModel;
   }
 
-  constructor(data: TuduItem, listId: string, origin: ListOrigin = 'default') {
+  public clone() {
+    const newTudu = new TuduViewModel(
+      this.mapBack(),
+      this.listId,
+      this.origin,
+      this.listName,
+    );
+
+    return newTudu;
+  }
+
+  constructor(
+    data: TuduItem,
+    listId: string,
+    origin: ListOrigin = 'default',
+    listName?: string,
+  ) {
     this.id = data.id;
     this.label = data.label;
     this.done = data.done;
     this.listId = listId;
+    this.dueDate = data.dueDate;
+    this.scheduledOrder = data.scheduledOrder;
     this.origin = origin;
+    this.listName = listName;
   }
 }
 
@@ -49,7 +79,7 @@ export type List = {
 
 export type ListOrigin = 'archived' | 'default';
 
-export class ListViewModel {
+export class ListViewModel implements Clonable<ListViewModel> {
   origin: ListOrigin;
   id: string;
   label: string;
@@ -65,7 +95,7 @@ export class ListViewModel {
     return mappedTudus;
   };
 
-  mapBack() {
+  public mapBack() {
     const listModel: List = {
       id: this.id,
       label: this.label,
@@ -76,6 +106,12 @@ export class ListViewModel {
     };
 
     return listModel;
+  }
+
+  public clone() {
+    const newList = new ListViewModel(this.mapBack(), this.origin);
+
+    return newList;
   }
 
   constructor(data: List, origin: ListOrigin = 'default') {
@@ -105,7 +141,33 @@ export type ListGroup = {
 };
 
 export type Counter = {
+  id: string;
   title: string;
   value: number;
   pace: number;
 };
+
+export class CounterViewModel {
+  id: string;
+  title: string;
+  value: number;
+  pace: number;
+
+  mapBack() {
+    const listModel: Counter = {
+      id: this.id,
+      title: this.title,
+      value: this.value,
+      pace: this.pace,
+    };
+
+    return listModel;
+  }
+
+  constructor(data: Counter) {
+    this.id = data.id;
+    this.title = data.title;
+    this.value = data.value;
+    this.pace = data.pace;
+  }
+}

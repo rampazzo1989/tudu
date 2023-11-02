@@ -9,7 +9,7 @@ import {
   myLists,
   archivedLists as archivedListsState,
 } from '../../scenes/home/state';
-import {ItemNotFoundError} from './errors/item-not-found-error';
+import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback} from 'react';
 
 const useListService = () => {
@@ -42,7 +42,10 @@ const useListService = () => {
 
   const saveAllLists = useCallback(
     (newLists: ListViewModel[], origin: ListOrigin = 'default') => {
-      const lists = newLists.map<[string, List]>(x => [x.id, x.mapBack()]);
+      const lists = newLists.map<[string, List]>(x => {
+        console.log({x});
+        return [x.id, x.mapBack()];
+      });
       const newMap = new Map<string, List>(lists);
 
       const stateSetter = getStateSetter(origin);

@@ -1,13 +1,15 @@
 import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
 import {FadeIn, ZoomInRotate} from 'react-native-reanimated';
-import {BackButton} from '../../../../components/back-button';
-import {Header} from '../../../../components/header';
+
 import {ContentRow, Emoji, styles, Title, TitleContainer} from './styles';
 import {ListHeaderProps} from './types';
-import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
+
 import {useTheme} from 'styled-components/native';
-import {getFirstEmoji, trimFirstEmoji} from '../../../../utils/emoji-utils';
-import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
+import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
+import {getFirstEmoji, trimFirstEmoji} from '../../utils/emoji-utils';
+import {Header} from '../header';
+import {BackButton} from '../back-button';
+import {ListDefaultIcon} from '../animated-icons/list-default-icon';
 
 const ListHeader: React.FC<ListHeaderProps> = memo(
   ({listData, onBackButtonPress}) => {

@@ -1,7 +1,7 @@
 import {ForwardedRefAnimatedIcon} from '../../../../components/animated-icons/animated-icon/types';
-import {Counter} from '../../types';
+import {CounterViewModel} from '../../types';
 
 export type CounterListProps = {
-  list: Counter[];
+  list: CounterViewModel[];
   animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };

@@ -199,7 +199,6 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       draggableContext.data,
       editModalVisible,
       editingList,
-      enteringAnimation,
       handleArchiveGenerator,
       handleDeleteGenerator,
       handleEditListGenerator,
