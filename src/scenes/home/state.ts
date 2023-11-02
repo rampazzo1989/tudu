@@ -133,23 +133,3 @@ export const archivedLists = atom<Map<string, List>>({
   default: new Map<string, List>(),
   effects: [mmkvPersistAtom('archivedLists')],
 });
-
-export const getListByLabel = selector({
-  key: 'getObjectByLabel',
-  get:
-    ({get}) =>
-    (label: string) => {
-      const defaultLists = get(homeDefaultLists);
-      const myListsData = get(myLists);
-
-      const selectedListFromDefault = defaultLists.find(
-        list => list.label === label,
-      );
-
-      if (selectedListFromDefault) {
-        return selectedListFromDefault;
-      }
-
-      return myListsData.find(list => list.label === label);
-    },
-});

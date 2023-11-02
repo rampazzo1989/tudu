@@ -8,18 +8,18 @@ import React, {
 } from 'react';
 import {useTranslation} from 'react-i18next';
 import {TextInput} from 'react-native';
-import {PopupModal} from '../../../../components/popup-modal';
-import {PopupButton} from '../../../../components/popup-modal/types';
-import {TuduViewModel} from '../../../home/types';
-import {CheckMarkIcon} from '../../../../components/animated-icons/check-mark';
-import {Input} from './styles';
-import {NewTuduModalProps} from './types';
-import {generateRandomHash} from '../../../../hooks/useHashGenerator';
+import {generateRandomHash} from '../../hooks/useHashGenerator';
+import {DraggableContext} from '../../modules/draggable/draggable-context';
 import {
   DraggableContextType,
   DraggableItem,
-} from '../../../../modules/draggable/draggable-context/types';
-import {DraggableContext} from '../../../../modules/draggable/draggable-context';
+} from '../../modules/draggable/draggable-context/types';
+import {TuduViewModel} from '../../scenes/home/types';
+import {CheckMarkIcon} from '../animated-icons/check-mark';
+import {PopupModal} from '../popup-modal';
+import {PopupButton} from '../popup-modal/types';
+import {Input} from './styles';
+import {NewTuduModalProps} from './types';
 
 const getNewEmptyTudu = () =>
   new TuduViewModel(
@@ -44,8 +44,9 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
 
     const handleTextChange = useCallback((text: string) => {
       setInternalTuduData(x => {
-        x.label = text;
-        return x;
+        const newTudu = x.clone();
+        newTudu.label = text;
+        return newTudu;
       });
     }, []);
 

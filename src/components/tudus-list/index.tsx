@@ -7,19 +7,6 @@ import React, {
   useState,
 } from 'react';
 import {SlideInRight} from 'react-native-reanimated';
-import {CheckMarkIcon} from '../../../../components/animated-icons/check-mark';
-import {TuduCard} from '../../../../components/tudu-card';
-import {DraggableContext} from '../../../../modules/draggable/draggable-context';
-import {
-  DraggableContextType,
-  DraggableItem,
-} from '../../../../modules/draggable/draggable-context/types';
-import {
-  deleteItem,
-  refreshListState,
-} from '../../../../modules/draggable/draggable-utils';
-import {DraggableView} from '../../../../modules/draggable/draggable-view';
-import {TuduViewModel} from '../../../home/types';
 import {
   Container,
   InnerContainer,
@@ -28,10 +15,24 @@ import {
 } from './styles';
 import {TudusListProps} from './types';
 import Toast from 'react-native-toast-message';
-import {showItemDeletedToast} from '../../../../utils/toast-utils';
+
 import {useTranslation} from 'react-i18next';
-import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
-import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
+import {CheckMarkIcon} from '../animated-icons/check-mark';
+import {DraggableView} from '../../modules/draggable/draggable-view';
+import {TuduCard} from '../tudu-card';
+import {
+  DraggableContextType,
+  DraggableItem,
+} from '../../modules/draggable/draggable-context/types';
+import {TuduViewModel} from '../../scenes/home/types';
+import {DraggableContext} from '../../modules/draggable/draggable-context';
+import {
+  deleteItem,
+  refreshListState,
+} from '../../modules/draggable/draggable-utils';
+import {DeleteIconActionAnimation} from '../animated-icons/delete-icon';
+import {showItemDeletedToast} from '../../utils/toast-utils';
+import {SwipeableCardRef} from '../swipeable-card/types';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({onTuduPress, onEditPress, animateIcon}) => {

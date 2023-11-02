@@ -182,12 +182,10 @@ const CounterTile: React.FC<CounterTileProps> = memo(
           operation === 'increment'
             ? counterData.value + counterData.pace
             : counterData.value - counterData.pace;
-        const newCounter = new CounterViewModel({
-          ...counterData.mapBack(),
-          value: newValue,
-        });
 
-        saveCounter(newCounter);
+        counterData.value = newValue;
+
+        saveCounter(counterData);
       },
       [counterData, saveCounter],
     );

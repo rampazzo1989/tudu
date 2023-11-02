@@ -16,10 +16,7 @@ import {
 import {CountersList} from './components/counters-list';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {CustomLists} from './components/custom-lists';
-import {
-  mapDraggableItemsToList,
-  mapListToDraggableItems,
-} from '../../modules/draggable/draggable-utils';
+import {mapListToDraggableItems} from '../../modules/draggable/draggable-utils';
 import {DraxProvider} from 'react-native-drax';
 import {FloatingDelete} from '../../components/floating-delete';
 import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
@@ -45,6 +42,33 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
     actionButtonRef.current?.animateThisIcon(Icon);
   }, []);
+
+  const mapDraggableItemsToList = (
+    newOrderList: DraggableItem<ListViewModel>[],
+    groupPropertySetter: (
+      obj: ListViewModel,
+      groupId: string | undefined,
+    ) => void,
+  ) => {
+    for (let itemIndex in newOrderList) {
+      const item = newOrderList[itemIndex];
+
+      if (item.groupId) {
+        for (let subItemIndex in item.data) {
+          const subItem = item.data[subItemIndex];
+          groupPropertySetter(subItem, item.groupId);
+          item.data[subItemIndex] = subItem;
+        }
+      } else {
+        item.groupId = undefined;
+        const onlyItem = item.data[0];
+        groupPropertySetter(onlyItem, undefined);
+        item.data = [onlyItem];
+      }
+    }
+
+    return newOrderList.flatMap(item => item.data);
+  };
 
   const handleSetCustomLists = useCallback(
     (newOrderList: DraggableItem<ListViewModel>[]) => {

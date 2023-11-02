@@ -32,8 +32,9 @@ const NewListModal: React.FC<NewListModalProps> = memo(
 
     const handleTextChange = useCallback((text: string) => {
       setInternalListData(x => {
-        x.label = text;
-        return x;
+        const newList = x.clone();
+        newList.label = text;
+        return newList;
       });
     }, []);
 
@@ -61,12 +62,9 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         return;
       }
 
-      const newList = {
-        ...internalListData,
-        label: internalListData.label.trim(),
-      } as ListViewModel;
+      internalListData.label = internalListData.label.trim();
 
-      insertOrUpdateList(newList);
+      insertOrUpdateList(internalListData);
 
       onRequestClose();
     }, [insertOrUpdateList, internalListData, onRequestClose]);

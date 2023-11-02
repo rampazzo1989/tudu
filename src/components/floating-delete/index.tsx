@@ -53,12 +53,13 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
 
         refreshListState(parsedOldState, draggableContext.setData);
         Toast.hide();
-      } catch {
+      } catch (e) {
+        console.log(previousStateData.current);
         Toast.show({
           type: 'error',
           position: 'bottom',
           bottomOffset: 60,
-          text1: 'Unexpected error on trying to undo',
+          text1: e,
         });
       }
     }, [draggableContext.setData]);

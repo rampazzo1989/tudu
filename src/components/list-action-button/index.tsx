@@ -6,9 +6,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {FloatingActionButtonRef} from '../../../../components/floating-action-button/types';
-import {PlusIcon} from '../../../../components/animated-icons/plus-icon';
-import {FloatingActionButton} from '../../../../components/floating-action-button';
+import {FloatingActionButtonRef} from '../floating-action-button/types';
+import {PlusIcon} from '../animated-icons/plus-icon';
+import {FloatingActionButton} from '../floating-action-button';
 import {ListActionButtonProps} from './types';
 
 const ListActionButton = memo(

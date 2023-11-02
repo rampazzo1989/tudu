@@ -75,10 +75,9 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
           ? getDuplicateProofCounterTitle(getAllCounters(), counter.title)
           : counter.title;
 
-        const newCounter = new CounterViewModel({
-          ...counter.mapBack(),
-          title: newTitle,
-        });
+        const newCounter = new CounterViewModel(counter.mapBack());
+
+        newCounter.title = newTitle;
 
         saveCounter(newCounter);
       },
@@ -95,13 +94,11 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
       }
       setCustomPace(customPaceInputValue);
       setCustomPaceInputVisible(false);
-      setInternalCounterData(
-        previousState =>
-          new CounterViewModel({
-            ...previousState.mapBack(),
-            pace: customPaceInputValue ?? 0,
-          }),
-      );
+      setInternalCounterData(previousState => {
+        const viewModel = new CounterViewModel(previousState.mapBack());
+        viewModel.pace = customPaceInputValue ?? 0;
+        return viewModel;
+      });
     }, [customPaceInputValue, handlePaceOptionPressGenerator]);
 
     const handleConfirmButtonPress = useCallback(() => {
@@ -141,26 +138,24 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
     );
 
     const handleTitleChange = useCallback((text: string) => {
-      setInternalCounterData(
-        previousState =>
-          new CounterViewModel({
-            ...previousState.mapBack(),
-            title: text,
-          }),
-      );
+      setInternalCounterData(previousState => {
+        const viewModel = new CounterViewModel(previousState.mapBack());
+        viewModel.title = text;
+
+        return viewModel;
+      });
     }, []);
 
     const handleValueChange = useCallback((text: string) => {
       // Remove all non-numeric characters from the input
       let numericValue = parseInt(text.replace(/[^0-9]/g, ''), 10);
       numericValue = isNaN(numericValue) || !numericValue ? 0 : numericValue;
-      setInternalCounterData(
-        previousState =>
-          new CounterViewModel({
-            ...previousState.mapBack(),
-            value: numericValue,
-          }),
-      );
+      setInternalCounterData(previousState => {
+        const viewModel = new CounterViewModel(previousState.mapBack());
+        viewModel.value = numericValue;
+
+        return viewModel;
+      });
     }, []);
 
     const paceOptions = useMemo(
