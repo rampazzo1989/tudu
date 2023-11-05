@@ -106,7 +106,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   const handleSmartListPress = useCallback(
     (listData: SmartList) => {
-      navigation.navigate(listData.navigateToPage, {listId: listData.id});
+      navigation.navigate(listData.navigateToPage);
     },
     [navigation],
   );

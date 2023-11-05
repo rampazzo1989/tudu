@@ -24,7 +24,7 @@ import {TuduViewModel} from '../../scenes/home/types';
 import {ListHeader} from '../list-header';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
-  ({setTudus, handleBackButtonPress, list}) => {
+  ({setTudus, handleBackButtonPress, list, Icon}) => {
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
@@ -78,7 +78,11 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     return (
       <Page>
-        <ListHeader listData={list} onBackButtonPress={handleBackButtonPress} />
+        <ListHeader
+          listData={list}
+          onBackButtonPress={handleBackButtonPress}
+          Icon={Icon}
+        />
         <DraxProvider>
           <DraggableContextProvider<TuduViewModel>
             data={draggableTudus}

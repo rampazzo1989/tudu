@@ -31,6 +31,14 @@ const useListService = () => {
   const getAllLists = useCallback(
     (origin: ListOrigin = 'default') => {
       const listState = getState(origin);
+      if (
+        !listState ||
+        (Object.keys(listState).length === 0 &&
+          listState.constructor === Object)
+      ) {
+        return;
+      }
+
       const linkedLists = [...listState].map(
         ([_, value]) => new ListViewModel(value, origin),
       );
@@ -43,7 +51,6 @@ const useListService = () => {
   const saveAllLists = useCallback(
     (newLists: ListViewModel[], origin: ListOrigin = 'default') => {
       const lists = newLists.map<[string, List]>(x => {
-        console.log({x});
         return [x.id, x.mapBack()];
       });
       const newMap = new Map<string, List>(lists);
@@ -103,7 +110,7 @@ const useListService = () => {
         newTuduMap.set(tudu.id, tudu.mapBack());
         const newList = {...foundList, tudus: newTuduMap};
 
-        const newState = new Map(previousState);
+        const newState = new Map([...previousState]);
         newState.set(newList.id, newList);
 
         return newState;
@@ -149,7 +156,7 @@ const useListService = () => {
     (list: ListViewModel) => {
       // Can only edit list if it's not archived
       setCustomLists(previousState => {
-        const newState = new Map(previousState);
+        const newState = new Map([...previousState]);
         newState.set(list.id, list.mapBack());
 
         return newState;

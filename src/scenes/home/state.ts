@@ -11,6 +11,7 @@ export const homeDefaultLists = atom<SmartList[]>({
       icon: 'today',
       label: i18next.t('listTitles.today'),
       isHighlighted: true,
+      navigateToPage: 'ScheduledList',
     },
     {
       id: 'all lists',
@@ -65,7 +66,7 @@ export const counters = atom<Map<string, Counter>>({
       },
     ],
   ]),
-  effects: [mmkvPersistAtom('counters')],
+  effects: [mmkvPersistAtom('counters', true)],
 });
 
 export const myLists = atom<Map<string, List>>({
@@ -125,11 +126,11 @@ export const myLists = atom<Map<string, List>>({
       },
     ],
   ]),
-  effects: [mmkvPersistAtom('myLists')],
+  effects: [mmkvPersistAtom('myLists', true)],
 });
 
 export const archivedLists = atom<Map<string, List>>({
   key: 'archivedLists',
   default: new Map<string, List>(),
-  effects: [mmkvPersistAtom('archivedLists')],
+  effects: [mmkvPersistAtom('archivedLists', true)],
 });

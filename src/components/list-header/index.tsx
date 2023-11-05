@@ -12,7 +12,7 @@ import {BackButton} from '../back-button';
 import {ListDefaultIcon} from '../animated-icons/list-default-icon';
 
 const ListHeader: React.FC<ListHeaderProps> = memo(
-  ({listData, onBackButtonPress}) => {
+  ({listData, onBackButtonPress, Icon}) => {
     const [titleWidth, setTitleWidth] = useState(0);
     const iconRef = useRef<AnimatedIconRef>(null);
     const theme = useTheme();
@@ -46,7 +46,14 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               {titleRemovedMainEmoji}
             </Title>
           </TitleContainer>
-          {titleEmoji ? (
+          {Icon ? (
+            <Icon
+              size={70}
+              ref={iconRef}
+              style={styles.pageIcon}
+              overrideColor={theme.colors.iconOverlay}
+            />
+          ) : titleEmoji ? (
             <Emoji adjustsFontSizeToFit entering={ZoomInRotate.springify()}>
               {titleEmoji}
             </Emoji>
