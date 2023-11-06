@@ -37,6 +37,8 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
       scheduledOrder: this.scheduledOrder,
     };
 
+    console.log({listModel});
+
     return listModel;
   }
 

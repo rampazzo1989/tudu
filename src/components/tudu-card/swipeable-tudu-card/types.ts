@@ -3,7 +3,7 @@ import {SwipeableCardRef} from '../../swipeable-card/types';
 export type SwipeableTuduCardProps = {
   children: React.ReactNode;
   done: boolean;
-  onSendOrRemoveFromToday: (
+  onSendToOrRemoveFromToday: (
     swipeableRef: React.RefObject<SwipeableCardRef>,
   ) => void;
   onDelete: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;

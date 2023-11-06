@@ -33,6 +33,7 @@ import {
 import {DeleteIconActionAnimation} from '../animated-icons/delete-icon';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {SwipeableCardRef} from '../swipeable-card/types';
+import {isToday} from '../../utils/date-utils';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({onTuduPress, onEditPress, animateIcon}) => {
@@ -109,6 +110,23 @@ const TudusList: React.FC<TudusListProps> = memo(
       [onEditPress],
     );
 
+    const handleSendToOrRemoveFromTodayGenerator = useCallback(
+      (editingItem: DraggableItem<TuduViewModel>) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          const dueDate = editingItem.data[0].dueDate;
+          if (dueDate && isToday(dueDate)) {
+            editingItem.data[0].dueDate = undefined;
+            editingItem.data[0].scheduledOrder = undefined;
+            console.log(editingItem.data[0]);
+          } else {
+            editingItem.data[0].dueDate = new Date();
+          }
+          refreshListState(draggableContext.data, draggableContext.setData);
+          swipeableRef.current?.closeOptions();
+        },
+      [draggableContext.data, draggableContext.setData],
+    );
+
     const getTuduList = useMemo(() => {
       const {data} = draggableContext;
       const indexedTudus = data.map((indexedTudu, index) => ({
@@ -141,6 +159,9 @@ const TudusList: React.FC<TudusListProps> = memo(
                 onPress={handleTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                  draggableTudu.indexedTudu,
+                )}
               />
             </TuduAnimatedContainer>
           </DraggableView>
@@ -162,6 +183,9 @@ const TudusList: React.FC<TudusListProps> = memo(
                 onPress={onTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                  draggableTudu.indexedTudu,
+                )}
               />
             </TuduAnimatedContainer>
           </DraggableView>

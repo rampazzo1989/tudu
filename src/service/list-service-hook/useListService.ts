@@ -11,6 +11,7 @@ import {
 } from '../../scenes/home/state';
 import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback} from 'react';
+import {groupBy} from '../../utils/array-utils';
 
 const useListService = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
@@ -121,30 +122,28 @@ const useListService = () => {
 
   const saveAllTudus = useCallback(
     (tudus: TuduViewModel[]) => {
-      const listIds = tudus.map(x => x.listId);
-      const uniqueListIds = new Set(listIds);
-      if (uniqueListIds.size > 1) {
-        throw new Error(
-          'Saving multiple tudus to multiple lists are not supported yet',
-        );
-      }
-      const listId = [...uniqueListIds][0];
+      const groupedTudus = groupBy(tudus, tudu => tudu.listId);
+
       // Can only save tudus if the list is not archived
       setCustomLists(previousState => {
-        const foundList = previousState.get(listId);
-        if (!foundList) {
-          throw new ItemNotFoundError("The list couldn't be found.", listId);
-        }
-        const newTuduMap = new Map(foundList.tudus);
-
-        tudus.forEach(tudu => {
-          newTuduMap.set(tudu.id, tudu.mapBack());
-        });
-
-        const newList = {...foundList, tudus: newTuduMap};
-
         const newState = new Map(previousState);
-        newState.set(newList.id, newList);
+
+        for (const listId in groupedTudus) {
+          const foundList = previousState.get(listId);
+          if (!foundList) {
+            throw new ItemNotFoundError("The list couldn't be found.", listId);
+          }
+          const newTuduMap = new Map(foundList.tudus);
+          const savingTudus = groupedTudus[listId];
+
+          savingTudus.forEach(tudu => {
+            newTuduMap.set(tudu.id, tudu.mapBack());
+          });
+
+          const newList = {...foundList, tudus: newTuduMap};
+
+          newState.set(newList.id, newList);
+        }
 
         return newState;
       });

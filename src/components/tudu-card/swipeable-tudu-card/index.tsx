@@ -8,7 +8,13 @@ import {SunIcon} from '../../animated-icons/sun-icon';
 import {SwipeableTuduCardProps} from './types';
 
 const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
-  ({children, onSendOrRemoveFromToday, onDelete, onEdit, done}) => {
+  ({
+    children,
+    onSendToOrRemoveFromToday: onSendOrRemoveFromToday,
+    onDelete,
+    onEdit,
+    done,
+  }) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
 

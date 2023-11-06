@@ -15,9 +15,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       [route.params?.date],
     );
 
-    const {saveList} = useListService();
-
-    const {getTudusForDate} = useScheduledTuduService();
+    const {getTudusForDate, saveAllScheduledTudus} = useScheduledTuduService();
 
     const handleBackButtonPress = useCallback(() => {
       navigation.goBack();
@@ -50,11 +48,10 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         }
 
         const newTuduList = draggable.flatMap(x => x.data);
-        const newList = new ListViewModel(list.mapBack(), list.origin);
-        newList.tudus = newTuduList;
-        saveList(newList);
+
+        saveAllScheduledTudus(newTuduList);
       },
-      [list, saveList],
+      [list, saveAllScheduledTudus],
     );
 
     return (
