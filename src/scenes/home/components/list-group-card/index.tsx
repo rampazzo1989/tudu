@@ -76,7 +76,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
                 <SubListCard
                   Icon={ListDefaultIcon}
                   label={list.label}
-                  numberOfActiveItems={list.numberOfActiveItems}
+                  numberOfActiveItems={list.getNumberOfActiveItems()}
                   onPress={listPressHandlerGenerator(list)}
                   onDelete={handleDeleteGenerator(list)}
                   onArchive={handleArchiveGenerator(list)}

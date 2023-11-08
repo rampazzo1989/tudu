@@ -20,7 +20,10 @@ const ArchivedPage: React.FC<ArchivedPageProps> = ({navigation}) => {
 
   const handleListPress = useCallback(
     (listData: ListViewModel) => {
-      navigation.navigate('List', {listId: listData.label});
+      navigation.navigate('List', {
+        listId: listData.id,
+        listOrigin: 'archived',
+      });
     },
     [navigation],
   );
@@ -34,7 +37,7 @@ const ArchivedPage: React.FC<ArchivedPageProps> = ({navigation}) => {
       />
       <PageContent contentContainerStyle={styles.scrollContentContainer}>
         <ArchivedLists
-          data={getAllLists('archived')}
+          data={getAllLists('archived') ?? []}
           onListPress={handleListPress}
         />
       </PageContent>

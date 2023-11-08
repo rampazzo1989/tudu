@@ -6,7 +6,7 @@ import {useListService} from '../../service/list-service-hook/useListService';
 import {ListPageCore} from '../../components/list-page-core';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
-  const {listId} = route.params;
+  const {listId, listOrigin} = route.params;
 
   const {getListById, saveList} = useListService();
 
@@ -15,8 +15,9 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, [navigation]);
 
   const list = useMemo(() => {
-    return getListById(listId);
-  }, [getListById, listId]);
+    console.log({listId, listOrigin});
+    return getListById(listId, listOrigin);
+  }, [getListById, listId, listOrigin]);
 
   const setTudus = useCallback(
     (draggable: DraggableItem<TuduViewModel>[]) => {

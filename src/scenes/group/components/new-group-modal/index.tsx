@@ -146,7 +146,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
                     <SelectableListCard
                       label={list.data[0].label}
                       Icon={ListDefaultIcon}
-                      numberOfActiveItems={list.data[0].numberOfActiveItems}
+                      numberOfActiveItems={list.data[0].getNumberOfActiveItems()}
                       isHighlighted
                       key={`${list.data[0].label}`}
                       ControlComponent={

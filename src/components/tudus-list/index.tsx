@@ -42,6 +42,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     const [enteringAnimation, setEnteringAnimation] = useState<
       typeof SlideInRight | undefined
     >(() => SlideInRight);
+
     const {t} = useTranslation();
 
     useEffect(() => {
@@ -83,7 +84,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       (deletingItem: DraggableItem<TuduViewModel>) => () => {
         deleteItem(
           draggableContext.data,
-          draggableContext.setData,
+          newData => draggableContext.setData(newData, true),
           deletingItem,
         );
         animateIcon?.(DeleteIconActionAnimation);
@@ -92,13 +93,7 @@ const TudusList: React.FC<TudusListProps> = memo(
           handleUndoDeletion(draggableContext.data, draggableContext.setData),
         );
       },
-      [
-        animateIcon,
-        draggableContext.data,
-        draggableContext.setData,
-        handleUndoDeletion,
-        t,
-      ],
+      [animateIcon, draggableContext, handleUndoDeletion, t],
     );
 
     const handleEditGenerator = useCallback(

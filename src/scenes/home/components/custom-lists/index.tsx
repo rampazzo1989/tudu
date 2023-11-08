@@ -4,7 +4,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
@@ -28,8 +27,6 @@ import {FolderAddIconActionAnimation} from '../../../../components/animated-icon
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
 import {SlideInRight} from 'react-native-reanimated';
 import {useCloseCurrentlyOpenSwipeable} from '../../../../hooks/useCloseAllSwipeables';
-import Toast from 'react-native-toast-message';
-import {refreshListState} from '../../../../modules/draggable/draggable-utils';
 import {showItemDeletedToast} from '../../../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
 import {ListViewModel} from '../../types';
@@ -64,30 +61,9 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       [onListPress],
     );
 
-    const previousStateData = useRef(JSON.stringify(draggableContext.data));
-
-    const handleUndoDeletePress = useCallback(() => {
-      try {
-        const parsedOldState: DraggableItem<ListViewModel>[] = JSON.parse(
-          previousStateData.current,
-        );
-
-        refreshListState(parsedOldState, draggableContext.setData);
-        Toast.hide();
-      } catch {
-        Toast.show({
-          type: 'error',
-          position: 'bottom',
-          bottomOffset: 60,
-          text1: 'Unexpected error on trying to undo',
-        });
-      }
-    }, [draggableContext.setData]);
-
     const handleDeleteGenerator = useCallback(
       (listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-          previousStateData.current = JSON.stringify(draggableContext.data);
           draggableContext.showConfirmationModal(
             listOrDraggableList,
             generateListAndGroupDeleteTitle,
@@ -97,12 +73,12 @@ const CustomLists: React.FC<CustomListsProps> = memo(
               animateIcon?.(DeleteIconActionAnimation);
               showItemDeletedToast(
                 t('toast.itemDeleted', {itemType: t('toast.itemType.list')}),
-                handleUndoDeletePress,
+                draggableContext.undoLastDeletion,
               );
             },
           );
         },
-      [animateIcon, draggableContext, handleUndoDeletePress, t],
+      [animateIcon, draggableContext, t],
     );
 
     const archive = useCallback(
@@ -171,7 +147,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                   <EditableListCard
                     Icon={ListDefaultIcon}
                     label={onlyItem.label}
-                    numberOfActiveItems={onlyItem.numberOfActiveItems}
+                    numberOfActiveItems={onlyItem.getNumberOfActiveItems()}
                     color={onlyItem.color}
                     onPress={listPressHandlerGenerator(onlyItem)}
                     onDelete={handleDeleteGenerator(item)}

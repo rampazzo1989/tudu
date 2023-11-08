@@ -95,7 +95,6 @@ export const deleteItem = <T>(
     const index = cloneList?.indexOf(deletingItem);
     cloneList?.splice(index, 1);
   }
-
   listSetter(cloneList);
 };
 
