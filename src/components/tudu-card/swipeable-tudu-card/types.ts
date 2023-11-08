@@ -8,4 +8,5 @@ export type SwipeableTuduCardProps = {
   ) => void;
   onDelete: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   onEdit: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
+  isOnToday?: boolean;
 };

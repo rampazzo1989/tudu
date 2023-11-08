@@ -1,4 +1,5 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
+import {isToday} from '../../utils/date-utils';
 import {toggle} from '../../utils/state-utils';
 import {TuduCheckbox} from '../tudu-checkbox';
 import {Card, CheckAndTextContainer, Label} from './styles';
@@ -31,6 +32,7 @@ const TuduCard = memo<TuduCardProps>(
           done={internalDone}
           onDelete={onDelete}
           onEdit={onEdit}
+          isOnToday={data.dueDate && isToday(data.dueDate)}
           onSendToOrRemoveFromToday={onSendToOrRemoveFromToday}>
           <CheckAndTextContainer done={data.done}>
             <Label done={internalDone}>{data.label}</Label>
