@@ -8,6 +8,7 @@ import {SplashScreen} from '../../scenes/splash-screen';
 import {useTheme} from 'styled-components/native';
 import {ListPage} from '../../scenes/list';
 import {ArchivedPage} from '../../scenes/archived';
+import {ScheduledListPage} from '../../scenes/scheduled-list';
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 
@@ -56,6 +57,17 @@ const StackNavigator = () => {
       <Stack.Screen
         name="List"
         component={ListPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: config,
+            close: config,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="ScheduledList"
+        component={ScheduledListPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {

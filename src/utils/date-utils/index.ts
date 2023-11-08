@@ -1,2 +1,7 @@
-export const getDateOnlyTimeStamp = (date: Date) =>
-  new Date(date.toDateString()).getTime();
+export const getDateOnlyTimeStamp = (date: Date) => {
+  const castDate = typeof date === 'string' ? new Date(date) : date;
+  return new Date(castDate.toDateString()).getTime();
+};
+
+export const isToday = (date: Date) =>
+  getDateOnlyTimeStamp(date) === getDateOnlyTimeStamp(new Date());

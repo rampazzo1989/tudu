@@ -1,6 +1,6 @@
 export type DraggableContextType<T> = {
   data: DraggableItem<T>[];
-  setData: (newData: DraggableItem<T>[]) => void;
+  setData: (newData: DraggableItem<T>[], allowUndoThisSave?: boolean) => void;
   showConfirmationModal: (
     itemToDealWith: DraggableItem<T> | T,
     titleBuilderFn: (item?: DraggableItem<T> | T) => string,
@@ -8,6 +8,7 @@ export type DraggableContextType<T> = {
     onCancel?: () => void,
     onAction?: () => void,
   ) => void;
+  undoLastDeletion: () => void;
   onDragStart?: () => void;
   onDragEnd?: () => void;
 };

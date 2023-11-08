@@ -33,6 +33,7 @@ import {
 import {DeleteIconActionAnimation} from '../animated-icons/delete-icon';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {SwipeableCardRef} from '../swipeable-card/types';
+import {isToday} from '../../utils/date-utils';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({onTuduPress, onEditPress, animateIcon}) => {
@@ -41,6 +42,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     const [enteringAnimation, setEnteringAnimation] = useState<
       typeof SlideInRight | undefined
     >(() => SlideInRight);
+
     const {t} = useTranslation();
 
     useEffect(() => {
@@ -82,7 +84,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       (deletingItem: DraggableItem<TuduViewModel>) => () => {
         deleteItem(
           draggableContext.data,
-          draggableContext.setData,
+          newData => draggableContext.setData(newData, true),
           deletingItem,
         );
         animateIcon?.(DeleteIconActionAnimation);
@@ -91,13 +93,7 @@ const TudusList: React.FC<TudusListProps> = memo(
           handleUndoDeletion(draggableContext.data, draggableContext.setData),
         );
       },
-      [
-        animateIcon,
-        draggableContext.data,
-        draggableContext.setData,
-        handleUndoDeletion,
-        t,
-      ],
+      [animateIcon, draggableContext, handleUndoDeletion, t],
     );
 
     const handleEditGenerator = useCallback(
@@ -107,6 +103,23 @@ const TudusList: React.FC<TudusListProps> = memo(
           swipeableRef.current?.closeOptions();
         },
       [onEditPress],
+    );
+
+    const handleSendToOrRemoveFromTodayGenerator = useCallback(
+      (editingItem: DraggableItem<TuduViewModel>) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          const dueDate = editingItem.data[0].dueDate;
+          if (dueDate && isToday(dueDate)) {
+            editingItem.data[0].dueDate = undefined;
+            editingItem.data[0].scheduledOrder = undefined;
+            console.log(editingItem.data[0]);
+          } else {
+            editingItem.data[0].dueDate = new Date();
+          }
+          refreshListState(draggableContext.data, draggableContext.setData);
+          swipeableRef.current?.closeOptions();
+        },
+      [draggableContext.data, draggableContext.setData],
     );
 
     const getTuduList = useMemo(() => {
@@ -141,6 +154,9 @@ const TudusList: React.FC<TudusListProps> = memo(
                 onPress={handleTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                  draggableTudu.indexedTudu,
+                )}
               />
             </TuduAnimatedContainer>
           </DraggableView>
@@ -162,6 +178,9 @@ const TudusList: React.FC<TudusListProps> = memo(
                 onPress={onTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                  draggableTudu.indexedTudu,
+                )}
               />
             </TuduAnimatedContainer>
           </DraggableView>

@@ -24,3 +24,15 @@ export function removeFromList<T>(list: T[], items: T[]) {
 export function getLastItem<T>(list: T[]) {
   return list.at(list.length - 1);
 }
+
+export function groupBy<T, K>(
+  array: T[],
+  keyFn: (item: T) => K,
+): Record<string, T[]> {
+  return array.reduce((result, item) => {
+    const key = String(keyFn(item));
+    const group = result[key] || [];
+    group.push(item);
+    return {...result, [key]: group};
+  }, {} as Record<string, T[]>);
+}

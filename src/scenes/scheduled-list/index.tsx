@@ -5,25 +5,33 @@ import {useListService} from '../../service/list-service-hook/useListService';
 import {ListPageCore} from '../../components/list-page-core';
 import {ScheduledListPageProps} from './types';
 import {useScheduledTuduService} from '../../service/list-service-hook/useScheduledTuduService';
+import {isToday} from '../../utils/date-utils';
+import {getDaytimeIcon} from '../../utils/general-utils';
 
 const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   ({navigation, route}) => {
-    const {date} = route.params;
+    const date = useMemo(
+      () => route.params?.date ?? new Date(),
+      [route.params?.date],
+    );
 
-    const {saveList} = useListService();
-
-    const {getTudusForDate} = useScheduledTuduService();
+    const {getTudusForDate, saveAllScheduledTudus} = useScheduledTuduService();
 
     const handleBackButtonPress = useCallback(() => {
       navigation.goBack();
     }, [navigation]);
+
+    const getListTitle = useCallback(
+      () => (isToday(date) ? 'Today' : date.toLocaleDateString('pt-BR')),
+      [date],
+    );
 
     const list = useMemo(() => {
       const tudusForDate = getTudusForDate(date);
 
       const scheduledListVM = new ListViewModel({
         id: 'scheduled',
-        label: date.toLocaleDateString('pt-BR'),
+        label: getListTitle(),
         numberOfActiveItems: 0,
         tudus: new Map(),
       });
@@ -31,7 +39,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       scheduledListVM.tudus = tudusForDate;
 
       return scheduledListVM;
-    }, [date, getTudusForDate]);
+    }, [date, getListTitle, getTudusForDate]);
 
     const setTudus = useCallback(
       (draggable: DraggableItem<TuduViewModel>[]) => {
@@ -40,11 +48,10 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         }
 
         const newTuduList = draggable.flatMap(x => x.data);
-        const newList = new ListViewModel(list.mapBack(), list.origin);
-        newList.tudus = newTuduList;
-        saveList(newList);
+
+        saveAllScheduledTudus(newTuduList);
       },
-      [list, saveList],
+      [list, saveAllScheduledTudus],
     );
 
     return (
@@ -52,6 +59,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         handleBackButtonPress={handleBackButtonPress}
         setTudus={setTudus}
         list={list}
+        Icon={getDaytimeIcon()}
       />
     );
   },

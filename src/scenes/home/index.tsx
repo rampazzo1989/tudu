@@ -2,7 +2,7 @@ import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {HomePageProps, ListViewModel, SmartList} from './types';
 import {DraggablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
-import {DefaultLists} from './components/default-lists';
+import {SmartLists} from './components/smart-lists';
 import {useRecoilValue} from 'recoil';
 import {homeDefaultLists} from './state';
 import {HomeHeader} from './components/home-header';
@@ -83,7 +83,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   const groupedCustomLists = useMemo(() => {
     return mapListToDraggableItems(
-      getAllLists(),
+      getAllLists() ?? [],
       (list: ListViewModel) => list.groupName,
     ) as DraggableItem<ListViewModel>[];
   }, [getAllLists]);
@@ -106,7 +106,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   const handleSmartListPress = useCallback(
     (listData: SmartList) => {
-      navigation.navigate(listData.navigateToPage, {listId: listData.id});
+      navigation.navigate(listData.navigateToPage);
     },
     [navigation],
   );
@@ -134,7 +134,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContentContainer}
             scrollEnabled>
-            <DefaultLists
+            <SmartLists
               lists={smartLists}
               onListPress={handleDefaultListPress}
             />

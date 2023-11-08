@@ -37,6 +37,8 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
       scheduledOrder: this.scheduledOrder,
     };
 
+    console.log({listModel});
+
     return listModel;
   }
 
@@ -70,7 +72,6 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
 
 export type List = {
   label: string;
-  numberOfActiveItems: number;
   id: string;
   tudus: Map<string, TuduItem>;
   color?: string;
@@ -83,10 +84,13 @@ export class ListViewModel implements Clonable<ListViewModel> {
   origin: ListOrigin;
   id: string;
   label: string;
-  numberOfActiveItems: number;
   tudus: TuduViewModel[];
   color?: string;
   groupName?: string;
+
+  public getNumberOfActiveItems() {
+    return this.tudus.filter(x => !x.done).length;
+  }
 
   private getTuduViewModelsFromList = (list: List, origin: ListOrigin) => {
     const mappedTudus = [...list.tudus].map(
@@ -99,7 +103,6 @@ export class ListViewModel implements Clonable<ListViewModel> {
     const listModel: List = {
       id: this.id,
       label: this.label,
-      numberOfActiveItems: this.numberOfActiveItems,
       color: this.color,
       groupName: this.groupName,
       tudus: new Map(this.tudus.map(x => [x.id, x.mapBack()])),
@@ -117,7 +120,6 @@ export class ListViewModel implements Clonable<ListViewModel> {
   constructor(data: List, origin: ListOrigin = 'default') {
     this.id = data.id;
     this.label = data.label;
-    this.numberOfActiveItems = data.numberOfActiveItems;
     this.color = data.color;
     this.groupName = data.groupName;
     this.tudus = this.getTuduViewModelsFromList(data, origin);

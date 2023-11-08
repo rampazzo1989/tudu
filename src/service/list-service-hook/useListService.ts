@@ -11,6 +11,7 @@ import {
 } from '../../scenes/home/state';
 import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback} from 'react';
+import {groupBy} from '../../utils/array-utils';
 
 const useListService = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
@@ -31,6 +32,14 @@ const useListService = () => {
   const getAllLists = useCallback(
     (origin: ListOrigin = 'default') => {
       const listState = getState(origin);
+      if (
+        !listState ||
+        (Object.keys(listState).length === 0 &&
+          listState.constructor === Object)
+      ) {
+        return;
+      }
+
       const linkedLists = [...listState].map(
         ([_, value]) => new ListViewModel(value, origin),
       );
@@ -43,7 +52,6 @@ const useListService = () => {
   const saveAllLists = useCallback(
     (newLists: ListViewModel[], origin: ListOrigin = 'default') => {
       const lists = newLists.map<[string, List]>(x => {
-        console.log({x});
         return [x.id, x.mapBack()];
       });
       const newMap = new Map<string, List>(lists);
@@ -64,7 +72,7 @@ const useListService = () => {
       }
       const foundList = listState.get(id)!;
 
-      const linkedList = new ListViewModel(foundList);
+      const linkedList = new ListViewModel(foundList, origin);
       return linkedList;
     },
     [getState],
@@ -93,8 +101,8 @@ const useListService = () => {
 
   const saveTudu = useCallback(
     (tudu: TuduViewModel) => {
-      // Can only save tudus if the list is not archived
-      setCustomLists(previousState => {
+      const listStateSetter = getStateSetter(tudu.origin);
+      listStateSetter(previousState => {
         const foundList = previousState.get(tudu.listId);
         if (!foundList) {
           throw new ItemNotFoundError("The list couldn't be found.", tudu);
@@ -103,65 +111,63 @@ const useListService = () => {
         newTuduMap.set(tudu.id, tudu.mapBack());
         const newList = {...foundList, tudus: newTuduMap};
 
-        const newState = new Map(previousState);
+        const newState = new Map([...previousState]);
         newState.set(newList.id, newList);
 
         return newState;
       });
     },
-    [setCustomLists],
+    [getStateSetter],
   );
 
   const saveAllTudus = useCallback(
-    (tudus: TuduViewModel[]) => {
-      const listIds = tudus.map(x => x.listId);
-      const uniqueListIds = new Set(listIds);
-      if (uniqueListIds.size > 1) {
-        throw new Error(
-          'Saving multiple tudus to multiple lists are not supported yet',
-        );
-      }
-      const listId = [...uniqueListIds][0];
-      // Can only save tudus if the list is not archived
-      setCustomLists(previousState => {
-        const foundList = previousState.get(listId);
-        if (!foundList) {
-          throw new ItemNotFoundError("The list couldn't be found.", listId);
-        }
-        const newTuduMap = new Map(foundList.tudus);
+    (tudus: TuduViewModel[], origin: ListOrigin = 'default') => {
+      const groupedTudus = groupBy(tudus, tudu => tudu.listId);
 
-        tudus.forEach(tudu => {
-          newTuduMap.set(tudu.id, tudu.mapBack());
-        });
+      const listStateSetter = getStateSetter(origin);
 
-        const newList = {...foundList, tudus: newTuduMap};
-
+      listStateSetter(previousState => {
         const newState = new Map(previousState);
-        newState.set(newList.id, newList);
+
+        for (const listId in groupedTudus) {
+          const foundList = previousState.get(listId);
+          if (!foundList) {
+            throw new ItemNotFoundError("The list couldn't be found.", listId);
+          }
+          const newTuduMap = new Map(foundList.tudus);
+          const savingTudus = groupedTudus[listId];
+
+          savingTudus.forEach(tudu => {
+            newTuduMap.set(tudu.id, tudu.mapBack());
+          });
+
+          const newList = {...foundList, tudus: newTuduMap};
+
+          newState.set(newList.id, newList);
+        }
 
         return newState;
       });
     },
-    [setCustomLists],
+    [getStateSetter],
   );
 
   const saveList = useCallback(
     (list: ListViewModel) => {
-      // Can only edit list if it's not archived
-      setCustomLists(previousState => {
-        const newState = new Map(previousState);
+      const listStateSetter = getStateSetter(list.origin);
+      listStateSetter(previousState => {
+        const newState = new Map([...previousState]);
         newState.set(list.id, list.mapBack());
 
         return newState;
       });
     },
-    [setCustomLists],
+    [getStateSetter],
   );
 
   const deleteList = useCallback(
     (list: ListViewModel) => {
-      const listStateSetter =
-        list.origin === 'default' ? setCustomLists : setArchivedLists;
+      const listStateSetter = getStateSetter(list.origin);
 
       listStateSetter(previousState => {
         const newState = new Map(previousState);
@@ -170,7 +176,7 @@ const useListService = () => {
         return newState;
       });
     },
-    [setArchivedLists, setCustomLists],
+    [getStateSetter],
   );
 
   const archiveList = useCallback(

@@ -24,7 +24,7 @@ import {TuduViewModel} from '../../scenes/home/types';
 import {ListHeader} from '../list-header';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
-  ({setTudus, handleBackButtonPress, list}) => {
+  ({setTudus, handleBackButtonPress, list, Icon}) => {
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
@@ -60,9 +60,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
         saveTudu(tudu);
 
-        const allDone = !!list.tudus
-          ?.filter(x => x.id !== tudu.id)
-          .every(x => x.done);
+        const allDone =
+          !!list.tudus?.filter(x => x.id !== tudu.id).every(x => x.done) &&
+          tudu.done;
         if (allDone) {
           handleListCompleted();
         }
@@ -70,15 +70,22 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [handleListCompleted, list, saveTudu],
     );
 
-    const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
-      actionButtonRef.current?.animateThisIcon(Icon);
-    }, []);
+    const animateThisIcon = useCallback(
+      (thisIcon: ForwardedRefAnimatedIcon) => {
+        actionButtonRef.current?.animateThisIcon(thisIcon);
+      },
+      [],
+    );
 
     const cheersRef = useRef<AnimatedIconRef>(null);
 
     return (
       <Page>
-        <ListHeader listData={list} onBackButtonPress={handleBackButtonPress} />
+        <ListHeader
+          listData={list}
+          onBackButtonPress={handleBackButtonPress}
+          Icon={Icon}
+        />
         <DraxProvider>
           <DraggableContextProvider<TuduViewModel>
             data={draggableTudus}

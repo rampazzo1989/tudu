@@ -7,7 +7,7 @@ import {useListService} from './useListService';
 
 const useScheduledTuduService = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
-  const {saveTudu} = useListService();
+  const {saveTudu, saveAllTudus} = useListService();
 
   const getTudusForDate = useCallback(
     (date: Date) => {
@@ -29,6 +29,10 @@ const useScheduledTuduService = () => {
           ),
         );
       });
+
+      tudusFromDate.sort(
+        (a, b) => (a.scheduledOrder ?? -1) - (b.scheduledOrder ?? -1),
+      );
 
       return tudusFromDate;
     },
@@ -53,7 +57,21 @@ const useScheduledTuduService = () => {
     [saveTudu],
   );
 
-  return {getTudusForDate, scheduleTudu, unscheduleTudu};
+  const saveAllScheduledTudus = useCallback(
+    (tudus: TuduViewModel[]) => {
+      tudus.forEach((tudu, index) => {
+        if (!tudu.dueDate) {
+          return;
+        }
+        tudu.scheduledOrder = index;
+      });
+
+      saveAllTudus(tudus);
+    },
+    [saveAllTudus],
+  );
+
+  return {getTudusForDate, scheduleTudu, unscheduleTudu, saveAllScheduledTudus};
 };
 
 export {useScheduledTuduService};

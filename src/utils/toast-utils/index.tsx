@@ -6,13 +6,17 @@ export const showItemDeletedToast = (
   message: string,
   onUndoPress: () => void,
 ) => {
+  const handleUndoPress = () => {
+    onUndoPress();
+    Toast.hide();
+  };
   Toast.show({
     type: 'actionSuccessWithUndo',
     position: 'bottom',
     bottomOffset: 60,
     visibilityTime: 6000,
     props: {
-      onPress: onUndoPress,
+      onPress: handleUndoPress,
       message,
     },
     onShow: () => setRecoil(toastSpan, 40),

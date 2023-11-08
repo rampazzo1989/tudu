@@ -6,11 +6,21 @@ import {SwipeableCard} from '../../swipeable-card';
 import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
 import {SunIcon} from '../../animated-icons/sun-icon';
 import {SwipeableTuduCardProps} from './types';
+import {UndoSunIcon} from '../../animated-icons/undo-sun-icon';
+import {useTranslation} from 'react-i18next';
 
 const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
-  ({children, onSendOrRemoveFromToday, onDelete, onEdit, done}) => {
+  ({
+    children,
+    onSendToOrRemoveFromToday: onSendOrRemoveFromToday,
+    onDelete,
+    onEdit,
+    done,
+    isOnToday = false,
+  }) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
+    const {t} = useTranslation();
 
     const rightOptions = useMemo<SwipeableOption[]>(
       () => [
@@ -29,11 +39,13 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
     const leftOptions = useMemo<SwipeableOption[]>(
       () => [
         {
-          Icon: SunIcon,
-          text: 'Send to Today',
+          Icon: isOnToday ? UndoSunIcon : SunIcon,
+          text: isOnToday
+            ? t('actions.removeFromToday')
+            : t('actions.sendToToday'),
         },
       ],
-      [],
+      [isOnToday, t],
     );
 
     const handleSwipeRight = useCallback(() => {

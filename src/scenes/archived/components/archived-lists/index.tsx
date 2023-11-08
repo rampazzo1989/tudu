@@ -52,7 +52,7 @@ const ArchivedLists: React.FC<ArchivedListsProps> = memo(
               <StyledArchivedListCard
                 Icon={ListDefaultIcon}
                 label={item.label}
-                numberOfActiveItems={item.numberOfActiveItems}
+                numberOfActiveItems={item.getNumberOfActiveItems()}
                 color={item.color}
                 onPress={listPressHandlerGenerator(item)}
                 onDelete={handleDeleteGenerator(item)}

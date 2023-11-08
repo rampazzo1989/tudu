@@ -1,6 +1,9 @@
-import {DefaultHeaderProps} from '../../../../components/default-header/types';
-import {ListViewModel} from '../../../home/types';
+import {ListViewModel} from '../../scenes/home/types';
+import {DefaultHeaderProps} from '../default-header/types';
 
-export type ListHeaderProps = Pick<DefaultHeaderProps, 'onBackButtonPress'> & {
+export type ListHeaderProps = Pick<
+  DefaultHeaderProps,
+  'onBackButtonPress' | 'Icon'
+> & {
   listData?: ListViewModel;
 };

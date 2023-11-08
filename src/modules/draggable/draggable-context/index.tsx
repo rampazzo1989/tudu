@@ -1,8 +1,8 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {DeleteIcon} from '../../../components/animated-icons/delete-icon';
 import {FolderIcon} from '../../../components/animated-icons/folder-icon';
 import {PopupModal} from '../../../components/popup-modal';
-import {deleteItem} from '../draggable-utils';
+import {deleteItem, refreshListState} from '../draggable-utils';
 import {
   DraggableContextProviderProps,
   DraggableContextType,
@@ -29,18 +29,29 @@ const DraggableContextProvider = <T,>({
   const [onCustomAction, setOnCustomAction] = useState<EmptyFnType>();
   const [confirmationPopupTitleBuilder, setConfirmationPopupTitleBuilder] =
     useState<(item?: DraggableItem<T> | T) => string>();
+  const previousStateRef = useRef<DraggableItem<T>[]>();
+
+  const handleSetData = useCallback(
+    (newData: DraggableItem<T>[], allowUndoThisSave?: boolean) => {
+      previousStateRef.current = allowUndoThisSave ? data : undefined;
+      console.log({allowUndoThisSave, data});
+
+      onSetData(newData);
+    },
+    [data, onSetData],
+  );
 
   const handleConfirmAction = useCallback(() => {
     setModal(x => {
       if (x?.action === 'delete') {
-        deleteItem(data, onSetData, dealingItem);
+        deleteItem(data, newData => handleSetData(newData, true), dealingItem);
         onCustomAction?.();
       } else {
         onCustomAction?.();
       }
       return undefined;
     });
-  }, [data, onSetData, dealingItem, onCustomAction]);
+  }, [data, handleSetData, dealingItem, onCustomAction]);
 
   const handleCancelAction = useCallback(() => {
     setDealingItem(undefined);
@@ -50,6 +61,15 @@ const DraggableContextProvider = <T,>({
       return undefined;
     });
   }, []);
+
+  const undoLastDeletion = useCallback(() => {
+    console.log('previousState.lengths', previousStateRef.current?.length);
+    if (!previousStateRef.current) {
+      return;
+    }
+    refreshListState(previousStateRef.current, onSetData);
+    previousStateRef.current = undefined;
+  }, [onSetData]);
 
   const showConfirmationModal = useCallback(
     (
@@ -72,10 +92,11 @@ const DraggableContextProvider = <T,>({
     <DraggableContext.Provider
       value={{
         data,
-        setData: onSetData,
+        setData: handleSetData,
         onDragStart,
         onDragEnd,
         showConfirmationModal,
+        undoLastDeletion,
       }}>
       {children}
       <PopupModal
