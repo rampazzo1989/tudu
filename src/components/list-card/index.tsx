@@ -38,6 +38,7 @@ const ListCard: React.FC<ListCardProps> = memo(
     onPress,
     ControlComponent,
     isHighlighted = false,
+    showNumberOfActiveItems = true,
   }) => {
     const labelEmoji = useMemo(() => getFirstEmoji(label), [label]);
 
@@ -70,10 +71,12 @@ const ListCard: React.FC<ListCardProps> = memo(
             {trimmedLabel}
           </Label>
         </IconLabelContainer>
-        <NumberOfActiveItems
-          numberOfActiveItems={numberOfActiveItems}
-          isHighlighted={isHighlighted}
-        />
+        {showNumberOfActiveItems && (
+          <NumberOfActiveItems
+            numberOfActiveItems={numberOfActiveItems}
+            isHighlighted={isHighlighted}
+          />
+        )}
       </ListCardContainer>
     );
   },

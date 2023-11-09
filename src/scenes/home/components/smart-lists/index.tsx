@@ -1,5 +1,7 @@
 import React, {memo, useCallback} from 'react';
+import {useRecoilValue} from 'recoil';
 import {ListIcons} from '../../../list/constants';
+import {smartListsTuduCount} from '../../state';
 import {SmartList} from '../../types';
 import {StyledListCard} from './styles';
 import {DefaultListsProps} from './types';
@@ -12,13 +14,31 @@ const SmartLists: React.FC<DefaultListsProps> = memo(({lists, onListPress}) => {
     [onListPress],
   );
 
+  const smartListsUndoneCounter = useRecoilValue(smartListsTuduCount);
+
+  console.log({smartListsUndoneCounter});
+
+  const getNumberOfActiveTudus = (list: SmartList) => {
+    switch (list.id) {
+      case 'all':
+        return smartListsUndoneCounter.allTudus;
+      case 'today':
+        return smartListsUndoneCounter.todayCount;
+      case 'starred':
+        return smartListsUndoneCounter.starredCount;
+      default:
+        return 0;
+    }
+  };
+
   return (
     <>
       {lists.map(list => (
         <StyledListCard
           Icon={ListIcons[list.icon]}
           label={list.label}
-          numberOfActiveItems={0}
+          showNumberOfActiveItems={list.id !== 'archived'}
+          numberOfActiveItems={getNumberOfActiveTudus(list)}
           isHighlighted={list.isHighlighted}
           key={list.label}
           onPress={listPressHandlerGenerator(list)}

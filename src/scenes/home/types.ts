@@ -127,7 +127,7 @@ export class ListViewModel implements Clonable<ListViewModel> {
   }
 }
 
-type BuiltInListType = 'today' | 'all lists' | 'starred' | 'archived';
+type BuiltInListType = 'today' | 'all' | 'starred' | 'archived';
 
 export type SmartList = {
   id: BuiltInListType;
