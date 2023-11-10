@@ -16,8 +16,6 @@ const SmartLists: React.FC<DefaultListsProps> = memo(({lists, onListPress}) => {
 
   const smartListsUndoneCounter = useRecoilValue(smartListsTuduCount);
 
-  console.log({smartListsUndoneCounter});
-
   const getNumberOfActiveTudus = (list: SmartList) => {
     switch (list.id) {
       case 'all':

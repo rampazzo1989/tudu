@@ -4,6 +4,8 @@ import {isToday} from '../../utils/date-utils';
 import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
 import {Counter, SmartList, List, TuduItem} from './types';
 
+export const UNLISTED = 'unlisted';
+
 export const homeDefaultLists = atom<SmartList[]>({
   key: 'homeDefaultLists',
   default: [
@@ -68,6 +70,16 @@ export const counters = atom<Map<string, Counter>>({
     ],
   ]),
   effects: [mmkvPersistAtom('counters', true)],
+});
+
+export const unlistedTudusList = atom<List>({
+  key: 'unlistedTudusList',
+  default: {
+    id: UNLISTED,
+    label: 'Unlisted',
+    tudus: new Map<string, TuduItem>(),
+  } as List,
+  effects: [mmkvPersistAtom('unlistedTudusList')],
 });
 
 export const myLists = atom<Map<string, List>>({
@@ -135,6 +147,7 @@ export const smartListsTuduCount = selector({
   key: 'smartListsTuduCount',
   get: ({get}) => {
     const lists = get(myLists);
+    const {tudus: unlistedTudus} = get(unlistedTudusList);
 
     let todayCount = 0;
     let starredCount = 0;
@@ -147,12 +160,19 @@ export const smartListsTuduCount = selector({
 
       allTudus += undoneTudus.length;
 
-      console.log({allTudus});
-
       todayCount += undoneTudus.filter(
         tudu => tudu.dueDate && isToday(tudu.dueDate),
       ).length;
     }, []);
+
+    const undoneUnlistedTudus = [...unlistedTudus]
+      .filter(([_, tudu]) => !tudu.done)
+      .map(([_, tudu]) => tudu);
+
+    allTudus += undoneUnlistedTudus.length;
+    todayCount += undoneUnlistedTudus.filter(
+      tudu => tudu.dueDate && isToday(tudu.dueDate),
+    ).length;
 
     return {todayCount, starredCount, allTudus};
   },

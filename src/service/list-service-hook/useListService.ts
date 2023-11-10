@@ -8,6 +8,8 @@ import {
 import {
   myLists,
   archivedLists as archivedListsState,
+  unlistedTudusList,
+  UNLISTED,
 } from '../../scenes/home/state';
 import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback} from 'react';
@@ -16,6 +18,7 @@ import {groupBy} from '../../utils/array-utils';
 const useListService = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
   const [archivedLists, setArchivedLists] = useRecoilState(archivedListsState);
+  const [_, setUnlistedTudus] = useRecoilState(unlistedTudusList);
 
   const getState = useCallback(
     (stateOrigin: ListOrigin) =>
@@ -99,8 +102,32 @@ const useListService = () => {
     [getListById],
   );
 
+  const saveUnlistedTudus = useCallback(
+    (tudus: TuduViewModel[]) => {
+      setUnlistedTudus(previousState => {
+        const newTuduMap = new Map(previousState.tudus);
+
+        tudus.forEach(tudu => {
+          newTuduMap.set(tudu.id, tudu.mapBack());
+        });
+
+        const newList: List = {
+          id: UNLISTED,
+          label: 'Unlisted',
+          tudus: newTuduMap,
+        };
+
+        return newList;
+      });
+    },
+    [setUnlistedTudus],
+  );
+
   const saveTudu = useCallback(
     (tudu: TuduViewModel) => {
+      if (tudu.listId === UNLISTED) {
+        return saveUnlistedTudus([tudu]);
+      }
       const listStateSetter = getStateSetter(tudu.origin);
       listStateSetter(previousState => {
         const foundList = previousState.get(tudu.listId);
@@ -117,12 +144,21 @@ const useListService = () => {
         return newState;
       });
     },
-    [getStateSetter],
+    [getStateSetter, saveUnlistedTudus],
   );
 
   const saveAllTudus = useCallback(
     (tudus: TuduViewModel[], origin: ListOrigin = 'default') => {
-      const groupedTudus = groupBy(tudus, tudu => tudu.listId);
+      const unlistedTudusVMs = tudus.filter(x => x.listId === UNLISTED);
+
+      if (unlistedTudusVMs) {
+        saveUnlistedTudus(unlistedTudusVMs);
+      }
+
+      const groupedTudus = groupBy(
+        tudus.filter(x => x.listId !== UNLISTED),
+        tudu => tudu.listId,
+      );
 
       const listStateSetter = getStateSetter(origin);
 
@@ -149,7 +185,7 @@ const useListService = () => {
         return newState;
       });
     },
-    [getStateSetter],
+    [getStateSetter, saveUnlistedTudus],
   );
 
   const saveList = useCallback(

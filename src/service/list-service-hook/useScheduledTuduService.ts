@@ -1,12 +1,13 @@
 import {useCallback} from 'react';
 import {useRecoilState} from 'recoil';
-import {myLists} from '../../scenes/home/state';
+import {myLists, unlistedTudusList} from '../../scenes/home/state';
 import {TuduViewModel} from '../../scenes/home/types';
 import {getDateOnlyTimeStamp} from '../../utils/date-utils';
 import {useListService} from './useListService';
 
 const useScheduledTuduService = () => {
-  const [customLists, setCustomLists] = useRecoilState(myLists);
+  const [customLists] = useRecoilState(myLists);
+  const [unlistedTudus] = useRecoilState(unlistedTudusList);
   const {saveTudu, saveAllTudus} = useListService();
 
   const getTudusForDate = useCallback(
@@ -30,13 +31,31 @@ const useScheduledTuduService = () => {
         );
       });
 
+      const filteredTudus = [...unlistedTudus.tudus].filter(([_, tudu]) => {
+        const itsFromDate =
+          tudu.dueDate &&
+          getDateOnlyTimeStamp(tudu.dueDate) === dateOnlyTimeStamp;
+        return itsFromDate;
+      });
+
+      filteredTudus.forEach(([_, tudu]) =>
+        tudusFromDate.push(
+          new TuduViewModel(
+            tudu,
+            unlistedTudus.id,
+            'default',
+            unlistedTudus.label,
+          ),
+        ),
+      );
+
       tudusFromDate.sort(
         (a, b) => (a.scheduledOrder ?? -1) - (b.scheduledOrder ?? -1),
       );
 
       return tudusFromDate;
     },
-    [customLists],
+    [customLists, unlistedTudus],
   );
 
   const scheduleTudu = useCallback(
