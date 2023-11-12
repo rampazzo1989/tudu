@@ -5,3 +5,6 @@ export const getDateOnlyTimeStamp = (date: Date) => {
 
 export const isToday = (date: Date) =>
   getDateOnlyTimeStamp(date) === getDateOnlyTimeStamp(new Date());
+
+export const formatToLocaleDate = (date: Date) =>
+  date.toLocaleDateString('pt-BR');

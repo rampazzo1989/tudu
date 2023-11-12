@@ -63,7 +63,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
     this.label = data.label;
     this.done = data.done;
     this.listId = listId;
-    this.dueDate = data.dueDate;
+    this.dueDate = data.dueDate ? new Date(data.dueDate) : undefined;
     this.scheduledOrder = data.scheduledOrder;
     this.origin = origin;
     this.listName = listName;
@@ -127,7 +127,7 @@ export class ListViewModel implements Clonable<ListViewModel> {
   }
 }
 
-type BuiltInListType = 'today' | 'all lists' | 'starred' | 'archived';
+type BuiltInListType = 'today' | 'all' | 'starred' | 'archived';
 
 export type SmartList = {
   id: BuiltInListType;

@@ -37,6 +37,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
       editingTudu ?? getNewEmptyTudu(),
     );
+    const draggableContext =
+      useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
 
     const {t} = useTranslation();
 
@@ -51,9 +53,6 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     }, []);
 
     const isEditing = useMemo(() => !!editingTudu, [editingTudu]);
-
-    const draggableContext =
-      useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
 
     const handleInsertOrUpdateTudu = useCallback(
       (tudu: TuduViewModel) => {

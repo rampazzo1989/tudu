@@ -1,12 +1,12 @@
 import React, {memo, useCallback, useMemo} from 'react';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
-import {useListService} from '../../service/list-service-hook/useListService';
 import {ListPageCore} from '../../components/list-page-core';
 import {ScheduledListPageProps} from './types';
 import {useScheduledTuduService} from '../../service/list-service-hook/useScheduledTuduService';
-import {isToday} from '../../utils/date-utils';
+import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {getDaytimeIcon} from '../../utils/general-utils';
+import {UNLISTED} from '../home/state';
 
 const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   ({navigation, route}) => {
@@ -22,7 +22,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
     }, [navigation]);
 
     const getListTitle = useCallback(
-      () => (isToday(date) ? 'Today' : date.toLocaleDateString('pt-BR')),
+      () => (isToday(date) ? 'Today' : formatToLocaleDate(date)),
       [date],
     );
 
@@ -32,7 +32,6 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       const scheduledListVM = new ListViewModel({
         id: 'scheduled',
         label: getListTitle(),
-        numberOfActiveItems: 0,
         tudus: new Map(),
       });
 
@@ -49,9 +48,16 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
 
         const newTuduList = draggable.flatMap(x => x.data);
 
+        newTuduList.forEach(tudu => {
+          if (!tudu.listId) {
+            tudu.dueDate = date;
+            tudu.listId = UNLISTED;
+          }
+        });
+
         saveAllScheduledTudus(newTuduList);
       },
-      [list, saveAllScheduledTudus],
+      [date, list, saveAllScheduledTudus],
     );
 
     return (
@@ -60,6 +66,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         setTudus={setTudus}
         list={list}
         Icon={getDaytimeIcon()}
+        isSmartList
       />
     );
   },

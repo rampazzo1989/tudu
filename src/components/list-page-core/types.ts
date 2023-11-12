@@ -7,4 +7,5 @@ export type ListPageCoreProps = {
   handleBackButtonPress: () => void;
   list?: ListViewModel;
   Icon?: ForwardedRefAnimatedIcon;
+  isSmartList?: boolean;
 };

@@ -29,7 +29,9 @@ const mmkvPersistAtom: (key: string, isMap?: boolean) => AtomEffect<any> =
     setSelf(() => {
       let data = storage.getString(key);
       if (data != null) {
-        return isMap ? new Map(JSON.parse(data, reviver)) : JSON.parse(data);
+        return isMap
+          ? new Map(JSON.parse(data, reviver))
+          : JSON.parse(data, reviver);
       } else {
         return new DefaultValue();
       }
@@ -38,7 +40,7 @@ const mmkvPersistAtom: (key: string, isMap?: boolean) => AtomEffect<any> =
     onSet((newValue, _, isReset) => {
       const stringified = isMap
         ? JSON.stringify(newValue, replacer)
-        : JSON.stringify(newValue);
+        : JSON.stringify(newValue, replacer);
       if (isReset) {
         storage.delete(key);
       } else {

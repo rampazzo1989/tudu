@@ -24,10 +24,25 @@ export const CheckAndTextContainer = styled.View<CheckableComponentType>`
 export const Label = styled.Text<CheckableComponentType>`
   color: ${({theme}) => theme.colors.text};
   font-size: 16px;
-  margin-top: 12px;
-  margin-bottom: 12px;
+  /* margin-top: 12px; */
+  /* margin-bottom: 12px; */
   max-width: 85%;
   flex: 1;
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};
+`;
+
+export const LabelAndAdditionalInfoContainer = styled.View`
+  flex: 1;
+`;
+
+export const AdditionalInfoContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  height: 14px;
+`;
+
+export const AdditionalInfoLabel = styled.Text`
+  margin-left: 3px;
+  font-size: 10px;
 `;

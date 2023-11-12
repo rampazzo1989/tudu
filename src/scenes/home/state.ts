@@ -1,7 +1,10 @@
 import i18next from 'i18next';
 import {atom, selector} from 'recoil';
+import {isToday} from '../../utils/date-utils';
 import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
 import {Counter, SmartList, List, TuduItem} from './types';
+
+export const UNLISTED = 'unlisted';
 
 export const homeDefaultLists = atom<SmartList[]>({
   key: 'homeDefaultLists',
@@ -14,7 +17,7 @@ export const homeDefaultLists = atom<SmartList[]>({
       navigateToPage: 'ScheduledList',
     },
     {
-      id: 'all lists',
+      id: 'all',
       icon: 'default',
       label: i18next.t('listTitles.allTasks'),
       isHighlighted: false,
@@ -69,6 +72,16 @@ export const counters = atom<Map<string, Counter>>({
   effects: [mmkvPersistAtom('counters', true)],
 });
 
+export const unlistedTudusList = atom<List>({
+  key: 'unlistedTudusList',
+  default: {
+    id: UNLISTED,
+    label: 'Unlisted',
+    tudus: new Map<string, TuduItem>(),
+  } as List,
+  effects: [mmkvPersistAtom('unlistedTudusList')],
+});
+
 export const myLists = atom<Map<string, List>>({
   key: 'myLists',
   default: new Map<string, List>([
@@ -78,7 +91,6 @@ export const myLists = atom<Map<string, List>>({
         id: '1',
         label: 'Movies',
         color: 'green',
-        numberOfActiveItems: 1,
         tudus: new Map<string, TuduItem>(),
       },
     ],
@@ -88,7 +100,6 @@ export const myLists = atom<Map<string, List>>({
         id: '2',
         label: 'Shop List',
         color: 'red',
-        numberOfActiveItems: 3,
         groupName: 'Test',
         tudus: new Map<string, TuduItem>(),
       },
@@ -99,7 +110,6 @@ export const myLists = atom<Map<string, List>>({
         id: '3',
         label: 'Gift Ideias',
         color: '#7956BF',
-        numberOfActiveItems: 12,
         tudus: new Map<string, TuduItem>(),
       },
     ],
@@ -109,7 +119,6 @@ export const myLists = atom<Map<string, List>>({
         id: '4',
         label: 'America',
         color: 'red',
-        numberOfActiveItems: 10,
         groupName: 'Travel',
         tudus: new Map<string, TuduItem>(),
       },
@@ -120,7 +129,6 @@ export const myLists = atom<Map<string, List>>({
         id: '5',
         label: 'Europe',
         color: 'blue',
-        numberOfActiveItems: 12,
         groupName: 'Travel',
         tudus: new Map<string, TuduItem>(),
       },
@@ -133,4 +141,39 @@ export const archivedLists = atom<Map<string, List>>({
   key: 'archivedLists',
   default: new Map<string, List>(),
   effects: [mmkvPersistAtom('archivedLists', true)],
+});
+
+export const smartListsTuduCount = selector({
+  key: 'smartListsTuduCount',
+  get: ({get}) => {
+    const lists = get(myLists);
+    const {tudus: unlistedTudus} = get(unlistedTudusList);
+
+    let todayCount = 0;
+    let starredCount = 0;
+    let allTudus = 0;
+
+    lists.forEach(list => {
+      const undoneTudus = [...list.tudus]
+        .filter(([_, tudu]) => !tudu.done)
+        .map(([_, tudu]) => tudu);
+
+      allTudus += undoneTudus.length;
+
+      todayCount += undoneTudus.filter(
+        tudu => tudu.dueDate && isToday(tudu.dueDate),
+      ).length;
+    }, []);
+
+    const undoneUnlistedTudus = [...unlistedTudus]
+      .filter(([_, tudu]) => !tudu.done)
+      .map(([_, tudu]) => tudu);
+
+    allTudus += undoneUnlistedTudus.length;
+    todayCount += undoneUnlistedTudus.filter(
+      tudu => tudu.dueDate && isToday(tudu.dueDate),
+    ).length;
+
+    return {todayCount, starredCount, allTudus};
+  },
 });

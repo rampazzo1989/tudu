@@ -11,6 +11,7 @@ export type ListCardProps = {
   color?: string;
   onPress?: () => void;
   ControlComponent?: React.ReactNode;
+  showNumberOfActiveItems?: boolean;
 };
 
 export type EditableListCardProps = ListCardProps & {
