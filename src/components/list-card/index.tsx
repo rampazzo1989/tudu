@@ -1,5 +1,5 @@
 import React, {memo, useMemo} from 'react';
-import {getFirstEmoji, trimFirstEmoji} from '../../utils/emoji-utils';
+import {trimEmoji} from '../../utils/emoji-utils';
 import {
   Container,
   ControlComponentContainer,
@@ -40,9 +40,8 @@ const ListCard: React.FC<ListCardProps> = memo(
     isHighlighted = false,
     showNumberOfActiveItems = true,
   }) => {
-    const labelEmoji = useMemo(() => getFirstEmoji(label), [label]);
+    const emojiInfo = useMemo(() => trimEmoji(label.trim()), [label]);
 
-    const trimmedLabel = useMemo(() => trimFirstEmoji(label), [label]);
     return (
       <ListCardContainer
         isHighlighted={isHighlighted}
@@ -58,8 +57,8 @@ const ListCard: React.FC<ListCardProps> = memo(
               {ControlComponent}
             </ControlComponentContainer>
           )}
-          {labelEmoji ? (
-            <Emoji adjustsFontSizeToFit>{labelEmoji}</Emoji>
+          {emojiInfo?.emoji ? (
+            <Emoji adjustsFontSizeToFit>{emojiInfo.emoji}</Emoji>
           ) : (
             <Icon
               animateWhenIdle
@@ -68,7 +67,7 @@ const ListCard: React.FC<ListCardProps> = memo(
             />
           )}
           <Label isHighlighted={isHighlighted} numberOfLines={1}>
-            {trimmedLabel}
+            {emojiInfo?.emoji ?? label}
           </Label>
         </IconLabelContainer>
         {showNumberOfActiveItems && (
