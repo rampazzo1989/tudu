@@ -4,7 +4,7 @@ import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {ListPageCore} from '../../components/list-page-core';
 import {ScheduledListPageProps} from './types';
 import {useScheduledTuduService} from '../../service/list-service-hook/useScheduledTuduService';
-import {isToday} from '../../utils/date-utils';
+import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {getDaytimeIcon} from '../../utils/general-utils';
 import {UNLISTED} from '../home/state';
 
@@ -22,7 +22,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
     }, [navigation]);
 
     const getListTitle = useCallback(
-      () => (isToday(date) ? 'Today' : date.toLocaleDateString('pt-BR')),
+      () => (isToday(date) ? 'Today' : formatToLocaleDate(date)),
       [date],
     );
 
@@ -66,6 +66,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         setTudus={setTudus}
         list={list}
         Icon={getDaytimeIcon()}
+        isSmartList
       />
     );
   },

@@ -22,9 +22,11 @@ import {TudusList} from '../tudus-list';
 import {ListPageCoreProps} from './types';
 import {TuduViewModel} from '../../scenes/home/types';
 import {ListHeader} from '../list-header';
+import {TuduAdditionalInformation} from '../tudu-card/types';
+import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
-  ({setTudus, handleBackButtonPress, list, Icon}) => {
+  ({setTudus, handleBackButtonPress, list, Icon, isSmartList = false}) => {
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
@@ -79,6 +81,28 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const cheersRef = useRef<AnimatedIconRef>(null);
 
+    const getAdditionalInformation = useCallback(
+      (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
+        if (isSmartList && tudu.listName) {
+          return {
+            label: tudu.listName,
+            originType: 'list',
+          };
+        }
+        if (tudu.dueDate) {
+          console.log(tudu.dueDate, typeof tudu.dueDate);
+          const isScheduledForToday = isToday(tudu.dueDate);
+          return {
+            label: isScheduledForToday
+              ? 'Today'
+              : formatToLocaleDate(tudu.dueDate),
+            originType: isScheduledForToday ? 'today' : 'list',
+          };
+        }
+      },
+      [isSmartList],
+    );
+
     return (
       <Page>
         <ListHeader
@@ -108,6 +132,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 <TudusList
                   onTuduPress={handleTuduPress}
                   animateIcon={animateThisIcon}
+                  getAdditionalInformation={getAdditionalInformation}
                   onEditPress={tudu => {
                     setEditingTudu(tudu);
                     setNewTuduPopupVisible(true);

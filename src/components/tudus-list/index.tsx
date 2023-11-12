@@ -36,7 +36,7 @@ import {SwipeableCardRef} from '../swipeable-card/types';
 import {isToday} from '../../utils/date-utils';
 
 const TudusList: React.FC<TudusListProps> = memo(
-  ({onTuduPress, onEditPress, animateIcon}) => {
+  ({onTuduPress, onEditPress, getAdditionalInformation, animateIcon}) => {
     const draggableContext =
       useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
     const [enteringAnimation, setEnteringAnimation] = useState<
@@ -112,7 +112,6 @@ const TudusList: React.FC<TudusListProps> = memo(
           if (dueDate && isToday(dueDate)) {
             editingItem.data[0].dueDate = undefined;
             editingItem.data[0].scheduledOrder = undefined;
-            console.log(editingItem.data[0]);
           } else {
             editingItem.data[0].dueDate = new Date();
           }
@@ -157,6 +156,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   draggableTudu.indexedTudu,
                 )}
+                additionalInfo={getAdditionalInformation(tudu)}
               />
             </TuduAnimatedContainer>
           </DraggableView>
@@ -200,6 +200,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       getSectionTitle,
       handleDeleteGenerator,
       handleEditGenerator,
+      handleSendToOrRemoveFromTodayGenerator,
       handleTuduPress,
       onTuduPress,
     ]);

@@ -1,13 +1,29 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {isToday} from '../../utils/date-utils';
 import {toggle} from '../../utils/state-utils';
+import {ListDefaultIcon} from '../animated-icons/list-default-icon';
+import {SunIcon} from '../animated-icons/sun-icon';
 import {TuduCheckbox} from '../tudu-checkbox';
-import {Card, CheckAndTextContainer, Label} from './styles';
+import {
+  AdditionalInfoContainer,
+  AdditionalInfoLabel,
+  Card,
+  CheckAndTextContainer,
+  Label,
+  LabelAndAdditionalInfoContainer,
+} from './styles';
 import {SwipeableTuduCard} from './swipeable-tudu-card';
-import {TuduCardProps} from './types';
+import {TuduAdditionalInformationOriginType, TuduCardProps} from './types';
 
 const TuduCard = memo<TuduCardProps>(
-  ({data, onPress, onDelete, onEdit, onSendToOrRemoveFromToday}) => {
+  ({
+    data,
+    onPress,
+    onDelete,
+    onEdit,
+    onSendToOrRemoveFromToday,
+    additionalInfo,
+  }) => {
     const [internalDone, setInternalDone] = useState(data.done);
 
     useEffect(() => {
@@ -19,6 +35,30 @@ const TuduCard = memo<TuduCardProps>(
       const toggleTimeout = data.done ? 0 : 100;
       setTimeout(() => onPress(data), toggleTimeout);
     }, [data, onPress]);
+
+    const AdditionalInfoIcon = useCallback(
+      (informationType: TuduAdditionalInformationOriginType) => {
+        switch (informationType) {
+          case 'today':
+            return <SunIcon size={12} />;
+          case 'list':
+            return <ListDefaultIcon size={10} />;
+        }
+      },
+      [],
+    );
+
+    const getAdditionalInformationLabel = useCallback(
+      (informationType: TuduAdditionalInformationOriginType, label: string) => {
+        switch (informationType) {
+          case 'today':
+            return label;
+          case 'list':
+            return `in ${label}`;
+        }
+      },
+      [],
+    );
 
     return (
       <Card
@@ -35,7 +75,20 @@ const TuduCard = memo<TuduCardProps>(
           isOnToday={data.dueDate && isToday(data.dueDate)}
           onSendToOrRemoveFromToday={onSendToOrRemoveFromToday}>
           <CheckAndTextContainer done={data.done}>
-            <Label done={internalDone}>{data.label}</Label>
+            <LabelAndAdditionalInfoContainer>
+              <Label done={internalDone}>{data.label}</Label>
+              {additionalInfo && (
+                <AdditionalInfoContainer>
+                  {AdditionalInfoIcon(additionalInfo.originType)}
+                  <AdditionalInfoLabel>
+                    {getAdditionalInformationLabel(
+                      additionalInfo.originType,
+                      additionalInfo.label,
+                    )}
+                  </AdditionalInfoLabel>
+                </AdditionalInfoContainer>
+              )}
+            </LabelAndAdditionalInfoContainer>
             <TuduCheckbox checked={internalDone} onPress={handleTuduPress} />
           </CheckAndTextContainer>
           {/* <Favorite /> */}
