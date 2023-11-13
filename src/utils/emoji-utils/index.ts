@@ -1,36 +1,28 @@
 import GraphemeSplitter from 'grapheme-splitter';
+import {getLastItem} from '../array-utils';
 
-export const EMOJI_BEGGINING_REGEX = /^[\p{Emoji}\u200d]+/gu;
-export const EMOJI_END_REGEX = /[\p{Emoji}\u200d]+$/gu;
 export const EMOJI_REGEX = /[\p{Emoji}\u200d]+/gu;
+export const REMOVE_NUMBERS_REGEX = /^[\d]+/gu;
 
-export const getFirstEmoji = (text: string) => {
-  const emojis = text.match(EMOJI_REGEX);
-  if (!emojis?.length || emojis.length > 3) {
-    return;
-  }
-
+export const trimEmoji = (text: string) => {
   var splitter = new GraphemeSplitter();
 
-  const splittedEmojis = splitter.splitGraphemes(emojis[0]);
+  const splittedText = splitter.splitGraphemes(text);
+  const firstEmoji = splittedText[0];
 
-  return splittedEmojis[0];
-};
+  const startsWithEmoji = !!firstEmoji.match(EMOJI_REGEX)?.length;
 
-/**
- * Removes the first emoji found if it's in the beggining or in the end of the text.
- */
-export const trimFirstEmoji = (text: string) => {
-  const emojisFromHead = text.match(EMOJI_BEGGINING_REGEX);
-  const emojisFromTail = text.match(EMOJI_END_REGEX);
-  if (!emojisFromHead?.length && !emojisFromTail?.length) {
-    return text;
+  if (startsWithEmoji && !firstEmoji.match(REMOVE_NUMBERS_REGEX)) {
+    splittedText.shift();
+    return {emoji: firstEmoji, formattedText: splittedText.join('')};
   }
 
-  const firstEmojiSet = emojisFromHead?.[0] ?? emojisFromTail?.[0] ?? '';
-  var splitter = new GraphemeSplitter();
+  const lastEmoji = getLastItem(splittedText);
 
-  const splittedEmojis = splitter.splitGraphemes(firstEmojiSet);
+  const endsWithEmoji = !!lastEmoji?.match(EMOJI_REGEX)?.length;
 
-  return splittedEmojis?.length ? text.replace(splittedEmojis[0], '') : text;
+  if (endsWithEmoji && !lastEmoji.match(REMOVE_NUMBERS_REGEX)) {
+    splittedText.pop();
+    return {emoji: lastEmoji, formattedText: splittedText.join('')};
+  }
 };

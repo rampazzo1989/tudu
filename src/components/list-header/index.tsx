@@ -6,7 +6,7 @@ import {ListHeaderProps} from './types';
 
 import {useTheme} from 'styled-components/native';
 import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
-import {getFirstEmoji, trimFirstEmoji} from '../../utils/emoji-utils';
+import {trimEmoji} from '../../utils/emoji-utils';
 import {Header} from '../header';
 import {BackButton} from '../back-button';
 import {ListDefaultIcon} from '../animated-icons/list-default-icon';
@@ -21,13 +21,8 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
       iconRef.current?.play();
     }, []);
 
-    const titleEmoji = useMemo(
-      () => getFirstEmoji(listData?.label?.trim() ?? ''),
-      [listData?.label],
-    );
-
-    const titleRemovedMainEmoji = useMemo(
-      () => trimFirstEmoji(listData?.label?.trim() ?? ''),
+    const emojiInfo = useMemo(
+      () => trimEmoji(listData?.label?.trim() ?? ''),
       [listData?.label],
     );
 
@@ -43,7 +38,7 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               }}
               numberOfLines={2}
               minimumFontScale={0.6}>
-              {titleRemovedMainEmoji}
+              {emojiInfo?.formattedText ?? listData?.label?.trim()}
             </Title>
           </TitleContainer>
           {Icon ? (
@@ -53,9 +48,9 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               style={styles.pageIcon}
               overrideColor={theme.colors.iconOverlay}
             />
-          ) : titleEmoji ? (
+          ) : emojiInfo?.emoji ? (
             <Emoji adjustsFontSizeToFit entering={ZoomInRotate.springify()}>
-              {titleEmoji}
+              {emojiInfo.emoji}
             </Emoji>
           ) : (
             <ListDefaultIcon
