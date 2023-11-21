@@ -37,8 +37,6 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
       scheduledOrder: this.scheduledOrder,
     };
 
-    console.log({listModel});
-
     return listModel;
   }
 
@@ -94,7 +92,7 @@ export class ListViewModel implements Clonable<ListViewModel> {
 
   private getTuduViewModelsFromList = (list: List, origin: ListOrigin) => {
     const mappedTudus = [...list.tudus].map(
-      ([_, tudu]) => new TuduViewModel(tudu, list.id, origin),
+      ([_, tudu]) => new TuduViewModel(tudu, list.id, origin, list.label),
     );
     return mappedTudus;
   };

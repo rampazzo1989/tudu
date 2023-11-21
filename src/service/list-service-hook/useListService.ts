@@ -18,7 +18,7 @@ import {groupBy} from '../../utils/array-utils';
 const useListService = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
   const [archivedLists, setArchivedLists] = useRecoilState(archivedListsState);
-  const [_, setUnlistedTudus] = useRecoilState(unlistedTudusList);
+  const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusList);
 
   const getState = useCallback(
     (stateOrigin: ListOrigin) =>
@@ -188,6 +188,17 @@ const useListService = () => {
     [getStateSetter, saveUnlistedTudus],
   );
 
+  const getAllTudus = useCallback(
+    (origin: ListOrigin = 'default') => {
+      const allLists = getAllLists(origin);
+      const unlisted = [...unlistedTudus.tudus].map(
+        ([_, tudu]) => new TuduViewModel(tudu, unlistedTudus.id),
+      );
+      return allLists?.flatMap(x => x.tudus).concat(unlisted);
+    },
+    [getAllLists, unlistedTudus.id, unlistedTudus.tudus],
+  );
+
   const saveList = useCallback(
     (list: ListViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
@@ -267,6 +278,7 @@ const useListService = () => {
     getAllLists,
     saveAllLists,
     getListById,
+    getAllTudus,
     getTuduById,
     saveTudu,
     saveAllTudus,

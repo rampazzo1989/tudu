@@ -26,7 +26,14 @@ import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
-  ({setTudus, handleBackButtonPress, list, Icon, isSmartList = false}) => {
+  ({
+    setTudus,
+    handleBackButtonPress,
+    list,
+    Icon,
+    isSmartList = false,
+    draggableEnabled = true,
+  }) => {
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
@@ -133,6 +140,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   onTuduPress={handleTuduPress}
                   animateIcon={animateThisIcon}
                   getAdditionalInformation={getAdditionalInformation}
+                  draggableEnabled={draggableEnabled}
                   onEditPress={tudu => {
                     setEditingTudu(tudu);
                     setNewTuduPopupVisible(true);

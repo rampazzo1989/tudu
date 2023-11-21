@@ -21,6 +21,7 @@ export const homeDefaultLists = atom<SmartList[]>({
       icon: 'default',
       label: i18next.t('listTitles.allTasks'),
       isHighlighted: false,
+      navigateToPage: 'AllTudus',
     },
     {
       id: 'archived',

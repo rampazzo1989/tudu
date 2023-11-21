@@ -36,7 +36,13 @@ import {SwipeableCardRef} from '../swipeable-card/types';
 import {isToday} from '../../utils/date-utils';
 
 const TudusList: React.FC<TudusListProps> = memo(
-  ({onTuduPress, onEditPress, getAdditionalInformation, animateIcon}) => {
+  ({
+    onTuduPress,
+    onEditPress,
+    getAdditionalInformation,
+    animateIcon,
+    draggableEnabled = true,
+  }) => {
     const draggableContext =
       useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
     const [enteringAnimation, setEnteringAnimation] = useState<
@@ -48,13 +54,6 @@ const TudusList: React.FC<TudusListProps> = memo(
     useEffect(() => {
       setEnteringAnimation(undefined);
     }, []);
-
-    const handleTuduPress = useCallback(
-      (tudu: TuduViewModel) => {
-        onTuduPress(tudu);
-      },
-      [onTuduPress],
-    );
 
     const getSectionTitle = useCallback((undoneListLength: number) => {
       return (
@@ -144,13 +143,13 @@ const TudusList: React.FC<TudusListProps> = memo(
           <DraggableView
             payload={draggableTudu.indexedTudu}
             key={`${tudu.label}${draggableTudu.index}`}
-            draggableEnabled={!tudu.done}
+            draggableEnabled={!tudu.done && !draggableEnabled}
             draggableViewKey={`${tudu.label}${index}`}>
             <TuduAnimatedContainer
               entering={enteringAnimation?.duration(100).delay(index * 50)}>
               <TuduCard
                 data={tudu}
-                onPress={handleTuduPress}
+                onPress={onTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
@@ -169,7 +168,7 @@ const TudusList: React.FC<TudusListProps> = memo(
           <DraggableView
             key={`${tudu.label}${draggableTudu.index}`}
             payload={draggableTudu.indexedTudu}
-            draggableEnabled={!tudu.done}
+            draggableEnabled={!tudu.done && !draggableEnabled}
             draggableViewKey={`${tudu.label}${index}`}>
             <TuduAnimatedContainer
               entering={enteringAnimation?.duration(100).delay(index * 50)}>
@@ -196,12 +195,13 @@ const TudusList: React.FC<TudusListProps> = memo(
       return allTudus;
     }, [
       draggableContext,
+      draggableEnabled,
       enteringAnimation,
+      getAdditionalInformation,
       getSectionTitle,
       handleDeleteGenerator,
       handleEditGenerator,
       handleSendToOrRemoveFromTodayGenerator,
-      handleTuduPress,
       onTuduPress,
     ]);
 

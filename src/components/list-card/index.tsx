@@ -67,7 +67,7 @@ const ListCard: React.FC<ListCardProps> = memo(
             />
           )}
           <Label isHighlighted={isHighlighted} numberOfLines={1}>
-            {emojiInfo?.emoji ?? label}
+            {emojiInfo?.formattedText ?? label}
           </Label>
         </IconLabelContainer>
         {showNumberOfActiveItems && (
