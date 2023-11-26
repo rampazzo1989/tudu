@@ -45,4 +45,5 @@ export const AdditionalInfoContainer = styled.View`
 export const AdditionalInfoLabel = styled.Text`
   margin-left: 3px;
   font-size: 10px;
+  color: ${({theme}) => theme.colors.text};
 `;

@@ -143,7 +143,7 @@ const TudusList: React.FC<TudusListProps> = memo(
           <DraggableView
             payload={draggableTudu.indexedTudu}
             key={`${tudu.label}${draggableTudu.index}`}
-            draggableEnabled={!tudu.done && !draggableEnabled}
+            draggableEnabled={!tudu.done && draggableEnabled}
             draggableViewKey={`${tudu.label}${index}`}>
             <TuduAnimatedContainer
               entering={enteringAnimation?.duration(100).delay(index * 50)}>

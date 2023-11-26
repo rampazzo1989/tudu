@@ -50,6 +50,8 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
       list={list}
       Icon={ListDefaultIcon}
       isSmartList
+      draggableEnabled={false}
+      allowAdding={false}
     />
   );
 };

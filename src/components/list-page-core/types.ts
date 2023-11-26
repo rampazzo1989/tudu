@@ -9,4 +9,5 @@ export type ListPageCoreProps = {
   Icon?: ForwardedRefAnimatedIcon;
   isSmartList?: boolean;
   draggableEnabled?: boolean;
+  allowAdding?: boolean;
 };

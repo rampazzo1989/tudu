@@ -40,12 +40,7 @@ const useScheduledTuduService = () => {
 
       filteredTudus.forEach(([_, tudu]) =>
         tudusFromDate.push(
-          new TuduViewModel(
-            tudu,
-            unlistedTudus.id,
-            'default',
-            unlistedTudus.label,
-          ),
+          new TuduViewModel(tudu, unlistedTudus.id, 'default'),
         ),
       );
 

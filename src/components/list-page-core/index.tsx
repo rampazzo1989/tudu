@@ -33,6 +33,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     Icon,
     isSmartList = false,
     draggableEnabled = true,
+    allowAdding = true,
   }) => {
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
@@ -157,10 +158,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
               }}
               editingTudu={editingTudu}
             />
-            <ListActionButton
-              ref={actionButtonRef}
-              onInsertTuduPress={() => setNewTuduPopupVisible(true)}
-            />
+            {allowAdding && (
+              <ListActionButton
+                ref={actionButtonRef}
+                onInsertTuduPress={() => setNewTuduPopupVisible(true)}
+              />
+            )}
           </DraggableContextProvider>
         </DraxProvider>
       </Page>
