@@ -8,6 +8,7 @@ type StackNavigatorParamList = {
   };
   SplashScreen: undefined;
   Archived: undefined;
+  AllTudus: undefined;
 };
 
 export type {StackNavigatorParamList};

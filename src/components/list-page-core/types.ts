@@ -8,4 +8,7 @@ export type ListPageCoreProps = {
   list?: ListViewModel;
   Icon?: ForwardedRefAnimatedIcon;
   isSmartList?: boolean;
+  draggableEnabled?: boolean;
+  allowAdding?: boolean;
+  showScheduleInformation?: boolean;
 };

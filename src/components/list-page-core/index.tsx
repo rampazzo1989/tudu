@@ -24,9 +24,19 @@ import {TuduViewModel} from '../../scenes/home/types';
 import {ListHeader} from '../list-header';
 import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
+import {UNLISTED} from '../../scenes/home/state';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
-  ({setTudus, handleBackButtonPress, list, Icon, isSmartList = false}) => {
+  ({
+    setTudus,
+    handleBackButtonPress,
+    list,
+    Icon,
+    showScheduleInformation = true,
+    isSmartList = false,
+    draggableEnabled = true,
+    allowAdding = true,
+  }) => {
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
@@ -83,13 +93,13 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const getAdditionalInformation = useCallback(
       (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
-        if (isSmartList && tudu.listName) {
+        if (isSmartList && tudu.listName && tudu.listId !== UNLISTED) {
           return {
             label: tudu.listName,
             originType: 'list',
           };
         }
-        if (tudu.dueDate) {
+        if (showScheduleInformation && tudu.dueDate) {
           console.log(tudu.dueDate, typeof tudu.dueDate);
           const isScheduledForToday = isToday(tudu.dueDate);
           return {
@@ -100,7 +110,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           };
         }
       },
-      [isSmartList],
+      [isSmartList, showScheduleInformation],
     );
 
     return (
@@ -133,6 +143,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   onTuduPress={handleTuduPress}
                   animateIcon={animateThisIcon}
                   getAdditionalInformation={getAdditionalInformation}
+                  draggableEnabled={draggableEnabled}
                   onEditPress={tudu => {
                     setEditingTudu(tudu);
                     setNewTuduPopupVisible(true);
@@ -149,10 +160,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
               }}
               editingTudu={editingTudu}
             />
-            <ListActionButton
-              ref={actionButtonRef}
-              onInsertTuduPress={() => setNewTuduPopupVisible(true)}
-            />
+            {allowAdding && (
+              <ListActionButton
+                ref={actionButtonRef}
+                onInsertTuduPress={() => setNewTuduPopupVisible(true)}
+              />
+            )}
           </DraggableContextProvider>
         </DraxProvider>
       </Page>

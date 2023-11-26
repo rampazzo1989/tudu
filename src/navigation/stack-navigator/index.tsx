@@ -9,6 +9,7 @@ import {useTheme} from 'styled-components/native';
 import {ListPage} from '../../scenes/list';
 import {ArchivedPage} from '../../scenes/archived';
 import {ScheduledListPage} from '../../scenes/scheduled-list';
+import {AllTudusPage} from '../../scenes/all-tudus';
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 
@@ -68,6 +69,17 @@ const StackNavigator = () => {
       <Stack.Screen
         name="ScheduledList"
         component={ScheduledListPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: config,
+            close: config,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="AllTudus"
+        component={AllTudusPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {
