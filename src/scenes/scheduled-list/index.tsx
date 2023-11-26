@@ -67,6 +67,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         list={list}
         Icon={getDaytimeIcon()}
         isSmartList
+        showScheduleInformation={false}
       />
     );
   },

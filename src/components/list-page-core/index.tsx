@@ -24,6 +24,7 @@ import {TuduViewModel} from '../../scenes/home/types';
 import {ListHeader} from '../list-header';
 import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
+import {UNLISTED} from '../../scenes/home/state';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -31,6 +32,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     handleBackButtonPress,
     list,
     Icon,
+    showScheduleInformation = true,
     isSmartList = false,
     draggableEnabled = true,
     allowAdding = true,
@@ -91,13 +93,13 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const getAdditionalInformation = useCallback(
       (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
-        if (isSmartList && tudu.listName) {
+        if (isSmartList && tudu.listName && tudu.listId !== UNLISTED) {
           return {
             label: tudu.listName,
             originType: 'list',
           };
         }
-        if (tudu.dueDate) {
+        if (showScheduleInformation && tudu.dueDate) {
           console.log(tudu.dueDate, typeof tudu.dueDate);
           const isScheduledForToday = isToday(tudu.dueDate);
           return {
@@ -108,7 +110,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           };
         }
       },
-      [isSmartList],
+      [isSmartList, showScheduleInformation],
     );
 
     return (
