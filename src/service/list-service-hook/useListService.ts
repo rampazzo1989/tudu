@@ -199,6 +199,19 @@ const useListService = () => {
     [getAllLists, unlistedTudus.id, unlistedTudus.tudus],
   );
 
+  const getAllUndoneTudus = useCallback(
+    (origin: ListOrigin = 'default') => {
+      const allLists = getAllLists(origin);
+      const unlisted = [...unlistedTudus.tudus]
+        .filter(([_, tudu]) => !tudu.done)
+        .map(([_, tudu]) => new TuduViewModel(tudu, unlistedTudus.id));
+      return allLists
+        ?.flatMap(x => x.tudus?.filter(t => !t.done))
+        .concat(unlisted);
+    },
+    [getAllLists, unlistedTudus.id, unlistedTudus.tudus],
+  );
+
   const saveList = useCallback(
     (list: ListViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
@@ -279,6 +292,7 @@ const useListService = () => {
     saveAllLists,
     getListById,
     getAllTudus,
+    getAllUndoneTudus,
     getTuduById,
     saveTudu,
     saveAllTudus,

@@ -1,4 +1,11 @@
-import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
+import React, {
+  memo,
+  Suspense,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {DraxProvider} from 'react-native-drax';
 import {Page} from '../../components/page';
 import {DraggablePageContent} from '../../components/draggable-page-content';
@@ -10,7 +17,7 @@ import {
   AnimatedIconRef,
   ForwardedRefAnimatedIcon,
 } from '../../components/animated-icons/animated-icon/types';
-import {Dimensions} from 'react-native';
+import {Dimensions, View} from 'react-native';
 import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
 import {CheckMarkIconActionAnimation} from '../../components/animated-icons/check-mark';
 import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
@@ -25,6 +32,9 @@ import {ListHeader} from '../list-header';
 import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../../scenes/home/state';
+import Animated, {SlideOutLeft, SlideOutRight} from 'react-native-reanimated';
+import {Skeletonizer} from '../skeletonizer';
+import {Skeleton} from 'react-native-animated-skeleton';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -100,7 +110,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           };
         }
         if (showScheduleInformation && tudu.dueDate) {
-          console.log(tudu.dueDate, typeof tudu.dueDate);
           const isScheduledForToday = isToday(tudu.dueDate);
           return {
             label: isScheduledForToday
@@ -138,7 +147,19 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
             <DraggablePageContent
               contentContainerStyle={styles.scrollContentContainer}>
-              {!!list?.tudus && (
+              {/* <Suspense
+                fallback={
+                  <Animated.View exiting={SlideOutLeft.duration(75)}>
+                    <View
+                      style={{
+                        width: '100%',
+                        height: 60,
+                        borderRadius: 8,
+                        backgroundColor: '#585f69',
+                      }}
+                    />
+                  </Animated.View>
+                }>
                 <TudusList
                   onTuduPress={handleTuduPress}
                   animateIcon={animateThisIcon}
@@ -149,6 +170,33 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                     setNewTuduPopupVisible(true);
                   }}
                 />
+              </Suspense> */}
+              {list?.tudus?.length ? (
+                <TudusList
+                  onTuduPress={handleTuduPress}
+                  animateIcon={animateThisIcon}
+                  getAdditionalInformation={getAdditionalInformation}
+                  draggableEnabled={draggableEnabled}
+                  onEditPress={tudu => {
+                    setEditingTudu(tudu);
+                    setNewTuduPopupVisible(true);
+                  }}
+                />
+              ) : (
+                <Animated.View exiting={SlideOutLeft.duration(75)}>
+                  <Skeleton
+                    numberOfItems={4}
+                    speed={500}
+                    direction="column"
+                    loaderStyle={{
+                      width: '100%',
+                      height: 60,
+                      borderRadius: 8,
+                      backgroundColor: '#3C414A',
+                      marginBottom: 8,
+                    }}
+                  />
+                </Animated.View>
               )}
             </DraggablePageContent>
             <NewTuduModal
