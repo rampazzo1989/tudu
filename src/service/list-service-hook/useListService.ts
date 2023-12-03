@@ -4,12 +4,16 @@ import {
   TuduViewModel,
   List,
   ListOrigin,
+  ListDataViewModel,
+  TuduItem,
 } from '../../scenes/home/types';
 import {
   myLists,
   archivedLists as archivedListsState,
-  unlistedTudusList,
+  unlistedTudus as unlistedTudusState,
   UNLISTED,
+  tudus as tudusState,
+  archivedTudus as archivedTudusState,
 } from '../../scenes/home/state';
 import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback} from 'react';
@@ -17,13 +21,21 @@ import {groupBy} from '../../utils/array-utils';
 
 const useListService = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
+  const [customTudus, setCustomTudus] = useRecoilState(tudusState);
   const [archivedLists, setArchivedLists] = useRecoilState(archivedListsState);
-  const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusList);
+  const [archivedTudus, setArchivedTudus] = useRecoilState(archivedTudusState);
+  const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusState);
 
-  const getState = useCallback(
+  const getListState = useCallback(
     (stateOrigin: ListOrigin) =>
       stateOrigin === 'default' ? customLists : archivedLists,
     [customLists, archivedLists],
+  );
+
+  const getTudusState = useCallback(
+    (stateOrigin: ListOrigin) =>
+      stateOrigin === 'default' ? customTudus : archivedTudus,
+    [customTudus, archivedTudus],
   );
 
   const getStateSetter = useCallback(
@@ -32,9 +44,15 @@ const useListService = () => {
     [setCustomLists, setArchivedLists],
   );
 
+  const getTudusStateSetter = useCallback(
+    (stateOrigin: ListOrigin) =>
+      stateOrigin === 'default' ? setCustomTudus : setArchivedTudus,
+    [setCustomTudus, setArchivedTudus],
+  );
+
   const getAllLists = useCallback(
-    (origin: ListOrigin = 'default') => {
-      const listState = getState(origin);
+    (origin: ListOrigin = 'default'): ListDataViewModel[] | undefined => {
+      const listState = getListState(origin);
       if (
         !listState ||
         (Object.keys(listState).length === 0 &&
@@ -43,19 +61,21 @@ const useListService = () => {
         return;
       }
 
-      const linkedLists = [...listState].map(
-        ([_, value]) => new ListViewModel(value, origin),
-      );
-
+      const linkedLists = [...listState].map(([_, value]) => ({
+        id: value.id,
+        label: value.label,
+        color: value.color,
+        groupName: value.groupName,
+      }));
       return linkedLists;
     },
-    [getState],
+    [getListState],
   );
 
   const saveAllLists = useCallback(
     (newLists: ListViewModel[], origin: ListOrigin = 'default') => {
       const lists = newLists.map<[string, List]>(x => {
-        return [x.id, x.mapBack()];
+        return [x.id, x.mapBackList()];
       });
       const newMap = new Map<string, List>(lists);
 
@@ -68,25 +88,27 @@ const useListService = () => {
 
   const getListById = useCallback(
     (id: string, origin: ListOrigin = 'default') => {
-      const listState = getState(origin);
+      const listState = getListState(origin);
 
       if (!listState.has(id)) {
         return;
       }
       const foundList = listState.get(id)!;
 
-      const linkedList = new ListViewModel(foundList, origin);
+      const foundTudus = getTudusState(origin).get(id);
+
+      const linkedList = new ListViewModel(foundList, foundTudus, origin);
       return linkedList;
     },
-    [getState],
+    [getListState, getTudusState],
   );
 
   const getTuduById = useCallback(
     (id: string, listId: string, origin: ListOrigin = 'default') => {
-      const linkedList = getListById(listId, origin);
-      const list = linkedList?.mapBack();
+      const tudus = getTudusState(origin);
+      const foundTudus = tudus.get(listId);
 
-      if (!list?.tudus.has(id)) {
+      if (!foundTudus?.has(id)) {
         throw new ItemNotFoundError("The tudu id couldn't be found.", {
           listId: listId,
           tuduId: id,
@@ -94,30 +116,24 @@ const useListService = () => {
         });
       }
 
-      const foundTudu = list.tudus.get(id)!;
+      const foundTudu = foundTudus.get(id)!;
       const linkedTudu = new TuduViewModel(foundTudu, listId, origin);
 
       return linkedTudu;
     },
-    [getListById],
+    [getTudusState],
   );
 
   const saveUnlistedTudus = useCallback(
     (tudus: TuduViewModel[]) => {
       setUnlistedTudus(previousState => {
-        const newTuduMap = new Map(previousState.tudus);
+        const newTuduMap = new Map(previousState);
 
         tudus.forEach(tudu => {
           newTuduMap.set(tudu.id, tudu.mapBack());
         });
 
-        const newList: List = {
-          id: UNLISTED,
-          label: 'Unlisted',
-          tudus: newTuduMap,
-        };
-
-        return newList;
+        return newTuduMap;
       });
     },
     [setUnlistedTudus],
@@ -128,23 +144,21 @@ const useListService = () => {
       if (tudu.listId === UNLISTED) {
         return saveUnlistedTudus([tudu]);
       }
-      const listStateSetter = getStateSetter(tudu.origin);
-      listStateSetter(previousState => {
-        const foundList = previousState.get(tudu.listId);
-        if (!foundList) {
-          throw new ItemNotFoundError("The list couldn't be found.", tudu);
-        }
-        const newTuduMap = new Map(foundList.tudus);
+      const tudusStateSetter = getTudusStateSetter(tudu.origin);
+
+      tudusStateSetter(previousState => {
+        const foundTuduMap =
+          previousState.get(tudu.listId) ?? new Map<string, TuduItem>();
+        const newTuduMap = new Map(foundTuduMap);
         newTuduMap.set(tudu.id, tudu.mapBack());
-        const newList = {...foundList, tudus: newTuduMap};
 
         const newState = new Map([...previousState]);
-        newState.set(newList.id, newList);
+        newState.set(tudu.listId, newTuduMap);
 
         return newState;
       });
     },
-    [getStateSetter, saveUnlistedTudus],
+    [getTudusStateSetter, saveUnlistedTudus],
   );
 
   const saveAllTudus = useCallback(
@@ -160,74 +174,91 @@ const useListService = () => {
         tudu => tudu.listId,
       );
 
-      const listStateSetter = getStateSetter(origin);
+      const tudusStateSetter = getTudusStateSetter(origin);
 
-      listStateSetter(previousState => {
+      tudusStateSetter(previousState => {
         const newState = new Map(previousState);
 
         for (const listId in groupedTudus) {
-          const foundList = previousState.get(listId);
-          if (!foundList) {
-            throw new ItemNotFoundError("The list couldn't be found.", listId);
-          }
-          const newTuduMap = new Map(foundList.tudus);
+          const foundTuduMap =
+            previousState.get(listId) ?? new Map<string, TuduItem>();
+
+          const newTuduMap = new Map(foundTuduMap);
           const savingTudus = groupedTudus[listId];
 
           savingTudus.forEach(tudu => {
             newTuduMap.set(tudu.id, tudu.mapBack());
           });
 
-          const newList = {...foundList, tudus: newTuduMap};
-
-          newState.set(newList.id, newList);
+          newState.set(listId, newTuduMap);
         }
 
         return newState;
       });
     },
-    [getStateSetter, saveUnlistedTudus],
+    [getTudusStateSetter, saveUnlistedTudus],
   );
 
   const getAllTudus = useCallback(
     (origin: ListOrigin = 'default') => {
-      const allLists = getAllLists(origin);
-      const unlisted = [...unlistedTudus.tudus].map(
-        ([_, tudu]) => new TuduViewModel(tudu, unlistedTudus.id),
+      const state = getTudusState(origin);
+      const allTudus =
+        [...state].flatMap(([listId, tudus]) =>
+          [...tudus].map(
+            ([_, tudu]) => new TuduViewModel(tudu, listId, origin),
+          ),
+        ) ?? [];
+      const unlisted = [...unlistedTudus].map(
+        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED),
       );
-      return allLists?.flatMap(x => x.tudus).concat(unlisted);
+      return allTudus.concat(unlisted);
     },
-    [getAllLists, unlistedTudus.id, unlistedTudus.tudus],
+    [getTudusState, unlistedTudus],
   );
 
   const getAllUndoneTudus = useCallback(
     (origin: ListOrigin = 'default') => {
-      const allLists = getAllLists(origin);
-      const unlisted = [...unlistedTudus.tudus]
+      const state = getTudusState(origin);
+      const allTudus =
+        [...state].flatMap(([listId, tudus]) =>
+          [...tudus]
+            .filter(([_, tudu]) => !tudu.done)
+            .map(([_, tudu]) => new TuduViewModel(tudu, listId, origin)),
+        ) ?? [];
+      const unlisted = [...unlistedTudus]
         .filter(([_, tudu]) => !tudu.done)
-        .map(([_, tudu]) => new TuduViewModel(tudu, unlistedTudus.id));
-      return allLists
-        ?.flatMap(x => x.tudus?.filter(t => !t.done))
-        .concat(unlisted);
+        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED));
+      return allTudus.concat(unlisted);
     },
-    [getAllLists, unlistedTudus.id, unlistedTudus.tudus],
+    [getTudusState, unlistedTudus],
   );
 
   const saveList = useCallback(
     (list: ListViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
+      const tudusStateSetter = getTudusStateSetter(list.origin);
+
       listStateSetter(previousState => {
         const newState = new Map([...previousState]);
-        newState.set(list.id, list.mapBack());
+        newState.set(list.id, list.mapBackList());
+
+        return newState;
+      });
+
+      tudusStateSetter(previousState => {
+        const newState = new Map(previousState);
+        newState.set(list.id, list.mapBackTudus());
 
         return newState;
       });
     },
-    [getStateSetter],
+    [getStateSetter, getTudusStateSetter],
   );
 
   const deleteList = useCallback(
     (list: ListViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
+      const tudusStateSetter = getTudusStateSetter(list.origin);
 
       listStateSetter(previousState => {
         const newState = new Map(previousState);
@@ -235,8 +266,15 @@ const useListService = () => {
 
         return newState;
       });
+
+      tudusStateSetter(previousState => {
+        const newState = new Map(previousState);
+        newState.delete(list.id);
+
+        return newState;
+      });
     },
-    [getStateSetter],
+    [getStateSetter, getTudusStateSetter],
   );
 
   const archiveList = useCallback(
@@ -248,7 +286,14 @@ const useListService = () => {
 
       setArchivedLists(previousState => {
         const newState = new Map(previousState);
-        newState.set(list.id, list.mapBack());
+        newState.set(list.id, list.mapBackList());
+
+        return newState;
+      });
+
+      setArchivedTudus(previousState => {
+        const newState = new Map(previousState);
+        newState.set(list.id, list.mapBackTudus());
 
         return newState;
       });
@@ -259,8 +304,21 @@ const useListService = () => {
 
         return newState;
       });
+
+      setCustomTudus(previousState => {
+        const newState = new Map(previousState);
+        newState.delete(list.id);
+
+        return newState;
+      });
     },
-    [customLists, setArchivedLists, setCustomLists],
+    [
+      customLists,
+      setArchivedLists,
+      setArchivedTudus,
+      setCustomLists,
+      setCustomTudus,
+    ],
   );
 
   const unarchiveList = useCallback(
@@ -272,7 +330,14 @@ const useListService = () => {
 
       setCustomLists(previousState => {
         const newState = new Map(previousState);
-        newState.set(list.id, list.mapBack());
+        newState.set(list.id, list.mapBackList());
+
+        return newState;
+      });
+
+      setCustomTudus(previousState => {
+        const newState = new Map(previousState);
+        newState.set(list.id, list.mapBackTudus());
 
         return newState;
       });
@@ -283,8 +348,21 @@ const useListService = () => {
 
         return newState;
       });
+
+      setArchivedTudus(previousState => {
+        const newState = new Map(previousState);
+        newState.delete(list.id);
+
+        return newState;
+      });
     },
-    [archivedLists, setCustomLists, setArchivedLists],
+    [
+      archivedLists,
+      setCustomLists,
+      setCustomTudus,
+      setArchivedLists,
+      setArchivedTudus,
+    ],
   );
 
   return {

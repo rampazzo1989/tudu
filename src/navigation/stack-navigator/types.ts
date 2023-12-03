@@ -1,8 +1,8 @@
-import {ListOrigin} from '../../scenes/home/types';
+import {ListOrigin, ListViewModel} from '../../scenes/home/types';
 
 type StackNavigatorParamList = {
   Home: undefined;
-  List: {listId: string; listOrigin?: ListOrigin};
+  List: {listData: ListViewModel; listOrigin?: ListOrigin};
   ScheduledList: {
     date: Date;
   };

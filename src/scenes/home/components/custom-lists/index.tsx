@@ -1,11 +1,4 @@
-import React, {
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {memo, useCallback, useContext, useMemo, useState} from 'react';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
 import {DraggableView} from '../../../../modules/draggable/draggable-view';
 import {ListGroupCard} from '../list-group-card';
@@ -25,37 +18,28 @@ import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
 import {NewListModal} from '../../../group/components/new-list-modal';
 import {FolderAddIconActionAnimation} from '../../../../components/animated-icons/folder-add-icon';
 import {DeleteIconActionAnimation} from '../../../../components/animated-icons/delete-icon';
-import {SlideInRight} from 'react-native-reanimated';
 import {useCloseCurrentlyOpenSwipeable} from '../../../../hooks/useCloseAllSwipeables';
 import {showItemDeletedToast} from '../../../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
-import {ListViewModel} from '../../types';
+import {ListDataViewModel} from '../../types';
 import {useListService} from '../../../../service/list-service-hook/useListService';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({onListPress, animateIcon}) => {
     const draggableContext =
-      useContext<DraggableContextType<ListViewModel>>(DraggableContext);
+      useContext<DraggableContextType<ListDataViewModel>>(DraggableContext);
 
     const [editModalVisible, setEditModalVisible] = useState(false);
-    const [editingList, setEditingList] = useState<ListViewModel>();
+    const [editingList, setEditingList] = useState<ListDataViewModel>();
 
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
     const {archiveList} = useListService();
 
-    const [enteringAnimation, setEnteringAnimation] = useState<
-      typeof SlideInRight | undefined
-    >(() => SlideInRight);
-
     const {t} = useTranslation();
 
-    useEffect(() => {
-      setEnteringAnimation(undefined);
-    }, []);
-
     const listPressHandlerGenerator = useCallback(
-      (listData: ListViewModel) => () => {
+      (listData: ListDataViewModel) => () => {
         onListPress(listData);
       },
       [onListPress],
@@ -82,7 +66,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     );
 
     const archive = useCallback(
-      (list: ListViewModel) => {
+      (list: ListDataViewModel) => {
         archiveList(list);
         animateIcon?.(FolderAddIconActionAnimation);
       },
@@ -90,10 +74,14 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     );
 
     const handleArchiveGenerator = useCallback(
-      (listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel) =>
+      (
+          listOrDraggableList:
+            | DraggableItem<ListDataViewModel>
+            | ListDataViewModel,
+        ) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
           const list =
-            listOrDraggableList instanceof DraggableItem<ListViewModel>
+            listOrDraggableList instanceof DraggableItem<ListDataViewModel>
               ? listOrDraggableList.data[0]
               : listOrDraggableList;
           return draggableContext.showConfirmationModal(
@@ -108,10 +96,14 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     );
 
     const handleEditListGenerator = useCallback(
-      (listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel) =>
+      (
+          listOrDraggableList:
+            | DraggableItem<ListDataViewModel>
+            | ListDataViewModel,
+        ) =>
         () => {
           const list =
-            listOrDraggableList instanceof DraggableItem<ListViewModel>
+            listOrDraggableList instanceof DraggableItem<ListDataViewModel>
               ? listOrDraggableList.data[0]
               : listOrDraggableList;
           setEditingList(list);
@@ -147,7 +139,8 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                   <EditableListCard
                     Icon={ListDefaultIcon}
                     label={onlyItem.label}
-                    numberOfActiveItems={onlyItem.getNumberOfActiveItems()}
+                    numberOfActiveItems={onlyItem.numberOfActiveItems}
+                    // numberOfActiveItems={onlyItem.getNumberOfActiveItems()}
                     color={onlyItem.color}
                     onPress={listPressHandlerGenerator(onlyItem)}
                     onDelete={handleDeleteGenerator(item)}

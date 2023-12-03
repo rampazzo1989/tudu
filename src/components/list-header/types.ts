@@ -6,4 +6,5 @@ export type ListHeaderProps = Pick<
   'onBackButtonPress' | 'Icon'
 > & {
   listData?: ListViewModel;
+  loading?: boolean;
 };

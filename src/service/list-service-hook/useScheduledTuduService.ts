@@ -1,13 +1,13 @@
 import {useCallback} from 'react';
 import {useRecoilState} from 'recoil';
-import {myLists, unlistedTudusList} from '../../scenes/home/state';
+import {myLists, unlistedTudus} from '../../scenes/home/state';
 import {TuduViewModel} from '../../scenes/home/types';
 import {getDateOnlyTimeStamp} from '../../utils/date-utils';
 import {useListService} from './useListService';
 
 const useScheduledTuduService = () => {
   const [customLists] = useRecoilState(myLists);
-  const [unlistedTudus] = useRecoilState(unlistedTudusList);
+  const [unlistedTudus] = useRecoilState(unlistedTudus);
   const {saveTudu, saveAllTudus} = useListService();
 
   const getTudusForDate = useCallback(

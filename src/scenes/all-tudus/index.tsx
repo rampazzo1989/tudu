@@ -8,14 +8,18 @@ import {UNLISTED} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {AllTudusPageProps} from './types';
 
+const UNLOADED_ID = 'unloaded';
+
 const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
   const {t} = useTranslation();
   const [list, setList] = useState<ListViewModel>(
-    new ListViewModel({
-      id: 'all',
-      label: 'All Tudús',
-      tudus: new Map(),
-    }),
+    new ListViewModel(
+      {
+        id: UNLOADED_ID,
+        label: 'All Tudús',
+      },
+      new Map(),
+    ),
   );
 
   const {saveAllTudus, getAllUndoneTudus} = useListService();
@@ -25,21 +29,20 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log('iniciou');
     setTimeout(() => {
       const allTudus = getAllUndoneTudus();
 
       setList(() => {
-        const virtualListVM = new ListViewModel({
-          id: 'all',
-          label: 'All Tudús',
-          tudus: new Map(),
-        });
+        const virtualListVM = new ListViewModel(
+          {
+            id: 'all',
+            label: 'All Tudús',
+          },
+          new Map(),
+        );
         virtualListVM.tudus = allTudus ?? [];
-
         return virtualListVM;
       });
-      console.log('carregou');
     }, 100);
   }, [getAllUndoneTudus]);
 
@@ -71,6 +74,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
       isSmartList
       draggableEnabled={false}
       allowAdding={true}
+      loading={list.id === UNLOADED_ID}
     />
   );
 };

@@ -1,12 +1,16 @@
-import React, {memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {ListPageProps} from './types';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {useListService} from '../../service/list-service-hook/useListService';
 import {ListPageCore} from '../../components/list-page-core';
 
+const UNLOADED_ID = 'unloaded';
+
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
-  const {listId, listOrigin} = route.params;
+  const {listData, listOrigin} = route.params;
+
+  const [list, setList] = useState<ListViewModel | undefined>(listData);
 
   const {getListById, saveList} = useListService();
 
@@ -14,10 +18,11 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     navigation.goBack();
   }, [navigation]);
 
-  const list = useMemo(() => {
-    console.log({listId, listOrigin});
-    return getListById(listId, listOrigin);
-  }, [getListById, listId, listOrigin]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setList(() => getListById(listId, listOrigin));
+  //   }, 100);
+  // }, [getListById, listId, listOrigin]);
 
   const setTudus = useCallback(
     (draggable: DraggableItem<TuduViewModel>[]) => {
@@ -26,7 +31,11 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       }
 
       const newTuduList = draggable.flatMap(x => x.data);
-      const newList = new ListViewModel(list.mapBack(), list.origin);
+      const newList = new ListViewModel(
+        list.mapBackList(),
+        undefined,
+        list.origin,
+      );
       newList.tudus = newTuduList;
       saveList(newList);
     },
@@ -38,6 +47,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       handleBackButtonPress={handleBackButtonPress}
       setTudus={setTudus}
       list={list}
+      loading={list?.id === UNLOADED_ID}
     />
   );
 });

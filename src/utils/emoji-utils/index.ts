@@ -5,6 +5,9 @@ export const EMOJI_REGEX = /[\p{Emoji}\u200d]+/gu;
 export const REMOVE_NUMBERS_REGEX = /^[\d]+/gu;
 
 export const trimEmoji = (text: string) => {
+  if (text === '') {
+    return;
+  }
   var splitter = new GraphemeSplitter();
 
   const splittedText = splitter.splitGraphemes(text);

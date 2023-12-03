@@ -12,12 +12,13 @@ import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {useListService} from '../../../../service/list-service-hook/useListService';
 
 const getNewEmptyList = () =>
-  new ListViewModel({
-    label: '',
-    numberOfActiveItems: 0,
-    id: generateRandomHash('New List'),
-    tudus: new Map(),
-  });
+  new ListViewModel(
+    {
+      label: '',
+      id: generateRandomHash('New List'),
+    },
+    new Map(),
+  );
 
 const NewListModal: React.FC<NewListModalProps> = memo(
   ({visible, editingList, onRequestClose}) => {

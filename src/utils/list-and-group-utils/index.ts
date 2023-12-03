@@ -1,7 +1,7 @@
 import {t} from 'i18next';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
-import {ListViewModel} from '../../scenes/home/types';
+import {ListDataViewModel, ListViewModel} from '../../scenes/home/types';
 
 export const getTypeItemOrGroup = (
   item: DraggableItem<ListViewModel> | ListViewModel,
@@ -65,7 +65,7 @@ const getNewNameWithCopyNumber = (name: string) => {
 };
 
 export const getDuplicateProofListTitle = (
-  lists: ListViewModel[],
+  lists: ListDataViewModel[],
   newLabel: string,
 ): string => {
   let alreadyExists = lists.some(x => x.label === newLabel);

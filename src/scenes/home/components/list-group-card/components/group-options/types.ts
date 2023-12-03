@@ -1,8 +1,8 @@
 import {DraggableItem} from '../../../../../../modules/draggable/draggable-context/types';
-import {ListViewModel} from '../../../../types';
+import {ListDataViewModel} from '../../../../types';
 
 export type GroupOptionsProps = {
-  groupData: DraggableItem<ListViewModel>;
+  groupData: DraggableItem<ListDataViewModel>;
   closeMenu: () => void;
   onRename: () => void;
   onDeleteCallback?: () => void;
