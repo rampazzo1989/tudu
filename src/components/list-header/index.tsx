@@ -12,7 +12,7 @@ import {BackButton} from '../back-button';
 import {ListDefaultIcon} from '../animated-icons/list-default-icon';
 
 const ListHeader: React.FC<ListHeaderProps> = memo(
-  ({listData, onBackButtonPress, Icon, loading = false}) => {
+  ({listData, onBackButtonPress, Icon}) => {
     const [titleWidth, setTitleWidth] = useState(0);
     const iconRef = useRef<AnimatedIconRef>(null);
     const theme = useTheme();
@@ -41,26 +41,25 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               {emojiInfo?.formattedText ?? listData?.label?.trim()}
             </Title>
           </TitleContainer>
-          {!loading &&
-            (Icon ? (
-              <Icon
-                size={70}
-                ref={iconRef}
-                style={styles.pageIcon}
-                overrideColor={theme.colors.iconOverlay}
-              />
-            ) : emojiInfo?.emoji ? (
-              <Emoji adjustsFontSizeToFit entering={ZoomInRotate.springify()}>
-                {emojiInfo.emoji}
-              </Emoji>
-            ) : (
-              <ListDefaultIcon
-                size={70}
-                ref={iconRef}
-                style={styles.pageIcon}
-                overrideColor={theme.colors.iconOverlay}
-              />
-            ))}
+          {Icon ? (
+            <Icon
+              size={70}
+              ref={iconRef}
+              style={styles.pageIcon}
+              overrideColor={theme.colors.iconOverlay}
+            />
+          ) : emojiInfo?.emoji ? (
+            <Emoji adjustsFontSizeToFit entering={ZoomInRotate.springify()}>
+              {emojiInfo.emoji}
+            </Emoji>
+          ) : (
+            <ListDefaultIcon
+              size={70}
+              ref={iconRef}
+              style={styles.pageIcon}
+              overrideColor={theme.colors.iconOverlay}
+            />
+          )}
         </ContentRow>
       </Header>
     );

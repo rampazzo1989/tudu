@@ -104,7 +104,11 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   const handleListPress = useCallback(
     (listData: ListViewModel) => {
-      navigation.navigate('List', {listData});
+      navigation.navigate('List', {
+        listId: listData.id,
+        title: listData.label,
+        listOrigin: listData.origin,
+      });
     },
     [navigation],
   );

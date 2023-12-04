@@ -46,7 +46,11 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     );
 
     const handleDeleteGenerator = useCallback(
-      (listOrDraggableList: DraggableItem<ListViewModel> | ListViewModel) =>
+      (
+          listOrDraggableList:
+            | DraggableItem<ListDataViewModel>
+            | ListDataViewModel,
+        ) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
           draggableContext.showConfirmationModal(
             listOrDraggableList,

@@ -8,9 +8,14 @@ import {ListPageCore} from '../../components/list-page-core';
 const UNLOADED_ID = 'unloaded';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
-  const {listData, listOrigin} = route.params;
+  const {listId, title, listOrigin} = route.params;
 
-  const [list, setList] = useState<ListViewModel | undefined>(listData);
+  const [list, setList] = useState<ListViewModel | undefined>(
+    new ListViewModel({
+      id: UNLOADED_ID,
+      label: title,
+    }),
+  );
 
   const {getListById, saveList} = useListService();
 
@@ -18,11 +23,11 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     navigation.goBack();
   }, [navigation]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setList(() => getListById(listId, listOrigin));
-  //   }, 100);
-  // }, [getListById, listId, listOrigin]);
+  useEffect(() => {
+    setTimeout(() => {
+      setList(() => getListById(listId, listOrigin));
+    }, 100);
+  }, [getListById, listId, listOrigin]);
 
   const setTudus = useCallback(
     (draggable: DraggableItem<TuduViewModel>[]) => {

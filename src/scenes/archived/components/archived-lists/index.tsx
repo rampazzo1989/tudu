@@ -6,7 +6,7 @@ import {Container, StyledArchivedListCard} from './styles';
 import {PopupModal} from '../../../../components/popup-modal';
 import {DeleteIcon} from '../../../../components/animated-icons/delete-icon';
 import {SwipeableCardRef} from '../../../../components/swipeable-card/types';
-import {ListViewModel} from '../../../home/types';
+import {ListDataViewModel} from '../../../home/types';
 import {useListService} from '../../../../service/list-service-hook/useListService';
 import {useTranslation} from 'react-i18next';
 
@@ -14,21 +14,21 @@ const ArchivedLists: React.FC<ArchivedListsProps> = memo(
   ({data, onListPress}) => {
     const [confirmationModalVisible, setConfirmationModalVisible] =
       useState(false);
-    const [deletingList, setDeletingList] = useState<ListViewModel>();
+    const [deletingList, setDeletingList] = useState<ListDataViewModel>();
     const [deletingListRef, setDeletingListRef] =
       useState<React.RefObject<SwipeableCardRef>>();
     const {unarchiveList, deleteList} = useListService();
     const {t} = useTranslation();
 
     const listPressHandlerGenerator = useCallback(
-      (listData: ListViewModel) => () => {
+      (listData: ListDataViewModel) => () => {
         onListPress(listData);
       },
       [onListPress],
     );
 
     const handleDeleteGenerator = useCallback(
-      (list: ListViewModel) =>
+      (list: ListDataViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
           setDeletingList(list);
           setConfirmationModalVisible(true);
@@ -38,7 +38,7 @@ const ArchivedLists: React.FC<ArchivedListsProps> = memo(
     );
 
     const handleUnarchiveGenerator = useCallback(
-      (list: ListViewModel) => () => {
+      (list: ListDataViewModel) => () => {
         unarchiveList(list);
       },
       [unarchiveList],
@@ -52,7 +52,7 @@ const ArchivedLists: React.FC<ArchivedListsProps> = memo(
               <StyledArchivedListCard
                 Icon={ListDefaultIcon}
                 label={item.label}
-                numberOfActiveItems={item.getNumberOfActiveItems()}
+                numberOfActiveItems={item.numberOfActiveItems}
                 color={item.color}
                 onPress={listPressHandlerGenerator(item)}
                 onDelete={handleDeleteGenerator(item)}

@@ -145,6 +145,7 @@ export class ListViewModel implements Clonable<ListViewModel> {
 
 export type ListDataViewModel = List & {
   numberOfActiveItems: number;
+  origin: ListOrigin;
 };
 
 type BuiltInListType = 'today' | 'all' | 'starred' | 'archived';

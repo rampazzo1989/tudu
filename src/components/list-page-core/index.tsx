@@ -121,7 +121,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           listData={list}
           onBackButtonPress={handleBackButtonPress}
           Icon={Icon}
-          loading={loading}
         />
         <DraxProvider>
           <DraggableContextProvider<TuduViewModel>

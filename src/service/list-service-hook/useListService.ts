@@ -61,15 +61,25 @@ const useListService = () => {
         return;
       }
 
-      const linkedLists = [...listState].map(([_, value]) => ({
-        id: value.id,
-        label: value.label,
-        color: value.color,
-        groupName: value.groupName,
-      }));
+      const linkedLists = [...listState].map<ListDataViewModel>(
+        ([listId, value]) => {
+          const tudus = customTudus.get(listId);
+          const numberOfActiveItems = [...(tudus ?? [])].filter(
+            ([_, tudu]) => !tudu.done,
+          ).length;
+          return {
+            id: value.id,
+            label: value.label,
+            color: value.color,
+            groupName: value.groupName,
+            origin,
+            numberOfActiveItems,
+          };
+        },
+      );
       return linkedLists;
     },
-    [getListState],
+    [customTudus, getListState],
   );
 
   const saveAllLists = useCallback(
@@ -202,29 +212,36 @@ const useListService = () => {
   const getAllTudus = useCallback(
     (origin: ListOrigin = 'default') => {
       const state = getTudusState(origin);
+      const listState = getListState(origin);
       const allTudus =
-        [...state].flatMap(([listId, tudus]) =>
-          [...tudus].map(
-            ([_, tudu]) => new TuduViewModel(tudu, listId, origin),
-          ),
-        ) ?? [];
+        [...state].flatMap(([listId, tudus]) => {
+          const listName = listState.get(listId)?.label;
+          console.log(listName);
+          return [...tudus].map(
+            ([_, tudu]) => new TuduViewModel(tudu, listId, origin, listName),
+          );
+        }) ?? [];
       const unlisted = [...unlistedTudus].map(
         ([_, tudu]) => new TuduViewModel(tudu, UNLISTED),
       );
       return allTudus.concat(unlisted);
     },
-    [getTudusState, unlistedTudus],
+    [getListState, getTudusState, unlistedTudus],
   );
 
   const getAllUndoneTudus = useCallback(
     (origin: ListOrigin = 'default') => {
       const state = getTudusState(origin);
+      const listState = getListState(origin);
       const allTudus =
-        [...state].flatMap(([listId, tudus]) =>
-          [...tudus]
+        [...state].flatMap(([listId, tudus]) => {
+          const listName = listState.get(listId)?.label;
+          return [...tudus]
             .filter(([_, tudu]) => !tudu.done)
-            .map(([_, tudu]) => new TuduViewModel(tudu, listId, origin)),
-        ) ?? [];
+            .map(
+              ([_, tudu]) => new TuduViewModel(tudu, listId, origin, listName),
+            );
+        }) ?? [];
       const unlisted = [...unlistedTudus]
         .filter(([_, tudu]) => !tudu.done)
         .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED));
@@ -256,7 +273,7 @@ const useListService = () => {
   );
 
   const deleteList = useCallback(
-    (list: ListViewModel) => {
+    (list: ListDataViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
       const tudusStateSetter = getTudusStateSetter(list.origin);
 
