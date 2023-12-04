@@ -1,15 +1,15 @@
 import {t} from 'i18next';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
-import {ListViewModel} from '../../scenes/home/types';
+import {ListDataViewModel} from '../../scenes/home/types';
 
 export const getTypeItemOrGroup = (
-  item: DraggableItem<ListViewModel> | ListViewModel,
+  item: DraggableItem<ListDataViewModel> | ListDataViewModel,
 ) => {
   let itemType: string = t('messages.confirmListDeleteItemType.list');
 
   if (!isNestedItem(item)) {
-    const draggableItem = item as DraggableItem<ListViewModel>;
+    const draggableItem = item as DraggableItem<ListDataViewModel>;
     itemType = draggableItem.groupId
       ? t('messages.confirmListDeleteItemType.group')
       : itemType;
@@ -19,7 +19,7 @@ export const getTypeItemOrGroup = (
 };
 
 export const generateListAndGroupDeleteTitle = (
-  item?: DraggableItem<ListViewModel> | ListViewModel,
+  item?: DraggableItem<ListDataViewModel> | ListDataViewModel,
 ) => {
   if (!item) {
     return '';
@@ -27,16 +27,16 @@ export const generateListAndGroupDeleteTitle = (
   let listName: string;
   const itemType = getTypeItemOrGroup(item);
   if (isNestedItem(item)) {
-    listName = (item as ListViewModel).label;
+    listName = (item as ListDataViewModel).label;
   } else {
-    const draggableItem = item as DraggableItem<ListViewModel>;
+    const draggableItem = item as DraggableItem<ListDataViewModel>;
     listName = draggableItem.groupId ?? draggableItem.data[0].label;
   }
   return t('messages.confirmListDelete', {itemType, listName});
 };
 
 export const generateListAndGroupArchiveTitle = (
-  item?: DraggableItem<ListViewModel> | ListViewModel,
+  item?: DraggableItem<ListDataViewModel> | ListDataViewModel,
 ) => {
   if (!item) {
     return '';
@@ -44,9 +44,9 @@ export const generateListAndGroupArchiveTitle = (
   let listName: string;
   let itemType: string = t('messages.confirmListDeleteItemType.list');
   if (isNestedItem(item)) {
-    listName = (item as ListViewModel).label;
+    listName = (item as ListDataViewModel).label;
   } else {
-    const draggableItem = item as DraggableItem<ListViewModel>;
+    const draggableItem = item as DraggableItem<ListDataViewModel>;
     listName = draggableItem.groupId ?? draggableItem.data[0].label;
     itemType = draggableItem.groupId
       ? t('messages.confirmListDeleteItemType.group')
@@ -65,7 +65,7 @@ const getNewNameWithCopyNumber = (name: string) => {
 };
 
 export const getDuplicateProofListTitle = (
-  lists: ListViewModel[],
+  lists: ListDataViewModel[],
   newLabel: string,
 ): string => {
   let alreadyExists = lists.some(x => x.label === newLabel);
@@ -80,7 +80,7 @@ export const getDuplicateProofListTitle = (
 };
 
 export const getDuplicateProofGroupTitle = (
-  list: DraggableItem<ListViewModel>[],
+  list: DraggableItem<ListDataViewModel>[],
   newName: string,
 ): string => {
   const alreadyExists = list.some(draggable => draggable.groupId === newName);

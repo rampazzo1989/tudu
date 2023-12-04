@@ -25,6 +25,8 @@ import {ListHeader} from '../list-header';
 import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../../scenes/home/state';
+import Animated, {SlideOutLeft} from 'react-native-reanimated';
+import {Skeleton} from 'react-native-animated-skeleton';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -32,6 +34,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     handleBackButtonPress,
     list,
     Icon,
+    loading = false,
     showScheduleInformation = true,
     isSmartList = false,
     draggableEnabled = true,
@@ -100,7 +103,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           };
         }
         if (showScheduleInformation && tudu.dueDate) {
-          console.log(tudu.dueDate, typeof tudu.dueDate);
           const isScheduledForToday = isToday(tudu.dueDate);
           return {
             label: isScheduledForToday
@@ -138,7 +140,46 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
             <DraggablePageContent
               contentContainerStyle={styles.scrollContentContainer}>
-              {!!list?.tudus && (
+              {/* <Suspense
+                fallback={
+                  <Animated.View exiting={SlideOutLeft.duration(75)}>
+                    <View
+                      style={{
+                        width: '100%',
+                        height: 60,
+                        borderRadius: 8,
+                        backgroundColor: '#585f69',
+                      }}
+                    />
+                  </Animated.View>
+                }>
+                <TudusList
+                  onTuduPress={handleTuduPress}
+                  animateIcon={animateThisIcon}
+                  getAdditionalInformation={getAdditionalInformation}
+                  draggableEnabled={draggableEnabled}
+                  onEditPress={tudu => {
+                    setEditingTudu(tudu);
+                    setNewTuduPopupVisible(true);
+                  }}
+                />
+              </Suspense> */}
+              {loading ? (
+                <Animated.View exiting={SlideOutLeft.duration(75)}>
+                  <Skeleton
+                    numberOfItems={4}
+                    speed={500}
+                    direction="column"
+                    loaderStyle={{
+                      width: '100%',
+                      height: 60,
+                      borderRadius: 8,
+                      backgroundColor: '#3C414A',
+                      marginBottom: 8,
+                    }}
+                  />
+                </Animated.View>
+              ) : (
                 <TudusList
                   onTuduPress={handleTuduPress}
                   animateIcon={animateThisIcon}

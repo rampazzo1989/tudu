@@ -71,7 +71,6 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
 export type List = {
   label: string;
   id: string;
-  tudus: Map<string, TuduItem>;
   color?: string;
   groupName?: string;
 };
@@ -90,40 +89,64 @@ export class ListViewModel implements Clonable<ListViewModel> {
     return this.tudus.filter(x => !x.done).length;
   }
 
-  private getTuduViewModelsFromList = (list: List, origin: ListOrigin) => {
-    const mappedTudus = [...list.tudus].map(
+  private getTuduViewModelsFromList = (
+    list: List,
+    origin: ListOrigin,
+    tuduList?: Map<string, TuduItem>,
+  ) => {
+    if (!tuduList) {
+      return [];
+    }
+    const mappedTudus = [...tuduList].map(
       ([_, tudu]) => new TuduViewModel(tudu, list.id, origin, list.label),
     );
     return mappedTudus;
   };
 
-  public mapBack() {
+  public mapBackList() {
     const listModel: List = {
       id: this.id,
       label: this.label,
       color: this.color,
       groupName: this.groupName,
-      tudus: new Map(this.tudus.map(x => [x.id, x.mapBack()])),
     };
 
     return listModel;
   }
 
-  public clone() {
-    const newList = new ListViewModel(this.mapBack(), this.origin);
+  public mapBackTudus() {
+    const tuduModelMap = new Map(this.tudus.map(x => [x.id, x.mapBack()]));
 
+    return tuduModelMap;
+  }
+
+  public clone() {
+    const newList = new ListViewModel(
+      this.mapBackList(),
+      this.mapBackTudus(),
+      this.origin,
+    );
     return newList;
   }
 
-  constructor(data: List, origin: ListOrigin = 'default') {
+  constructor(
+    data: List,
+    tudus?: Map<string, TuduItem>,
+    origin: ListOrigin = 'default',
+  ) {
     this.id = data.id;
     this.label = data.label;
     this.color = data.color;
     this.groupName = data.groupName;
-    this.tudus = this.getTuduViewModelsFromList(data, origin);
+    this.tudus = this.getTuduViewModelsFromList(data, origin, tudus);
     this.origin = origin;
   }
 }
+
+export type ListDataViewModel = List & {
+  numberOfActiveItems: number;
+  origin: ListOrigin;
+};
 
 type BuiltInListType = 'today' | 'all' | 'starred' | 'archived';
 

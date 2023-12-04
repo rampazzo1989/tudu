@@ -1,22 +1,32 @@
-import React, {memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {ListPageProps} from './types';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {useListService} from '../../service/list-service-hook/useListService';
 import {ListPageCore} from '../../components/list-page-core';
 
-const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
-  const {listId, listOrigin} = route.params;
+const UNLOADED_ID = 'unloaded';
 
-  const {getListById, saveList} = useListService();
+const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
+  const {listId, title, listOrigin} = route.params;
+
+  const [list, setList] = useState<ListViewModel | undefined>(
+    new ListViewModel({
+      id: UNLOADED_ID,
+      label: title,
+    }),
+  );
+
+  const {getListById, saveListAndTudus} = useListService();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
-  const list = useMemo(() => {
-    console.log({listId, listOrigin});
-    return getListById(listId, listOrigin);
+  useEffect(() => {
+    setTimeout(() => {
+      setList(() => getListById(listId, listOrigin));
+    }, 100);
   }, [getListById, listId, listOrigin]);
 
   const setTudus = useCallback(
@@ -26,11 +36,15 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       }
 
       const newTuduList = draggable.flatMap(x => x.data);
-      const newList = new ListViewModel(list.mapBack(), list.origin);
+      const newList = new ListViewModel(
+        list.mapBackList(),
+        undefined,
+        list.origin,
+      );
       newList.tudus = newTuduList;
-      saveList(newList);
+      saveListAndTudus(newList);
     },
-    [list, saveList],
+    [list, saveListAndTudus],
   );
 
   return (
@@ -38,6 +52,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       handleBackButtonPress={handleBackButtonPress}
       setTudus={setTudus}
       list={list}
+      loading={list?.id === UNLOADED_ID}
     />
   );
 });

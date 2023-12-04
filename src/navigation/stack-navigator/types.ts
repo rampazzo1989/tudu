@@ -2,7 +2,11 @@ import {ListOrigin} from '../../scenes/home/types';
 
 type StackNavigatorParamList = {
   Home: undefined;
-  List: {listId: string; listOrigin?: ListOrigin};
+  List: {
+    listId: string;
+    title: string;
+    listOrigin?: ListOrigin;
+  };
   ScheduledList: {
     date: Date;
   };

@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {ListPageCore} from '../../components/list-page-core';
@@ -7,6 +7,8 @@ import {useScheduledTuduService} from '../../service/list-service-hook/useSchedu
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {getDaytimeIcon} from '../../utils/general-utils';
 import {UNLISTED} from '../home/state';
+
+const UNLOADED_ID = 'unloaded';
 
 const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   ({navigation, route}) => {
@@ -26,18 +28,32 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       [date],
     );
 
-    const list = useMemo(() => {
-      const tudusForDate = getTudusForDate(date);
+    const [list, setList] = useState<ListViewModel>(
+      new ListViewModel(
+        {
+          id: UNLOADED_ID,
+          label: getListTitle(),
+        },
+        new Map(),
+      ),
+    );
 
-      const scheduledListVM = new ListViewModel({
-        id: 'scheduled',
-        label: getListTitle(),
-        tudus: new Map(),
-      });
+    useEffect(() => {
+      setTimeout(() => {
+        const tudusForDate = getTudusForDate(date);
 
-      scheduledListVM.tudus = tudusForDate;
-
-      return scheduledListVM;
+        setList(() => {
+          const virtualListVM = new ListViewModel(
+            {
+              id: 'scheduled',
+              label: getListTitle(),
+            },
+            new Map(),
+          );
+          virtualListVM.tudus = tudusForDate ?? [];
+          return virtualListVM;
+        });
+      }, 100);
     }, [date, getListTitle, getTudusForDate]);
 
     const setTudus = useCallback(
@@ -68,6 +84,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         Icon={getDaytimeIcon()}
         isSmartList
         showScheduleInformation={false}
+        loading={list.id === UNLOADED_ID}
       />
     );
   },

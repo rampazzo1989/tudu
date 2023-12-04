@@ -1,5 +1,10 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {HomePageProps, ListViewModel, SmartList} from './types';
+import {
+  HomePageProps,
+  ListDataViewModel,
+  ListViewModel,
+  SmartList,
+} from './types';
 import {DraggablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
 import {SmartLists} from './components/smart-lists';
@@ -44,9 +49,9 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   }, []);
 
   const mapDraggableItemsToList = (
-    newOrderList: DraggableItem<ListViewModel>[],
+    newOrderList: DraggableItem<ListDataViewModel>[],
     groupPropertySetter: (
-      obj: ListViewModel,
+      obj: ListDataViewModel,
       groupId: string | undefined,
     ) => void,
   ) => {
@@ -71,10 +76,10 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   };
 
   const handleSetCustomLists = useCallback(
-    (newOrderList: DraggableItem<ListViewModel>[]) => {
+    (newOrderList: DraggableItem<ListDataViewModel>[]) => {
       const mappedList = mapDraggableItemsToList(
         newOrderList,
-        (list: ListViewModel, groupName) => (list.groupName = groupName),
+        (list: ListDataViewModel, groupName) => (list.groupName = groupName),
       );
       saveAllLists(mappedList);
     },
@@ -84,8 +89,8 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const groupedCustomLists = useMemo(() => {
     return mapListToDraggableItems(
       getAllLists() ?? [],
-      (list: ListViewModel) => list.groupName,
-    ) as DraggableItem<ListViewModel>[];
+      (list: ListDataViewModel) => list.groupName,
+    ) as DraggableItem<ListDataViewModel>[];
   }, [getAllLists]);
 
   const handleListDragStart = useCallback(() => {
@@ -98,8 +103,12 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   }, []);
 
   const handleListPress = useCallback(
-    (listData: ListViewModel) => {
-      navigation.navigate('List', {listId: listData.id});
+    (listData: ListDataViewModel) => {
+      navigation.navigate('List', {
+        listId: listData.id,
+        title: listData.label,
+        listOrigin: listData.origin,
+      });
     },
     [navigation],
   );
@@ -124,7 +133,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     <Page>
       <HomeHeader />
       <DraxProvider>
-        <DraggableContextProvider<ListViewModel>
+        <DraggableContextProvider<ListDataViewModel>
           data={groupedCustomLists}
           onSetData={handleSetCustomLists}
           onDragStart={handleListDragStart}

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {ListPageCore} from '../../components/list-page-core';
@@ -8,28 +8,43 @@ import {UNLISTED} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {AllTudusPageProps} from './types';
 
+const UNLOADED_ID = 'unloaded';
+
 const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
   const {t} = useTranslation();
+  const [list, setList] = useState<ListViewModel>(
+    new ListViewModel(
+      {
+        id: UNLOADED_ID,
+        label: 'All Tudús',
+      },
+      new Map(),
+    ),
+  );
 
-  const {saveAllTudus, getAllTudus} = useListService();
+  const {saveAllTudus, getAllUndoneTudus} = useListService();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
-  const list = useMemo(() => {
-    const allTudus = getAllTudus();
+  useEffect(() => {
+    setTimeout(() => {
+      const allTudus = getAllUndoneTudus();
 
-    const virtualListVM = new ListViewModel({
-      id: 'all',
-      label: 'All Tudús',
-      tudus: new Map(),
-    });
-
-    virtualListVM.tudus = allTudus ?? [];
-
-    return virtualListVM;
-  }, [getAllTudus]);
+      setList(() => {
+        const virtualListVM = new ListViewModel(
+          {
+            id: 'all',
+            label: 'All Tudús',
+          },
+          new Map(),
+        );
+        virtualListVM.tudus = allTudus ?? [];
+        return virtualListVM;
+      });
+    }, 100);
+  }, [getAllUndoneTudus]);
 
   const setTudus = useCallback(
     (draggable: DraggableItem<TuduViewModel>[]) => {
@@ -59,6 +74,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
       isSmartList
       draggableEnabled={false}
       allowAdding={true}
+      loading={list.id === UNLOADED_ID}
     />
   );
 };

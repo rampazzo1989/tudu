@@ -1,13 +1,19 @@
 import {useCallback} from 'react';
 import {useRecoilState} from 'recoil';
-import {myLists, unlistedTudusList} from '../../scenes/home/state';
+import {
+  myLists,
+  tudus as tudusState,
+  UNLISTED,
+  unlistedTudus as unlistedTudusState,
+} from '../../scenes/home/state';
 import {TuduViewModel} from '../../scenes/home/types';
 import {getDateOnlyTimeStamp} from '../../utils/date-utils';
 import {useListService} from './useListService';
 
 const useScheduledTuduService = () => {
   const [customLists] = useRecoilState(myLists);
-  const [unlistedTudus] = useRecoilState(unlistedTudusList);
+  const [customTudus] = useRecoilState(tudusState);
+  const [unlistedTudus] = useRecoilState(unlistedTudusState);
   const {saveTudu, saveAllTudus} = useListService();
 
   const getTudusForDate = useCallback(
@@ -16,22 +22,24 @@ const useScheduledTuduService = () => {
 
       const tudusFromDate: Array<TuduViewModel> = [];
 
-      customLists.forEach(list => {
-        const filteredTudus = [...list.tudus].filter(([_, tudu]) => {
+      customTudus.forEach((tuduMap, listId) => {
+        const filteredTudus = [...tuduMap].filter(([_, tudu]) => {
           const itsFromDate =
             tudu.dueDate &&
             getDateOnlyTimeStamp(tudu.dueDate) === dateOnlyTimeStamp;
           return itsFromDate;
         });
 
+        const listName = customLists.get(listId)?.label;
+
         filteredTudus.forEach(([_, tudu]) =>
           tudusFromDate.push(
-            new TuduViewModel(tudu, list.id, 'default', list.label),
+            new TuduViewModel(tudu, listId, 'default', listName),
           ),
         );
       });
 
-      const filteredTudus = [...unlistedTudus.tudus].filter(([_, tudu]) => {
+      const filteredTudus = [...unlistedTudus].filter(([_, tudu]) => {
         const itsFromDate =
           tudu.dueDate &&
           getDateOnlyTimeStamp(tudu.dueDate) === dateOnlyTimeStamp;
@@ -40,12 +48,7 @@ const useScheduledTuduService = () => {
 
       filteredTudus.forEach(([_, tudu]) =>
         tudusFromDate.push(
-          new TuduViewModel(
-            tudu,
-            unlistedTudus.id,
-            'default',
-            unlistedTudus.label,
-          ),
+          new TuduViewModel(tudu, UNLISTED, 'default', 'Unlisted'),
         ),
       );
 
@@ -55,7 +58,7 @@ const useScheduledTuduService = () => {
 
       return tudusFromDate;
     },
-    [customLists, unlistedTudus],
+    [customLists, customTudus, unlistedTudus],
   );
 
   const scheduleTudu = useCallback(

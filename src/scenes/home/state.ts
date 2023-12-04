@@ -73,13 +73,11 @@ export const counters = atom<Map<string, Counter>>({
   effects: [mmkvPersistAtom('counters', true)],
 });
 
-export const unlistedTudusList = atom<List>({
+type TuduItemMap = Map<string, TuduItem>;
+
+export const unlistedTudus = atom<TuduItemMap>({
   key: 'unlistedTudusList',
-  default: {
-    id: UNLISTED,
-    label: 'Unlisted',
-    tudus: new Map<string, TuduItem>(),
-  } as List,
+  default: new Map<string, TuduItem>(),
   effects: [mmkvPersistAtom('unlistedTudusList')],
 });
 
@@ -92,7 +90,6 @@ export const myLists = atom<Map<string, List>>({
         id: '1',
         label: 'Movies',
         color: 'green',
-        tudus: new Map<string, TuduItem>(),
       },
     ],
     [
@@ -102,7 +99,6 @@ export const myLists = atom<Map<string, List>>({
         label: 'Shop List',
         color: 'red',
         groupName: 'Test',
-        tudus: new Map<string, TuduItem>(),
       },
     ],
     [
@@ -111,7 +107,6 @@ export const myLists = atom<Map<string, List>>({
         id: '3',
         label: 'Gift Ideias',
         color: '#7956BF',
-        tudus: new Map<string, TuduItem>(),
       },
     ],
     [
@@ -121,7 +116,6 @@ export const myLists = atom<Map<string, List>>({
         label: 'America',
         color: 'red',
         groupName: 'Travel',
-        tudus: new Map<string, TuduItem>(),
       },
     ],
     [
@@ -131,11 +125,26 @@ export const myLists = atom<Map<string, List>>({
         label: 'Europe',
         color: 'blue',
         groupName: 'Travel',
-        tudus: new Map<string, TuduItem>(),
       },
     ],
   ]),
   effects: [mmkvPersistAtom('myLists', true)],
+});
+
+export const tudus = atom<Map<string, TuduItemMap>>({
+  key: 'tudus',
+  default: new Map<string, TuduItemMap>([
+    ['1', new Map<string, TuduItem>()],
+    ['2', new Map<string, TuduItem>()],
+    ['3', new Map<string, TuduItem>()],
+  ]),
+  effects: [mmkvPersistAtom('tudus')],
+});
+
+export const archivedTudus = atom<Map<string, TuduItemMap>>({
+  key: 'archivedTudus',
+  default: new Map<string, TuduItemMap>(),
+  effects: [mmkvPersistAtom('archivedTudus')],
 });
 
 export const archivedLists = atom<Map<string, List>>({
@@ -147,15 +156,15 @@ export const archivedLists = atom<Map<string, List>>({
 export const smartListsTuduCount = selector({
   key: 'smartListsTuduCount',
   get: ({get}) => {
-    const lists = get(myLists);
-    const {tudus: unlistedTudus} = get(unlistedTudusList);
+    const tuduMaps = get(tudus);
+    const unlisted = get(unlistedTudus);
 
     let todayCount = 0;
     let starredCount = 0;
     let allTudus = 0;
 
-    lists.forEach(list => {
-      const undoneTudus = [...list.tudus]
+    tuduMaps.forEach(map => {
+      const undoneTudus = [...map]
         .filter(([_, tudu]) => !tudu.done)
         .map(([_, tudu]) => tudu);
 
@@ -166,7 +175,7 @@ export const smartListsTuduCount = selector({
       ).length;
     }, []);
 
-    const undoneUnlistedTudus = [...unlistedTudus]
+    const undoneUnlistedTudus = [...unlisted]
       .filter(([_, tudu]) => !tudu.done)
       .map(([_, tudu]) => tudu);
 
