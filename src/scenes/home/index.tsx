@@ -103,7 +103,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   }, []);
 
   const handleListPress = useCallback(
-    (listData: ListViewModel) => {
+    (listData: ListDataViewModel) => {
       navigation.navigate('List', {
         listId: listData.id,
         title: listData.label,

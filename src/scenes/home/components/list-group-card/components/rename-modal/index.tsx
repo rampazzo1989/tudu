@@ -29,6 +29,7 @@ const RenameModal: React.FC<RenameModalProps> = memo(
     const inputRef = useRef<TextInput>(null);
 
     const handleTextChange = useCallback((text: string) => {
+      console.log({text});
       setInternalGroupName(text);
     }, []);
 

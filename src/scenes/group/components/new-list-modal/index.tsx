@@ -6,23 +6,21 @@ import {ListDefaultIcon} from '../../../../components/animated-icons/list-defaul
 import {Input} from './styles';
 import {PopupButton} from '../../../../components/popup-modal/types';
 import {NewListModalProps} from './types';
-import {ListViewModel} from '../../../home/types';
+import {ListDataViewModel, ListViewModel} from '../../../home/types';
 import {getDuplicateProofListTitle} from '../../../../utils/list-and-group-utils';
 import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {useListService} from '../../../../service/list-service-hook/useListService';
 
-const getNewEmptyList = () =>
-  new ListViewModel(
-    {
-      label: '',
-      id: generateRandomHash('New List'),
-    },
-    new Map(),
-  );
+const getNewEmptyList = (): ListDataViewModel => ({
+  id: generateRandomHash('New List'),
+  label: '',
+  numberOfActiveItems: 0,
+  origin: 'default',
+});
 
 const NewListModal: React.FC<NewListModalProps> = memo(
   ({visible, editingList, onRequestClose}) => {
-    const [internalListData, setInternalListData] = useState<ListViewModel>(
+    const [internalListData, setInternalListData] = useState<ListDataViewModel>(
       editingList ?? getNewEmptyList(),
     );
     const {getAllLists, saveList} = useListService();
@@ -33,7 +31,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
 
     const handleTextChange = useCallback((text: string) => {
       setInternalListData(x => {
-        const newList = x.clone();
+        const newList = {...x};
         newList.label = text;
         return newList;
       });
@@ -42,18 +40,20 @@ const NewListModal: React.FC<NewListModalProps> = memo(
     const isEditing = useMemo(() => !!editingList, [editingList]);
 
     const insertOrUpdateList = useCallback(
-      (newList: ListViewModel) => {
+      (newList: ListDataViewModel) => {
         const isUpdatingTitle = newList.label !== editingList?.label;
 
         const allLists = getAllLists();
 
         const duplicateProofListTitle = isUpdatingTitle
-          ? getDuplicateProofListTitle(allLists, internalListData.label)
+          ? getDuplicateProofListTitle(allLists ?? [], internalListData.label)
           : newList.label;
 
         newList.label = duplicateProofListTitle;
 
-        saveList(newList);
+        const newListViewModel = new ListViewModel(newList);
+
+        saveList(newListViewModel);
       },
       [editingList?.label, getAllLists, internalListData.label, saveList],
     );

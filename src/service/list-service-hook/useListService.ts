@@ -83,9 +83,9 @@ const useListService = () => {
   );
 
   const saveAllLists = useCallback(
-    (newLists: ListViewModel[], origin: ListOrigin = 'default') => {
+    (newLists: ListDataViewModel[], origin: ListOrigin = 'default') => {
       const lists = newLists.map<[string, List]>(x => {
-        return [x.id, x.mapBackList()];
+        return [x.id, x];
       });
       const newMap = new Map<string, List>(lists);
 
@@ -247,7 +247,7 @@ const useListService = () => {
         .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED));
       return allTudus.concat(unlisted);
     },
-    [getTudusState, unlistedTudus],
+    [getListState, getTudusState, unlistedTudus],
   );
 
   const saveList = useCallback(
@@ -295,7 +295,7 @@ const useListService = () => {
   );
 
   const archiveList = useCallback(
-    (list: ListViewModel) => {
+    (list: ListDataViewModel) => {
       const foundList = customLists.has(list.id);
       if (!foundList) {
         throw new ItemNotFoundError("The list couldn't be found.", list);
@@ -303,14 +303,18 @@ const useListService = () => {
 
       setArchivedLists(previousState => {
         const newState = new Map(previousState);
-        newState.set(list.id, list.mapBackList());
+        newState.set(list.id, list);
 
         return newState;
       });
 
       setArchivedTudus(previousState => {
+        const tudus = previousState.get(list.id);
+        if (!tudus) {
+          return previousState;
+        }
         const newState = new Map(previousState);
-        newState.set(list.id, list.mapBackTudus());
+        newState.set(list.id, tudus);
 
         return newState;
       });
