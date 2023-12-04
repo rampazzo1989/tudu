@@ -253,6 +253,20 @@ const useListService = () => {
   const saveList = useCallback(
     (list: ListViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
+
+      listStateSetter(previousState => {
+        const newState = new Map([...previousState]);
+        newState.set(list.id, list.mapBackList());
+
+        return newState;
+      });
+    },
+    [getStateSetter],
+  );
+
+  const saveListAndTudus = useCallback(
+    (list: ListViewModel) => {
+      const listStateSetter = getStateSetter(list.origin);
       const tudusStateSetter = getTudusStateSetter(list.origin);
 
       listStateSetter(previousState => {
@@ -396,6 +410,7 @@ const useListService = () => {
     saveTudu,
     saveAllTudus,
     saveList,
+    saveListAndTudus,
     deleteList,
     archiveList,
     unarchiveList,

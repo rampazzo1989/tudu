@@ -17,7 +17,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     }),
   );
 
-  const {getListById, saveList} = useListService();
+  const {getListById, saveListAndTudus} = useListService();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -42,9 +42,9 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
         list.origin,
       );
       newList.tudus = newTuduList;
-      saveList(newList);
+      saveListAndTudus(newList);
     },
-    [list, saveList],
+    [list, saveListAndTudus],
   );
 
   return (
