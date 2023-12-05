@@ -9,19 +9,24 @@ import {FloatingDeleteProps} from './types';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {DraggableContext} from '../../modules/draggable/draggable-context';
 import {DraxDragWithReceiverEventData} from 'react-native-drax';
-import {SpecialDraggablePayload} from '../../modules/draggable/draggable-context/types';
+import {
+  DraggableItem,
+  SpecialDraggablePayload,
+} from '../../modules/draggable/draggable-context/types';
 import {useTranslation} from 'react-i18next';
 import {AnimatedIconRef} from '../animated-icons/animated-icon/types';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {getTypeItemOrGroup} from '../../utils/list-and-group-utils';
 import {capitalizeFirstLetter} from '../../utils/string-utils';
+import {isNestedItem} from '../../modules/draggable/draggable-utils';
+import {ListDataViewModel} from '../../scenes/home/types';
 
 const deletePayload: SpecialDraggablePayload = {
   id: 'delete',
 };
 
 const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
-  ({visible, confirmationPopupTitleBuilder, animateIcon}) => {
+  ({visible, confirmationPopupTitleBuilder, deleteItemFn, animateIcon}) => {
     const draggableContext = useContext(DraggableContext);
     const {t} = useTranslation();
     const iconRef = useRef<AnimatedIconRef>(null);
@@ -39,14 +44,21 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
 
     const handleDrop = useCallback(
       (data: DraxDragWithReceiverEventData) => {
-        const itemType = getTypeItemOrGroup(data.dragged.payload);
+        const payload = data.dragged.payload as
+          | ListDataViewModel
+          | DraggableItem<ListDataViewModel>;
+        const itemType = getTypeItemOrGroup(payload);
         const capitalizedItemType = capitalizeFirstLetter(itemType);
+        const listDataViewModel = isNestedItem(payload)
+          ? payload
+          : payload.data[0];
         return draggableContext.showConfirmationModal(
           data.dragged.payload,
           confirmationPopupTitleBuilder,
           'delete',
           undefined,
           () => {
+            deleteItemFn(listDataViewModel);
             animateIcon?.(DeleteIconActionAnimation);
             showItemDeletedToast(
               t('toast.itemDeleted', {itemType: capitalizedItemType}),
@@ -55,7 +67,13 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
           },
         );
       },
-      [animateIcon, confirmationPopupTitleBuilder, draggableContext, t],
+      [
+        animateIcon,
+        confirmationPopupTitleBuilder,
+        deleteItemFn,
+        draggableContext,
+        t,
+      ],
     );
 
     const handleReceiveDragExit = useCallback(

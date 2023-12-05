@@ -23,6 +23,7 @@ import {showItemDeletedToast} from '../../../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
 import {ListDataViewModel} from '../../types';
 import {useListService} from '../../../../service/list-service-hook/useListService';
+import {isNestedItem} from '../../../../modules/draggable/draggable-utils';
 
 const CustomLists: React.FC<CustomListsProps> = memo(
   ({onListPress, animateIcon}) => {
@@ -34,7 +35,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
 
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
-    const {archiveList} = useListService();
+    const {archiveList, deleteList, deleteGroup} = useListService();
 
     const {t} = useTranslation();
 
@@ -52,12 +53,16 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             | ListDataViewModel,
         ) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          const listDataViewModel = isNestedItem(listOrDraggableList)
+            ? listOrDraggableList
+            : listOrDraggableList.data[0];
           draggableContext.showConfirmationModal(
-            listOrDraggableList,
+            listDataViewModel,
             generateListAndGroupDeleteTitle,
             'delete',
             () => swipeableRef.current?.closeOptions(),
             () => {
+              deleteList(listDataViewModel);
               animateIcon?.(DeleteIconActionAnimation);
               showItemDeletedToast(
                 t('toast.itemDeleted', {itemType: t('toast.itemType.list')}),
@@ -66,7 +71,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
             },
           );
         },
-      [animateIcon, draggableContext, t],
+      [animateIcon, deleteList, draggableContext, t],
     );
 
     const archive = useCallback(
@@ -116,6 +121,13 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       [],
     );
 
+    const handleDeleteGroup = useCallback(
+      (groupName: string) => {
+        deleteGroup(groupName);
+      },
+      [deleteGroup],
+    );
+
     const memoizedItems = useMemo(() => {
       return (
         <>
@@ -131,6 +143,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                     handleDeleteGenerator={handleDeleteGenerator}
                     handleEditListGenerator={handleEditListGenerator}
                     groupData={item}
+                    deleteGroupFn={handleDeleteGroup}
                     onListPress={onListPress}
                     animateIcon={animateIcon}
                   />

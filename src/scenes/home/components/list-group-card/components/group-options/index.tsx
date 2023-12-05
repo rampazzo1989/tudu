@@ -12,7 +12,7 @@ import {showItemDeletedToast} from '../../../../../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
 
 const GroupOptions: React.FC<GroupOptionsProps> = memo(
-  ({groupData, closeMenu, onRename, onDeleteCallback}) => {
+  ({groupData, closeMenu, onRename, onDelete}) => {
     const draggableContext = useContext(DraggableContext);
 
     const {t} = useTranslation();
@@ -27,7 +27,7 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
         'delete',
         undefined,
         () => {
-          onDeleteCallback?.();
+          onDelete();
           showItemDeletedToast(
             t('toast.itemDeleted', {itemType: 'Group'}),
             draggableContext.undoLastDeletion,
@@ -35,7 +35,7 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
         },
       );
       closeMenu();
-    }, [closeMenu, draggableContext, groupData, onDeleteCallback, t]);
+    }, [closeMenu, draggableContext, groupData, onDelete, t]);
 
     const handleUngroupOptionPress = useCallback(() => {
       closeMenu();

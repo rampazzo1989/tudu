@@ -300,12 +300,26 @@ const useListService = () => {
 
       tudusStateSetter(previousState => {
         const newState = new Map(previousState);
+        console.log(list.id, newState.get(list.id), {list});
         newState.delete(list.id);
 
         return newState;
       });
     },
     [getStateSetter, getTudusStateSetter],
+  );
+
+  const deleteGroup = useCallback(
+    (groupName: string) => {
+      const allListsFromGroup = [...customLists]
+        .filter(([_, list]) => list.groupName === groupName)
+        .map(([_, list]) => list);
+
+      allListsFromGroup.forEach(list => {
+        deleteList({...list} as ListDataViewModel);
+      });
+    },
+    [customLists, deleteList],
   );
 
   const archiveList = useCallback(
@@ -412,6 +426,7 @@ const useListService = () => {
     saveList,
     saveListAndTudus,
     deleteList,
+    deleteGroup,
     archiveList,
     unarchiveList,
   };

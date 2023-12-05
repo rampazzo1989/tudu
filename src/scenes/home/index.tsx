@@ -41,7 +41,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const {t} = useTranslation();
   const theme = useTheme();
 
-  const {getAllLists, saveAllLists} = useListService();
+  const {getAllLists, saveAllLists, deleteList} = useListService();
   const {getAllCounters} = useCounterService();
 
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
@@ -127,6 +127,13 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     [handleSmartListPress],
   );
 
+  const handleDeleteList = useCallback(
+    (list: ListDataViewModel) => {
+      deleteList(list);
+    },
+    [deleteList],
+  );
+
   const countersList = useMemo(() => getAllCounters(), [getAllCounters]);
 
   return (
@@ -178,6 +185,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
             animateIcon={animateThisIcon}
+            deleteItemFn={handleDeleteList}
           />
           <HomeActionButton ref={actionButtonRef} />
         </DraggableContextProvider>

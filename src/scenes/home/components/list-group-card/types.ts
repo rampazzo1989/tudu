@@ -15,5 +15,6 @@ export type ListGroupProps = {
   handleDeleteGenerator: (
     listOrDraggableList: DraggableItem<ListDataViewModel> | ListDataViewModel,
   ) => (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
+  deleteGroupFn: (groupName: string) => void;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };
