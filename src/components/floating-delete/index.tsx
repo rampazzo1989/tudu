@@ -29,7 +29,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
   ({
     visible,
     confirmationPopupTitleBuilder,
-    deleteItemFn,
+    deleteItemsFn,
     undoDeletionFn,
     animateIcon,
   }) => {
@@ -55,16 +55,22 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
           | DraggableItem<ListDataViewModel>;
         const itemType = getTypeItemOrGroup(payload);
         const capitalizedItemType = capitalizeFirstLetter(itemType);
-        const listDataViewModel = isNestedItem(payload)
-          ? payload
-          : payload.data[0]; // TODO: here it can be a group
+
+        let viewModelList: ListDataViewModel[] | undefined;
+
+        if (isNestedItem(payload)) {
+          viewModelList = [payload];
+        } else {
+          viewModelList = payload.data;
+        }
+
         return draggableContext.showConfirmationModal(
           data.dragged.payload,
           confirmationPopupTitleBuilder,
           'delete',
           undefined,
           () => {
-            deleteItemFn(listDataViewModel);
+            deleteItemsFn(viewModelList);
             animateIcon?.(DeleteIconActionAnimation);
             showItemDeletedToast(
               t('toast.itemDeleted', {itemType: capitalizedItemType}),
@@ -76,7 +82,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
       [
         animateIcon,
         confirmationPopupTitleBuilder,
-        deleteItemFn,
+        deleteItemsFn,
         draggableContext,
         t,
         undoDeletionFn,

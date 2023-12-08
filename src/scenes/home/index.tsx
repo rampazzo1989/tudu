@@ -128,9 +128,9 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     [handleSmartListPress],
   );
 
-  const handleDeleteList = useCallback(
-    (list: ListDataViewModel) => {
-      deleteList(list);
+  const handleDeleteListOrGroup = useCallback(
+    (lists: ListDataViewModel[]) => {
+      lists.forEach(x => deleteList(x));
     },
     [deleteList],
   );
@@ -186,7 +186,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
             animateIcon={animateThisIcon}
-            deleteItemFn={handleDeleteList}
+            deleteItemsFn={handleDeleteListOrGroup}
             undoDeletionFn={restoreBackup}
           />
           <HomeActionButton ref={actionButtonRef} />

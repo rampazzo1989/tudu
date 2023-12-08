@@ -234,7 +234,6 @@ const useListService = () => {
       const allTudus =
         [...state].flatMap(([listId, tudus]) => {
           const listName = listState.get(listId)?.label;
-          console.log(listName);
           return [...tudus].map(
             ([_, tudu]) => new TuduViewModel(tudu, listId, origin, listName),
           );
@@ -311,7 +310,6 @@ const useListService = () => {
         tudusBkp: new Map(getTudusState(origin)),
         origin: origin,
       };
-      console.log({backup});
       SingletonBackup.getInstance().backup = backup;
     },
     [getListState, getTudusState],
@@ -320,7 +318,6 @@ const useListService = () => {
   const restoreBackup = useCallback(() => {
     const backup = SingletonBackup.getInstance().backup;
     const backupOrigin = backup?.origin;
-    console.log('Restoring state...', backupOrigin);
     if (!backupOrigin) {
       return;
     }
@@ -335,6 +332,7 @@ const useListService = () => {
     (listData: ListDataViewModel, saveBackup = true) => {
       const listStateSetter = getStateSetter(listData.origin);
       const tudusStateSetter = getTudusStateSetter(listData.origin);
+      console.log({listData, saveBackup});
 
       if (saveBackup) {
         doStateBackup(listData.origin);
@@ -364,9 +362,10 @@ const useListService = () => {
       const allListsFromGroup = [...customLists]
         .filter(([_, list]) => list.groupName === groupName)
         .map(([_, list]) => list);
+      // console.log({groupName, allListsFromGroup});
 
       allListsFromGroup.forEach(list => {
-        deleteList({...list} as ListDataViewModel, false);
+        deleteList({...list, origin: 'default'} as ListDataViewModel, false);
       });
     },
     [customLists, deleteList, doStateBackup],
