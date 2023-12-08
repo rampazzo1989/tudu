@@ -108,7 +108,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             label: isScheduledForToday
               ? 'Today'
               : formatToLocaleDate(tudu.dueDate),
-            originType: isScheduledForToday ? 'today' : 'list',
+            originType: isScheduledForToday ? 'today' : 'scheduled',
           };
         }
       },
@@ -170,13 +170,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                     numberOfItems={4}
                     speed={500}
                     direction="column"
-                    loaderStyle={{
-                      width: '100%',
-                      height: 60,
-                      borderRadius: 8,
-                      backgroundColor: '#3C414A',
-                      marginBottom: 8,
-                    }}
+                    loaderStyle={styles.skeleton}
                   />
                 </Animated.View>
               ) : (

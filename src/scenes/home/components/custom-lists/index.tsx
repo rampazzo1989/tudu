@@ -35,7 +35,8 @@ const CustomLists: React.FC<CustomListsProps> = memo(
 
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
-    const {archiveList, deleteList, deleteGroup} = useListService();
+    const {archiveList, deleteList, deleteGroup, restoreBackup} =
+      useListService();
 
     const {t} = useTranslation();
 
@@ -66,12 +67,12 @@ const CustomLists: React.FC<CustomListsProps> = memo(
               animateIcon?.(DeleteIconActionAnimation);
               showItemDeletedToast(
                 t('toast.itemDeleted', {itemType: t('toast.itemType.list')}),
-                draggableContext.undoLastDeletion,
+                restoreBackup,
               );
             },
           );
         },
-      [animateIcon, deleteList, draggableContext, t],
+      [animateIcon, deleteList, draggableContext, restoreBackup, t],
     );
 
     const archive = useCallback(
@@ -146,6 +147,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                     deleteGroupFn={handleDeleteGroup}
                     onListPress={onListPress}
                     animateIcon={animateIcon}
+                    undoDeletionFn={restoreBackup}
                   />
                 </DraggableView>
               );

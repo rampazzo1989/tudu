@@ -26,7 +26,13 @@ const deletePayload: SpecialDraggablePayload = {
 };
 
 const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
-  ({visible, confirmationPopupTitleBuilder, deleteItemFn, animateIcon}) => {
+  ({
+    visible,
+    confirmationPopupTitleBuilder,
+    deleteItemFn,
+    undoDeletionFn,
+    animateIcon,
+  }) => {
     const draggableContext = useContext(DraggableContext);
     const {t} = useTranslation();
     const iconRef = useRef<AnimatedIconRef>(null);
@@ -51,7 +57,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
         const capitalizedItemType = capitalizeFirstLetter(itemType);
         const listDataViewModel = isNestedItem(payload)
           ? payload
-          : payload.data[0];
+          : payload.data[0]; // TODO: here it can be a group
         return draggableContext.showConfirmationModal(
           data.dragged.payload,
           confirmationPopupTitleBuilder,
@@ -62,7 +68,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
             animateIcon?.(DeleteIconActionAnimation);
             showItemDeletedToast(
               t('toast.itemDeleted', {itemType: capitalizedItemType}),
-              draggableContext.undoLastDeletion,
+              undoDeletionFn,
             );
           },
         );
@@ -73,6 +79,7 @@ const FloatingDelete: React.FC<FloatingDeleteProps> = memo(
         deleteItemFn,
         draggableContext,
         t,
+        undoDeletionFn,
       ],
     );
 

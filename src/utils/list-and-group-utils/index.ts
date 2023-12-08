@@ -1,7 +1,7 @@
 import {t} from 'i18next';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {isNestedItem} from '../../modules/draggable/draggable-utils';
-import {ListDataViewModel} from '../../scenes/home/types';
+import {List, ListDataViewModel} from '../../scenes/home/types';
 
 export const getTypeItemOrGroup = (
   item: DraggableItem<ListDataViewModel> | ListDataViewModel,
@@ -91,4 +91,14 @@ export const getDuplicateProofGroupTitle = (
   } else {
     return newName;
   }
+};
+
+export const getListFromViewModel = (viewModel: ListDataViewModel): List => {
+  const {id, label, color, groupName} = viewModel;
+  return {
+    id,
+    label,
+    color,
+    groupName,
+  };
 };

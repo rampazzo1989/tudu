@@ -16,5 +16,6 @@ export type ListGroupProps = {
     listOrDraggableList: DraggableItem<ListDataViewModel> | ListDataViewModel,
   ) => (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   deleteGroupFn: (groupName: string) => void;
+  undoDeletionFn: () => void;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
 };

@@ -6,6 +6,7 @@ import {
   ListOrigin,
   ListDataViewModel,
   TuduItem,
+  StateBackup,
 } from '../../scenes/home/types';
 import {
   myLists,
@@ -18,6 +19,23 @@ import {
 import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback} from 'react';
 import {groupBy} from '../../utils/array-utils';
+import {getListFromViewModel} from '../../utils/list-and-group-utils';
+
+class SingletonBackup {
+  private static instance: SingletonBackup;
+
+  public backup?: StateBackup = undefined;
+
+  private constructor() {}
+
+  public static getInstance(): SingletonBackup {
+    if (!SingletonBackup.instance) {
+      SingletonBackup.instance = new SingletonBackup();
+    }
+
+    return SingletonBackup.instance;
+  }
+}
 
 const useListService = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
@@ -85,7 +103,7 @@ const useListService = () => {
   const saveAllLists = useCallback(
     (newLists: ListDataViewModel[], origin: ListOrigin = 'default') => {
       const lists = newLists.map<[string, List]>(x => {
-        return [x.id, x];
+        return [x.id, getListFromViewModel(x)];
       });
       const newMap = new Map<string, List>(lists);
 
@@ -286,48 +304,83 @@ const useListService = () => {
     [getStateSetter, getTudusStateSetter],
   );
 
+  const doStateBackup = useCallback(
+    (origin: ListOrigin) => {
+      const backup: StateBackup = {
+        listBkp: new Map(getListState(origin)),
+        tudusBkp: new Map(getTudusState(origin)),
+        origin: origin,
+      };
+      console.log({backup});
+      SingletonBackup.getInstance().backup = backup;
+    },
+    [getListState, getTudusState],
+  );
+
+  const restoreBackup = useCallback(() => {
+    const backup = SingletonBackup.getInstance().backup;
+    const backupOrigin = backup?.origin;
+    console.log('Restoring state...', backupOrigin);
+    if (!backupOrigin) {
+      return;
+    }
+    const listStateSetter = getStateSetter(backupOrigin);
+    const tudusStateSetter = getTudusStateSetter(backupOrigin);
+
+    listStateSetter(backup.listBkp);
+    tudusStateSetter(backup.tudusBkp);
+  }, [getStateSetter, getTudusStateSetter]);
+
   const deleteList = useCallback(
-    (list: ListDataViewModel) => {
-      const listStateSetter = getStateSetter(list.origin);
-      const tudusStateSetter = getTudusStateSetter(list.origin);
+    (listData: ListDataViewModel, saveBackup = true) => {
+      const listStateSetter = getStateSetter(listData.origin);
+      const tudusStateSetter = getTudusStateSetter(listData.origin);
+
+      if (saveBackup) {
+        doStateBackup(listData.origin);
+      }
 
       listStateSetter(previousState => {
         const newState = new Map(previousState);
-        newState.delete(list.id);
+        newState.delete(listData.id);
 
         return newState;
       });
 
       tudusStateSetter(previousState => {
         const newState = new Map(previousState);
-        console.log(list.id, newState.get(list.id), {list});
-        newState.delete(list.id);
+        newState.delete(listData.id);
 
         return newState;
       });
     },
-    [getStateSetter, getTudusStateSetter],
+    [doStateBackup, getStateSetter, getTudusStateSetter],
   );
 
   const deleteGroup = useCallback(
     (groupName: string) => {
+      doStateBackup('default');
+
       const allListsFromGroup = [...customLists]
         .filter(([_, list]) => list.groupName === groupName)
         .map(([_, list]) => list);
 
       allListsFromGroup.forEach(list => {
-        deleteList({...list} as ListDataViewModel);
+        deleteList({...list} as ListDataViewModel, false);
       });
     },
-    [customLists, deleteList],
+    [customLists, deleteList, doStateBackup],
   );
 
   const archiveList = useCallback(
-    (list: ListDataViewModel) => {
-      const foundList = customLists.has(list.id);
+    (listData: ListDataViewModel) => {
+      const foundList = customLists.has(listData.id);
       if (!foundList) {
-        throw new ItemNotFoundError("The list couldn't be found.", list);
+        throw new ItemNotFoundError("The list couldn't be found.", listData);
       }
+
+      const list = getListFromViewModel(listData);
+      const tudusToArchive = customTudus.get(list.id);
 
       setArchivedLists(previousState => {
         const newState = new Map(previousState);
@@ -337,12 +390,11 @@ const useListService = () => {
       });
 
       setArchivedTudus(previousState => {
-        const tudus = previousState.get(list.id);
-        if (!tudus) {
+        if (!tudusToArchive) {
           return previousState;
         }
         const newState = new Map(previousState);
-        newState.set(list.id, tudus);
+        newState.set(list.id, tudusToArchive);
 
         return newState;
       });
@@ -363,6 +415,7 @@ const useListService = () => {
     },
     [
       customLists,
+      customTudus,
       setArchivedLists,
       setArchivedTudus,
       setCustomLists,
@@ -371,22 +424,28 @@ const useListService = () => {
   );
 
   const unarchiveList = useCallback(
-    (list: ListViewModel) => {
-      const foundList = archivedLists.has(list.id);
+    (listData: ListDataViewModel) => {
+      const foundList = archivedLists.has(listData.id);
       if (!foundList) {
-        throw new ItemNotFoundError("The list couldn't be found.", list);
+        throw new ItemNotFoundError("The list couldn't be found.", listData);
       }
+
+      const list = getListFromViewModel(listData);
+      const tudus = archivedTudus.get(list.id);
 
       setCustomLists(previousState => {
         const newState = new Map(previousState);
-        newState.set(list.id, list.mapBackList());
+        newState.set(list.id, list);
 
         return newState;
       });
 
       setCustomTudus(previousState => {
         const newState = new Map(previousState);
-        newState.set(list.id, list.mapBackTudus());
+        if (!tudus) {
+          return previousState;
+        }
+        newState.set(list.id, tudus);
 
         return newState;
       });
@@ -400,13 +459,14 @@ const useListService = () => {
 
       setArchivedTudus(previousState => {
         const newState = new Map(previousState);
-        newState.delete(list.id);
+        newState.delete(listData.id);
 
         return newState;
       });
     },
     [
       archivedLists,
+      archivedTudus,
       setCustomLists,
       setCustomTudus,
       setArchivedLists,
@@ -429,6 +489,7 @@ const useListService = () => {
     deleteGroup,
     archiveList,
     unarchiveList,
+    restoreBackup,
   };
 };
 

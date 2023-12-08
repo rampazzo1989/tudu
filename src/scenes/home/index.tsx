@@ -41,7 +41,8 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const {t} = useTranslation();
   const theme = useTheme();
 
-  const {getAllLists, saveAllLists, deleteList} = useListService();
+  const {getAllLists, saveAllLists, deleteList, restoreBackup} =
+    useListService();
   const {getAllCounters} = useCounterService();
 
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
@@ -186,6 +187,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
             animateIcon={animateThisIcon}
             deleteItemFn={handleDeleteList}
+            undoDeletionFn={restoreBackup}
           />
           <HomeActionButton ref={actionButtonRef} />
         </DraggableContextProvider>

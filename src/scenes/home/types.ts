@@ -194,3 +194,11 @@ export class CounterViewModel {
     this.pace = data.pace;
   }
 }
+
+export type TuduItemMap = Map<string, TuduItem>;
+
+export type StateBackup = {
+  listBkp: Map<string, List>;
+  tudusBkp: Map<string, TuduItemMap>;
+  origin: ListOrigin;
+};

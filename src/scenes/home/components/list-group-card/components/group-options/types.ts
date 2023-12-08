@@ -6,4 +6,5 @@ export type GroupOptionsProps = {
   closeMenu: () => void;
   onRename: () => void;
   onDelete: () => void;
+  onUndoDeletion: () => void;
 };
