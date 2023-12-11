@@ -1,67 +1,70 @@
-import React, {memo, useCallback, useContext} from 'react';
+import React, {memo, useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
 import {SlideInRight} from 'react-native-reanimated';
-import {DraggableContext} from '../../modules/draggable/draggable-context';
-import {
-  DraggableContextType,
-  DraggableItem,
-} from '../../modules/draggable/draggable-context/types';
-import {
-  deleteItem,
-  refreshListState,
-} from '../../modules/draggable/draggable-utils';
 import {TuduViewModel} from '../../scenes/home/types';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {SwipeableCardRef} from '../swipeable-card/types';
 import {TuduCard} from '../tudu-card';
 import {TuduAnimatedContainer} from './styles';
 import {SimpleTuduListProps} from './types';
-import Toast from 'react-native-toast-message';
+import {isToday} from '../../utils/date-utils';
 
 /**
  * A non-draggable, non-addable tudu list.
  */
 const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
-  ({onTuduPress, getAdditionalInformation}) => {
+  ({
+    tudus,
+    getAdditionalInformation,
+    deleteTuduFn,
+    updateTuduFn,
+    undoDeletionFn,
+    onEditPress,
+  }) => {
     const {t} = useTranslation();
 
-    const draggableContext =
-      useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
-
-    const handleUndoDeletion = useCallback(
-      (
-        list: DraggableItem<TuduViewModel>[],
-        listSetter: (newData: DraggableItem<TuduViewModel>[]) => void,
-      ) => {
-        refreshListState(list, listSetter);
-        Toast.hide();
-      },
-      [],
-    );
-
     const handleDeleteGenerator = useCallback(
-      (deletingItem: DraggableItem<TuduViewModel>) => () => {
-        deleteItem(
-          draggableContext.data,
-          newData => draggableContext.setData(newData, true),
-          deletingItem,
-        );
+      (deletingItem: TuduViewModel) => () => {
+        deleteTuduFn(deletingItem);
 
-        showItemDeletedToast(t('toast.tuduDeleted'), () =>
-          handleUndoDeletion(draggableContext.data, draggableContext.setData),
-        );
+        showItemDeletedToast(t('toast.tuduDeleted'), () => undoDeletionFn());
       },
-      [draggableContext, handleUndoDeletion, t],
+      [deleteTuduFn, t, undoDeletionFn],
     );
 
     const handleEditGenerator = useCallback(
-      (editingItem: DraggableItem<TuduViewModel>) =>
+      (editingItem: TuduViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-          onEditPress(editingItem.data[0]);
+          onEditPress(editingItem);
           swipeableRef.current?.closeOptions();
         },
       [onEditPress],
     );
+
+    const handleTuduPress = useCallback(
+      (editingItem: TuduViewModel) => {
+        editingItem.done = !editingItem.done;
+        updateTuduFn(editingItem);
+      },
+      [updateTuduFn],
+    );
+
+    const handleSendToOrRemoveFromTodayGenerator = useCallback(
+      (editingItem: TuduViewModel) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          const dueDate = editingItem.dueDate;
+          if (dueDate && isToday(dueDate)) {
+            editingItem.dueDate = undefined;
+            editingItem.scheduledOrder = undefined;
+          } else {
+            editingItem.dueDate = new Date();
+          }
+          updateTuduFn(editingItem);
+          swipeableRef.current?.closeOptions();
+        },
+      [updateTuduFn],
+    );
+
     return (
       <>
         {tudus.map((tudu, index) => {
@@ -70,7 +73,7 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
               entering={SlideInRight?.duration(100).delay(index * 50)}>
               <TuduCard
                 data={tudu}
-                onPress={onTuduPress}
+                onPress={handleTuduPress}
                 onDelete={handleDeleteGenerator(tudu)}
                 onEdit={handleEditGenerator(tudu)}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(

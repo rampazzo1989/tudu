@@ -75,7 +75,7 @@ export type List = {
   groupName?: string;
 };
 
-export type ListOrigin = 'archived' | 'default';
+export type ListOrigin = 'archived' | 'default' | 'unlisted';
 
 export class ListViewModel implements Clonable<ListViewModel> {
   origin: ListOrigin;

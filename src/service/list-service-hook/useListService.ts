@@ -1,4 +1,4 @@
-import {useRecoilState} from 'recoil';
+import {SetterOrUpdater, useRecoilState} from 'recoil';
 import {
   ListViewModel,
   TuduViewModel,
@@ -7,6 +7,7 @@ import {
   ListDataViewModel,
   TuduItem,
   StateBackup,
+  TuduItemMap,
 } from '../../scenes/home/types';
 import {
   myLists,
@@ -52,8 +53,12 @@ const useListService = () => {
 
   const getTudusState = useCallback(
     (stateOrigin: ListOrigin) =>
-      stateOrigin === 'default' ? customTudus : archivedTudus,
-    [customTudus, archivedTudus],
+      stateOrigin === 'default'
+        ? customTudus
+        : stateOrigin === 'unlisted'
+        ? new Map([['unlisted', unlistedTudus]])
+        : archivedTudus,
+    [customTudus, unlistedTudus, archivedTudus],
   );
 
   const getStateSetter = useCallback(
@@ -62,10 +67,32 @@ const useListService = () => {
     [setCustomLists, setArchivedLists],
   );
 
+  const unlistedTudusStandardSetter: SetterOrUpdater<Map<string, TuduItemMap>> =
+    useCallback(
+      newData => {
+        let tuduMap: TuduItemMap | undefined;
+
+        if (newData instanceof Map) {
+          tuduMap = newData.get('unlisted');
+        } else {
+          const convertedData = newData(new Map([['unlisted', unlistedTudus]]));
+          tuduMap = convertedData.get('unlisted');
+        }
+        if (tuduMap) {
+          setUnlistedTudus(tuduMap);
+        }
+      },
+      [setUnlistedTudus, unlistedTudus],
+    );
+
   const getTudusStateSetter = useCallback(
     (stateOrigin: ListOrigin) =>
-      stateOrigin === 'default' ? setCustomTudus : setArchivedTudus,
-    [setCustomTudus, setArchivedTudus],
+      stateOrigin === 'default'
+        ? setCustomTudus
+        : stateOrigin === 'unlisted'
+        ? unlistedTudusStandardSetter
+        : setArchivedTudus,
+    [setCustomTudus, unlistedTudusStandardSetter, setArchivedTudus],
   );
 
   const getAllLists = useCallback(
@@ -239,7 +266,7 @@ const useListService = () => {
           );
         }) ?? [];
       const unlisted = [...unlistedTudus].map(
-        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED),
+        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'),
       );
       return allTudus.concat(unlisted);
     },
@@ -261,7 +288,7 @@ const useListService = () => {
         }) ?? [];
       const unlisted = [...unlistedTudus]
         .filter(([_, tudu]) => !tudu.done)
-        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED));
+        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'));
       return allTudus.concat(unlisted);
     },
     [getListState, getTudusState, unlistedTudus],
@@ -353,6 +380,26 @@ const useListService = () => {
       });
     },
     [doStateBackup, getStateSetter, getTudusStateSetter],
+  );
+
+  const deleteTudu = useCallback(
+    (tuduData: TuduViewModel, saveBackup = true) => {
+      const tudusStateSetter = getTudusStateSetter(tuduData.origin);
+
+      if (saveBackup) {
+        doStateBackup(tuduData.origin);
+      }
+
+      tudusStateSetter(previousState => {
+        const newState = new Map(previousState);
+        const tudus = newState.get(tuduData.listId);
+
+        tudus?.delete(tuduData.id);
+
+        return newState;
+      });
+    },
+    [doStateBackup, getTudusStateSetter],
   );
 
   const deleteGroup = useCallback(
@@ -486,6 +533,7 @@ const useListService = () => {
     saveListAndTudus,
     deleteList,
     deleteGroup,
+    deleteTudu,
     archiveList,
     unarchiveList,
     restoreBackup,
