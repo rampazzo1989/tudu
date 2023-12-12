@@ -70,7 +70,8 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
         {tudus.map((tudu, index) => {
           return (
             <TuduAnimatedContainer
-              entering={SlideInRight?.duration(100).delay(index * 50)}>
+              entering={SlideInRight?.duration(100).delay(index * 50)}
+              key={`${tudu.id}`}>
               <TuduCard
                 data={tudu}
                 onPress={handleTuduPress}

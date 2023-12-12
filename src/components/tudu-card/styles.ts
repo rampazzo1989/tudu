@@ -24,8 +24,6 @@ export const CheckAndTextContainer = styled.View<CheckableComponentType>`
 export const Label = styled.Text<CheckableComponentType>`
   color: ${({theme}) => theme.colors.text};
   font-size: 16px;
-  /* margin-top: 12px; */
-  /* margin-bottom: 12px; */
   max-width: 85%;
   flex-grow: 1;
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};

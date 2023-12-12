@@ -33,12 +33,10 @@ const getNewEmptyTudu = () =>
   );
 
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
-  ({visible, editingTudu, onRequestClose}) => {
+  ({visible, editingTudu, onRequestClose, onInsertOrUpdate}) => {
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
       editingTudu ?? getNewEmptyTudu(),
     );
-    const draggableContext =
-      useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
 
     const {t} = useTranslation();
 
@@ -56,26 +54,9 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
 
     const handleInsertOrUpdateTudu = useCallback(
       (tudu: TuduViewModel) => {
-        console.log({tudu, isEditing, data: draggableContext.data});
-        const draggableTudu = new DraggableItem([tudu]);
-        if (isEditing) {
-          const tuduIndex = draggableContext.data.findIndex(
-            x => x.data[0].id === tudu.id,
-          );
-          if (tuduIndex >= 0) {
-            const newList = draggableContext.data.slice();
-            newList.splice(tuduIndex, 1, draggableTudu);
-            draggableContext.setData(newList);
-          }
-        } else {
-          const draggableTudus = draggableContext.data;
-          const newList = draggableTudus.length
-            ? [draggableTudu, ...draggableContext.data]
-            : [draggableTudu];
-          draggableContext.setData(newList);
-        }
+        onInsertOrUpdate(tudu);
       },
-      [draggableContext, isEditing],
+      [onInsertOrUpdate],
     );
 
     const handleConfirmButtonPress = useCallback(() => {

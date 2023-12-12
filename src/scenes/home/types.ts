@@ -198,7 +198,7 @@ export class CounterViewModel {
 export type TuduItemMap = Map<string, TuduItem>;
 
 export type StateBackup = {
-  listBkp: Map<string, List>;
-  tudusBkp: Map<string, TuduItemMap>;
   origin: ListOrigin;
+  tudusBkp: Map<string, TuduItemMap>;
+  listBkp?: Map<string, List>;
 };

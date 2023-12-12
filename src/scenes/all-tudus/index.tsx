@@ -16,8 +16,6 @@ import {ListViewModel, TuduViewModel} from '../home/types';
 import {styles} from './styles';
 import {AllTudusPageProps} from './types';
 
-const UNLOADED_ID = 'unloaded';
-
 const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
   const {t} = useTranslation();
   const [tudus, setTudus] = useState<TuduViewModel[]>();
@@ -106,6 +104,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
           closeCurrentlyOpenSwipeable();
         }}
         editingTudu={editingTudu}
+        onInsertOrUpdate={saveTudu}
       />
     </Page>
   );

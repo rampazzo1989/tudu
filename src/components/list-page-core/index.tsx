@@ -25,8 +25,6 @@ import {ListHeader} from '../list-header';
 import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../../scenes/home/state';
-import Animated, {SlideOutLeft} from 'react-native-reanimated';
-import {Skeleton} from 'react-native-animated-skeleton';
 import {SkeletonTuduList} from '../skeleton-tudu-list';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
@@ -116,6 +114,29 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [isSmartList, showScheduleInformation],
     );
 
+    const handleInsertOrUpdate = useCallback(
+      (tudu: TuduViewModel) => {
+        const draggableTudu = new DraggableItem([tudu]);
+        if (editingTudu) {
+          const tuduIndex = draggableTudus.findIndex(
+            x => x.data[0].id === tudu.id,
+          );
+          if (tuduIndex >= 0) {
+            const newList = draggableTudus.slice();
+            newList.splice(tuduIndex, 1, draggableTudu);
+            setTudus(newList);
+          }
+        } else {
+          const draggableTudusList = draggableTudus;
+          const newList = draggableTudusList.length
+            ? [draggableTudu, ...draggableTudus]
+            : [draggableTudu];
+          setTudus(newList);
+        }
+      },
+      [draggableTudus, editingTudu, setTudus],
+    );
+
     return (
       <Page>
         <ListHeader
@@ -141,30 +162,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
             <DraggablePageContent
               contentContainerStyle={styles.scrollContentContainer}>
-              {/* <Suspense
-                fallback={
-                  <Animated.View exiting={SlideOutLeft.duration(75)}>
-                    <View
-                      style={{
-                        width: '100%',
-                        height: 60,
-                        borderRadius: 8,
-                        backgroundColor: '#585f69',
-                      }}
-                    />
-                  </Animated.View>
-                }>
-                <TudusList
-                  onTuduPress={handleTuduPress}
-                  animateIcon={animateThisIcon}
-                  getAdditionalInformation={getAdditionalInformation}
-                  draggableEnabled={draggableEnabled}
-                  onEditPress={tudu => {
-                    setEditingTudu(tudu);
-                    setNewTuduPopupVisible(true);
-                  }}
-                />
-              </Suspense> */}
               {loading ? (
                 <SkeletonTuduList />
               ) : (
@@ -187,6 +184,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 setEditingTudu(undefined);
                 closeCurrentlyOpenSwipeable();
               }}
+              onInsertOrUpdate={handleInsertOrUpdate}
               editingTudu={editingTudu}
             />
             {allowAdding && (

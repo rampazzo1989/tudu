@@ -333,7 +333,8 @@ const useListService = () => {
   const doStateBackup = useCallback(
     (origin: ListOrigin) => {
       const backup: StateBackup = {
-        listBkp: new Map(getListState(origin)),
+        listBkp:
+          origin === 'unlisted' ? undefined : new Map(getListState(origin)),
         tudusBkp: new Map(getTudusState(origin)),
         origin: origin,
       };
@@ -345,13 +346,17 @@ const useListService = () => {
   const restoreBackup = useCallback(() => {
     const backup = SingletonBackup.getInstance().backup;
     const backupOrigin = backup?.origin;
+
     if (!backupOrigin) {
       return;
     }
-    const listStateSetter = getStateSetter(backupOrigin);
-    const tudusStateSetter = getTudusStateSetter(backupOrigin);
 
-    listStateSetter(backup.listBkp);
+    if (backupOrigin !== 'unlisted' && !!backup.listBkp) {
+      const listStateSetter = getStateSetter(backupOrigin);
+      listStateSetter(backup.listBkp);
+    }
+
+    const tudusStateSetter = getTudusStateSetter(backupOrigin);
     tudusStateSetter(backup.tudusBkp);
   }, [getStateSetter, getTudusStateSetter]);
 
