@@ -27,6 +27,7 @@ import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../../scenes/home/state';
 import Animated, {SlideOutLeft} from 'react-native-reanimated';
 import {Skeleton} from 'react-native-animated-skeleton';
+import {SkeletonTuduList} from '../skeleton-tudu-list';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -165,14 +166,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 />
               </Suspense> */}
               {loading ? (
-                <Animated.View exiting={SlideOutLeft.duration(75)}>
-                  <Skeleton
-                    numberOfItems={4}
-                    speed={500}
-                    direction="column"
-                    loaderStyle={styles.skeleton}
-                  />
-                </Animated.View>
+                <SkeletonTuduList />
               ) : (
                 <TudusList
                   onTuduPress={handleTuduPress}
