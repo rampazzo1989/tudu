@@ -5,5 +5,6 @@ export type GroupOptionsProps = {
   groupData: DraggableItem<ListDataViewModel>;
   closeMenu: () => void;
   onRename: () => void;
-  onDeleteCallback?: () => void;
+  onDelete: () => void;
+  onUndoDeletion: () => void;
 };

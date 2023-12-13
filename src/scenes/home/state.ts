@@ -2,7 +2,14 @@ import i18next from 'i18next';
 import {atom, selector} from 'recoil';
 import {isToday} from '../../utils/date-utils';
 import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
-import {Counter, SmartList, List, TuduItem} from './types';
+import {
+  Counter,
+  SmartList,
+  List,
+  TuduItem,
+  TuduItemMap,
+  StateBackup,
+} from './types';
 
 export const UNLISTED = 'unlisted';
 
@@ -73,12 +80,10 @@ export const counters = atom<Map<string, Counter>>({
   effects: [mmkvPersistAtom('counters', true)],
 });
 
-type TuduItemMap = Map<string, TuduItem>;
-
 export const unlistedTudus = atom<TuduItemMap>({
-  key: 'unlistedTudusList',
+  key: 'unlistedTudus',
   default: new Map<string, TuduItem>(),
-  effects: [mmkvPersistAtom('unlistedTudusList')],
+  effects: [mmkvPersistAtom('unlistedTudus')],
 });
 
 export const myLists = atom<Map<string, List>>({

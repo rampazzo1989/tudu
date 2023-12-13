@@ -75,7 +75,7 @@ export type List = {
   groupName?: string;
 };
 
-export type ListOrigin = 'archived' | 'default';
+export type ListOrigin = 'archived' | 'default' | 'unlisted';
 
 export class ListViewModel implements Clonable<ListViewModel> {
   origin: ListOrigin;
@@ -194,3 +194,11 @@ export class CounterViewModel {
     this.pace = data.pace;
   }
 }
+
+export type TuduItemMap = Map<string, TuduItem>;
+
+export type StateBackup = {
+  origin: ListOrigin;
+  tudusBkp: Map<string, TuduItemMap>;
+  listBkp?: Map<string, List>;
+};

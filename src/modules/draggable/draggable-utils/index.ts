@@ -92,6 +92,8 @@ export const deleteItem = <T>(
   if (isNestedItem(deletingItem)) {
     removeSubItem(cloneList, deletingItem);
   } else {
+    console.log('Deleting item: ', {cloneList});
+
     const index = cloneList?.indexOf(deletingItem);
     cloneList?.splice(index, 1);
   }

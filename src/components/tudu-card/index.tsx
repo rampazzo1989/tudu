@@ -1,6 +1,7 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {isToday} from '../../utils/date-utils';
 import {toggle} from '../../utils/state-utils';
+import {CalendarIcon} from '../animated-icons/calendar';
 import {ListDefaultIcon} from '../animated-icons/list-default-icon';
 import {SunIcon} from '../animated-icons/sun-icon';
 import {TuduCheckbox} from '../tudu-checkbox';
@@ -43,6 +44,8 @@ const TuduCard = memo<TuduCardProps>(
             return <SunIcon size={12} />;
           case 'list':
             return <ListDefaultIcon size={10} />;
+          case 'scheduled':
+            return <CalendarIcon size={12} />;
         }
       },
       [],
@@ -54,6 +57,7 @@ const TuduCard = memo<TuduCardProps>(
           case 'today':
             return label;
           case 'list':
+          default:
             return `in ${label}`;
         }
       },

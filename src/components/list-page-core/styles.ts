@@ -9,6 +9,13 @@ export const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 30,
   },
+  skeleton: {
+    width: '100%',
+    height: 60,
+    borderRadius: 8,
+    backgroundColor: '#3C414A',
+    marginBottom: 8,
+  },
 });
 
 export const CheersAnimationContainer = styled.View`

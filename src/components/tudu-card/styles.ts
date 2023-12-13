@@ -17,17 +17,15 @@ export const CheckAndTextContainer = styled.View<CheckableComponentType>`
   justify-content: space-between;
   margin-right: 5px;
   margin-left: 5px;
-  flex: 1;
+  flex-grow: 1;
   opacity: ${({done}) => (done ? '0.2' : '1')};
 `;
 
 export const Label = styled.Text<CheckableComponentType>`
   color: ${({theme}) => theme.colors.text};
   font-size: 16px;
-  /* margin-top: 12px; */
-  /* margin-bottom: 12px; */
   max-width: 85%;
-  flex: 1;
+  flex-grow: 1;
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};
 `;

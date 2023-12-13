@@ -5,11 +5,11 @@ import {AnimatedIconProps} from '../animated-icon/types';
 const CalendarIcon: React.FC<AnimatedIconProps> = memo(props => {
   return (
     <BaseAnimatedIcon
-      source={require('../../../assets/lottie/calendar.json')}
+      source={require('../../../assets/lottie/calendar_black.json')}
       loop={false}
       componentName="CalendarIcon"
       initialFrame={60}
-      finalFrame={150}
+      finalFrame={60}
       {...props}
     />
   );

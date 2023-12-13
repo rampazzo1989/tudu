@@ -26,6 +26,8 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
     handleArchiveGenerator,
     handleDeleteGenerator,
     handleEditListGenerator,
+    deleteGroupFn,
+    undoDeletionFn,
     animateIcon,
   }) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
@@ -96,9 +98,10 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
       listPressHandlerGenerator,
     ]);
 
-    const handleAnimateIconOnDelete = useCallback(() => {
+    const handleDeleteGroup = useCallback(() => {
+      deleteGroupFn(groupData.groupId!);
       animateIcon?.(DeleteIconActionAnimation);
-    }, [animateIcon]);
+    }, [animateIcon, deleteGroupFn, groupData.groupId]);
 
     return (
       <ListGroupContainer>
@@ -115,7 +118,8 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
               groupData={groupData}
               closeMenu={handlePopoverMenuRequestClose}
               onRename={handleRename}
-              onDeleteCallback={handleAnimateIconOnDelete}
+              onDelete={handleDeleteGroup}
+              onUndoDeletion={undoDeletionFn}
             />
           </PopoverMenu>
         </TitleContainer>
