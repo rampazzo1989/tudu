@@ -70,19 +70,19 @@ const useListService = () => {
   const unlistedTudusStandardSetter: SetterOrUpdater<Map<string, TuduItemMap>> =
     useCallback(
       newData => {
-        let tuduMap: TuduItemMap | undefined;
+        setUnlistedTudus(previousState => {
+          const newMapInstance = new Map(previousState);
+          const tuduMap =
+            newData instanceof Map
+              ? newData.get('unlisted')
+              : newData(new Map([['unlisted', newMapInstance]]))?.get(
+                  'unlisted',
+                );
 
-        if (newData instanceof Map) {
-          tuduMap = newData.get('unlisted');
-        } else {
-          const convertedData = newData(new Map([['unlisted', unlistedTudus]]));
-          tuduMap = convertedData.get('unlisted');
-        }
-        if (tuduMap) {
-          setUnlistedTudus(tuduMap);
-        }
+          return tuduMap ?? previousState;
+        });
       },
-      [setUnlistedTudus, unlistedTudus],
+      [setUnlistedTudus],
     );
 
   const getTudusStateSetter = useCallback(
@@ -332,10 +332,17 @@ const useListService = () => {
 
   const doStateBackup = useCallback(
     (origin: ListOrigin) => {
+      const selectedTudusState = getTudusState(origin);
+      const tudusStateClone = new Map(selectedTudusState);
+
+      for (const [listId, tuduMap] of selectedTudusState) {
+        tudusStateClone.set(listId, new Map(tuduMap));
+      }
+
       const backup: StateBackup = {
         listBkp:
           origin === 'unlisted' ? undefined : new Map(getListState(origin)),
-        tudusBkp: new Map(getTudusState(origin)),
+        tudusBkp: new Map(tudusStateClone),
         origin: origin,
       };
       SingletonBackup.getInstance().backup = backup;
@@ -364,7 +371,6 @@ const useListService = () => {
     (listData: ListDataViewModel, saveBackup = true) => {
       const listStateSetter = getStateSetter(listData.origin);
       const tudusStateSetter = getTudusStateSetter(listData.origin);
-      console.log({listData, saveBackup});
 
       if (saveBackup) {
         doStateBackup(listData.origin);
@@ -414,7 +420,6 @@ const useListService = () => {
       const allListsFromGroup = [...customLists]
         .filter(([_, list]) => list.groupName === groupName)
         .map(([_, list]) => list);
-      // console.log({groupName, allListsFromGroup});
 
       allListsFromGroup.forEach(list => {
         deleteList({...list, origin: 'default'} as ListDataViewModel, false);

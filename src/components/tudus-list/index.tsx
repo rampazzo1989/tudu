@@ -79,6 +79,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       [],
     );
 
+    // TODO: Remove this and pass via props. Each page should implement its own tuduDeleteFn.
     const handleDeleteGenerator = useCallback(
       (deletingItem: DraggableItem<TuduViewModel>) => () => {
         deleteItem(
@@ -89,10 +90,10 @@ const TudusList: React.FC<TudusListProps> = memo(
         animateIcon?.(DeleteIconActionAnimation);
 
         showItemDeletedToast(t('toast.tuduDeleted'), () =>
-          handleUndoDeletion(draggableContext.data, draggableContext.setData),
+          draggableContext.undoLastDeletion(),
         );
       },
-      [animateIcon, draggableContext, handleUndoDeletion, t],
+      [animateIcon, draggableContext, t],
     );
 
     const handleEditGenerator = useCallback(

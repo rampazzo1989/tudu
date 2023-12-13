@@ -33,7 +33,7 @@ const DraggableContextProvider = <T,>({
 
   const handleSetData = useCallback(
     (newData: DraggableItem<T>[], allowUndoThisSave?: boolean) => {
-      previousStateRef.current = allowUndoThisSave ? data : undefined;
+      previousStateRef.current = allowUndoThisSave ? [...data] : undefined;
       onSetData(newData);
     },
     [data, onSetData],
@@ -43,7 +43,7 @@ const DraggableContextProvider = <T,>({
     setModal(x => {
       if (x?.action === 'delete') {
         // deleteItem(data, newData => handleSetData(newData, true), dealingItem);
-        previousStateRef.current = data;
+        previousStateRef.current = [...data];
         onCustomAction?.();
       } else {
         onCustomAction?.();

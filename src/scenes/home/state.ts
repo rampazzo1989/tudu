@@ -81,9 +81,9 @@ export const counters = atom<Map<string, Counter>>({
 });
 
 export const unlistedTudus = atom<TuduItemMap>({
-  key: 'unlistedTudusList',
+  key: 'unlistedTudus',
   default: new Map<string, TuduItem>(),
-  effects: [mmkvPersistAtom('unlistedTudusList')],
+  effects: [mmkvPersistAtom('unlistedTudus')],
 });
 
 export const myLists = atom<Map<string, List>>({

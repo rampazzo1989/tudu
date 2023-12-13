@@ -68,7 +68,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
       id: 'all-tudus',
-      label: 'All Undone Tudús',
+      label: 'All undone tudús',
     });
 
     return list;
