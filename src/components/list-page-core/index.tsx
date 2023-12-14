@@ -35,6 +35,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     handleBackButtonPress,
     list,
     Icon,
+    numberOfUndoneTudus,
     loading = false,
     showScheduleInformation = true,
     isSmartList = false,
@@ -175,7 +176,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             <DraggablePageContent
               contentContainerStyle={styles.scrollContentContainer}>
               {loading ? (
-                <SkeletonTuduList />
+                <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
               ) : (
                 <TudusList
                   onTuduPress={handleTuduPress}

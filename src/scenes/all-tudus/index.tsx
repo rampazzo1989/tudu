@@ -16,7 +16,7 @@ import {ListViewModel, TuduViewModel} from '../home/types';
 import {styles} from './styles';
 import {AllTudusPageProps} from './types';
 
-const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
+const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
   const {t} = useTranslation();
   const [tudus, setTudus] = useState<TuduViewModel[]>();
 
@@ -83,7 +83,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation}) => {
       />
       <PageContent contentContainerStyle={styles.pageContent}>
         {!tudus ? (
-          <SkeletonTuduList />
+          <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
         ) : (
           <SimpleTuduList
             getAdditionalInformation={getAdditionalInformation}

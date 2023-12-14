@@ -52,6 +52,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       setTudus={setTudus}
       list={list}
       loading={list?.id === UNLOADED_ID}
+      numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
     />
   );
 });

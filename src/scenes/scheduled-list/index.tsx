@@ -85,6 +85,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         isSmartList
         showScheduleInformation={false}
         loading={list.id === UNLOADED_ID}
+        numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
       />
     );
   },

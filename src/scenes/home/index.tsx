@@ -109,23 +109,19 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
         listId: listData.id,
         title: listData.label,
         listOrigin: listData.origin,
+        numberOfUndoneTudus: listData.numberOfActiveItems,
       });
     },
     [navigation],
   );
 
-  const handleSmartListPress = useCallback(
-    (listData: SmartList) => {
-      navigation.navigate(listData.navigateToPage);
+  const handleDefaultListPress = useCallback(
+    (listData: SmartList, numberOfUndoneTudus?: number) => {
+      navigation.navigate(listData.navigateToPage, {
+        numberOfUndoneTudus,
+      });
     },
     [navigation],
-  );
-
-  const handleDefaultListPress = useCallback(
-    (listData: SmartList) => {
-      handleSmartListPress(listData);
-    },
-    [handleSmartListPress],
   );
 
   const handleDeleteListOrGroup = useCallback(

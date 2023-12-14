@@ -12,4 +12,5 @@ export type ListPageCoreProps = {
   draggableEnabled?: boolean;
   allowAdding?: boolean;
   showScheduleInformation?: boolean;
+  numberOfUndoneTudus?: number;
 };
