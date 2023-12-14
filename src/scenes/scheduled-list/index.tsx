@@ -63,7 +63,6 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         }
 
         const newTuduList = draggable.flatMap(x => x.data);
-        console.log('setTudus: ', {newTuduList});
 
         newTuduList.forEach(tudu => {
           if (!tudu.listId) {

@@ -26,6 +26,8 @@ import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../../scenes/home/state';
 import {SkeletonTuduList} from '../skeleton-tudu-list';
+import {showItemDeletedToast} from '../../utils/toast-utils';
+import {useTranslation} from 'react-i18next';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -45,7 +47,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
-    const {saveTudu} = useListService();
+    const {saveTudu, deleteTudu, restoreBackup} = useListService();
+
+    const {t} = useTranslation();
 
     const draggableTudus = useMemo(() => {
       if (!list?.tudus) {
@@ -137,6 +141,14 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [draggableTudus, editingTudu, setTudus],
     );
 
+    const handleTuduDelete = useCallback(
+      (tudu: TuduViewModel) => {
+        deleteTudu(tudu);
+        showItemDeletedToast(t('toast.tuduDeleted'), restoreBackup);
+      },
+      [deleteTudu, restoreBackup, t],
+    );
+
     return (
       <Page>
         <ListHeader
@@ -174,6 +186,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                     setEditingTudu(tudu);
                     setNewTuduPopupVisible(true);
                   }}
+                  onDeletePress={handleTuduDelete}
                 />
               )}
             </DraggablePageContent>

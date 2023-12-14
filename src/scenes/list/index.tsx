@@ -4,7 +4,6 @@ import {ListPageProps} from './types';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {useListService} from '../../service/list-service-hook/useListService';
 import {ListPageCore} from '../../components/list-page-core';
-
 const UNLOADED_ID = 'unloaded';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
