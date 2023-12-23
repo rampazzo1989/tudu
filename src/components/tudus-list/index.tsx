@@ -34,6 +34,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     onTuduPress,
     onEditPress,
     onDeletePress,
+    onStarPress,
     getAdditionalInformation,
     animateIcon,
     draggableEnabled = true,
@@ -126,6 +127,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                 onPress={onTuduPress}
                 onDelete={handleDeleteGenerator(tudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onStarPress={onStarPress}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   draggableTudu.indexedTudu,
                 )}
@@ -151,6 +153,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                 onPress={onTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onStarPress={onStarPress}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   draggableTudu.indexedTudu,
                 )}
@@ -176,6 +179,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       handleDeleteGenerator,
       handleEditGenerator,
       handleSendToOrRemoveFromTodayGenerator,
+      onStarPress,
       onTuduPress,
     ]);
 

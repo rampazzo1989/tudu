@@ -89,6 +89,19 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [handleListCompleted, list, saveTudu],
     );
 
+    const handleTuduStarPress = useCallback(
+      (tudu: TuduViewModel) => {
+        if (!list) {
+          return;
+        }
+
+        tudu.starred = !tudu.starred;
+
+        saveTudu(tudu);
+      },
+      [list, saveTudu],
+    );
+
     const animateThisIcon = useCallback(
       (thisIcon: ForwardedRefAnimatedIcon) => {
         actionButtonRef.current?.animateThisIcon(thisIcon);
@@ -183,6 +196,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   animateIcon={animateThisIcon}
                   getAdditionalInformation={getAdditionalInformation}
                   draggableEnabled={draggableEnabled}
+                  onStarPress={handleTuduStarPress}
                   onEditPress={tudu => {
                     setEditingTudu(tudu);
                     setNewTuduPopupVisible(true);

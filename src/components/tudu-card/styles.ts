@@ -17,7 +17,7 @@ export const CheckAndTextContainer = styled.View<CheckableComponentType>`
   justify-content: space-between;
   margin-right: 5px;
   margin-left: 5px;
-  flex-grow: 1;
+  flex: 1;
   opacity: ${({done}) => (done ? '0.2' : '1')};
 `;
 
@@ -44,4 +44,8 @@ export const AdditionalInfoLabel = styled.Text`
   margin-left: 3px;
   font-size: 10px;
   color: ${({theme}) => theme.colors.text};
+`;
+
+export const StarContainer = styled.View`
+  width: 10%;
 `;

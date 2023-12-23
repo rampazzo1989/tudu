@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import {PopupModal} from '../../../../components/popup-modal';
-import {ListViewModel} from '../../../home/types';
+import {ListDataViewModel} from '../../../home/types';
 import {useTranslation} from 'react-i18next';
 import {PopupButton} from '../../../../components/popup-modal/types';
 import {TextInput, View} from 'react-native';
@@ -41,10 +41,10 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
     const titleInputRef = useRef<TextInput>(null);
     const {t} = useTranslation();
     const [selectedLists, setSelectedLists] = useState<
-      DraggableItem<ListViewModel>[]
+      DraggableItem<ListDataViewModel>[]
     >([]);
     const draggableContext =
-      useContext<DraggableContextType<ListViewModel>>(DraggableContext);
+      useContext<DraggableContextType<ListDataViewModel>>(DraggableContext);
     const theme = useTheme();
 
     const ungroupedLists = useMemo(() => {
@@ -97,7 +97,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
     }, []);
 
     const handleCheckboxPressGenerator = useCallback(
-      (list: DraggableItem<ListViewModel>) => () => {
+      (list: DraggableItem<ListDataViewModel>) => () => {
         setSelectedLists(current => {
           const itemIndex = current.indexOf(list);
 
