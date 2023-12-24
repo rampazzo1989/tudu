@@ -4,6 +4,7 @@ import {toggle} from '../../utils/state-utils';
 import {CalendarIcon} from '../animated-icons/calendar';
 import {ListDefaultIcon} from '../animated-icons/list-default-icon';
 import {SunIcon} from '../animated-icons/sun-icon';
+import {Star} from '../star';
 import {TuduCheckbox} from '../tudu-checkbox';
 import {
   AdditionalInfoContainer,
@@ -12,6 +13,7 @@ import {
   CheckAndTextContainer,
   Label,
   LabelAndAdditionalInfoContainer,
+  StarContainer,
 } from './styles';
 import {SwipeableTuduCard} from './swipeable-tudu-card';
 import {TuduAdditionalInformationOriginType, TuduCardProps} from './types';
@@ -22,14 +24,17 @@ const TuduCard = memo<TuduCardProps>(
     onPress,
     onDelete,
     onEdit,
+    onStarPress,
     onSendToOrRemoveFromToday,
     additionalInfo,
   }) => {
     const [internalDone, setInternalDone] = useState(data.done);
+    const [internalStarred, setInternalStarred] = useState(!!data.starred);
 
     useEffect(() => {
       setInternalDone(data.done);
-    }, [data.done]);
+      setInternalStarred(!!data.starred);
+    }, [data.done, data.starred]);
 
     const handleTuduPress = useCallback(() => {
       setInternalDone(toggle);
@@ -64,6 +69,11 @@ const TuduCard = memo<TuduCardProps>(
       [],
     );
 
+    const handleStarPress = useCallback(() => {
+      setInternalStarred(toggle);
+      setTimeout(() => onStarPress(data), 100);
+    }, [data, onStarPress]);
+
     return (
       <Card
         scaleFactor={0.03}
@@ -78,6 +88,9 @@ const TuduCard = memo<TuduCardProps>(
           onEdit={onEdit}
           isOnToday={data.dueDate && isToday(data.dueDate)}
           onSendToOrRemoveFromToday={onSendToOrRemoveFromToday}>
+          <StarContainer>
+            <Star checked={internalStarred} onPress={handleStarPress} />
+          </StarContainer>
           <CheckAndTextContainer done={data.done}>
             <LabelAndAdditionalInfoContainer>
               <Label done={internalDone}>{data.label}</Label>

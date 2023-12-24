@@ -122,13 +122,6 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       [],
     );
 
-    const handleDeleteGroup = useCallback(
-      (groupName: string) => {
-        deleteGroup(groupName);
-      },
-      [deleteGroup],
-    );
-
     const memoizedItems = useMemo(() => {
       return (
         <>
@@ -144,7 +137,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                     handleDeleteGenerator={handleDeleteGenerator}
                     handleEditListGenerator={handleEditListGenerator}
                     groupData={item}
-                    deleteGroupFn={handleDeleteGroup}
+                    deleteGroupFn={deleteGroup}
                     onListPress={onListPress}
                     animateIcon={animateIcon}
                     undoDeletionFn={restoreBackup}
@@ -159,7 +152,6 @@ const CustomLists: React.FC<CustomListsProps> = memo(
                     Icon={ListDefaultIcon}
                     label={onlyItem.label}
                     numberOfActiveItems={onlyItem.numberOfActiveItems}
-                    // numberOfActiveItems={onlyItem.getNumberOfActiveItems()}
                     color={onlyItem.color}
                     onPress={listPressHandlerGenerator(onlyItem)}
                     onDelete={handleDeleteGenerator(item)}
@@ -184,6 +176,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
     }, [
       animateIcon,
       closeCurrentlyOpenSwipeable,
+      deleteGroup,
       draggableContext.data,
       editModalVisible,
       editingList,
@@ -192,6 +185,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       handleEditListGenerator,
       listPressHandlerGenerator,
       onListPress,
+      restoreBackup,
     ]);
 
     return <Container>{memoizedItems}</Container>;

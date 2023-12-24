@@ -26,6 +26,8 @@ import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../../scenes/home/state';
 import {SkeletonTuduList} from '../skeleton-tudu-list';
+import {showItemDeletedToast} from '../../utils/toast-utils';
+import {useTranslation} from 'react-i18next';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -33,6 +35,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     handleBackButtonPress,
     list,
     Icon,
+    numberOfUndoneTudus,
     loading = false,
     showScheduleInformation = true,
     isSmartList = false,
@@ -45,7 +48,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
-    const {saveTudu} = useListService();
+    const {saveTudu, deleteTudu, restoreBackup} = useListService();
+
+    const {t} = useTranslation();
 
     const draggableTudus = useMemo(() => {
       if (!list?.tudus) {
@@ -82,6 +87,19 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         }
       },
       [handleListCompleted, list, saveTudu],
+    );
+
+    const handleTuduStarPress = useCallback(
+      (tudu: TuduViewModel) => {
+        if (!list) {
+          return;
+        }
+
+        tudu.starred = !tudu.starred;
+
+        saveTudu(tudu);
+      },
+      [list, saveTudu],
     );
 
     const animateThisIcon = useCallback(
@@ -137,6 +155,14 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [draggableTudus, editingTudu, setTudus],
     );
 
+    const handleTuduDelete = useCallback(
+      (tudu: TuduViewModel) => {
+        deleteTudu(tudu);
+        showItemDeletedToast(t('toast.tuduDeleted'), restoreBackup);
+      },
+      [deleteTudu, restoreBackup, t],
+    );
+
     return (
       <Page>
         <ListHeader
@@ -163,17 +189,19 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             <DraggablePageContent
               contentContainerStyle={styles.scrollContentContainer}>
               {loading ? (
-                <SkeletonTuduList />
+                <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
               ) : (
                 <TudusList
                   onTuduPress={handleTuduPress}
                   animateIcon={animateThisIcon}
                   getAdditionalInformation={getAdditionalInformation}
                   draggableEnabled={draggableEnabled}
+                  onStarPress={handleTuduStarPress}
                   onEditPress={tudu => {
                     setEditingTudu(tudu);
                     setNewTuduPopupVisible(true);
                   }}
+                  onDeletePress={handleTuduDelete}
                 />
               )}
             </DraggablePageContent>

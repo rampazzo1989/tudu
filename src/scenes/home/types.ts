@@ -12,6 +12,7 @@ export type TuduItem = {
   done: boolean;
   dueDate?: Date;
   scheduledOrder?: number;
+  starred?: boolean;
 };
 
 interface Clonable<T> {
@@ -27,6 +28,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
   dueDate?: Date;
   scheduledOrder?: number;
   listName?: string;
+  starred?: boolean;
 
   public mapBack() {
     const listModel: TuduItem = {
@@ -35,6 +37,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
       label: this.label,
       dueDate: this.dueDate,
       scheduledOrder: this.scheduledOrder,
+      starred: this.starred,
     };
 
     return listModel;
@@ -65,6 +68,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
     this.scheduledOrder = data.scheduledOrder;
     this.origin = origin;
     this.listName = listName;
+    this.starred = data.starred;
   }
 }
 

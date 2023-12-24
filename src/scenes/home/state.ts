@@ -42,6 +42,7 @@ export const homeDefaultLists = atom<SmartList[]>({
       icon: 'star',
       label: i18next.t('listTitles.starred'),
       isHighlighted: false,
+      navigateToPage: 'StarredTudus',
     },
   ],
 });
@@ -178,6 +179,8 @@ export const smartListsTuduCount = selector({
       todayCount += undoneTudus.filter(
         tudu => tudu.dueDate && isToday(tudu.dueDate),
       ).length;
+
+      starredCount += undoneTudus.filter(tudu => !!tudu.starred).length;
     }, []);
 
     const undoneUnlistedTudus = [...unlisted]
@@ -188,6 +191,8 @@ export const smartListsTuduCount = selector({
     todayCount += undoneUnlistedTudus.filter(
       tudu => tudu.dueDate && isToday(tudu.dueDate),
     ).length;
+
+    starredCount += undoneUnlistedTudus.filter(tudu => !!tudu.starred).length;
 
     return {todayCount, starredCount, allTudus};
   },

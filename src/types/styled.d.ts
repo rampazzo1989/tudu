@@ -43,6 +43,7 @@ declare module 'styled-components/native' {
       actionMessageToast: {
         background: string;
       };
+      star: string;
     };
     fonts: {
       header: string;

@@ -14,9 +14,7 @@ import {
   TuduAnimatedContainer,
 } from './styles';
 import {TudusListProps} from './types';
-import Toast from 'react-native-toast-message';
 
-import {useTranslation} from 'react-i18next';
 import {CheckMarkIcon} from '../animated-icons/check-mark';
 import {DraggableView} from '../../modules/draggable/draggable-view';
 import {TuduCard} from '../tudu-card';
@@ -26,19 +24,17 @@ import {
 } from '../../modules/draggable/draggable-context/types';
 import {TuduViewModel} from '../../scenes/home/types';
 import {DraggableContext} from '../../modules/draggable/draggable-context';
-import {
-  deleteItem,
-  refreshListState,
-} from '../../modules/draggable/draggable-utils';
-import {DeleteIconActionAnimation} from '../animated-icons/delete-icon';
-import {showItemDeletedToast} from '../../utils/toast-utils';
+import {refreshListState} from '../../modules/draggable/draggable-utils';
 import {SwipeableCardRef} from '../swipeable-card/types';
 import {isToday} from '../../utils/date-utils';
+import {DeleteIconActionAnimation} from '../animated-icons/delete-icon';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({
     onTuduPress,
     onEditPress,
+    onDeletePress,
+    onStarPress,
     getAdditionalInformation,
     animateIcon,
     draggableEnabled = true,
@@ -48,8 +44,6 @@ const TudusList: React.FC<TudusListProps> = memo(
     const [enteringAnimation, setEnteringAnimation] = useState<
       typeof SlideInRight | undefined
     >(() => SlideInRight);
-
-    const {t} = useTranslation();
 
     useEffect(() => {
       setEnteringAnimation(undefined);
@@ -68,32 +62,12 @@ const TudusList: React.FC<TudusListProps> = memo(
       );
     }, []);
 
-    const handleUndoDeletion = useCallback(
-      (
-        list: DraggableItem<TuduViewModel>[],
-        listSetter: (newData: DraggableItem<TuduViewModel>[]) => void,
-      ) => {
-        refreshListState(list, listSetter);
-        Toast.hide();
-      },
-      [],
-    );
-
-    // TODO: Remove this and pass via props. Each page should implement its own tuduDeleteFn.
     const handleDeleteGenerator = useCallback(
-      (deletingItem: DraggableItem<TuduViewModel>) => () => {
-        deleteItem(
-          draggableContext.data,
-          newData => draggableContext.setData(newData, true),
-          deletingItem,
-        );
+      (deletingItem: TuduViewModel) => () => {
+        onDeletePress(deletingItem);
         animateIcon?.(DeleteIconActionAnimation);
-
-        showItemDeletedToast(t('toast.tuduDeleted'), () =>
-          draggableContext.undoLastDeletion(),
-        );
       },
-      [animateIcon, draggableContext, t],
+      [animateIcon, onDeletePress],
     );
 
     const handleEditGenerator = useCallback(
@@ -151,8 +125,9 @@ const TudusList: React.FC<TudusListProps> = memo(
               <TuduCard
                 data={tudu}
                 onPress={onTuduPress}
-                onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
+                onDelete={handleDeleteGenerator(tudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onStarPress={onStarPress}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   draggableTudu.indexedTudu,
                 )}
@@ -178,6 +153,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                 onPress={onTuduPress}
                 onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onStarPress={onStarPress}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   draggableTudu.indexedTudu,
                 )}
@@ -203,6 +179,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       handleDeleteGenerator,
       handleEditGenerator,
       handleSendToOrRemoveFromTodayGenerator,
+      onStarPress,
       onTuduPress,
     ]);
 

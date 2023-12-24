@@ -49,6 +49,14 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
       [updateTuduFn],
     );
 
+    const handleStarPress = useCallback(
+      (editingItem: TuduViewModel) => {
+        editingItem.starred = !editingItem.starred;
+        updateTuduFn(editingItem);
+      },
+      [updateTuduFn],
+    );
+
     const handleSendToOrRemoveFromTodayGenerator = useCallback(
       (editingItem: TuduViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
@@ -77,6 +85,7 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
                 onPress={handleTuduPress}
                 onDelete={handleDeleteGenerator(tudu)}
                 onEdit={handleEditGenerator(tudu)}
+                onStarPress={handleStarPress}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   tudu,
                 )}

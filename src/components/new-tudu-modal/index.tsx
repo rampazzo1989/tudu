@@ -1,19 +1,7 @@
-import React, {
-  memo,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {TextInput} from 'react-native';
 import {generateRandomHash} from '../../hooks/useHashGenerator';
-import {DraggableContext} from '../../modules/draggable/draggable-context';
-import {
-  DraggableContextType,
-  DraggableItem,
-} from '../../modules/draggable/draggable-context/types';
 import {TuduViewModel} from '../../scenes/home/types';
 import {CheckMarkIcon} from '../animated-icons/check-mark';
 import {PopupModal} from '../popup-modal';

@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
+import {StarIcon} from '../../components/animated-icons/star-icon';
 import {ListHeader} from '../../components/list-header';
 import {NewTuduModal} from '../../components/new-tudu-modal';
 import {Page} from '../../components/page';
@@ -14,16 +15,19 @@ import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {styles} from './styles';
-import {AllTudusPageProps} from './types';
+import {StarredTudusPageProps} from './types';
 
-const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
+const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
+  navigation,
+  route,
+}) => {
   const {t} = useTranslation();
   const [tudus, setTudus] = useState<TuduViewModel[]>();
 
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
 
-  const {getAllUndoneTudus, saveTudu, deleteTudu, restoreBackup} =
+  const {getAllStarredTudus, saveTudu, deleteTudu, restoreBackup} =
     useListService();
 
   const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
@@ -34,10 +38,10 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
 
   useEffect(() => {
     setTimeout(() => {
-      const allTudus = getAllUndoneTudus();
-      setTudus(allTudus ?? []);
+      const starredTudus = getAllStarredTudus();
+      setTudus(starredTudus ?? []);
     }, 100);
-  }, [getAllUndoneTudus, setTudus]);
+  }, [getAllStarredTudus, setTudus]);
 
   const getAdditionalInformation = useCallback(
     (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
@@ -67,10 +71,9 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
 
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
-      id: 'all-tudus',
-      label: 'All undone tudús',
+      id: 'starred-tudus',
+      label: 'Starred tudús',
     });
-
     return list;
   }, []);
 
@@ -79,7 +82,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
       <ListHeader
         listData={virtualList}
         onBackButtonPress={handleBackButtonPress}
-        Icon={ListDefaultIcon}
+        Icon={StarIcon}
       />
       <PageContent contentContainerStyle={styles.pageContent}>
         {!tudus ? (
@@ -110,4 +113,4 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
   );
 };
 
-export {AllTudusPage};
+export {StarredTudusPage};

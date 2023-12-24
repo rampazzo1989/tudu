@@ -7,27 +7,34 @@ import {StyledListCard} from './styles';
 import {DefaultListsProps} from './types';
 
 const SmartLists: React.FC<DefaultListsProps> = memo(({lists, onListPress}) => {
-  const listPressHandlerGenerator = useCallback(
-    (listData: SmartList) => () => {
-      onListPress(listData);
-    },
-    [onListPress],
-  );
-
   const smartListsUndoneCounter = useRecoilValue(smartListsTuduCount);
 
-  const getNumberOfActiveTudus = (list: SmartList) => {
-    switch (list.id) {
-      case 'all':
-        return smartListsUndoneCounter.allTudus;
-      case 'today':
-        return smartListsUndoneCounter.todayCount;
-      case 'starred':
-        return smartListsUndoneCounter.starredCount;
-      default:
-        return 0;
-    }
-  };
+  const getNumberOfActiveTudus = useCallback(
+    (list: SmartList) => {
+      switch (list.id) {
+        case 'all':
+          return smartListsUndoneCounter.allTudus;
+        case 'today':
+          return smartListsUndoneCounter.todayCount;
+        case 'starred':
+          return smartListsUndoneCounter.starredCount;
+        default:
+          return 0;
+      }
+    },
+    [
+      smartListsUndoneCounter.allTudus,
+      smartListsUndoneCounter.starredCount,
+      smartListsUndoneCounter.todayCount,
+    ],
+  );
+
+  const listPressHandlerGenerator = useCallback(
+    (listData: SmartList) => () => {
+      onListPress(listData, getNumberOfActiveTudus(listData));
+    },
+    [getNumberOfActiveTudus, onListPress],
+  );
 
   return (
     <>
