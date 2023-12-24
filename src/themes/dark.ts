@@ -50,6 +50,7 @@ const darkTheme: DefaultTheme = {
     actionMessageToast: {
       background: '#585f69',
     },
+    star: '#F5B404',
   },
   fonts: {
     header: 'Inter-SemiBold',

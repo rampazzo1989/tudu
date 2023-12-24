@@ -17,6 +17,7 @@ type StackNavigatorParamList = {
   SplashScreen: undefined;
   Archived: undefined;
   AllTudus: ListCommonProps;
+  StarredTudus: ListCommonProps;
 };
 
 export type {StackNavigatorParamList};
