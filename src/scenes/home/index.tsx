@@ -131,11 +131,15 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     [deleteList],
   );
 
+  const handleSearchPress = useCallback(() => {
+    navigation.navigate('Search');
+  }, [navigation]);
+
   const countersList = useMemo(() => getAllCounters(), [getAllCounters]);
 
   return (
     <Page>
-      <HomeHeader />
+      <HomeHeader onSearchPress={handleSearchPress} />
       <DraxProvider>
         <DraggableContextProvider<ListDataViewModel>
           data={groupedCustomLists}
