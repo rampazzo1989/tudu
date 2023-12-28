@@ -4,7 +4,7 @@ import {ListPageProps} from './types';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {useListService} from '../../service/list-service-hook/useListService';
 import {ListPageCore} from '../../components/list-page-core';
-const UNLOADED_ID = 'unloaded';
+import {UNLOADED_ID} from '../../constants';
 
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId, title, listOrigin} = route.params;
@@ -51,7 +51,6 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       handleBackButtonPress={handleBackButtonPress}
       setTudus={setTudus}
       list={list}
-      loading={list?.id === UNLOADED_ID}
       numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
     />
   );

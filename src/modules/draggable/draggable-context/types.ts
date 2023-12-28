@@ -23,11 +23,13 @@ export type DraggableContextProviderProps<T> = {
 
 export class DraggableItem<T> {
   groupId?: string;
+  orderIndex?: number;
   data: T[];
 
-  constructor(data: T[] = [], groupId?: string) {
+  constructor(data: T[] = [], groupId?: string, orderIndex?: number) {
     this.data = data;
     this.groupId = groupId;
+    this.orderIndex = orderIndex;
   }
 }
 
