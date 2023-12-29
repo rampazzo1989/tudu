@@ -177,8 +177,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             x => x.data[0].id === tudu.id,
           );
           if (tuduIndex >= 0) {
-            const newList = draggableTudus.slice();
-            newList.splice(tuduIndex, 1, draggableTudu);
+            const newList = [...draggableTudus];
+            newList[tuduIndex] = draggableTudu;
             handleSetTudus(newList);
           }
         } else {
