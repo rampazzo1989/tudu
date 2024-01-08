@@ -155,8 +155,17 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
               lists={smartLists}
               onListPress={handleDefaultListPress}
             />
-            <SectionTitle title={t('sectionTitles.counters')} />
-            <CountersList list={countersList} animateIcon={animateThisIcon} />
+            {countersList.length ? (
+              <>
+                <SectionTitle title={t('sectionTitles.counters')} />
+                <CountersList
+                  list={countersList}
+                  animateIcon={animateThisIcon}
+                />
+              </>
+            ) : (
+              <></>
+            )}
             {groupedCustomLists.length ? (
               <>
                 <SectionTitle title={t('sectionTitles.myLists')} />
