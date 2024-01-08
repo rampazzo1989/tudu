@@ -1,7 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {SearchIcon} from '../../components/animated-icons/search';
-import {ListHeader} from '../../components/list-header';
 import {NewTuduModal} from '../../components/new-tudu-modal';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
@@ -14,15 +12,17 @@ import {useSearchService} from '../../service/list-service-hook/useSearchService
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
+import {SearchHeader} from './components/search-header';
 import {styles} from './styles';
-import {StarredTudusPageProps} from './types';
+import {SearchPageProps} from './types';
 
-const SearchPage: React.FC<StarredTudusPageProps> = ({navigation, route}) => {
+const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
   const {t} = useTranslation();
   const [tudus, setTudus] = useState<TuduViewModel[]>();
 
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
+  const [searchText, setSearchText] = useState('');
 
   const {saveTudu, deleteTudu, restoreBackup} = useListService();
 
@@ -34,12 +34,18 @@ const SearchPage: React.FC<StarredTudusPageProps> = ({navigation, route}) => {
     navigation.goBack();
   }, [navigation]);
 
+  const delayDebounceFn = useRef<NodeJS.Timeout>();
+
   useEffect(() => {
-    setTimeout(() => {
-      const result = searchTudus('carro');
+    if (delayDebounceFn.current) {
+      clearTimeout(delayDebounceFn.current);
+    }
+    setTudus(current => (current?.length ? current : undefined));
+    delayDebounceFn.current = setTimeout(() => {
+      const result = searchTudus(searchText);
       setTudus(result ?? []);
-    }, 100);
-  }, [searchTudus, setTudus]);
+    }, 1000);
+  }, [searchText, searchTudus, setTudus]);
 
   const getAdditionalInformation = useCallback(
     (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
@@ -75,16 +81,20 @@ const SearchPage: React.FC<StarredTudusPageProps> = ({navigation, route}) => {
     return list;
   }, []);
 
+  const handleTextChange = useCallback((text: string) => {
+    setSearchText(text);
+  }, []);
+
   return (
     <Page>
-      <ListHeader
+      <SearchHeader
         listData={virtualList}
         onBackButtonPress={handleBackButtonPress}
-        Icon={SearchIcon}
+        onTextChange={handleTextChange}
       />
       <PageContent contentContainerStyle={styles.pageContent}>
         {!tudus ? (
-          <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
+          <SkeletonTuduList />
         ) : (
           <SimpleTuduList
             getAdditionalInformation={getAdditionalInformation}
