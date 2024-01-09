@@ -1,4 +1,9 @@
+<a href="https://www.linkedin.com/in/felipe-rampazzo-farias-99227439/" target="_blank">
+  <img src="https://raw.githubusercontent.com/dheereshagrwal/colored-icons/f7e587a482aafa9b290d1f757ab0060128f4ff0a/public/icons/linkedin/linkedin.svg" alt="LinkedIn" width="40" height="40">
+</a>
+
 # Tudú - A Beautiful React Native To-Do List App 🚀
+
 
 Welcome to Tudú, your new experience in to-do list applications developed in React Native. This project was conceived with the mission of providing an intuitive, elegant, and efficient way to manage your daily tasks.
 <p align="center">
@@ -7,6 +12,7 @@ Welcome to Tudú, your new experience in to-do list applications developed in Re
   <img src="https://private-user-images.githubusercontent.com/49328211/295071020-31981677-de75-4808-bb7e-84cf78f3d7ca.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDQ3NjE3OTEsIm5iZiI6MTcwNDc2MTQ5MSwicGF0aCI6Ii80OTMyODIxMS8yOTUwNzEwMjAtMzE5ODE2NzctZGU3NS00ODA4LWJiN2UtODRjZjc4ZjNkN2NhLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAxMDklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMTA5VDAwNTEzMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWM0YmY0YjdiYTczZjM4NTdkMGVkZDA4MjQ1MjBhNmNmYTFkMGQxZWE1MzFhZTkyMDNlNDk3NDdiYjQ1OGU4ZWImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.bagyQGvNUvlq4WvL2Lenq0hQvzm8zsTZmLcX_W5BWDE" width="180">
    <img src="https://private-user-images.githubusercontent.com/49328211/295071022-9809240e-d484-4b27-ad7c-29c898bc06c9.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDQ3NjE3OTEsIm5iZiI6MTcwNDc2MTQ5MSwicGF0aCI6Ii80OTMyODIxMS8yOTUwNzEwMjItOTgwOTI0MGUtZDQ4NC00YjI3LWFkN2MtMjljODk4YmMwNmM5LmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAxMDklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMTA5VDAwNTEzMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTcxZWQ3YmFkOTViNGVhZTBmYjhlM2M3M2RmNzk1OWI5NmMzOWU0ZGQ1YjcyODYyNzAwNDFlMmQ1YTI5YzRmOTkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.RbCjIsx-Bq92n77nEHhTxhy72YZ9Kr_E_4iYS9XIYhE" width="180">
   <img src="https://private-user-images.githubusercontent.com/49328211/295071012-f7c46282-2e3d-4186-ada9-057606389ca7.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDQ3NjE3OTEsIm5iZiI6MTcwNDc2MTQ5MSwicGF0aCI6Ii80OTMyODIxMS8yOTUwNzEwMTItZjdjNDYyODItMmUzZC00MTg2LWFkYTktMDU3NjA2Mzg5Y2E3LmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAxMDklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMTA5VDAwNTEzMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWMxNDQ3ZGMzZDM3NzQxZmMyYjlkOTRlODg5OTAzZGE2YzFhMmVjMzg2YjlkMjc4ZjgyZDIzYTIzZjg3Y2FkMGYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.eoVypD1k6cGoaIBzznxsQZndw2W16wzvoHhwabvYUE8" width="180">
+  <img src="https://private-user-images.githubusercontent.com/49328211/295071031-fe4e47f5-9197-4728-b0f8-02dc942d36f2.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDQ3NjMxODYsIm5iZiI6MTcwNDc2Mjg4NiwicGF0aCI6Ii80OTMyODIxMS8yOTUwNzEwMzEtZmU0ZTQ3ZjUtOTE5Ny00NzI4LWIwZjgtMDJkYzk0MmQzNmYyLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAxMDklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMTA5VDAxMTQ0NlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTcwYWRmZDU1MGJhYTljOWYzMzI3NzBiZTQ0Yjc4YWJmY2RmNDk2NzM1ZmE2ODgxMDVjM2M4MjVjZDY3MjljY2YmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.npBbo4k_-kcX8Pa9o5UyqAWnvghHAMB-i-ivB_grTpQ" width="180">
 </p>
 
 ## Overview 🌐
@@ -20,6 +26,16 @@ Tudú is more than just a to-do list; it's a tool that combines powerful feature
 - **Cross-Platform:** Developed with React Native, ensuring performance and consistency across different devices.
 - **Flexible Task List:** Easily create, edit, and delete tasks. Organize your lists in the way that makes the most sense for you.
 - **Reminders and Notifications:** Never forget an important task with customizable reminders and notifications**.
+
+## Some Technologies Used 🛠️
+
+Tudú is built using the following technologies:
+
+- **React Native Reanimated 3:** A powerful animation library for React Native that enhances the performance and fluidity of animations.
+
+- **MMKV for Persistence:** MMKV is used for efficient key-value storage, providing a lightweight and high-performance solution for data persistence.
+
+- **Recoil.js for State Management:** Tudú utilizes Recoil.js to manage state in a simple and scalable way, making it easy to handle complex state logic.
 
 ### **Obs: * iOS not tested yet. ** time schedule and notifications still not supported.**
 
