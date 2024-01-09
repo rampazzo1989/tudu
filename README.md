@@ -15,11 +15,9 @@ Getting Started 🚀
 
 Follow these simple steps to get started with Tudú:
 
-    Clone the Repository:
+1. Clone the Repository:
 
-    bash
-
-git clone https://github.com/your-username/tudu.git
+    git clone https://github.com/your-username/tudu.git
 
 Navigate to the Tudú Directory:
 
