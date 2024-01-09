@@ -45,7 +45,7 @@ Follow these simple steps to get started with Tudú:
 
 1. **Clone the Repository:**
 ```
-git clone https://github.com/your-username/tudu.git
+git clone https://github.com/rampazzo1989/tudu.git
 ```
 2. **Navigate to the Tudú Directory:**
 ```
