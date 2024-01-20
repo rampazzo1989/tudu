@@ -49,35 +49,7 @@ export const homeDefaultLists = atom<SmartList[]>({
 
 export const counters = atom<Map<string, Counter>>({
   key: 'counters',
-  default: new Map<string, Counter>([
-    [
-      '1',
-      {
-        id: '1',
-        title: 'Glasses of water today',
-        value: 8,
-        pace: 1,
-      },
-    ],
-    [
-      '2',
-      {
-        id: '2',
-        title: 'Money saved',
-        value: 2400000,
-        pace: 5,
-      },
-    ],
-    [
-      '3',
-      {
-        id: '3',
-        title: 'Extra hours this week',
-        value: 7,
-        pace: 1,
-      },
-    ],
-  ]),
+  default: new Map<string, Counter>(),
   effects: [mmkvPersistAtom('counters', true)],
 });
 
@@ -94,43 +66,7 @@ export const myLists = atom<Map<string, List>>({
       '1',
       {
         id: '1',
-        label: 'Movies',
-        color: 'green',
-      },
-    ],
-    [
-      '2',
-      {
-        id: '2',
-        label: 'Shop List',
-        color: 'red',
-        groupName: 'Test',
-      },
-    ],
-    [
-      '3',
-      {
-        id: '3',
-        label: 'Gift Ideias',
-        color: '#7956BF',
-      },
-    ],
-    [
-      '4',
-      {
-        id: '4',
-        label: 'America',
-        color: 'red',
-        groupName: 'Travel',
-      },
-    ],
-    [
-      '5',
-      {
-        id: '5',
-        label: 'Europe',
-        color: 'blue',
-        groupName: 'Travel',
+        label: 'Sample list 💎',
       },
     ],
   ]),
@@ -140,9 +76,27 @@ export const myLists = atom<Map<string, List>>({
 export const tudus = atom<Map<string, TuduItemMap>>({
   key: 'tudus',
   default: new Map<string, TuduItemMap>([
-    ['1', new Map<string, TuduItem>()],
-    ['2', new Map<string, TuduItem>()],
-    ['3', new Map<string, TuduItem>()],
+    [
+      '1',
+      new Map<string, TuduItem>([
+        [
+          '10',
+          {
+            id: '10',
+            label: 'Check this tudú 👆',
+            done: false,
+          },
+        ],
+        [
+          '11',
+          {
+            id: '11',
+            label: 'Swipe for options 👈👉',
+            done: false,
+          },
+        ],
+      ]),
+    ],
   ]),
   effects: [mmkvPersistAtom('tudus')],
 });

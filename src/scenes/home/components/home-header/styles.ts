@@ -27,6 +27,7 @@ export const ContentRow = styled.View`
 export const SearchAndProfile = styled.View`
   flex-direction: row;
   align-items: center;
+  justify-content: flex-end;
   width: 22%;
   height: 100%;
 `;

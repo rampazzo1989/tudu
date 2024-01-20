@@ -131,11 +131,15 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
     [deleteList],
   );
 
+  const handleSearchPress = useCallback(() => {
+    navigation.navigate('Search');
+  }, [navigation]);
+
   const countersList = useMemo(() => getAllCounters(), [getAllCounters]);
 
   return (
     <Page>
-      <HomeHeader />
+      <HomeHeader onSearchPress={handleSearchPress} />
       <DraxProvider>
         <DraggableContextProvider<ListDataViewModel>
           data={groupedCustomLists}
@@ -151,8 +155,17 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
               lists={smartLists}
               onListPress={handleDefaultListPress}
             />
-            <SectionTitle title={t('sectionTitles.counters')} />
-            <CountersList list={countersList} animateIcon={animateThisIcon} />
+            {countersList.length ? (
+              <>
+                <SectionTitle title={t('sectionTitles.counters')} />
+                <CountersList
+                  list={countersList}
+                  animateIcon={animateThisIcon}
+                />
+              </>
+            ) : (
+              <></>
+            )}
             {groupedCustomLists.length ? (
               <>
                 <SectionTitle title={t('sectionTitles.myLists')} />

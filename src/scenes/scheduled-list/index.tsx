@@ -7,8 +7,7 @@ import {useScheduledTuduService} from '../../service/list-service-hook/useSchedu
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {getDaytimeIcon} from '../../utils/general-utils';
 import {UNLISTED} from '../home/state';
-
-const UNLOADED_ID = 'unloaded';
+import {UNLOADED_ID} from '../../constants';
 
 const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   ({navigation, route}) => {
@@ -84,7 +83,6 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         Icon={getDaytimeIcon()}
         isSmartList
         showScheduleInformation={false}
-        loading={list.id === UNLOADED_ID}
         numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
       />
     );

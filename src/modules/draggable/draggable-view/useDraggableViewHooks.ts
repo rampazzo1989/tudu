@@ -91,6 +91,24 @@ const useDraggableViewHooks = <T>({
         }
       }
 
+      if (
+        draggedItem.orderIndex !== undefined &&
+        payload.orderIndex !== undefined
+      ) {
+        console.log('holla', draggedItem.orderIndex, payload.orderIndex);
+        const newList = draggableContext.data.slice();
+
+        [newList[draggedItem.orderIndex], newList[payload.orderIndex]] = [
+          newList[payload.orderIndex],
+          newList[draggedItem.orderIndex],
+        ];
+        isReceivingNestedItem.value = false;
+
+        draggableContext.setData(newList);
+
+        return;
+      }
+
       const newList = draggableContext.data.slice();
       const draggedItemIndex = draggableContext.data.indexOf(draggedItem);
 
