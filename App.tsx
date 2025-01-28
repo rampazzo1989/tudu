@@ -18,7 +18,7 @@ import RecoilNexus from 'recoil-nexus';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
-function App(): JSX.Element {
+function App(): React.JSX.Element {
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <ThemeProvider theme={CurrentTheme}>

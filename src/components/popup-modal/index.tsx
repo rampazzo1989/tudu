@@ -1,6 +1,6 @@
 import React, {memo, useEffect} from 'react';
 import {View} from 'react-native';
-import {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import Animated, {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {shake} from '../../utils/animation-utils';
 import {BlurredModal} from '../blurred-modal';
@@ -69,6 +69,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         visible={visible}
         {...props}>
         <KeyboardAvoidingView behavior="padding" pointerEvents="auto">
+          <Animated.View style={animatedStyle}>
           <PopupContainer style={animatedStyle} minimumSized={!children}>
             {title && (
               <>
@@ -104,6 +105,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
               </ButtonsContainer>
             )}
           </PopupContainer>
+          </Animated.View>
         </KeyboardAvoidingView>
       </BlurredModal>
     );
