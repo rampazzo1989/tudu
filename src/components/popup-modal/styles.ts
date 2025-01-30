@@ -4,7 +4,11 @@ import styled from 'styled-components/native';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity) as any;
 
-export const KeyboardAvoidingView = styled.KeyboardAvoidingView``;
+export const KeyboardAvoidingView = styled.KeyboardAvoidingView`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
 
 export const PopupContainer = styled(AnimatedTouchable).attrs({
   activeOpacity: 1,

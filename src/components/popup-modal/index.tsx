@@ -69,7 +69,6 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         visible={visible}
         {...props}>
         <KeyboardAvoidingView behavior="padding" pointerEvents="auto">
-          <Animated.View style={animatedStyle}>
           <PopupContainer style={animatedStyle} minimumSized={!children}>
             {title && (
               <>
@@ -105,7 +104,6 @@ const PopupModal: React.FC<PopupModalProps> = memo(
               </ButtonsContainer>
             )}
           </PopupContainer>
-          </Animated.View>
         </KeyboardAvoidingView>
       </BlurredModal>
     );
