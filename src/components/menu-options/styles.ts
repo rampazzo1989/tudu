@@ -6,7 +6,6 @@ export const OptionLine = styled.TouchableOpacity`
   align-items: center;
   padding-top: 8px;
   padding-bottom: 8px;
-  /* border: 1px solid; */
 `;
 
 export const Label = styled.Text`
@@ -16,7 +15,7 @@ export const Label = styled.Text`
   margin-left: 6px;
 `;
 
-export const OptionContainer = styled.View`
+export const OptionContainer = styled.TouchableOpacity`
   flex: 1;
 `;
 

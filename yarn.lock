@@ -6528,10 +6528,10 @@ react-native-navigation-bar-color@^2.0.2:
   resolved "https://registry.yarnpkg.com/react-native-navigation-bar-color/-/react-native-navigation-bar-color-2.0.2.tgz#2e14ca79a656d81d5b4b7433ae43966ef5206444"
   integrity sha512-ZmpLWRocyme1au11e5ZuecMS/UCi57nlzgnioi03Q6ERMbeUOqqbWgNBaNB7SsCeqBV6fZPjo3+A64zEIpzw4w==
 
-react-native-popover-view@^5.1.7:
-  version "5.1.9"
-  resolved "https://registry.yarnpkg.com/react-native-popover-view/-/react-native-popover-view-5.1.9.tgz#5106240e561ad133e6bbf83ca404ecdd2d721f42"
-  integrity sha512-jjcVfH6hUN2bnB8wwtiELyb5184K90L3qZ+h0u6dSfVdyxgDbbkPS336a9JmNoaUGIrQYwZpRUd5Cgai35Am2w==
+react-native-popover-view@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-popover-view/-/react-native-popover-view-6.1.0.tgz#1d0dd1573d95edfb611a0f712d1439d5deb374a9"
+  integrity sha512-j1CB+yPwTKlBvIJBNb1AwiHyF/r+W5+AJIbHk79GRa+0z6PVtW4C7NWJWPqUVkCMOcJtewl6Pr6f2dc/87cVyQ==
   dependencies:
     deprecated-react-native-prop-types "^2.3.0"
     prop-types "^15.8.1"

@@ -39,7 +39,7 @@
     "react-native-linear-gradient": "^2.7.3",
     "react-native-mmkv": "^3.2.0",
     "react-native-navigation-bar-color": "^2.0.2",
-    "react-native-popover-view": "^5.1.7",
+    "react-native-popover-view": "^6.1.0",
     "react-native-quick-base64": "^2.0.6",
     "react-native-quick-crypto": "^0.7.11",
     "react-native-reanimated": "^3.16.7",

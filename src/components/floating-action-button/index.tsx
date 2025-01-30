@@ -18,6 +18,7 @@ import {PopoverMenu} from '../popover-menu';
 import {MenuOptions} from '../menu-options';
 import {useRecoilValue} from 'recoil';
 import {toastSpan} from '../../state/atoms';
+import { View } from 'react-native';
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
@@ -58,6 +59,7 @@ const FloatingActionButton = memo(
       }, [animationMode, menuOptions, onPress]);
 
       const handlePopoverMenuRequestClose = useCallback(() => {
+        console.log('REQUESTCLOSE');
         if (animationMode === 'toggle') {
           iconRef.current?.toggle();
         }
@@ -93,7 +95,7 @@ const FloatingActionButton = memo(
           arrowSize={{width: 0, height: 0}}
           popoverShift={{y: 50}}
           onRequestClose={handlePopoverMenuRequestClose}
-          verticalOffset={-8}
+          offset={-10}
           from={OptionsComponent}>
           <MenuOptions options={menuOptions} />
         </PopoverMenu>
