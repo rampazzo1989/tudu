@@ -2,7 +2,7 @@ import {StyleSheet, TouchableOpacity} from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity) as any;
 
 export const KeyboardAvoidingView = styled.KeyboardAvoidingView``;
 

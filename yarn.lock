@@ -1989,7 +1989,7 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.4.tgz#0b92dcc0cc1c81f6f306a381f28e31b1a56536e9"
   integrity sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==
 
-"@tsconfig/react-native@^3.0.0":
+"@tsconfig/react-native@^3.0.5":
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/@tsconfig/react-native/-/react-native-3.0.5.tgz#c4971b1eca2e8cdf7b0d25f40193a782039c1abd"
   integrity sha512-0+pmYzHccvwWpFz2Tv5AJxp6UroLALmAy+SX34tKlwaCie1mNbtCv6uOJp7x8pKchgNA9/n6BGrx7uLQvw8p9A==
@@ -2137,7 +2137,7 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.3.tgz#6209321eb2c1712a7e7466422b8cb1fc0d9dd5d8"
   integrity sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==
 
-"@types/styled-components-react-native@^5.2.1":
+"@types/styled-components-react-native@^5.2.5":
   version "5.2.5"
   resolved "https://registry.yarnpkg.com/@types/styled-components-react-native/-/styled-components-react-native-5.2.5.tgz#224ff6b7a49b73d2c2563c5317a3e61da3f1fb87"
   integrity sha512-hDYioy4gAusO9NJI0n1e0Dwne4zofRVjou8i+FdNNz4vOG/iEBS99Rl87ybytjx/WD3NXqZQJ5g98AA+ZW7JKA==
@@ -2146,7 +2146,7 @@
     "@types/react-native" "^0.70"
     "@types/styled-components" "*"
 
-"@types/styled-components@*", "@types/styled-components@^5.1.26":
+"@types/styled-components@*":
   version "5.1.34"
   resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-5.1.34.tgz#4107df8ef8a7eaba4fa6b05f78f93fba4daf0300"
   integrity sha512-mmiVvwpYklFIv9E8qfxuPyIt/OuyIrn6gMOAMOFUO3WJfSrSE+sGUoa4PiZj77Ut7bKZpaa6o1fBKS/4TOEvnA==
@@ -2871,9 +2871,9 @@ camelize@^1.0.0:
   integrity sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==
 
 caniuse-lite@^1.0.30001688:
-  version "1.0.30001695"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001695.tgz#39dfedd8f94851132795fdf9b79d29659ad9c4d4"
-  integrity sha512-vHyLade6wTgI2u1ec3WQBxv+2BrTERV28UXQu9LO6lZ9pYeMk34vjXFLOxo1A4UBA8XTL4njRQZdno/yYaSmWw==
+  version "1.0.30001696"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001696.tgz#00c30a2fc11e3c98c25e5125418752af3ae2f49f"
+  integrity sha512-pDCPkvzfa39ehJtJ+OwGT/2yvT2SbjfHhiIW2LWOAcMQ7BzwxT/XuyUp4OTOd0XFWA6BKw0JalnBHgSi5DGJBQ==
 
 chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.2:
   version "4.1.2"
@@ -3414,9 +3414,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.5.73:
-  version "1.5.88"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.88.tgz#cdb6e2dda85e6521e8d7d3035ba391c8848e073a"
-  integrity sha512-K3C2qf1o+bGzbilTDCTBhTQcMS9KW60yTAaTeeXsfvQuTDDwlokLam/AdqlqcSy9u4UainDgsHV23ksXAOgamw==
+  version "1.5.89"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.89.tgz#d9d60baa576e0ab3ea721592f3345a83a37251ec"
+  integrity sha512-okLMJSmbI+XHr8aG+wCK+VPH+d38sHMED6/q1CTsCNkqfdOZL3k2ThWnh44HL6bJKj9cabPCSVLDv9ynsIm8qg==
 
 emittery@^0.13.1:
   version "0.13.1"
@@ -5590,10 +5590,10 @@ metro-minify-terser@0.81.0:
     flow-enums-runtime "^0.0.6"
     terser "^5.15.0"
 
-metro-react-native-babel-preset@0.76.8:
-  version "0.76.8"
-  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.76.8.tgz#7476efae14363cbdfeeec403b4f01d7348e6c048"
-  integrity sha512-Ptza08GgqzxEdK8apYsjTx2S8WDUlS2ilBlu9DR1CUcHmg4g3kOkFylZroogVAUKtpYQNYwAvdsjmrSdDNtiAg==
+metro-react-native-babel-preset@0.77.0:
+  version "0.77.0"
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.77.0.tgz#47457eca8e36b77156afbe790247a70dbb40faaa"
+  integrity sha512-HPPD+bTxADtoE4y/4t1txgTQ1LVR6imOBy7RMHUsqMVTbekoi8Ph5YI9vKX2VMPtVWeFt0w9YnCSLPa76GcXsA==
   dependencies:
     "@babel/core" "^7.20.0"
     "@babel/plugin-proposal-async-generator-functions" "^7.0.0"
@@ -6411,11 +6411,6 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-queue-tick@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/queue-tick/-/queue-tick-1.0.1.tgz#f6f07ac82c1fd60f82e098b417a80e52f1f4c142"
-  integrity sha512-kJt5qhMxoszgU/62PLP1CJytzd2NKetjSRnyuj31fDd3Rlcz3fzlFdFLD1SItunPwyqEOkca6GbV612BWfaBag==
-
 queue@6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/queue/-/queue-6.0.2.tgz#b91525283e2315c7553d2efa18d83e76432fed65"
@@ -6559,7 +6554,7 @@ react-native-quick-crypto@^0.7.11:
     string_decoder "^1.3.0"
     util "^0.12.5"
 
-react-native-reanimated@^3.1.0:
+react-native-reanimated@^3.16.7:
   version "3.16.7"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.16.7.tgz#6c7fa516f62c6743c24d955dada00e3c5323d50d"
   integrity sha512-qoUUQOwE1pHlmQ9cXTJ2MX9FQ9eHllopCLiWOkDkp6CER95ZWeXhJCP4cSm6AD4jigL5jHcZf/SkWrg8ttZUsw==
@@ -7017,9 +7012,9 @@ semver@^6.3.0, semver@^6.3.1:
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
 
 semver@^7.1.3, semver@^7.3.5, semver@^7.3.7, semver@^7.5.2, semver@^7.5.3, semver@^7.5.4, semver@^7.6.0:
-  version "7.6.3"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
-  integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==
+  version "7.7.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.0.tgz#9c6fe61d0c6f9fa9e26575162ee5a9180361b09c"
+  integrity sha512-DrfFnPzblFmNrIZzg5RzHegbiRWg7KMR7btwi2yjHwx06zsUbO5g613sVwEV7FTwmzJu+Io0lJe2GJ3LxqpvBQ==
 
 send@0.19.0:
   version "0.19.0"
@@ -7308,12 +7303,11 @@ stream-browserify@^3.0.0:
     readable-stream "^3.5.0"
 
 streamx@^2.15.0, streamx@^2.21.0:
-  version "2.21.1"
-  resolved "https://registry.yarnpkg.com/streamx/-/streamx-2.21.1.tgz#f02979d8395b6b637d08a589fb514498bed55845"
-  integrity sha512-PhP9wUnFLa+91CPy3N6tiQsK+gnYyUNuk15S3YG/zjYE7RuPeCjJngqnzpC31ow0lzBHQ+QGO4cNJnd0djYUsw==
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/streamx/-/streamx-2.22.0.tgz#cd7b5e57c95aaef0ff9b2aef7905afa62ec6e4a7"
+  integrity sha512-sLh1evHOzBy/iWRiR6d1zRcLao4gGZr3C1kzNz4fopCOKJb6xD9ub8Mpi9Mr1R6id5o43S+d93fI48UC5uM9aw==
   dependencies:
     fast-fifo "^1.3.2"
-    queue-tick "^1.0.1"
     text-decoder "^1.1.0"
   optionalDependencies:
     bare-events "^2.2.0"
@@ -7457,7 +7451,7 @@ strnum@^1.0.5:
   resolved "https://registry.yarnpkg.com/strnum/-/strnum-1.0.5.tgz#5c4e829fe15ad4ff0d20c3db5ac97b73c9b072db"
   integrity sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==
 
-styled-components@^5.3.11:
+styled-components@^5, styled-components@^5.3.11:
   version "5.3.11"
   resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-5.3.11.tgz#9fda7bf1108e39bf3f3e612fcc18170dedcd57a8"
   integrity sha512-uuzIIfnVkagcVHv9nE0VPlHPSCmXIUGKfJ42LNjxCCTDTL5sgnJ8Z7GZBq0EnLYGln77tPpEpExt2+qa+cZqSw==
@@ -7748,10 +7742,10 @@ typesafe-actions@^5.1.0:
   resolved "https://registry.yarnpkg.com/typesafe-actions/-/typesafe-actions-5.1.0.tgz#9afe8b1e6a323af1fd59e6a57b11b7dd6623d2f1"
   integrity sha512-bna6Yi1pRznoo6Bz1cE6btB/Yy8Xywytyfrzu/wc+NFW3ZF0I+2iCGImhBsoYYCOWuICtRO4yHcnDlzgo1AdNg==
 
-typescript@5.0.4:
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.4.tgz#b217fd20119bd61a94d4011274e0ab369058da3b"
-  integrity sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==
+typescript@5.7.3:
+  version "5.7.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.7.3.tgz#919b44a7dbb8583a9b856d162be24a54bf80073e"
+  integrity sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==
 
 unbox-primitive@^1.1.0:
   version "1.1.0"

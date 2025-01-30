@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
-export const ContentRow = styled(Animated.View)`
+export const ContentRow = styled(Animated.View as any)`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;

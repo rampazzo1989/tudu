@@ -13,7 +13,7 @@ const AnimatedTouchableOpacity =
   Animated.createAnimatedComponent(TouchableOpacity);
 
 const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
-  forwardRef<TouchableOpacity, ShrinkableViewProps>(
+  forwardRef<typeof TouchableOpacity, ShrinkableViewProps>(
     (
       {
         children,
