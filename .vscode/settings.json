@@ -7,6 +7,5 @@
     "i18n-ally.enabledParsers": [
         "ts",
         "json"
-    ],
-    "java.configuration.updateBuildConfiguration": "interactive",
+    ]
 }
