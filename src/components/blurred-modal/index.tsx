@@ -2,21 +2,13 @@ import React, {memo} from 'react';
 import {BlurredModalProps} from './types';
 import {Blur, ContentContainer, Modal} from './styles';
 import { View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const BlurredModal: React.FC<BlurredModalProps> = memo(
   ({onRequestClose, children, ...props}) => {
     return (
-      // <SafeAreaProvider>
-  //       <SafeAreaView style={{
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // }}>
-  <View>
 
-  
-      <Modal {...props} statusBarTranslucent>
+  <View>
+      <Modal {...props} statusBarTranslucent onRequestClose={() => console.log('onRequestClose Modal')}>
         <Blur
           reducedTransparencyFallbackColor="grey"
           overlayColor="#00000020"
@@ -29,8 +21,6 @@ const BlurredModal: React.FC<BlurredModalProps> = memo(
 
       </Modal>
       </View>
-      // </SafeAreaView>
-      // </SafeAreaProvider>
     );
   },
 );

@@ -85,5 +85,6 @@
   },
   "resolutions": {
     "styled-components": "^5"
-  }
+  },
+  "packageManager": "yarn@4.6.0"
 }

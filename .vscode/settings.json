@@ -8,4 +8,5 @@
         "ts",
         "json"
     ],
+    "java.configuration.updateBuildConfiguration": "interactive",
 }

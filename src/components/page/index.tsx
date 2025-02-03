@@ -12,7 +12,6 @@ import {
 } from '../../constants';
 import {generateShuffledArray} from '../../utils/array-utils';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Page: React.FC<PageProps> = memo(({children}) => {
   const theme = useTheme();

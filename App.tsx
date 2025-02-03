@@ -15,28 +15,31 @@ import Toast from 'react-native-toast-message';
 import {CurrentTheme} from './src/themes';
 import {toastConfig} from './src/config/toast';
 import RecoilNexus from 'recoil-nexus';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 function App(): React.JSX.Element {
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <ThemeProvider theme={CurrentTheme}>
-        <RecoilRoot>
-          <RecoilNexus />
-          <ReactNativeRecoilPersistGate
-            onInit={() => RNBootSplash.hide()}
-            store={ReactNativeRecoilPersist}>
-            <IdleProvider>
-              <NavigationContainer>
-                <StackNavigator />
-                <Toast config={toastConfig} />
-              </NavigationContainer>
-            </IdleProvider>
-          </ReactNativeRecoilPersistGate>
-        </RecoilRoot>
-      </ThemeProvider>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <ThemeProvider theme={CurrentTheme}>
+          <RecoilRoot>
+            <RecoilNexus />
+            <ReactNativeRecoilPersistGate
+              onInit={() => RNBootSplash.hide()}
+              store={ReactNativeRecoilPersist}>
+              <IdleProvider>
+                <NavigationContainer>
+                  <StackNavigator />
+                  <Toast config={toastConfig} />
+                </NavigationContainer>
+              </IdleProvider>
+            </ReactNativeRecoilPersistGate>
+          </RecoilRoot>
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 
