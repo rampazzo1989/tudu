@@ -22,18 +22,23 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
     const swipeableRef = useRef<SwipeableCardRef>(null);
     const {t} = useTranslation();
 
+    const deleteOption = useMemo<SwipeableOption>(
+      () => ({
+        Icon: DeleteIcon,
+        onPress: () => onDelete(swipeableRef),
+      }),
+      [onDelete],
+    );
+
     const rightOptions = useMemo<SwipeableOption[]>(
       () => [
         {
           Icon: RenameIcon,
           onPress: () => onEdit(swipeableRef),
         },
-        {
-          Icon: DeleteIcon,
-          onPress: () => onDelete(swipeableRef),
-        },
+        deleteOption,
       ],
-      [onDelete, onEdit],
+      [onDelete, onEdit, deleteOption],
     );
 
     const leftOptions = useMemo<SwipeableOption[]>(
@@ -56,13 +61,13 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
 
     return (
       <SwipeableCard
-        enabled={!done}
+        // enabled={!done} TRYING THIS
         ref={swipeableRef}
         backgroundColor={
           done ? theme.colors.tuduCardDone : theme.colors.tuduCard
         }
-        rightOptions={rightOptions}
-        leftOptions={leftOptions}
+        rightOptions={!done ? rightOptions : [deleteOption]}
+        leftOptions={!done ? leftOptions : undefined}
         optionsSize="large"
         fullWidthOnLeftOptions
         onSwipeRight={handleSwipeRight}

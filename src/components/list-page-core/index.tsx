@@ -199,6 +199,10 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [deleteTudu, restoreBackup, t],
     );
 
+    const handleInsertTudu = useCallback(() => {
+      setNewTuduPopupVisible(true);
+    }, []);
+
     return (
       <Page>
         <ListHeader
@@ -254,7 +258,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             {allowAdding && (
               <ListActionButton
                 ref={actionButtonRef}
-                onInsertTuduPress={() => setNewTuduPopupVisible(true)}
+                onInsertTuduPress={handleInsertTudu}
               />
             )}
           </DraggableContextProvider>

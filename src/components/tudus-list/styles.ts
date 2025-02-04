@@ -18,6 +18,12 @@ export const TuduAnimatedContainer = styled(Animated.View)`
   width: 100%;
 `;
 
+export const DoneTuduAnimatedContainer = styled(Animated.View)`
+  flex-grow: 1;
+  width: 100%;
+  margin-top: 12px;
+`;
+
 export const InnerContainer = styled.View`
   margin-bottom: 18px;
   margin-top: -6px;

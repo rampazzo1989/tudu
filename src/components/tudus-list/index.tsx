@@ -9,6 +9,7 @@ import React, {
 import {SlideInRight} from 'react-native-reanimated';
 import {
   Container,
+  DoneTuduAnimatedContainer,
   InnerContainer,
   SectionTitle,
   TuduAnimatedContainer,
@@ -118,7 +119,7 @@ const TudusList: React.FC<TudusListProps> = memo(
           <DraggableView
             payload={draggableTudu.indexedTudu}
             key={`${tudu.label}${draggableTudu.index}`}
-            draggableEnabled={!tudu.done && draggableEnabled}
+            draggableEnabled={draggableEnabled}
             draggableViewKey={`${tudu.label}${index}`}>
             <TuduAnimatedContainer
               entering={enteringAnimation?.duration(100).delay(index * 50)}>
@@ -141,25 +142,20 @@ const TudusList: React.FC<TudusListProps> = memo(
       const doneComponents = done.map((draggableTudu, index) => {
         const tudu = draggableTudu.indexedTudu.data[0];
         return (
-          <DraggableView
-            key={`${tudu.label}${draggableTudu.index}`}
-            payload={draggableTudu.indexedTudu}
-            draggableEnabled={!tudu.done && !draggableEnabled}
-            draggableViewKey={`${tudu.label}${index}`}>
-            <TuduAnimatedContainer
-              entering={enteringAnimation?.duration(100).delay(index * 50)}>
+            <DoneTuduAnimatedContainer
+              entering={enteringAnimation?.duration(100).delay(index * 50)}
+              key={`${tudu.label}${draggableTudu.index}`}>
               <TuduCard
                 data={tudu}
                 onPress={onTuduPress}
-                onDelete={handleDeleteGenerator(draggableTudu.indexedTudu)}
+                onDelete={handleDeleteGenerator(tudu)}
                 onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
                 onStarPress={onStarPress}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   draggableTudu.indexedTudu,
                 )}
               />
-            </TuduAnimatedContainer>
-          </DraggableView>
+            </DoneTuduAnimatedContainer>
         );
       });
 

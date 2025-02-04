@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {DraxView} from 'react-native-drax';
-import Animated, {Layout} from 'react-native-reanimated';
+import Animated, {Layout, LinearTransition} from 'react-native-reanimated';
 import {DraggableItem} from '../draggable-item';
 import {styles} from './styles';
 import {DraggableViewProps} from './types';
@@ -25,7 +25,7 @@ const DraggableView = memo(
 
     return (
       <Animated.View
-        layout={Layout.duration(200)}
+        layout={LinearTransition.duration(200)}
         style={animatedStyle}
         onLayout={handleWrapperViewLayout}>
         <DraxView

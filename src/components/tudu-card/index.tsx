@@ -108,7 +108,6 @@ const TuduCard = memo<TuduCardProps>(
             </LabelAndAdditionalInfoContainer>
             <TuduCheckbox checked={internalDone} onPress={handleTuduPress} />
           </CheckAndTextContainer>
-          {/* <Favorite /> */}
         </SwipeableTuduCard>
       </Card>
     );

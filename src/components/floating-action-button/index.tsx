@@ -8,17 +8,16 @@ import React, {
   useState,
 } from 'react';
 import {FloatingActionButtonProps, FloatingActionButtonRef} from './types';
-import {FloatingButton, IconContainer} from './styles';
+import {FloatingButton, FloatingButtonContainer, IconContainer} from './styles';
 import {
   AnimatedIconRef,
   ForwardedRefAnimatedIcon,
 } from '../animated-icons/animated-icon/types';
-import {ZoomIn} from 'react-native-reanimated';
+import Animated, {ZoomIn} from 'react-native-reanimated';
 import {PopoverMenu} from '../popover-menu';
 import {MenuOptions} from '../menu-options';
 import {useRecoilValue} from 'recoil';
 import {toastSpan} from '../../state/atoms';
-import { View } from 'react-native';
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
@@ -59,7 +58,6 @@ const FloatingActionButton = memo(
       }, [animationMode, menuOptions, onPress]);
 
       const handlePopoverMenuRequestClose = useCallback(() => {
-        console.log('REQUESTCLOSE');
         if (animationMode === 'toggle') {
           iconRef.current?.toggle();
         }
@@ -75,17 +73,20 @@ const FloatingActionButton = memo(
       }));
 
       const OptionsComponent = useCallback(
-        () => (
-          <FloatingButton
-            onPress={handlePress}
-            scaleFactor={0.05}
-            extraBottomMargin={toastBottomSpan}
-            entering={ZoomIn.delay(100)}>
-            <IconContainer>
-              <CurrentIcon ref={iconRef} speed={1.5} size={40} />
-            </IconContainer>
-          </FloatingButton>
-        ),
+        () => {
+          return (
+            <FloatingButtonContainer entering={ZoomIn.delay(100)}>
+              <FloatingButton
+              onPress={handlePress}
+              scaleFactor={0.05}
+              extraBottomMargin={toastBottomSpan}>
+              <IconContainer>
+                <CurrentIcon ref={iconRef} speed={1.5} size={40} />
+              </IconContainer>
+            </FloatingButton>
+          </FloatingButtonContainer>
+          )
+        },
         [CurrentIcon, handlePress, toastBottomSpan],
       );
 
@@ -100,7 +101,7 @@ const FloatingActionButton = memo(
           <MenuOptions options={menuOptions} />
         </PopoverMenu>
       ) : (
-        OptionsComponent()
+        <OptionsComponent />
       );
     },
   ),
