@@ -3,16 +3,18 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
-import {SlideInRight} from 'react-native-reanimated';
+import {FadeIn, LinearTransition, SlideInRight} from 'react-native-reanimated';
 import {
   Container,
   DoneTuduAnimatedContainer,
   InnerContainer,
   SectionTitle,
   TuduAnimatedContainer,
+  TuduAnimatedWrapper,
 } from './styles';
 import {TudusListProps} from './types';
 
@@ -30,6 +32,8 @@ import {SwipeableCardRef} from '../swipeable-card/types';
 import {isToday} from '../../utils/date-utils';
 import {DeleteIconActionAnimation} from '../animated-icons/delete-icon';
 
+const LayoutAnimation = LinearTransition.springify().stiffness(300).damping(13).mass(0.3);
+
 const TudusList: React.FC<TudusListProps> = memo(
   ({
     onTuduPress,
@@ -43,12 +47,12 @@ const TudusList: React.FC<TudusListProps> = memo(
     const draggableContext =
       useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
     const [enteringAnimation, setEnteringAnimation] = useState<
-      typeof SlideInRight | undefined
-    >(() => SlideInRight);
+      typeof FadeIn | undefined
+    >(() => FadeIn);
 
-    useEffect(() => {
-      setEnteringAnimation(undefined);
-    }, []);
+    // useEffect(() => {
+    //   setEnteringAnimation(undefined);
+    // }, []);
 
     const getSectionTitle = useCallback((undoneListLength: number) => {
       return (
@@ -96,6 +100,18 @@ const TudusList: React.FC<TudusListProps> = memo(
       [draggableContext.data, draggableContext.setData],
     );
 
+    const getTestKey = useCallback(() => {
+      console.log('>>> getTestKey');
+      return Math.random().toString();
+    }, []);
+
+    const [forceUpdate, setForceUpdate] = useState(0);
+
+    useEffect(() => {
+      setEnteringAnimation(undefined);
+      setForceUpdate(x => x+1);
+    }, []);
+
     const getTuduList = useMemo(() => {
       const {data} = draggableContext;
       const indexedTudus = data.map((indexedTudu, index) => ({
@@ -103,48 +119,43 @@ const TudusList: React.FC<TudusListProps> = memo(
         index,
       }));
 
-      const sorted = indexedTudus.sort(
-        (a, b) =>
-          Number(a.indexedTudu.data[0].done) -
-          Number(b.indexedTudu.data[0].done),
-      );
-
-      const undone = sorted.filter(x => !x.indexedTudu.data[0].done);
-      const done = sorted.filter(x => x.indexedTudu.data[0].done);
+      const undone = indexedTudus.filter(x => !x.indexedTudu.data[0].done);
+      const done = indexedTudus.filter(x => x.indexedTudu.data[0].done);
 
       const undoneComponents = undone.map((draggableTudu, index) => {
         const tudu = draggableTudu.indexedTudu.data[0];
 
         return (
-          <DraggableView
-            payload={draggableTudu.indexedTudu}
-            key={`${tudu.label}${draggableTudu.index}`}
-            draggableEnabled={draggableEnabled}
-            draggableViewKey={`${tudu.label}${index}`}>
-            <TuduAnimatedContainer
-              entering={enteringAnimation?.duration(100).delay(index * 50)}>
-              <TuduCard
-                data={tudu}
-                onPress={onTuduPress}
-                onDelete={handleDeleteGenerator(tudu)}
-                onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
-                onStarPress={onStarPress}
-                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                  draggableTudu.indexedTudu,
-                )}
-                additionalInfo={getAdditionalInformation(tudu)}
-              />
-            </TuduAnimatedContainer>
-          </DraggableView>
+          <TuduAnimatedWrapper key={`a${tudu.id}`}
+            entering={enteringAnimation?.duration(100).delay(index * 50)} layout={LayoutAnimation}>
+            <DraggableView
+              payload={draggableTudu.indexedTudu}
+              draggableEnabled={draggableEnabled}
+              draggableViewKey={`${tudu.id}-${draggableTudu.index}-${forceUpdate}`}>
+              <TuduAnimatedContainer>
+                <TuduCard
+                  data={tudu}
+                  onPress={onTuduPress}
+                  onDelete={handleDeleteGenerator(tudu)}
+                  onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                  onStarPress={onStarPress}
+                  onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                    draggableTudu.indexedTudu,
+                  )}
+                  additionalInfo={getAdditionalInformation(tudu)}
+                />
+              </TuduAnimatedContainer>
+            </DraggableView>
+          </TuduAnimatedWrapper>
         );
       });
 
       const doneComponents = done.map((draggableTudu, index) => {
         const tudu = draggableTudu.indexedTudu.data[0];
         return (
-            <DoneTuduAnimatedContainer
-              entering={enteringAnimation?.duration(100).delay(index * 50)}
-              key={`${tudu.label}${draggableTudu.index}`}>
+          <TuduAnimatedWrapper key={`a${tudu.id}`} 
+            entering={enteringAnimation?.duration(100).delay(index * 50)} layout={LayoutAnimation}>
+            <DoneTuduAnimatedContainer>
               <TuduCard
                 data={tudu}
                 onPress={onTuduPress}
@@ -156,6 +167,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                 )}
               />
             </DoneTuduAnimatedContainer>
+          </TuduAnimatedWrapper>
         );
       });
 
@@ -167,7 +179,7 @@ const TudusList: React.FC<TudusListProps> = memo(
 
       return allTudus;
     }, [
-      draggableContext,
+      draggableContext.data,
       draggableEnabled,
       enteringAnimation,
       getAdditionalInformation,

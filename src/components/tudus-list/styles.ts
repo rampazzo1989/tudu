@@ -13,12 +13,15 @@ export const SectionTitle = styled(Title)<{marginTop: number}>`
   margin-top: ${({marginTop}) => marginTop}px;
 `;
 
-export const TuduAnimatedContainer = styled(Animated.View)`
+export const TuduAnimatedWrapper = styled(Animated.View)`
+`;
+
+export const TuduAnimatedContainer = styled.View`
   flex-grow: 1;
   width: 100%;
 `;
 
-export const DoneTuduAnimatedContainer = styled(Animated.View)`
+export const DoneTuduAnimatedContainer = styled.View`
   flex-grow: 1;
   width: 100%;
   margin-top: 12px;

@@ -31,6 +31,7 @@ const DraggableView = memo(
         <DraxView
           isParent
           receptive={draggableEnabled}
+          draggable={false}
           onReceiveDragDrop={handleContainerReceiveDragDrop}
           onReceiveDragOver={handleContainerReceiveDragOver}
           onReceiveDragEnter={handleContainerReceiveDragEnter}

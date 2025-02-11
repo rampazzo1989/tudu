@@ -61,7 +61,6 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
 
     return (
       <SwipeableCard
-        // enabled={!done} TRYING THIS
         ref={swipeableRef}
         backgroundColor={
           done ? theme.colors.tuduCardDone : theme.colors.tuduCard
