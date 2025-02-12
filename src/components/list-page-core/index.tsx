@@ -255,7 +255,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
               onInsertOrUpdate={handleInsertOrUpdate}
               editingTudu={editingTudu}
             />
-            {allowAdding && (
+            {allowAdding && !loading && (
               <ListActionButton
                 ref={actionButtonRef}
                 onInsertTuduPress={handleInsertTudu}

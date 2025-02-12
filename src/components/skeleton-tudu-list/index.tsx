@@ -3,7 +3,7 @@ import {styles} from './styles';
 import {SkeletonTuduListProps} from './types';
 import Skeleton from '../skeleton';
 
-const MAX_PLACEHOLDERS = 7;
+const MAX_PLACEHOLDERS = 4;
 
 const SkeletonTuduList = memo<SkeletonTuduListProps>(({numberOfItems}) => {
   return (
