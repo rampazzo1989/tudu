@@ -1,6 +1,6 @@
 import React, {memo, useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
-import {SlideInRight} from 'react-native-reanimated';
+import {FadeIn, LinearTransition, SlideInRight} from 'react-native-reanimated';
 import {TuduViewModel} from '../../scenes/home/types';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {SwipeableCardRef} from '../swipeable-card/types';
@@ -9,6 +9,7 @@ import {TuduAnimatedContainer} from './styles';
 import {SimpleTuduListProps} from './types';
 import {isToday} from '../../utils/date-utils';
 
+const LayoutAnimation = LinearTransition.springify().stiffness(300).damping(13).mass(0.3);
 /**
  * A non-draggable, non-addable tudu list.
  */
@@ -78,8 +79,8 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
         {tudus.map((tudu, index) => {
           return (
             <TuduAnimatedContainer
-              entering={SlideInRight?.duration(100).delay(index * 50)}
-              key={`${tudu.id}`}>
+              entering={FadeIn?.duration(100).delay(index * 50)}
+              key={`${tudu.id}`} layout={LayoutAnimation}>
               <TuduCard
                 data={tudu}
                 onPress={handleTuduPress}

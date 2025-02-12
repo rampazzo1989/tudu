@@ -1,17 +1,17 @@
 import React, {memo} from 'react';
-import {Skeleton} from 'react-native-animated-skeleton';
 import {styles} from './styles';
 import {SkeletonTuduListProps} from './types';
+import Skeleton from '../skeleton';
+
+const MAX_PLACEHOLDERS = 7;
 
 const SkeletonTuduList = memo<SkeletonTuduListProps>(({numberOfItems}) => {
   return (
       <Skeleton
-        numberOfItems={
-          numberOfItems !== undefined && numberOfItems < 4 ? numberOfItems : 4
+        count={
+          numberOfItems !== undefined && numberOfItems < MAX_PLACEHOLDERS ? numberOfItems : MAX_PLACEHOLDERS
         }
-        speed={500}
-        direction="column"
-        loaderStyle={styles.skeleton}
+        style={styles.skeleton}
       />
   );
 });

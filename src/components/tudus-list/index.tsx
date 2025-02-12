@@ -50,9 +50,9 @@ const TudusList: React.FC<TudusListProps> = memo(
       typeof FadeIn | undefined
     >(() => FadeIn);
 
-    // useEffect(() => {
-    //   setEnteringAnimation(undefined);
-    // }, []);
+    useEffect(() => {
+      setEnteringAnimation(undefined);
+    }, []);
 
     const getSectionTitle = useCallback((undoneListLength: number) => {
       return (

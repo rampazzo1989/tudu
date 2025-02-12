@@ -30,7 +30,6 @@
     "react": "18.3.1",
     "react-i18next": "^12.3.1",
     "react-native": "0.77.0",
-    "react-native-animated-skeleton": "^0.1.0",
     "react-native-bootsplash": "^4.7.2",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-drax": "^0.10.3",
