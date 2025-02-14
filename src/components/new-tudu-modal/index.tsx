@@ -20,6 +20,8 @@ const getNewEmptyTudu = () =>
     'default',
   );
 
+const MAX_TUDU_LENGTH = 35;
+
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
   ({visible, editingTudu, onRequestClose, onInsertOrUpdate}) => {
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
@@ -83,7 +85,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         <Input
           value={internalTuduData.label}
           onChangeText={handleTextChange}
-          maxLength={30}
+          maxLength={MAX_TUDU_LENGTH}
           ref={inputRef}
         />
       </PopupModal>

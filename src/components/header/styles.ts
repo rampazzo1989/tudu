@@ -1,4 +1,5 @@
 import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
 export const HeaderContent = styled.View`
@@ -14,11 +15,10 @@ export const HeaderContent = styled.View`
 
 export const TitleBackground = styled(Animated.View)<{titleWidth: number}>`
   height: 82px;
-  width: ${({titleWidth}) => (titleWidth ? 85 + titleWidth : 130)}px;
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   background-color: ${({theme}) => theme.colors.secondary};
 `;

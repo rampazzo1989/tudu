@@ -9,7 +9,7 @@ export const Card = styled(ShrinkableView)<CheckableComponentType>`
   border-radius: 10px;
   min-height: 60px;
   flex-grow: 1;
-  elevation: ${({done}) => (done ? '2' : '0')};
+  // elevation: ${({done}) => (done ? '2' : '0')};
 `;
 
 export const CheckAndTextContainer = styled.View<CheckableComponentType>`

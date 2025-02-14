@@ -24,7 +24,10 @@ export const TuduAnimatedContainer = styled.View`
 export const DoneTuduAnimatedContainer = styled.View`
   flex-grow: 1;
   width: 100%;
+  background-color: ${({theme}) => theme.colors.tuduCardDone};
+  // elevation: 2;
   margin-top: 12px;
+  border-radius: 10px;
 `;
 
 export const InnerContainer = styled.View`

@@ -95,13 +95,17 @@ const useDraggableViewHooks = <T>({
         draggedItem.orderIndex !== undefined &&
         payload.orderIndex !== undefined
       ) {
-        console.log('holla', draggedItem.orderIndex, payload.orderIndex);
         const newList = draggableContext.data.slice();
 
-        [newList[draggedItem.orderIndex], newList[payload.orderIndex]] = [
-          newList[payload.orderIndex],
-          newList[draggedItem.orderIndex],
-        ];
+        // Removes the dragged item from the list
+        const [removedItem] = newList.splice(draggedItem.orderIndex, 1);
+
+        const receivingItemIndex = newList.indexOf(payload);
+        console.log('holla', draggedItem.orderIndex, payload.orderIndex, receivingItemIndex);
+
+        // Inserts the dragged item in the new position
+        newList.splice(receivingItemIndex, 0, removedItem);
+
         isReceivingNestedItem.value = false;
 
         draggableContext.setData(newList);
