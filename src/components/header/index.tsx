@@ -1,7 +1,7 @@
 import React, {memo, useEffect} from 'react';
 import {HeaderContent, TitleBackground} from './styles';
 import {HeaderProps} from './types';
-import Animated, {useSharedValue, useAnimatedStyle, withTiming} from 'react-native-reanimated';
+import {useSharedValue, useAnimatedStyle, withTiming} from 'react-native-reanimated';
 
 const Header: React.FC<HeaderProps> = memo(
   ({children, titleWidth = 0, style}) => {

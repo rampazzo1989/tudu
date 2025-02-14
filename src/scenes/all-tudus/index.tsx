@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {ListDefaultIcon} from '../../components/animated-icons/list-default-icon';
 import {ListHeader} from '../../components/list-header';
 import {NewTuduModal} from '../../components/new-tudu-modal';
 import {Page} from '../../components/page';
@@ -79,7 +78,6 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
       <ListHeader
         listData={virtualList}
         onBackButtonPress={handleBackButtonPress}
-        Icon={ListDefaultIcon}
       />
       <PageContent contentContainerStyle={styles.pageContent}>
         {!tudus ? (

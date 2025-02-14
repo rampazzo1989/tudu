@@ -6,11 +6,12 @@ import {
 } from './styles';
 import {PageContentProps} from './types';
 import {useTheme} from 'styled-components/native';
+import { View } from 'react-native';
 
 const PageContent: React.FC<PageContentProps> = memo(({children, ...props}) => {
   const theme = useTheme();
   return (
-    <>
+    <View style={{flex: 1}}>
       <PageContentContainer {...props}>{children}</PageContentContainer>
       <TopFadingGradient
         start={{x: 0, y: 1}}
@@ -24,7 +25,7 @@ const PageContent: React.FC<PageContentProps> = memo(({children, ...props}) => {
         colors={theme.colors.scrollFadeGradientColorsPageBackground}
         pointerEvents={'none'}
       />
-    </>
+    </View>
   );
 });
 

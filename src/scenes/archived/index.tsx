@@ -5,7 +5,7 @@ import {Page} from '../../components/page';
 import {ArchivedPageProps} from './types';
 import {PageContent} from '../../components/page-content';
 import {ArchivedLists} from './components/archived-lists';
-import {ListViewModel} from '../home/types';
+import {ListDataViewModel, ListViewModel} from '../home/types';
 import {styles} from '../home/styles';
 import {useListService} from '../../service/list-service-hook/useListService';
 import {useTranslation} from 'react-i18next';
@@ -19,9 +19,10 @@ const ArchivedPage: React.FC<ArchivedPageProps> = ({navigation}) => {
   }, [navigation]);
 
   const handleListPress = useCallback(
-    (listData: ListViewModel) => {
+    (listData: ListDataViewModel) => {
       navigation.navigate('List', {
         listId: listData.id,
+        title: listData.label,
         listOrigin: 'archived',
       });
     },

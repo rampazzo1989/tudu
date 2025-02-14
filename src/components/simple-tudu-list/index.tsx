@@ -27,7 +27,6 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
     const handleDeleteGenerator = useCallback(
       (deletingItem: TuduViewModel) => () => {
         deleteTuduFn(deletingItem);
-
         showItemDeletedToast(t('toast.tuduDeleted'), () => undoDeletionFn());
       },
       [deleteTuduFn, t, undoDeletionFn],
