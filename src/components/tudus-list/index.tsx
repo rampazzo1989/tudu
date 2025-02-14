@@ -100,11 +100,6 @@ const TudusList: React.FC<TudusListProps> = memo(
       [draggableContext.data, draggableContext.setData],
     );
 
-    const getTestKey = useCallback(() => {
-      console.log('>>> getTestKey');
-      return Math.random().toString();
-    }, []);
-
     const [forceUpdate, setForceUpdate] = useState(0);
 
     useEffect(() => {

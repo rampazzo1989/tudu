@@ -1,4 +1,5 @@
 import {LottieViewProps} from 'lottie-react-native';
+import { MemoExoticComponent } from 'react';
 
 export interface BaseAnimatedIconProps extends LottieViewProps {
   componentName: string;
@@ -41,6 +42,8 @@ export type AnimatedIconRef = {
   toggle: () => void;
 };
 
-export type ForwardedRefAnimatedIcon = React.ForwardRefExoticComponent<
+export type ForwardedRefAnimatedIcon = MemoExoticComponent<
+  React.ForwardRefExoticComponent<
   AnimatedIconProps & React.RefAttributes<AnimatedIconRef>
+  >
 >;

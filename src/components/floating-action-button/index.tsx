@@ -18,6 +18,7 @@ import {PopoverMenu} from '../popover-menu';
 import {MenuOptions} from '../menu-options';
 import {useRecoilValue} from 'recoil';
 import {toastSpan} from '../../state/atoms';
+import { useOneTimeAnimationControl } from '../../hooks/useOneTimeAnimationControl';
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
@@ -27,6 +28,7 @@ const FloatingActionButton = memo(
       const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
       const [CurrentIcon, setCurrentIcon] =
         useState<ForwardedRefAnimatedIcon>(DefaultIcon);
+      const {animateOnceOnly} = useOneTimeAnimationControl();
 
       const toastBottomSpan = useRecoilValue(toastSpan);
 
@@ -75,11 +77,10 @@ const FloatingActionButton = memo(
       const OptionsComponent = useCallback(
         () => {
           return (
-            <FloatingButtonContainer entering={ZoomIn.delay(100)}>
+            <FloatingButtonContainer entering={animateOnceOnly(ZoomIn.delay(100))} extraBottomMargin={toastBottomSpan}>
               <FloatingButton
-              onPress={handlePress}
-              scaleFactor={0.05}
-              extraBottomMargin={toastBottomSpan}>
+                onPress={handlePress}
+                scaleFactor={0.05}>
               <IconContainer>
                 <CurrentIcon ref={iconRef} speed={1.5} size={40} />
               </IconContainer>

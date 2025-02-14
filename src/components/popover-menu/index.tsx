@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {PopoverMenuProps} from './types';
-import Popover, { PopoverMode } from 'react-native-popover-view';
+import Popover from 'react-native-popover-view';
 import {styles} from './styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
