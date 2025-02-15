@@ -34,24 +34,22 @@ const BaseAnimatedIcon = memo(
     ) => {
       const animationRef = useRef<Lottie | null>(null);
       const [toggle, setToggle] = useState(false);
-      const [animationFinishCallback, setAnimationFinishCallback] =
-        useState<() => void>();
+      const animationFinishCallbackRef = useRef<() => void>();
 
       useImperativeHandle(
         ref,
         () => {
           return {
             play(options?: BaseAnimationOptions) {
+              console.log('baseanimatedicon play', options);
+
+              animationFinishCallbackRef.current = options?.onAnimationFinish;
+
               setTimeout(
                 () => {
                   animationRef.current?.play(
                     options?.initialFrame ?? initialFrame,
                     options?.finalFrame ?? finalFrame,
-                  );
-                  setAnimationFinishCallback(
-                    options?.onAnimationFinish
-                      ? () => options.onAnimationFinish
-                      : undefined,
                   );
                 },
 
@@ -78,16 +76,20 @@ const BaseAnimatedIcon = memo(
         if (props.autoPlay) {
           setTimeout(() => {
             animationRef.current?.play(initialFrame, finalFrame);
+            console.log('ANIMATING AutoPlay', componentName);
           }, props.autoPlayDelay ?? 500);
         }
       }, [finalFrame, initialFrame, props.autoPlay, props.autoPlayDelay]);
 
       const {key: componentKey} = useHashGenerator({seedText: componentName});
 
-      const handleAnimationFinish = useCallback(() => {
-        animationFinishCallback?.();
-        setAnimationFinishCallback(undefined);
-      }, [animationFinishCallback]);
+      const handleAnimationFinish = useCallback((isCancelled: boolean) => {
+        if (!isCancelled) {
+          animationFinishCallbackRef.current?.();
+          animationFinishCallbackRef.current = undefined;
+        }
+        
+      }, []);
 
       useIdlyAnimatedComponent({
         componentRef: animationRef,

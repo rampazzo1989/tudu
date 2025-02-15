@@ -9,6 +9,6 @@ export type FloatingActionButtonProps = {
 };
 
 export type FloatingActionButtonRef = {
-  animateThisIcon: (Icon: ForwardedRefAnimatedIcon) => void;
+  animateThisIcon: (Icon: ForwardedRefAnimatedIcon | string) => void;
   closeMenu: () => void;
 };

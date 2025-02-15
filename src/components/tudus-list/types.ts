@@ -10,6 +10,6 @@ export type TudusListProps = {
   getAdditionalInformation: (
     tudu: TuduViewModel,
   ) => TuduAdditionalInformation | undefined;
-  animateIcon?: (Icon: ForwardedRefAnimatedIcon) => void;
+  animateIcon?: (Icon: ForwardedRefAnimatedIcon | string) => void;
   draggableEnabled?: boolean;
 };

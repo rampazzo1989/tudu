@@ -4,6 +4,14 @@ import {getLastItem} from '../array-utils';
 export const EMOJI_REGEX = /[\p{Emoji}\u200d]+/gu;
 export const REMOVE_NUMBERS_REGEX = /^[\d]+/gu;
 
+
+/**
+ * Trims an emoji from the beginning or end of a given text string.
+ *
+ * @param text - The input string that may contain an emoji at the start or end.
+ * @returns An object containing the trimmed emoji and the formatted text without the emoji,
+ *          or undefined if the input text is empty or no emoji is found at the start or end.
+ */
 export const trimEmoji = (text: string) => {
   if (text === '') {
     return;

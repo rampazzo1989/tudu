@@ -31,6 +31,8 @@ const CheckMarkIcon = memo(
                 onAnimationFinish: options.onAnimationFinish,
               });
             } else {
+              console.log('options play inner', options);
+
               iconRef.current?.play({
                 onAnimationFinish: options?.onAnimationFinish,
                 delay: options?.delay,
@@ -87,9 +89,9 @@ const CheckMarkIconActionAnimation = memo(
                 onAnimationFinish: options.onAnimationFinish,
               });
             } else {
+              console.log('options play', options);
               iconRef.current?.play({
-                onAnimationFinish: () =>
-                  setTimeout(() => options?.onAnimationFinish?.(), 1500),
+                onAnimationFinish: options?.onAnimationFinish,
                 delay: options?.delay,
               });
             }
@@ -104,7 +106,7 @@ const CheckMarkIconActionAnimation = memo(
       },
       [],
     );
-    return <CheckMarkIcon ref={iconRef} size={38} />;
+    return <CheckMarkIcon ref={iconRef} size={38} autoPlay={false} />;
   }),
 );
 

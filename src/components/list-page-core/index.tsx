@@ -36,6 +36,8 @@ import {SkeletonTuduList} from '../skeleton-tudu-list';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
 import {UNLOADED_ID} from '../../constants';
+import { AnimatedEmojiIcon } from '../animated-icons/animated-emoji';
+import { trimEmoji } from '../../utils/emoji-utils';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -105,6 +107,13 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       actionButtonRef.current?.animateThisIcon(CheckMarkIconActionAnimation);
     }, []);
 
+    const handleEmojiAnimation = useCallback((text: string) => {
+      var emojiInfo = trimEmoji(text);
+      if (emojiInfo?.emoji) {
+        actionButtonRef.current?.animateThisIcon(emojiInfo.emoji);
+      }
+    }, []);
+
     const handleTuduPress = useCallback(
       (tudu: TuduViewModel) => {
         if (!internalList) {
@@ -115,12 +124,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
         saveTudu(tudu);
 
-        const allDone =
-          !!internalList.tudus
-            ?.filter(x => x.id !== tudu.id)
-            .every(x => x.done) && tudu.done;
+        const allDone = !!internalList.tudus?.filter(x => x.id !== tudu.id).every(x => x.done) && tudu.done;
+
         if (allDone) {
           handleListCompleted();
+        } else if (tudu.done) {
+          handleEmojiAnimation(tudu.label);
         }
       },
       [handleListCompleted, internalList, saveTudu],
@@ -140,7 +149,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     );
 
     const animateThisIcon = useCallback(
-      (thisIcon: ForwardedRefAnimatedIcon) => {
+      (thisIcon: ForwardedRefAnimatedIcon | string) => {
         actionButtonRef.current?.animateThisIcon(thisIcon);
       },
       [],

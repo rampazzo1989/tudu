@@ -50,7 +50,7 @@ const DeleteIcon = memo(
 const DeleteIconActionAnimation = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
     return (
-      <DeleteIcon size={30} ref={ref} initialFrame={160} finalFrame={240} />
+      <DeleteIcon size={30} ref={ref} initialFrame={160} finalFrame={240} autoPlay={false} {...props} />
     );
   }),
 );

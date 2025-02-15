@@ -19,6 +19,10 @@ import {MenuOptions} from '../menu-options';
 import {useRecoilValue} from 'recoil';
 import {toastSpan} from '../../state/atoms';
 import { useOneTimeAnimationControl } from '../../hooks/useOneTimeAnimationControl';
+import { AnimatedEmojiIcon } from '../animated-icons/animated-emoji';
+import { ForwardedRefAnimatedEmojiIcon } from '../animated-icons/animated-emoji/types';
+
+const ANIMATED_REACTION_DURATION = 1500;
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
@@ -27,23 +31,28 @@ const FloatingActionButton = memo(
       const animateNextIcon = useRef(true);
       const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
       const [CurrentIcon, setCurrentIcon] =
-        useState<ForwardedRefAnimatedIcon>(DefaultIcon);
+        useState<ForwardedRefAnimatedIcon | ForwardedRefAnimatedEmojiIcon>(DefaultIcon);
       const {animateOnceOnly} = useOneTimeAnimationControl();
+      const [emoji, setEmoji] = useState<string>();
 
       const toastBottomSpan = useRecoilValue(toastSpan);
 
       // Animates the current icon when option is set
       useEffect(() => {
+        console.log('animateNextIcon.current', animateNextIcon.current, iconRef.current);
+
         if (animateNextIcon.current) {
           iconRef.current?.play({
-            onAnimationFinish: () =>
-              setTimeout(() => setCurrentIcon(DefaultIcon), 500),
+            onAnimationFinish: () => {
+              console.log('CalledAnimationFinish');
+              setTimeout(() => setCurrentIcon(DefaultIcon), ANIMATED_REACTION_DURATION);
+            }
           });
           animateNextIcon.current = false;
         } else {
           iconRef.current?.pause();
         }
-      }, [CurrentIcon, DefaultIcon]);
+      }, [CurrentIcon]);
 
       const handlePress = useCallback(() => {
         if (menuOptions) {
@@ -69,7 +78,14 @@ const FloatingActionButton = memo(
       useImperativeHandle(ref, () => ({
         animateThisIcon(Icon) {
           animateNextIcon.current = true;
-          setCurrentIcon(Icon);
+
+          // Emoji
+          if (typeof Icon === 'string') {
+            setEmoji(Icon);
+            setCurrentIcon(AnimatedEmojiIcon);
+          } else {
+            setCurrentIcon(Icon);
+          }
         },
         closeMenu: handlePopoverMenuRequestClose,
       }));
@@ -82,7 +98,7 @@ const FloatingActionButton = memo(
                 onPress={handlePress}
                 scaleFactor={0.05}>
               <IconContainer>
-                <CurrentIcon ref={iconRef} speed={1.5} size={40} />
+                <CurrentIcon emoji={emoji ?? ''} ref={iconRef} speed={1.5} size={40} />
               </IconContainer>
             </FloatingButton>
           </FloatingButtonContainer>
