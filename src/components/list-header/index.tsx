@@ -49,7 +49,7 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               overrideColor={theme.colors.iconOverlay}
             />
           ) : emojiInfo?.emoji ? (
-            <Emoji adjustsFontSizeToFit entering={ZoomInRotate.springify()}>
+            <Emoji entering={ZoomInRotate.springify()}>
               {emojiInfo.emoji}
             </Emoji>
           ) : (

@@ -34,6 +34,7 @@ const FloatingActionButton = memo(
         useState<ForwardedRefAnimatedIcon | ForwardedRefAnimatedEmojiIcon>(DefaultIcon);
       const {animateOnceOnly} = useOneTimeAnimationControl();
       const [emoji, setEmoji] = useState<string>();
+      const reactionTimeoutRef = useRef<NodeJS.Timeout>();
 
       const toastBottomSpan = useRecoilValue(toastSpan);
 
@@ -42,7 +43,10 @@ const FloatingActionButton = memo(
         if (animateNextIcon.current) {
           iconRef.current?.play({
             onAnimationFinish: () => {
-              setTimeout(() => setCurrentIcon(DefaultIcon), ANIMATED_REACTION_DURATION);
+              reactionTimeoutRef.current = setTimeout(() => {
+                setCurrentIcon(DefaultIcon);
+                reactionTimeoutRef.current = undefined;
+              }, ANIMATED_REACTION_DURATION);
             }
           });
           animateNextIcon.current = false;
@@ -74,6 +78,10 @@ const FloatingActionButton = memo(
 
       useImperativeHandle(ref, () => ({
         animateThisIcon(Icon) {
+          if (reactionTimeoutRef.current) {
+            return;
+          } 
+
           animateNextIcon.current = true;
 
           // Emoji

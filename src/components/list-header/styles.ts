@@ -22,7 +22,7 @@ export const Title = styled.Text`
 
 export const Emoji = styled(Animated.Text)`
   color: ${({theme}) => theme.colors.headerText};
-  font-size: 56px;
+  font-size: 48px;
   opacity: 0.4;
 `;
 
