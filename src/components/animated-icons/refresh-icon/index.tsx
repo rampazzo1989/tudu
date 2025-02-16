@@ -1,13 +1,14 @@
 import React, {forwardRef, memo, useImperativeHandle, useRef} from 'react';
+import {BaseAnimatedIcon} from '../animated-icon';
 import {
   AnimatedIconProps,
   AnimatedIconRef,
   AnimationOptions,
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
-import {AnimatedIcon} from './styles';
+import { AnimatedIconContainer } from './styles';
 
-const OptionsThreeDotsIcon = memo(
+const RefreshIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
 
@@ -16,7 +17,10 @@ const OptionsThreeDotsIcon = memo(
       () => {
         return {
           play(options?: AnimationOptions) {
-            iconRef.current?.play(options);
+            iconRef.current?.play({
+              onAnimationFinish: options?.onAnimationFinish,
+              delay: options?.delay,
+            });
           },
           pause() {
             iconRef.current?.pause();
@@ -30,16 +34,21 @@ const OptionsThreeDotsIcon = memo(
     );
 
     return (
-      <AnimatedIcon
-        source={require('../../../assets/lottie/threedots_close.json')}
+    <AnimatedIconContainer>
+      <BaseAnimatedIcon
+        source={require('../../../assets/lottie/refresh.lottie')}
         loop={false}
-        componentName="OptionsThreeDotsIcon"
-        finalFrame={60}
+        componentName="RefreshIcon"
+        size={30}
+        initialFrame={85}
+        finalFrame={165}
+        staticStateFrame={85}
         ref={iconRef}
         {...props}
       />
+    </AnimatedIconContainer>
     );
   }),
 );
 
-export {OptionsThreeDotsIcon};
+export {RefreshIcon};

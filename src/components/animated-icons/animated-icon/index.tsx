@@ -41,8 +41,6 @@ const BaseAnimatedIcon = memo(
         () => {
           return {
             play(options?: BaseAnimationOptions) {
-              console.log('baseanimatedicon play', options);
-
               animationFinishCallbackRef.current = options?.onAnimationFinish;
 
               setTimeout(
@@ -76,7 +74,6 @@ const BaseAnimatedIcon = memo(
         if (props.autoPlay) {
           setTimeout(() => {
             animationRef.current?.play(initialFrame, finalFrame);
-            console.log('ANIMATING AutoPlay', componentName);
           }, props.autoPlayDelay ?? 500);
         }
       }, [finalFrame, initialFrame, props.autoPlay, props.autoPlayDelay]);
@@ -84,10 +81,11 @@ const BaseAnimatedIcon = memo(
       const {key: componentKey} = useHashGenerator({seedText: componentName});
 
       const handleAnimationFinish = useCallback((isCancelled: boolean) => {
-        if (!isCancelled) {
+        // if (!isCancelled) {
+          props.onAnimationFinish?.(isCancelled);
           animationFinishCallbackRef.current?.();
-          animationFinishCallbackRef.current = undefined;
-        }
+          // animationFinishCallbackRef.current = undefined;
+        // }
         
       }, []);
 

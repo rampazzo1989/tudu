@@ -26,8 +26,6 @@ const Page: React.FC<PageProps> = memo(({children}) => {
       if (isIdle) {
         let timeBetweenAnimations = TIME_BETWEEN_IDLE_ANIMATIONS_LOW_DENSITY;
 
-        console.log({idlyAnimatedRefsLength: idlyAnimatedRefs.length});
-
         if (idlyAnimatedRefs.length >= 20) {
           timeBetweenAnimations = TIME_BETWEEN_IDLE_ANIMATIONS_HIGH_DENSITY;
         } else if (idlyAnimatedRefs.length >= 10) {

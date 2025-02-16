@@ -4,7 +4,6 @@ import IconContainer from './IconContainer';
 import ZoomIn from './ZoomIn';
 
 const OptionsComponent = ({ handlePress, toastBottomSpan, CurrentIcon, iconRef }) => {
-  console.log('RENDERED');
   return (
     <FloatingButton
       onPress={handlePress}

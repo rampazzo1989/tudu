@@ -101,7 +101,6 @@ const useDraggableViewHooks = <T>({
         const [removedItem] = newList.splice(draggedItem.orderIndex, 1);
 
         const receivingItemIndex = newList.indexOf(payload);
-        console.log('holla', draggedItem.orderIndex, payload.orderIndex, receivingItemIndex);
 
         // Inserts the dragged item in the new position
         newList.splice(receivingItemIndex, 0, removedItem);

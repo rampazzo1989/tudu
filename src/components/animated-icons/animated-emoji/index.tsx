@@ -10,7 +10,6 @@ import { withSpring, useSharedValue, useAnimatedStyle } from 'react-native-reani
 const AnimatedEmojiIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedEmojiIconProps>((props, ref) => {
     const scale = useSharedValue(0);
-    const rotate = useSharedValue(0);
 
     const animatedStyle = useAnimatedStyle(() => {
         return {

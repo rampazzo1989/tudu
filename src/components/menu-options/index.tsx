@@ -19,7 +19,6 @@ const MenuOptions: React.FC<MenuOptionsProps> = memo(({options, closeMenu}) => {
         const isLastItem = index === length - 1;
 
         const handlePress = () => {
-          console.log("CLICOU");
           onPress();
           closeMenu?.();
         };

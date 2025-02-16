@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { ShrinkableView } from '../shrinkable-view';
 
 export const TitleContainer = styled.View`
   border-width: 1px;

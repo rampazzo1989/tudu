@@ -12,7 +12,7 @@ import {
 import {ListGroupProps} from './types';
 import {PopoverMenu} from '../../../../components/popover-menu';
 import {GroupOptions} from './components/group-options';
-import {OptionsArrowDownIcon} from '../../../../components/animated-icons/options-arrow-down-icon';
+import {OptionsThreeDotsIcon} from '../../../../components/animated-icons/options-arrow-down-icon';
 import {BaseAnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {RenameModal} from './components/rename-modal';
 import {FadeIn} from 'react-native-reanimated';
@@ -51,7 +51,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
           hitSlop={20}
           scaleFactor={0}>
           <OptionsIconContainer>
-            <OptionsArrowDownIcon ref={iconRef} speed={2} />
+            <OptionsThreeDotsIcon ref={iconRef} speed={2} />
           </OptionsIconContainer>
         </OptionsTouchable>
       ),

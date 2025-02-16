@@ -35,7 +35,7 @@ import {ActionPlusIcon} from '../../assets/static/action_plus';
 import {CounterViewModel} from '../../scenes/home/types';
 import {PopoverMenu} from '../popover-menu';
 import {CounterOptions} from '../../scenes/counter/components/counter-options';
-import {OptionsArrowDownIcon} from '../animated-icons/options-arrow-down-icon';
+import {OptionsThreeDotsIcon} from '../animated-icons/options-arrow-down-icon';
 import {NewCounterModal} from '../../scenes/counter/components/new-counter-modal';
 import {PopupModal} from '../popup-modal';
 import {
@@ -110,7 +110,7 @@ const MoreOptionsButton: React.FC<OptionsButtonProps> = memo(
           hitSlop={20}
           scaleFactor={0}>
           <OptionsIconContainer>
-            <OptionsArrowDownIcon ref={iconRef} speed={2} />
+            <OptionsThreeDotsIcon ref={iconRef} speed={2} />
           </OptionsIconContainer>
         </OptionsTouchable>
       ),

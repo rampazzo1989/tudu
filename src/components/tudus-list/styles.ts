@@ -1,6 +1,7 @@
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {SectionTitle as Title} from '..//section-title';
+import { ShrinkableView } from '../shrinkable-view';
 
 export const Container = styled.View`
   flex: 1;
@@ -33,4 +34,14 @@ export const DoneTuduAnimatedContainer = styled.View`
 export const InnerContainer = styled.View`
   margin-bottom: 18px;
   margin-top: -6px;
+`;
+export const OptionsTouchable = styled(ShrinkableView)`
+  width: 28px;
+  height: 28px;
+  align-items: flex-end;
+`;
+
+export const OptionsIconContainer = styled.View`
+  height: 20px;
+  width: 20px;
 `;

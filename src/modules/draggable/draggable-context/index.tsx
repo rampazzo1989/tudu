@@ -62,7 +62,6 @@ const DraggableContextProvider = <T,>({
   }, []);
 
   const undoLastDeletion = useCallback(() => {
-    console.log('previousState.lengths', previousStateRef.current?.length);
     if (!previousStateRef.current) {
       return;
     }

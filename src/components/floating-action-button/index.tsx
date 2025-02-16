@@ -39,12 +39,9 @@ const FloatingActionButton = memo(
 
       // Animates the current icon when option is set
       useEffect(() => {
-        console.log('animateNextIcon.current', animateNextIcon.current, iconRef.current);
-
         if (animateNextIcon.current) {
           iconRef.current?.play({
             onAnimationFinish: () => {
-              console.log('CalledAnimationFinish');
               setTimeout(() => setCurrentIcon(DefaultIcon), ANIMATED_REACTION_DURATION);
             }
           });
