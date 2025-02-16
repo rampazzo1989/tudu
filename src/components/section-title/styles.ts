@@ -27,3 +27,12 @@ export const ControlContainer = styled.View`
   align-items: center;
   justify-content: center;
 `;
+
+export const ReactionContainer = styled.View`
+  position: absolute;
+  right: 10px;
+  height: 100%;
+  width: 28px;
+  align-items: center;
+  justify-content: center;
+`;

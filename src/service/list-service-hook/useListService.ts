@@ -416,10 +416,11 @@ const useListService = () => {
 
   const deleteTudu = useCallback(
     (tuduData: TuduViewModel, saveBackup = true) => {
-      const tudusStateSetter = getTudusStateSetter(tuduData.origin);
+      const origin = tuduData.origin;
+      const tudusStateSetter = getTudusStateSetter(origin);
 
       if (saveBackup) {
-        doStateBackup(tuduData.origin);
+        doStateBackup(origin);
       }
 
       tudusStateSetter(previousState => {
@@ -433,6 +434,47 @@ const useListService = () => {
     },
     [doStateBackup, getTudusStateSetter],
   );
+
+  const deleteTudus = useCallback(
+    (tuduList: TuduViewModel[], saveBackup = true) => {
+      const origin = tuduList[0].origin;
+      const tudusStateSetter = getTudusStateSetter(origin);
+
+      if (saveBackup) {
+        doStateBackup(origin);
+      }
+
+      tudusStateSetter(previousState => {
+        const newState = new Map(previousState);
+
+        tuduList.forEach(tudu => {
+          const tudus = newState.get(tudu.listId);
+          tudus?.delete(tudu.id);
+        });
+
+        return newState;
+      });
+    },
+    [doStateBackup, getTudusStateSetter],
+  );
+
+  const undoTudus = useCallback((tuduList: TuduViewModel[]) => {
+    const origin = tuduList[0].origin;
+    const tudusStateSetter = getTudusStateSetter(origin);
+
+    tudusStateSetter(previousState => {
+      const newState = new Map(previousState);
+
+      tuduList.forEach(tudu => {
+        const tudus = newState.get(tudu.listId);
+        var currentTudu = tudus?.get(tudu.id);
+        if (currentTudu) 
+          currentTudu.done = false;
+      });
+
+      return newState;
+    });
+  }, []);
 
   const deleteGroup = useCallback(
     (groupName: string) => {
@@ -566,6 +608,8 @@ const useListService = () => {
     deleteList,
     deleteGroup,
     deleteTudu,
+    deleteTudus,
+    undoTudus,
     archiveList,
     unarchiveList,
     restoreBackup,

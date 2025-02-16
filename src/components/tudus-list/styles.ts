@@ -26,7 +26,6 @@ export const DoneTuduAnimatedContainer = styled.View`
   flex-grow: 1;
   width: 100%;
   background-color: ${({theme}) => theme.colors.tuduCardDone};
-  // elevation: 2;
   margin-top: 12px;
   border-radius: 10px;
 `;
@@ -39,6 +38,8 @@ export const OptionsTouchable = styled(ShrinkableView)`
   width: 28px;
   height: 28px;
   align-items: flex-end;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const OptionsIconContainer = styled.View`

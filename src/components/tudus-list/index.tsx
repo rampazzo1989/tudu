@@ -3,12 +3,11 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import {FadeIn, LinearTransition, SlideInRight} from 'react-native-reanimated';
+import Animated, {FadeIn, FadeOutDown, LinearTransition} from 'react-native-reanimated';
 import {
   Container,
   DoneTuduAnimatedContainer,
@@ -38,6 +37,7 @@ import { PopoverMenu } from '../popover-menu';
 import { DoneItemsOptions } from './done-items-options';
 import { OptionsThreeDotsIcon } from '../animated-icons/options-arrow-down-icon';
 import { BaseAnimatedIconRef } from '../animated-icons/animated-icon/types';
+import { RefreshIcon } from '../animated-icons/refresh-icon';
 
 const LayoutAnimation = LinearTransition.springify().stiffness(300).damping(13).mass(0.3);
 
@@ -46,6 +46,8 @@ const TudusList: React.FC<TudusListProps> = memo(
     onTuduPress,
     onEditPress,
     onDeletePress,
+    onClearAllDonePress,
+    onUndoAllPress,
     onStarPress,
     getAdditionalInformation,
     animateIcon,
@@ -58,6 +60,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     >(() => FadeIn);
     const iconRef = useRef<BaseAnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
+    const [allDoneReactionVisible, setAllDoneReactionVisible] = useState(false);
 
     const handleOptionsButtonPress = useCallback(() => {
       iconRef.current?.toggle();
@@ -68,6 +71,18 @@ const TudusList: React.FC<TudusListProps> = memo(
       iconRef.current?.toggle();
       setPopoverMenuVisible(false);
     }, []);
+
+    const handleClearAllDonePress = useCallback(() => {
+      const doneTudus = draggableContext.data.filter(x => x.data[0].done);
+      onClearAllDonePress(doneTudus.map(x => x.data[0]));
+      animateIcon?.(DeleteIconActionAnimation);
+    }, [draggableContext.data, onClearAllDonePress]);
+
+    const handleUndoAllPress = useCallback(() => {
+      const doneTudus = draggableContext.data.filter(x => x.data[0].done);
+      onUndoAllPress(doneTudus.map(x => x.data[0]));
+      animateIcon?.(RefreshIcon);
+    }, [draggableContext.data, onUndoAllPress]);
 
     useEffect(() => {
       setEnteringAnimation(undefined);
@@ -87,24 +102,27 @@ const TudusList: React.FC<TudusListProps> = memo(
       [handleOptionsButtonPress],
     );
 
-    const OptionsMenu = useCallback(
+    const OptionsMenu = useMemo(
       () => (
         <PopoverMenu
           isVisible={popoverMenuVisible}
           onRequestClose={handlePopoverMenuRequestClose}
           from={OptionsComponent}
         >
-          <DoneItemsOptions />
+          <DoneItemsOptions closeMenu={handlePopoverMenuRequestClose} onClearAllDone={handleClearAllDonePress} onUndoAll={handleUndoAllPress} />
         </PopoverMenu>
       ),
-      [popoverMenuVisible, handlePopoverMenuRequestClose, OptionsComponent]
+      [popoverMenuVisible, handlePopoverMenuRequestClose, OptionsComponent, handleClearAllDonePress]
     );
 
-    const CheckMarkAnimation = useCallback(() => {
-      return <CheckMarkIcon onAnimationFinish={() => setTimeout(() => setSectionTitleControl(<OptionsMenu />), 1500)} autoPlay speed={3} />;
+    const CheckMarkAnimation = useMemo(() => {
+      return <CheckMarkIcon onAnimationFinish={() => setTimeout(() => setAllDoneReactionVisible(false), 1500)} autoPlay speed={3} />;
     }, [OptionsMenu]);
 
-    const [SectionTitleControl, setSectionTitleControl] = useState<React.ReactNode | undefined>(CheckMarkAnimation);
+    useEffect(() => {
+      var undoneLength = draggableContext.data.filter(x => !x.data[0].done).length;
+      setAllDoneReactionVisible(!undoneLength);
+    }, [draggableContext.data]);
 
     const getSectionTitle = useCallback((undoneListLength: number) => {
       return (
@@ -113,11 +131,12 @@ const TudusList: React.FC<TudusListProps> = memo(
           key="allTudus"
           marginTop={undoneListLength ? 20 : 0}
           ControlComponent={
-            undoneListLength ? undefined : SectionTitleControl
+            allDoneReactionVisible ? undefined : OptionsMenu
           }
+          ReactionComponent={allDoneReactionVisible ? CheckMarkAnimation : undefined}
         />
       );
-    }, [SectionTitleControl]);
+    }, [allDoneReactionVisible, OptionsMenu, CheckMarkAnimation]);
 
     const handleDeleteGenerator = useCallback(
       (deletingItem: TuduViewModel) => () => {
@@ -200,7 +219,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       const doneComponents = done.map((draggableTudu, index) => {
         const tudu = draggableTudu.indexedTudu.data[0];
         return (
-          <TuduAnimatedWrapper key={`a${tudu.id}`} 
+          <TuduAnimatedWrapper key={`a${tudu.id}`}
             entering={enteringAnimation?.duration(100).delay(index * 50)} layout={LayoutAnimation}>
             <DoneTuduAnimatedContainer>
               <TuduCard

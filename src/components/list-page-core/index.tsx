@@ -57,7 +57,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
 
-    const {saveTudu, deleteTudu, restoreBackup} = useListService();
+    const {saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup} = useListService();
 
     const {t} = useTranslation();
 
@@ -208,6 +208,18 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [deleteTudu, restoreBackup, t],
     );
 
+    const handleClearAllDone = useCallback(
+      (doneTudus: TuduViewModel[]) => {
+        deleteTudus(doneTudus);
+        showItemDeletedToast(t('toast.allDoneDeleted'), restoreBackup);
+      },
+      [deleteTudus, restoreBackup, t],
+    );
+
+    const handleUndoAllPress = useCallback((doneTudus: TuduViewModel[]) => {
+      undoTudus(doneTudus);
+    }, [undoTudus]);
+
     const handleInsertTudu = useCallback(() => {
       setNewTuduPopupVisible(true);
     }, []);
@@ -251,6 +263,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                     setNewTuduPopupVisible(true);
                   }}
                   onDeletePress={handleTuduDelete}
+                  onClearAllDonePress={handleClearAllDone}
+                  onUndoAllPress={handleUndoAllPress}
                 />
               )}
             </DraggablePageContent>

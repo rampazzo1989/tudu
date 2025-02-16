@@ -37,7 +37,8 @@
       "list": "List",
       "group": "Group"
     },
-    "undo": "UNDO"
+    "undo": "UNDO",
+    "allDoneDeleted": "All done tudús deleted"
   },
   "buttons": {
     "ok": "OK",
