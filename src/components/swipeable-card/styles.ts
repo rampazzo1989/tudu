@@ -4,13 +4,13 @@ import {CurrentTheme} from '../../themes';
 
 export const styles = StyleSheet.create({
   parent: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: CurrentTheme.colors.swipeableCard.optionsBackground,
     borderRadius: 10,
     // overflow: 'visible',
   },
   contentContainer: {
-    flex: 1,
+    flexGrow: 1,
     flexDirection: 'row',
     paddingHorizontal: 12,
     backgroundColor: CurrentTheme.colors.swipeableCard.background,

@@ -58,7 +58,7 @@ const useDraggableViewHooks = <T>({
     (event: LayoutChangeEvent) => {
       itemHeight.value = itemHeight.value ?? event.nativeEvent.layout.height;
     },
-    [itemHeight],
+    [itemHeight.value],
   );
 
   const removeFromOriginalGroup = useCallback(

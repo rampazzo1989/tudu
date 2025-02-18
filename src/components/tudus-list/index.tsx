@@ -176,7 +176,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     useEffect(() => {
       setEnteringAnimation(undefined);
       setForceUpdate(x => x+1);
-    }, []);
+    }, [draggableContext.data]);
 
     const getTuduList = useMemo(() => {
       const {data} = draggableContext;

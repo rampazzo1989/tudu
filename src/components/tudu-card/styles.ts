@@ -9,6 +9,7 @@ export const Card = styled(ShrinkableView)<CheckableComponentType>`
   border-radius: 10px;
   min-height: 60px;
   flex-grow: 1;
+  flex-shrink: 0;
   // elevation: ${({done}) => (done ? '2' : '0')};
 `;
 
@@ -31,7 +32,8 @@ export const Label = styled.Text<CheckableComponentType>`
 `;
 
 export const LabelAndAdditionalInfoContainer = styled.View`
-  flex: 1;
+  flex-grow: 1;
+  padding: 12px 0;
 `;
 
 export const AdditionalInfoContainer = styled.View`

@@ -22,7 +22,7 @@ import {FloatingActionButtonRef} from '../../components/floating-action-button/t
 import {CheckMarkIconActionAnimation} from '../../components/animated-icons/check-mark';
 import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
 import {useListService} from '../../service/list-service-hook/useListService';
-import {CheersAnimationContainer, styles} from './styles';
+import { CheersAnimationContainer, LoadingAnimationContainer, styles} from './styles';
 import {NewTuduModal} from '../new-tudu-modal';
 import {ListActionButton} from '../list-action-button';
 import {TudusList} from '../tudus-list';
@@ -38,6 +38,7 @@ import {useTranslation} from 'react-i18next';
 import {UNLOADED_ID} from '../../constants';
 import { AnimatedEmojiIcon } from '../animated-icons/animated-emoji';
 import { trimEmoji } from '../../utils/emoji-utils';
+import { LoadingParticles } from '../animated-components/loading-particles';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -54,14 +55,13 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
-
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
-
     const {saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup} = useListService();
-
     const {t} = useTranslation();
-
     const [internalList, setInternalList] = useState(list);
+    const cheersRef = useRef<AnimatedIconRef>(null);
+    const loadingRef = useRef<AnimatedIconRef>(null);
+    const [showLoader, setShowLoader] = useState(false);
 
     const loading = useMemo(
       () => internalList?.id === UNLOADED_ID,
@@ -155,8 +155,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [],
     );
 
-    const cheersRef = useRef<AnimatedIconRef>(null);
-
     const getAdditionalInformation = useCallback(
       (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
         if (isSmartList && tudu.listName && tudu.listId !== UNLISTED) {
@@ -208,24 +206,51 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [deleteTudu, restoreBackup, t],
     );
 
+    const withLoader = useCallback((callback: () => void) => {
+      loadingRef.current?.play();
+      setShowLoader(true);
+      callback();
+      setTimeout(() => setShowLoader(false), 1800);
+    }, []);
+
     const handleClearAllDone = useCallback(
       (doneTudus: TuduViewModel[]) => {
-        deleteTudus(doneTudus);
-        showItemDeletedToast(t('toast.allDoneDeleted'), restoreBackup);
+        withLoader(() => {
+          deleteTudus(doneTudus);
+          showItemDeletedToast(t('toast.allDoneDeleted'), restoreBackup);
+        })
       },
       [deleteTudus, restoreBackup, t],
     );
 
     const handleUndoAllPress = useCallback((doneTudus: TuduViewModel[]) => {
+      // withLoader(() => undoTudus(doneTudus));
       undoTudus(doneTudus);
-    }, [undoTudus]);
+    }, [withLoader, undoTudus]);
 
     const handleInsertTudu = useCallback(() => {
       setNewTuduPopupVisible(true);
     }, []);
 
+    // const [forceUpdate, setForceUpdate] = useState(0);
+    
+        // useEffect(() => {
+        //   setForceUpdate(x => x+1);
+        // }, [list]);
+
     return (
       <Page>
+        {/* <LoadingAnimationContainer pointerEvents="none">
+          <LoadingParticles
+              speed={1}
+              ref={loadingRef}
+              style={{
+                width: Dimensions.get('screen').width,
+                height: Dimensions.get('screen').height,
+                opacity: showLoader ? 1 : 0,
+              }}
+            />
+        </LoadingAnimationContainer> */}
         <ListHeader
           listData={list}
           onBackButtonPress={handleBackButtonPress}
@@ -236,7 +261,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             data={draggableTudus}
             onSetData={handleSetTudus}
             onDragStart={handleListDragStart}>
-            <CheersAnimationContainer pointerEvents="none">
+            {/* <CheersAnimationContainer pointerEvents="none">
               <CheersAnimation
                 ref={cheersRef}
                 speed={2}
@@ -245,7 +270,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   height: Dimensions.get('screen').height,
                 }}
               />
-            </CheersAnimationContainer>
+            </CheersAnimationContainer> */}
 
             <DraggablePageContent
               contentContainerStyle={styles.scrollContentContainer}>
@@ -265,7 +290,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   onDeletePress={handleTuduDelete}
                   onClearAllDonePress={handleClearAllDone}
                   onUndoAllPress={handleUndoAllPress}
-                />
+                  // key={`$key-${forceUpdate}`}
+            
               )}
             </DraggablePageContent>
             <NewTuduModal

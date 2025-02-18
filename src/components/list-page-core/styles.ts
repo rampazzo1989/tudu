@@ -22,5 +22,13 @@ export const CheersAnimationContainer = styled.View`
   position: absolute;
   width: ${Dimensions.get('screen').width}px;
   height: ${Dimensions.get('screen').height}px;
-  z-index: 9999;
+  z-index: 99999;
+`;
+
+export const LoadingAnimationContainer = styled.View`
+  position: absolute;
+  width: ${Dimensions.get('screen').width}px;
+  height: ${Dimensions.get('screen').height}px;
+  z-index: 99999;
+  margin-top: -30px;
 `;
