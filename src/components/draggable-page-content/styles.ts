@@ -4,7 +4,7 @@ import styled from 'styled-components/native';
 
 export const DEFAULT_PAGE_HORIZONTAL_PADDING = 20;
 
-export const PageContentContainer = styled(DraxScrollView)`
+export const PageContentContainer = styled.View`
   flex: 1;
   background-color: ${({theme}) => theme.colors.pageBackground};
   border-top-right-radius: 16px;
@@ -18,7 +18,7 @@ export const TopFadingGradient = styled(LinearGradient)`
   left: 16px;
   right: 16px;
   height: 28px;
-  z-index: 9999;
+  z-index: 9998;
 `;
 
 export const BottomFadingGradient = styled(LinearGradient)`
@@ -27,5 +27,5 @@ export const BottomFadingGradient = styled(LinearGradient)`
   left: 16px;
   right: 16px;
   height: 28px;
-  z-index: 9999;
+  z-index: 9998;
 `;

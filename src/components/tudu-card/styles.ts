@@ -3,7 +3,7 @@ import {ShrinkableView} from '../shrinkable-view';
 
 type CheckableComponentType = {done: boolean};
 
-export const Card = styled(ShrinkableView)<CheckableComponentType>`
+export const Card = styled.View<CheckableComponentType>`
   flex-direction: row;
   background-color: ${({theme}) => theme.colors.tuduCard};
   border-radius: 10px;

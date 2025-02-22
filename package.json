@@ -47,6 +47,7 @@
     "react-native-safe-area-view": "^1.1.1",
     "react-native-screens": "^3.25.0",
     "react-native-svg": "^15.11.1",
+    "react-native-swipeable-item": "^2.0.9",
     "react-native-toast-message": "^2.1.6",
     "reactotron-react-native": "^5.0.3",
     "recoil": "^0.7.7",

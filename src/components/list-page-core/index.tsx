@@ -248,7 +248,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             </CheersAnimationContainer>
 
             <DraggablePageContent
-              contentContainerStyle={styles.scrollContentContainer}>
+              style={styles.scrollContentContainer}>
               {loading ? (
                 <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
               ) : (
