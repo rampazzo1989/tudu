@@ -310,7 +310,7 @@ const TudusList: React.FC<TudusListProps> = memo(
             // snapPointsLeft={[150]}
           > */}
           {/* <Swipeable renderLeftActions={() => <View style={{backgroundColor: 'red', width: 150, height: 60}}><Text>{tudu.id}</Text></View>}> */}
-          <ShrinkableView  scaleFactor={0.03} style={{ minHeight: 60, width: '100%', zIndex: 9999, marginBottom: 8}} onLongPress={tudu.done ? undefined : drag} disabled={isActive}>
+          <ShrinkableView  scaleFactor={0.03} style={{ height: 'auto', width: '100%', zIndex: 9999, marginBottom: 8}} onLongPress={tudu.done ? undefined : drag} disabled={isActive}>
         <SwipeableTuduCard
               enabled={!isActive}
               done={tudu.done}
@@ -367,7 +367,9 @@ const TudusList: React.FC<TudusListProps> = memo(
             dragItemOverflow={true}
             style={{zIndex: 999999999, height: '100%', width: '100%', borderColor: 'red', borderWidth: 2, overflow: 'visible'}}
             // containerStyle={{zIndex: 999999999}}
-            contentContainerStyle={{zIndex: 999999999, overflow: 'visible', paddingHorizontal: 16}}
+            contentContainerStyle={{zIndex: 999999999, overflow: 'visible', paddingHorizontal: 16
+              ,borderColor: 'blue', borderWidth: 2, flex: 1
+            }}
             />
       </Container>
     );
