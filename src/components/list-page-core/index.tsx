@@ -112,12 +112,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleTuduPress = useCallback(
       (tudu: TuduViewModel) => {
+        console.log('Saving tudu' ,{tudu});
         if (!internalList) {
           return;
         }
 
         tudu.done = !tudu.done;
-
         saveTudu(tudu);
 
         const allDone = !!internalList.tudus?.filter(x => x.id !== tudu.id).every(x => x.done) && tudu.done;

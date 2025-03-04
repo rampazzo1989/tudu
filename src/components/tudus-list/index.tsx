@@ -28,7 +28,7 @@ import { DoneItemsOptions } from './done-items-options';
 import { OptionsThreeDotsIcon } from '../animated-icons/options-arrow-down-icon';
 import { BaseAnimatedIconRef } from '../animated-icons/animated-icon/types';
 import { RefreshIcon } from '../animated-icons/refresh-icon';
-import DraggableFlatList, { RenderItemParams, ScaleDecorator, ShadowDecorator } from 'react-native-draggable-flatlist';
+import DraggableFlatList, { NestableDraggableFlatList, NestableScrollContainer, RenderItemParams, ScaleDecorator, ShadowDecorator } from 'react-native-draggable-flatlist';
 import { useListService } from '../../service/list-service-hook/useListService';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
 import { ShrinkableView } from '../shrinkable-view';
@@ -164,8 +164,10 @@ const TudusList: React.FC<TudusListProps> = memo(
           } else {
             editingItem.dueDate = new Date();
           }
-          saveTudu(editingItem);
-          swipeableRef.current?.closeOptions();
+          setTimeout(() => {
+            saveTudu(editingItem);
+            swipeableRef.current?.closeOptions();
+          }, 700);
         },
       [saveTudu],
     );
@@ -256,7 +258,9 @@ const TudusList: React.FC<TudusListProps> = memo(
           : [],
       );
 
-      return allTudus;
+      // return allTudus;
+
+      return doneComponents;
     }, [
       draggableEnabled,
       enteringAnimation,
@@ -294,7 +298,7 @@ const TudusList: React.FC<TudusListProps> = memo(
             // snapPointsLeft={[150]}
           > */}
           {/* <Swipeable renderLeftActions={() => <View style={{backgroundColor: 'red', width: 150, height: 60}}><Text>{tudu.id}</Text></View>}> */}
-          <ShrinkableView  scaleFactor={0.03} style={{ height: 'auto', width: '100%', zIndex: 9999, marginBottom: 8}} onLongPress={item.done ? undefined : drag} disabled={isActive}>
+          <ShrinkableView onPress={() => onTuduPress(item)} scaleFactor={0.03} style={{ height: 'auto', width: '100%', zIndex: 9999, marginBottom: 8}} onLongPress={item.done ? undefined : drag} disabled={isActive}>
         <SwipeableTuduCard
               enabled={!isActive}
               done={item.done}
@@ -342,8 +346,8 @@ const TudusList: React.FC<TudusListProps> = memo(
         {/* {!!getTuduList?.length && (
           <InnerContainer>{getTuduList}</InnerContainer>
         )} */}
-         
-          <DraggableFlatList
+         <NestableScrollContainer>
+          <NestableDraggableFlatList
             data={[...undoneTudus]}
             renderItem={renderItem}
             keyExtractor={(item, index) => `item-${item.id}-${index}`}
@@ -364,6 +368,9 @@ const TudusList: React.FC<TudusListProps> = memo(
               , flex: 1
             }}
             />
+            {getSectionTitle(undoneTudus.length)}
+            {getTuduList}
+            </NestableScrollContainer>
       </Container>
     );
   },
