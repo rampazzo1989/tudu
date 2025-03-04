@@ -23,24 +23,25 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, [navigation]);
 
   useEffect(() => {
+    var a = getListById(listId, listOrigin);
+    console.log('LIST AT LIST PAGE', {a});
     setTimeout(() => {
-      setList(() => getListById(listId, listOrigin));
+      setList(a);
     }, 100);
   }, [getListById, listId, listOrigin]);
 
   const setTudus = useCallback(
-    (draggable: DraggableItem<TuduViewModel>[]) => {
+    (tudus: TuduViewModel[]) => {
       if (!list) {
         return;
       }
 
-      const newTuduList = draggable.flatMap(x => x.data);
       const newList = new ListViewModel(
         list.mapBackList(),
         undefined,
         list.origin,
       );
-      newList.tudus = newTuduList;
+      newList.tudus = tudus;
       saveListAndTudus(newList);
     },
     [list, saveListAndTudus],

@@ -69,30 +69,26 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     );
 
     const draggableTudus = useMemo(() => {
-      if (!internalList?.tudus) {
-        return [];
-      }
-      return (
-        [...internalList.tudus].map(
-          (tudu, index) => new DraggableItem([tudu], undefined, index),
-        ) ?? []
-      );
+      return !internalList?.tudus ? [] : 
+      [
+        ...internalList.tudus
+      ];
     }, [internalList]);
 
     useEffect(() => {
+      console.log('List updated', {list});
       setInternalList(list);
     }, [list]);
 
     const handleSetTudus: typeof setTudus = useCallback(
-      draggableList => {
-        const tudusList = draggableList.map(x => x.data[0]);
+      tudusList => {
         setInternalList(current => {
           if (!current) {
             return undefined;
           }
           return {...current, tudus: tudusList};
         });
-        setTudus(draggableList);
+        setTudus(tudusList);
       },
       [setTudus],
     );
@@ -180,20 +176,19 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleInsertOrUpdate = useCallback(
       (tudu: TuduViewModel) => {
-        const draggableTudu = new DraggableItem([tudu]);
         if (editingTudu) {
           const tuduIndex = draggableTudus.findIndex(
-            x => x.data[0].id === tudu.id,
+            x => x.id === tudu.id,
           );
           if (tuduIndex >= 0) {
             const newList = [...draggableTudus];
-            newList[tuduIndex] = draggableTudu;
+            newList[tuduIndex] = tudu;
             handleSetTudus(newList);
           }
         } else {
           const newList = draggableTudus.length
-            ? [draggableTudu, ...draggableTudus]
-            : [draggableTudu];
+            ? [tudu, ...draggableTudus]
+            : [tudu];
           handleSetTudus(newList);
         }
       },
@@ -231,11 +226,11 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           onBackButtonPress={handleBackButtonPress}
           Icon={Icon}
         />
-        <DraxProvider>
-          <DraggableContextProvider<TuduViewModel>
+        {/* <DraxProvider> */}
+          {/* <DraggableContextProvider<TuduViewModel>
             data={draggableTudus}
             onSetData={handleSetTudus}
-            onDragStart={handleListDragStart}>
+            onDragStart={handleListDragStart}> */}
             <CheersAnimationContainer pointerEvents="none">
               <CheersAnimation
                 ref={cheersRef}
@@ -265,6 +260,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   onDeletePress={handleTuduDelete}
                   onClearAllDonePress={handleClearAllDone}
                   onUndoAllPress={handleUndoAllPress}
+                  list={internalList}
                 />
               )}
             </DraggablePageContent>
@@ -284,8 +280,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 onInsertTuduPress={handleInsertTudu}
               />
             )}
-          </DraggableContextProvider>
-        </DraxProvider>
+          {/* </DraggableContextProvider> */}
+        {/* </DraxProvider> */}
       </Page>
     );
   },

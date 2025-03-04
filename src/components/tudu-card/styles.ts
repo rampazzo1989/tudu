@@ -9,7 +9,7 @@ export const Card = styled.View<CheckableComponentType>`
   border-radius: 10px;
   min-height: 62px;
   flex-grow: 1;
-  border: 1px solid green;
+  // border: 1px solid green;
   padding: 8px 0;
 `;
 

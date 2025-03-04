@@ -1,36 +1,25 @@
 import React, {
   memo,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import Animated, {FadeIn, FadeOutDown, LinearTransition} from 'react-native-reanimated';
+import {FadeIn, LinearTransition} from 'react-native-reanimated';
 import {
   Container,
   DoneTuduAnimatedContainer,
-  InnerContainer,
   OptionsIconContainer,
   OptionsTouchable,
   SectionTitle,
-  TuduAnimatedContainer,
   TuduAnimatedWrapper,
 } from './styles';
 import {TudusListProps} from './types';
-import SwipeableItem from 'react-native-swipeable-item'
 
 import {CheckMarkIcon} from '../animated-icons/check-mark';
-import {DraggableView} from '../../modules/draggable/draggable-view';
 import {TuduCard} from '../tudu-card';
-import {
-  DraggableContextType,
-  DraggableItem,
-} from '../../modules/draggable/draggable-context/types';
-import {TuduViewModel} from '../../scenes/home/types';
-import {DraggableContext} from '../../modules/draggable/draggable-context';
-import {refreshListState} from '../../modules/draggable/draggable-utils';
+import {List, TuduViewModel} from '../../scenes/home/types';
 import {SwipeableCardRef} from '../swipeable-card/types';
 import {isToday} from '../../utils/date-utils';
 import {DeleteIconActionAnimation} from '../animated-icons/delete-icon';
@@ -40,13 +29,9 @@ import { OptionsThreeDotsIcon } from '../animated-icons/options-arrow-down-icon'
 import { BaseAnimatedIconRef } from '../animated-icons/animated-icon/types';
 import { RefreshIcon } from '../animated-icons/refresh-icon';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator, ShadowDecorator } from 'react-native-draggable-flatlist';
-import { Text, TouchableOpacity, View } from 'react-native';
 import { useListService } from '../../service/list-service-hook/useListService';
-import { Swipeable } from 'react-native-gesture-handler';
-import { SwipeableCard } from '../swipeable-card';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
 import { ShrinkableView } from '../shrinkable-view';
-import { opacity } from 'react-native-reanimated/lib/typescript/Colors';
 
 const LayoutAnimation = LinearTransition.springify().stiffness(300).damping(13).mass(0.3);
 
@@ -60,10 +45,9 @@ const TudusList: React.FC<TudusListProps> = memo(
     onStarPress,
     getAdditionalInformation,
     animateIcon,
+    list,
     draggableEnabled = true,
   }) => {
-    const draggableContext =
-      useContext<DraggableContextType<TuduViewModel>>(DraggableContext);
     const [enteringAnimation, setEnteringAnimation] = useState<
       typeof FadeIn | undefined
     >(() => FadeIn);
@@ -71,7 +55,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
     const [allDoneReactionVisible, setAllDoneReactionVisible] = useState(false);
 
-    const {saveAllTudus} = useListService();
+    const {saveTudu, saveListAndTudus} = useListService();
 
     const handleOptionsButtonPress = useCallback(() => {
       iconRef.current?.toggle();
@@ -83,17 +67,21 @@ const TudusList: React.FC<TudusListProps> = memo(
       setPopoverMenuVisible(false);
     }, []);
 
+    const tuduList = useMemo(() => {
+      return list ? list.tudus : [];
+    }, [list]);
+
     const handleClearAllDonePress = useCallback(() => {
-      const doneTudus = draggableContext.data.filter(x => x.data[0].done);
-      onClearAllDonePress(doneTudus.map(x => x.data[0]));
+      const doneTudus = tuduList.filter(x => x.done);
+      onClearAllDonePress(doneTudus);
       animateIcon?.(DeleteIconActionAnimation);
-    }, [draggableContext.data, onClearAllDonePress]);
+    }, [tuduList, onClearAllDonePress, animateIcon]);
 
     const handleUndoAllPress = useCallback(() => {
-      const doneTudus = draggableContext.data.filter(x => x.data[0].done);
-      onUndoAllPress(doneTudus.map(x => x.data[0]));
+      const doneTudus = tuduList.filter(x => x.done);
+      onUndoAllPress(doneTudus);
       animateIcon?.(RefreshIcon);
-    }, [draggableContext.data, onUndoAllPress]);
+    }, [tuduList, onUndoAllPress]);
 
     useEffect(() => {
       setEnteringAnimation(undefined);
@@ -131,9 +119,9 @@ const TudusList: React.FC<TudusListProps> = memo(
     }, [OptionsMenu]);
 
     useEffect(() => {
-      var undoneLength = draggableContext.data.filter(x => !x.data[0].done).length;
+      var undoneLength = tuduList.filter(x => !x.done).length;
       setAllDoneReactionVisible(!undoneLength);
-    }, [draggableContext.data]);
+    }, [tuduList]);
 
     const getSectionTitle = useCallback((undoneListLength: number) => {
       return (
@@ -158,28 +146,28 @@ const TudusList: React.FC<TudusListProps> = memo(
     );
 
     const handleEditGenerator = useCallback(
-      (editingItem: DraggableItem<TuduViewModel>) =>
+      (editingItem: TuduViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-          onEditPress(editingItem.data[0]);
+          onEditPress(editingItem);
           swipeableRef.current?.closeOptions();
         },
       [onEditPress],
     );
 
     const handleSendToOrRemoveFromTodayGenerator = useCallback(
-      (editingItem: DraggableItem<TuduViewModel>) =>
+      (editingItem: TuduViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-          const dueDate = editingItem.data[0].dueDate;
+          const dueDate = editingItem.dueDate;
           if (dueDate && isToday(dueDate)) {
-            editingItem.data[0].dueDate = undefined;
-            editingItem.data[0].scheduledOrder = undefined;
+            editingItem.dueDate = undefined;
+            editingItem.scheduledOrder = undefined;
           } else {
-            editingItem.data[0].dueDate = new Date();
+            editingItem.dueDate = new Date();
           }
-          refreshListState(draggableContext.data, draggableContext.setData);
+          saveTudu(editingItem);
           swipeableRef.current?.closeOptions();
         },
-      [draggableContext.data, draggableContext.setData],
+      [saveTudu],
     );
 
     const [forceUpdate, setForceUpdate] = useState(0);
@@ -190,31 +178,29 @@ const TudusList: React.FC<TudusListProps> = memo(
     }, []);
 
     const undoneTudus = useMemo(() => {
-      const {data} = draggableContext;
-      const indexedTudus = data.map((indexedTudu, index) => ({
+      const indexedTudus = tuduList.map((indexedTudu, index) => ({
         indexedTudu,
         index,
       }));
 
-      const undone = indexedTudus.filter(x => true).map(x => x.indexedTudu);
+      const undone = indexedTudus.filter(x => !x.indexedTudu.done).map(x => x.indexedTudu);
       // const undone = indexedTudus.filter(x => !x.indexedTudu.data[0].done).map(x => x.indexedTudu);
       // const done = indexedTudus.filter(x => x.indexedTudu.data[0].done);
 
       return undone;
-    }, [draggableContext])
+    }, [tuduList]);
 
     const getTuduList = useMemo(() => {
-      const {data} = draggableContext;
-      const indexedTudus = data.map((indexedTudu, index) => ({
+      const indexedTudus = tuduList.map((indexedTudu, index) => ({
         indexedTudu,
         index,
       }));
 
-      const undone = indexedTudus.filter(x => !x.indexedTudu.data[0].done);
-      const done = indexedTudus.filter(x => x.indexedTudu.data[0].done);
+      const undone = indexedTudus.filter(x => !x.indexedTudu.done);
+      const done = indexedTudus.filter(x => x.indexedTudu.done);
 
       const undoneComponents = undone.map((draggableTudu, index) => {
-        const tudu = draggableTudu.indexedTudu.data[0];
+        const tudu = draggableTudu.indexedTudu;
 
         return (
           // <TuduAnimatedWrapper key={`a${tudu.id}`}
@@ -244,7 +230,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       });
 
       const doneComponents = done.map((draggableTudu, index) => {
-        const tudu = draggableTudu.indexedTudu.data[0];
+        const tudu = draggableTudu.indexedTudu;
         return (
           <TuduAnimatedWrapper key={`a${tudu.id}`}
             entering={enteringAnimation?.duration(100).delay(index * 50)} layout={LayoutAnimation}>
@@ -253,10 +239,10 @@ const TudusList: React.FC<TudusListProps> = memo(
                 data={tudu}
                 onPress={onTuduPress}
                 onDelete={handleDeleteGenerator(tudu)}
-                onEdit={handleEditGenerator(draggableTudu.indexedTudu)}
+                onEdit={handleEditGenerator(tudu)}
                 onStarPress={onStarPress}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                  draggableTudu.indexedTudu,
+                  tudu,
                 )}
               />
             </DoneTuduAnimatedContainer>
@@ -272,7 +258,6 @@ const TudusList: React.FC<TudusListProps> = memo(
 
       return allTudus;
     }, [
-      draggableContext.data,
       draggableEnabled,
       enteringAnimation,
       getAdditionalInformation,
@@ -284,8 +269,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       onTuduPress,
     ]);
 
-    const renderItem = ({ item, drag, isActive, getIndex }: RenderItemParams<DraggableItem<TuduViewModel>>) => {
-      const tudu = item.data[0];
+    const renderItem = ({ item, drag, isActive, getIndex }: RenderItemParams<TuduViewModel>) => {
       return (
         // <ScaleDecorator>
         //   <TouchableOpacity
@@ -310,13 +294,13 @@ const TudusList: React.FC<TudusListProps> = memo(
             // snapPointsLeft={[150]}
           > */}
           {/* <Swipeable renderLeftActions={() => <View style={{backgroundColor: 'red', width: 150, height: 60}}><Text>{tudu.id}</Text></View>}> */}
-          <ShrinkableView  scaleFactor={0.03} style={{ height: 'auto', width: '100%', zIndex: 9999, marginBottom: 8}} onLongPress={tudu.done ? undefined : drag} disabled={isActive}>
+          <ShrinkableView  scaleFactor={0.03} style={{ height: 'auto', width: '100%', zIndex: 9999, marginBottom: 8}} onLongPress={item.done ? undefined : drag} disabled={isActive}>
         <SwipeableTuduCard
               enabled={!isActive}
-              done={tudu.done}
-              onDelete={handleDeleteGenerator(tudu)}
+              done={item.done}
+              onDelete={handleDeleteGenerator(item)}
               onEdit={handleEditGenerator(item)}
-              isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
+              isOnToday={item.dueDate && isToday(item.dueDate)}
               onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                 item,
               )}>
@@ -334,15 +318,15 @@ const TudusList: React.FC<TudusListProps> = memo(
           {/* </TuduAnimatedContainer> */}
           {/* </TuduAnimatedWrapper> */}
           <TuduCard
-              data={tudu}
+              data={item}
               onPress={() => console.log('pressed')}
-              onDelete={handleDeleteGenerator(tudu)}
+              onDelete={handleDeleteGenerator(item)}
               onEdit={handleEditGenerator(item)}
               onStarPress={onStarPress}
               onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                 item,
               )}
-              additionalInfo={getAdditionalInformation(tudu)}
+              additionalInfo={getAdditionalInformation(item)}
             />
           </SwipeableTuduCard>
           </ShrinkableView>
@@ -362,13 +346,22 @@ const TudusList: React.FC<TudusListProps> = memo(
           <DraggableFlatList
             data={[...undoneTudus]}
             renderItem={renderItem}
-            keyExtractor={(item) => `item-${item.data[0].id}`}
-            onDragEnd={({data}) => saveAllTudus(data.flatMap(x => x.data))}
+            keyExtractor={(item, index) => `item-${item.id}-${index}`}
+            // onDragEnd={({data}) => saveAllTudus(data.flatMap(x => x.data))}
+            onDragEnd={({data}) => {
+              // saveAllTudus(data.flatMap(x => x.data));
+              var a = data.flatMap(x => x);
+              console.log('ONDRAGEND', {data: a});
+              var newList = list?.clone();
+              if(newList) {
+                newList.tudus = a;
+                saveListAndTudus(newList);
+              }
+            }}
             dragItemOverflow={true}
-            style={{zIndex: 999999999, height: '100%', width: '100%', borderColor: 'red', borderWidth: 2, overflow: 'visible'}}
-            // containerStyle={{zIndex: 999999999}}
+            style={{zIndex: 999999999, height: '100%', width: '100%', overflow: 'visible'}}
             contentContainerStyle={{zIndex: 999999999, overflow: 'visible', paddingHorizontal: 16
-              ,borderColor: 'blue', borderWidth: 2, flex: 1
+              , flex: 1
             }}
             />
       </Container>
