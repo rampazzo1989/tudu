@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   contentContainer: {
     // flex: 1,
     flexDirection: 'row',
-    paddingHorizontal: 12,
+    // paddingHorizontal: 12,
     backgroundColor: CurrentTheme.colors.swipeableCard.background,
     justifyContent: 'space-between',
     alignItems: 'center',

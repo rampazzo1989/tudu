@@ -10,6 +10,7 @@ export const PageContentContainer = styled.View`
   border-top-right-radius: 16px;
   border-top-left-radius: 16px;
   overflow: hidden;
+  padding: 0 16px;
 `;
 
 export const TopFadingGradient = styled(LinearGradient)`

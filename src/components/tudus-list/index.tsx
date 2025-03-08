@@ -128,7 +128,7 @@ const TudusList: React.FC<TudusListProps> = memo(
         <SectionTitle
           title={undoneListLength ? 'Done' : 'All done'}
           key="allTudus"
-          marginTop={undoneListLength ? 20 : 0}
+          marginTop={undoneListLength ? 16 : 0}
           ControlComponent={
             allDoneReactionVisible ? undefined : OptionsMenu
           }
@@ -190,6 +190,10 @@ const TudusList: React.FC<TudusListProps> = memo(
       // const done = indexedTudus.filter(x => x.indexedTudu.data[0].done);
 
       return undone;
+    }, [tuduList]);
+
+    const doneTudus = useMemo(() => {
+      return tuduList.filter(x => x.done);
     }, [tuduList]);
 
     const getTuduList = useMemo(() => {
@@ -363,13 +367,34 @@ const TudusList: React.FC<TudusListProps> = memo(
               }
             }}
             dragItemOverflow={true}
-            style={{zIndex: 999999999, height: '100%', width: '100%', overflow: 'visible'}}
-            contentContainerStyle={{zIndex: 999999999, overflow: 'visible', paddingHorizontal: 16
-              , flex: 1
+            style={{zIndex: 999999999, width: '100%', overflow: 'visible'}}
+            contentContainerStyle={{zIndex: 999999999, overflow: 'visible', 
+              flex: 1
             }}
             />
             {getSectionTitle(undoneTudus.length)}
-            {getTuduList}
+            {/* {getTuduList} */}
+            <NestableDraggableFlatList
+              data={[...doneTudus]}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => `item-${item.id}-${index}`}
+              // onDragEnd={({data}) => saveAllTudus(data.flatMap(x => x.data))}
+              onDragEnd={({data}) => {
+                // saveAllTudus(data.flatMap(x => x.data));
+                var a = data.flatMap(x => x);
+                console.log('ONDRAGEND', {data: a});
+                var newList = list?.clone();
+                if(newList) {
+                  newList.tudus = a;
+                  saveListAndTudus(newList);
+                }
+              }}
+              dragItemOverflow={true}
+              style={{zIndex: 999999999, width: '100%', overflow: 'visible', marginTop: 16}}
+              contentContainerStyle={{zIndex: 999999999, overflow: 'visible', 
+                flex: 1
+              }}
+            />
             </NestableScrollContainer>
       </Container>
     );

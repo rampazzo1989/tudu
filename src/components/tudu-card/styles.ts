@@ -5,12 +5,12 @@ type CheckableComponentType = {done: boolean};
 
 export const Card = styled.View<CheckableComponentType>`
   flex-direction: row;
-  background-color: ${({theme}) => theme.colors.tuduCard};
+  background-color: ${({theme, done}) => done ? theme.colors.tuduCardDone : theme.colors.tuduCard};
   border-radius: 10px;
   min-height: 62px;
   flex-grow: 1;
   // border: 1px solid green;
-  padding: 8px 0;
+  padding: 8px 12px;
 `;
 
 export const CheckAndTextContainer = styled.View<CheckableComponentType>`
