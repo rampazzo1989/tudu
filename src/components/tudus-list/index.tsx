@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {FadeIn, LinearTransition} from 'react-native-reanimated';
+import Animated, {FadeIn, FadeInUp, LinearTransition, ReduceMotion} from 'react-native-reanimated';
 import {
   Container,
   DoneTuduAnimatedContainer,
@@ -125,6 +125,7 @@ const TudusList: React.FC<TudusListProps> = memo(
 
     const getSectionTitle = useCallback((undoneListLength: number) => {
       return (
+        <Animated.View layout={LinearTransition}>
         <SectionTitle
           title={undoneListLength ? 'Done' : 'All done'}
           key="allTudus"
@@ -134,6 +135,7 @@ const TudusList: React.FC<TudusListProps> = memo(
           }
           ReactionComponent={allDoneReactionVisible ? CheckMarkAnimation : undefined}
         />
+        </Animated.View>
       );
     }, [allDoneReactionVisible, OptionsMenu, CheckMarkAnimation]);
 
@@ -302,7 +304,10 @@ const TudusList: React.FC<TudusListProps> = memo(
             // snapPointsLeft={[150]}
           > */}
           {/* <Swipeable renderLeftActions={() => <View style={{backgroundColor: 'red', width: 150, height: 60}}><Text>{tudu.id}</Text></View>}> */}
-          <ShrinkableView onPress={() => onTuduPress(item)} scaleFactor={0.03} style={{ height: 'auto', width: '100%', zIndex: 9999, marginBottom: 8}} onLongPress={item.done ? undefined : drag} disabled={isActive}>
+          <ShrinkableView onPress={() => onTuduPress(item)} scaleFactor={0.03} 
+            style={{ height: 'auto', width: '100%', zIndex: 9999, marginBottom: 8}} 
+            onLongPress={item.done ? undefined : drag} disabled={isActive}
+            layout={LinearTransition} newKey={`item-${item.id}`}>
         <SwipeableTuduCard
               enabled={!isActive}
               done={item.done}
@@ -350,7 +355,8 @@ const TudusList: React.FC<TudusListProps> = memo(
         {/* {!!getTuduList?.length && (
           <InnerContainer>{getTuduList}</InnerContainer>
         )} */}
-         <NestableScrollContainer>
+         <NestableScrollContainer style={{flexGrow: 1,  overflow:'visible'}}
+        >
           <NestableDraggableFlatList
             data={[...undoneTudus]}
             renderItem={renderItem}
@@ -367,12 +373,20 @@ const TudusList: React.FC<TudusListProps> = memo(
               }
             }}
             dragItemOverflow={true}
-            style={{zIndex: 999999999, width: '100%', overflow: 'visible'}}
+            style={{zIndex: 999999999,  flexGrow: 1, overflow: 'visible'}}
             contentContainerStyle={{zIndex: 999999999, overflow: 'visible', 
-              flex: 1
+              flexGrow: 1
             }}
+            // animationConfig={{
+            //   mass: 1,
+            //   damping: 12,
+            //   stiffness: 100,
+            //   overshootClamping: false,
+            //   restDisplacementThreshold: 0.01,
+            //   restSpeedThreshold: 2,
+            // }}
             />
-            {getSectionTitle(undoneTudus.length)}
+            {doneTudus.length ? getSectionTitle(undoneTudus.length) : undefined}
             {/* {getTuduList} */}
             <NestableDraggableFlatList
               data={[...doneTudus]}
@@ -392,8 +406,9 @@ const TudusList: React.FC<TudusListProps> = memo(
               dragItemOverflow={true}
               style={{zIndex: 999999999, width: '100%', overflow: 'visible', marginTop: 16}}
               contentContainerStyle={{zIndex: 999999999, overflow: 'visible', 
-                flex: 1
+                flexGrow: 1
               }}
+              
             />
             </NestableScrollContainer>
       </Container>

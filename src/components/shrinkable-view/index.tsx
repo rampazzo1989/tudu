@@ -22,6 +22,7 @@ const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
         scaleFactor = 0.1,
         delayPressEvent = 0,
         waitForAnimation = false,
+        newKey,
         ...props
       },
       ref,
@@ -75,6 +76,7 @@ const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
           activeOpacity={1}
           onPress={handlePress}
           ref={ref}
+          key={newKey}
           {...props}>
           {children}
         </AnimatedTouchableOpacity>
