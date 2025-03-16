@@ -10,7 +10,8 @@ export const PageContentContainer = styled.View`
   border-top-right-radius: 16px;
   border-top-left-radius: 16px;
   overflow: hidden;
-  padding: 0 16px;
+  // padding: 0 16px;
+  // border: 1px solid blue;
 `;
 
 export const TopFadingGradient = styled(LinearGradient)`
@@ -20,6 +21,7 @@ export const TopFadingGradient = styled(LinearGradient)`
   right: 16px;
   height: 28px;
   z-index: 9998;
+  // border: 1px solid blue;
 `;
 
 export const BottomFadingGradient = styled(LinearGradient)`

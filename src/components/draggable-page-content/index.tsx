@@ -12,8 +12,9 @@ const DraggablePageContent: React.FC<DraggablePageContentProps> = memo(
     const theme = useTheme();
     return (
       <>
-        <PageContentContainer {...props}>{children}</PageContentContainer>
-        <TopFadingGradient
+        <PageContentContainer {...props}>
+          {children}
+          <TopFadingGradient
           start={{x: 0, y: 1}}
           end={{x: 0, y: 0}}
           colors={theme.colors.scrollFadeGradientColorsPageBackground}
@@ -25,6 +26,8 @@ const DraggablePageContent: React.FC<DraggablePageContentProps> = memo(
           colors={theme.colors.scrollFadeGradientColorsPageBackground}
           pointerEvents={'none'}
         />
+        </PageContentContainer>
+        
       </>
     );
   },
