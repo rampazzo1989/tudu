@@ -8,7 +8,7 @@ import {SwipeableListCardProps} from './types';
 import {FolderAddIcon} from '../../animated-icons/folder-add-icon';
 
 const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
-  ({children, isHighlighted, onArchive, onDelete, onEdit, enabled = false}) => {
+  ({children, isHighlighted, onArchive, onDelete, onEdit, style, enabled = false}) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
 
@@ -56,6 +56,7 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
         fullWidthOnLeftOptions
         onSwipeRight={handleSwipeRight}
         onSwipeLeft={handleSwipeLeft}
+        style={style}
         optionsBackgroundColor={theme.colors.primary}>
         {children}
       </SwipeableCard>

@@ -11,12 +11,13 @@ export const ListCardContainer = styled(
 )<HighlightableComponentProps>`
   height: 46px;
   width: 100%;
-  flex-direction: row;
-  justify-content: space-between;
+  // flex-grow: 1;
   align-items: center;
   background-color: ${({theme, isHighlighted}) =>
     isHighlighted ? theme.colors.listCardHighlighted : theme.colors.listCard};
   border-radius: 10px;
+  flex-direction: row;
+  padding-horizontal: 16px;
 `;
 
 export const Emoji = styled(Animated.Text)`
