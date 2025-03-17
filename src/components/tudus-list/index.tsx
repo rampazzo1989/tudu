@@ -228,6 +228,7 @@ const TudusList: React.FC<TudusListProps> = memo(
             data={undoneTudus}
             renderItem={renderItem}
             itemLayoutAnimation={LinearTransition}
+            enableLayoutAnimationExperimental
             // itemExitingAnimation={FadeOut}
             keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
             onDragEnd={handleDragEnd}
@@ -241,6 +242,7 @@ const TudusList: React.FC<TudusListProps> = memo(
               data={doneTudus}
               renderItem={renderItem}
               itemLayoutAnimation={LinearTransition}
+              enableLayoutAnimationExperimental
               keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
               onDragEnd={handleDragEnd}
               style={{ width: '100%', overflow: 'visible', marginTop: 16}}

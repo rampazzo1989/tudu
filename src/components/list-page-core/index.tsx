@@ -123,7 +123,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         const allDone = !!internalList.tudus?.filter(x => x.id !== tudu.id).every(x => x.done) && tudu.done;
 
         if (allDone) {
-          handleListCompleted();
+          setTimeout(handleListCompleted, 600);
         } else if (tudu.done) {
           handleEmojiAnimation(tudu.label);
         }
