@@ -9,6 +9,7 @@ export type TudusListProps = {
   onClearAllDonePress: (doneTudus: TuduViewModel[]) => void;
   onUndoAllPress: (doneTudus: TuduViewModel[]) => void;
   onStarPress: (tudu: TuduViewModel) => void;
+  setTudus: (tudus: TuduViewModel[]) => void;
   getAdditionalInformation: (
     tudu: TuduViewModel,
   ) => TuduAdditionalInformation | undefined;

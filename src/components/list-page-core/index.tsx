@@ -259,6 +259,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   onClearAllDonePress={handleClearAllDone}
                   onUndoAllPress={handleUndoAllPress}
                   list={internalList}
+                  setTudus={handleSetTudus}
                 />
               )}
             </DraggablePageContent>

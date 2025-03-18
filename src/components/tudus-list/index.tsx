@@ -30,6 +30,7 @@ import { DragEndParams, NestableDraggableFlatList, NestableScrollContainer, Rend
 import { useListService } from '../../service/list-service-hook/useListService';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
 import { ShrinkableView } from '../shrinkable-view';
+import { View } from 'react-native';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({
@@ -39,6 +40,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     onClearAllDonePress,
     onUndoAllPress,
     onStarPress,
+    setTudus,
     getAdditionalInformation,
     animateIcon,
     list,
@@ -118,7 +120,7 @@ const TudusList: React.FC<TudusListProps> = memo(
         <SectionTitle
           title={undoneListLength ? 'Done' : 'All done'}
           key="allTudus"
-          marginTop={undoneListLength ? 16 : 0}
+          marginTop={0}
           ControlComponent={
             allDoneReactionVisible ? undefined : OptionsMenu
           }
@@ -222,12 +224,14 @@ const TudusList: React.FC<TudusListProps> = memo(
     const renderDoneItem = useCallback((params: RenderItemParams<IndexedTudu>) => renderItem({...params, renderDone: true}), [renderItem]);
 
     const handleDragEnd: (params: DragEndParams<IndexedTudu>) => void = useCallback(({ data }) => {
-      var newList = list?.clone();
-      if(newList) {
-        newList.tudus = data.flatMap(x => x.indexedTudu);
-        saveListAndTudus(newList);
-      }
-    }, [list, saveListAndTudus]);
+      // var newList = list?.clone();
+      // if(newList) {
+      //   newList.tudus = data.flatMap(x => x.indexedTudu);
+      //   saveListAndTudus(newList);
+      // }
+
+      setTudus(data.flatMap(x => x.indexedTudu));
+    }, [setTudus]);
 
     return (
       <Container>
@@ -237,11 +241,12 @@ const TudusList: React.FC<TudusListProps> = memo(
             renderItem={renderUndoneItem}
             itemLayoutAnimation={LinearTransition}
             enableLayoutAnimationExperimental
+            // ListFooterComponent={undoneTudus.length ? <View style={{height: 16, backgroundColor: 'transparent'}} /> : undefined}
             keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
             onDragEnd={handleDragEnd}
             style={{zIndex: 9999,  flexGrow: 1, overflow: 'visible'}}
             contentContainerStyle={{zIndex: 9999, overflow: 'visible', 
-              flexGrow: 1
+              flexGrow: 1,
             }}
             />
             {doneTudus.length ? getSectionTitle(undoneTudus.length) : undefined}

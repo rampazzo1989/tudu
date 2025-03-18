@@ -56,21 +56,19 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
     }, [date, getListTitle, getTudusForDate]);
 
     const setTudus = useCallback(
-      (draggable: DraggableItem<TuduViewModel>[]) => {
+      (tudus: TuduViewModel[]) => {
         if (!list) {
           return;
         }
 
-        const newTuduList = draggable.flatMap(x => x.data);
-
-        newTuduList.forEach(tudu => {
+        tudus.forEach(tudu => {
           if (!tudu.listId) {
             tudu.dueDate = date;
             tudu.listId = UNLISTED;
           }
         });
 
-        saveAllScheduledTudus(newTuduList);
+        saveAllScheduledTudus(tudus);
       },
       [date, list, saveAllScheduledTudus],
     );
