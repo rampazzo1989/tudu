@@ -17,7 +17,7 @@ const PopoverMenu: React.FC<PopoverMenuProps> = memo(
         popoverStyle={styles.popover}
         from={from}
         displayAreaInsets={insets}
-        onRequestClose={() => console.log('onRequestClose')}
+        // onRequestClose={() => console.log('onRequestClose')}
         {...props}>
         {children}
       </Popover>

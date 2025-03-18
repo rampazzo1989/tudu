@@ -45,9 +45,9 @@ const useListService = () => {
   const [archivedTudus, setArchivedTudus] = useRecoilState(archivedTudusState);
   const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusState);
 
-  useEffect(() => {
-    console.log({customLists: [...customLists]});
-  }, [customLists]);
+  // useEffect(() => {
+  //   console.log({customLists: [...customLists]});
+  // }, [customLists]);
 
   const getListState = useCallback(
     (stateOrigin: ListOrigin) =>
@@ -323,8 +323,6 @@ const useListService = () => {
     (list: ListViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
       
-      console.log({list});
-
       listStateSetter(previousState => {
         const newState = new Map([...previousState]);
         newState.set(list.id, list.mapBackList());

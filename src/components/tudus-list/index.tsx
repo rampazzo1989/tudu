@@ -178,8 +178,13 @@ const TudusList: React.FC<TudusListProps> = memo(
       return indexedTudus.filter(x => x.indexedTudu.done);
     }, [indexedTudus]);
 
-    const renderItem = useCallback(({ item, drag, isActive, getIndex }: RenderItemParams<IndexedTudu>) => {
+    const renderItem = useCallback(({ item, drag, isActive, renderDone }: RenderItemParams<IndexedTudu> & {renderDone: boolean}) => {
       const tudu = item.indexedTudu;
+
+      if (renderDone != tudu.done) {
+        return null;
+      }
+
       return (
           <ShadowDecorator elevation={5} color='black' opacity={1} radius={2}>
         <ScaleDecorator activeScale={1.05}>
@@ -213,6 +218,9 @@ const TudusList: React.FC<TudusListProps> = memo(
       );
     }, [handleDeleteGenerator, handleEditGenerator, handleSendToOrRemoveFromTodayGenerator, onStarPress, onTuduPress]);
 
+    const renderUndoneItem = useCallback((params: RenderItemParams<IndexedTudu>) => renderItem({...params, renderDone: false}), [renderItem]);
+    const renderDoneItem = useCallback((params: RenderItemParams<IndexedTudu>) => renderItem({...params, renderDone: true}), [renderItem]);
+
     const handleDragEnd: (params: DragEndParams<IndexedTudu>) => void = useCallback(({ data }) => {
       var newList = list?.clone();
       if(newList) {
@@ -225,11 +233,10 @@ const TudusList: React.FC<TudusListProps> = memo(
       <Container>
          <NestableScrollContainer style={{flexGrow: 1,  overflow:'visible', marginTop: 30}}>
           <NestableDraggableFlatList
-            data={undoneTudus}
-            renderItem={renderItem}
+            data={indexedTudus}
+            renderItem={renderUndoneItem}
             itemLayoutAnimation={LinearTransition}
             enableLayoutAnimationExperimental
-            // itemExitingAnimation={FadeOut}
             keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
             onDragEnd={handleDragEnd}
             style={{zIndex: 9999,  flexGrow: 1, overflow: 'visible'}}
@@ -240,7 +247,7 @@ const TudusList: React.FC<TudusListProps> = memo(
             {doneTudus.length ? getSectionTitle(undoneTudus.length) : undefined}
             <NestableDraggableFlatList
               data={doneTudus}
-              renderItem={renderItem}
+              renderItem={renderDoneItem}
               itemLayoutAnimation={LinearTransition}
               enableLayoutAnimationExperimental
               keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
