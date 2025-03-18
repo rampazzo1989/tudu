@@ -21,12 +21,12 @@ import {toastSpan} from '../../state/atoms';
 import { useOneTimeAnimationControl } from '../../hooks/useOneTimeAnimationControl';
 import { AnimatedEmojiIcon } from '../animated-icons/animated-emoji';
 import { ForwardedRefAnimatedEmojiIcon } from '../animated-icons/animated-emoji/types';
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const ANIMATED_REACTION_DURATION = 1500;
 
 const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
-    ({DefaultIcon, animationMode = 'toggle', menuOptions, onPress}, ref) => {
+    ({DefaultIcon, animationMode = 'toggle', menuOptions, animateOnPress, onPress}, ref) => {
       const iconRef = useRef<AnimatedIconRef>(null);
       const animateNextIcon = useRef(true);
       const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
@@ -38,8 +38,13 @@ const FloatingActionButton = memo(
 
       const toastBottomSpan = useRecoilValue(toastSpan);
 
+      
+      const insets = useSafeAreaInsets();
+
       // Animates the current icon when option is set
       useEffect(() => {
+        console.log('Safe area insets:', insets, {toastBottomSpan});
+
         if (animateNextIcon.current) {
           iconRef.current?.play({
             onAnimationFinish: () => {
@@ -62,12 +67,16 @@ const FloatingActionButton = memo(
           onPress?.();
         }
 
+        if (!animateOnPress) {
+          return;
+        }
+
         if (animationMode === 'toggle') {
           iconRef.current?.toggle();
         } else {
           iconRef.current?.play();
         }
-      }, [animationMode, menuOptions, onPress]);
+      }, [animationMode, menuOptions, onPress, animateOnPress]);
 
       const handlePopoverMenuRequestClose = useCallback(() => {
         if (animationMode === 'toggle') {

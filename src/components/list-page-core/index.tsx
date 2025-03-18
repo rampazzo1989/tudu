@@ -262,6 +262,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   setTudus={handleSetTudus}
                 />
               )}
+              {allowAdding && !loading && (
+              <ListActionButton
+                ref={actionButtonRef}
+                onInsertTuduPress={handleInsertTudu}
+              />
+            )}
             </DraggablePageContent>
             <NewTuduModal
               visible={newTuduPopupVisible}
@@ -273,12 +279,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
               onInsertOrUpdate={handleInsertOrUpdate}
               editingTudu={editingTudu}
             />
-            {allowAdding && !loading && (
-              <ListActionButton
-                ref={actionButtonRef}
-                onInsertTuduPress={handleInsertTudu}
-              />
-            )}
           {/* </DraggableContextProvider> */}
         {/* </DraxProvider> */}
       </Page>

@@ -24,22 +24,20 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
     const emojiInfo = useMemo(() => trimEmoji(label.trim()), [label]);
 
     return (
-      
-            <SwipeableListCard
-              enabled={swipeEnabled}
-              isHighlighted={isHighlighted}
-              onArchive={onArchive}
-              onDelete={onDelete}
-              // style={{flex: 1, justifyContent: 'center'}}
-              onEdit={onEdit}>
-                <ListCardContainer
-        isHighlighted={isHighlighted}
-        activeOpacity={1}
-        delayPressEvent={150}
-        disabled={!onPress}
-        scaleFactor={0.02}
-        style={style}
-        onPress={onPress}>
+    <SwipeableListCard
+      enabled={swipeEnabled}
+      isHighlighted={isHighlighted}
+      onArchive={onArchive}
+      onDelete={onDelete}
+      onEdit={onEdit}>
+        <ListCardContainer
+          isHighlighted={isHighlighted}
+          activeOpacity={1}
+          delayPressEvent={150}
+          disabled={!onPress}
+          scaleFactor={0.02}
+          style={style}
+          onPress={onPress}>
               <IconLabelContainer>
                 {ControlComponent && (
                   <ControlComponentContainer>
@@ -60,7 +58,7 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
                 isHighlighted={isHighlighted}
               />
       </ListCardContainer>
-            </SwipeableListCard>
+    </SwipeableListCard>
     );
   },
 );

@@ -5,6 +5,7 @@ export type FloatingActionButtonProps = {
   DefaultIcon: ForwardedRefAnimatedIcon;
   animationMode?: 'play' | 'toggle';
   menuOptions?: MenuOption[];
+  animateOnPress?: boolean;
   onPress?: () => void;
 };
 

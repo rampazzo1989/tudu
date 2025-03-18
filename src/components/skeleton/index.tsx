@@ -30,7 +30,7 @@ const Skeleton: React.FC<SkeletonProps> = ({ count = 1, style }) => {
 
   return (
     <View>
-      {Array.from({ length: count }).map((_, index) => (
+      {Array.from({ length: count || 3 }).map((_, index) => (
         <Animated.View
           key={index}
           style={[styles.skeleton, animatedStyle, style]}

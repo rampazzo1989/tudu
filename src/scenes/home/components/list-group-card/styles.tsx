@@ -24,8 +24,8 @@ export const Title = styled(Animated.Text)`
 `;
 
 export const SubListCard = styled(EditableListCard)`
-  elevation: 15;
   margin-bottom: 8px;
+  background-color: ${({theme}) => theme.colors.listCardGroupItem};
 `;
 
 export const TitleContainer = styled.View`

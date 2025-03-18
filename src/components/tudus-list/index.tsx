@@ -236,7 +236,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     return (
       <Container>
          <NestableScrollContainer style={{flexGrow: 1,  overflow:'visible', marginTop: 30}}>
-          <NestableDraggableFlatList
+          {indexedTudus.filter(x => !x.indexedTudu.done).length ? <NestableDraggableFlatList
             data={indexedTudus}
             renderItem={renderUndoneItem}
             itemLayoutAnimation={LinearTransition}
@@ -244,11 +244,11 @@ const TudusList: React.FC<TudusListProps> = memo(
             // ListFooterComponent={undoneTudus.length ? <View style={{height: 16, backgroundColor: 'transparent'}} /> : undefined}
             keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
             onDragEnd={handleDragEnd}
-            style={{zIndex: 9999,  flexGrow: 1, overflow: 'visible'}}
+            style={{zIndex: 9999,  flexGrow: 1, overflow: 'visible', marginBottom: 16}}
             contentContainerStyle={{zIndex: 9999, overflow: 'visible', 
               flexGrow: 1,
             }}
-            />
+            /> : undefined}
             {doneTudus.length ? getSectionTitle(undoneTudus.length) : undefined}
             <NestableDraggableFlatList
               data={doneTudus}

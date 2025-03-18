@@ -20,14 +20,14 @@ export const styles = StyleSheet.create({
 export const RightFadingGradient = styled(LinearGradient)`
   position: absolute;
   end: 0;
-  width: 20px;
+  width: 14px;
   height: 100%;
 `;
 
 export const LeftFadingGradient = styled(LinearGradient)`
   position: absolute;
   start: 0;
-  width: 20px;
+  width: 14px;
   height: 100%;
 `;
 

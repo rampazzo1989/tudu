@@ -5,7 +5,7 @@ import {
   ListViewModel,
   SmartList,
 } from './types';
-import {DraggablePageContent} from '../../components/draggable-page-content';
+import {DraggablePageContent, DraggableScrollablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
 import {SmartLists} from './components/smart-lists';
 import {useRecoilValue} from 'recoil';
@@ -148,10 +148,9 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           onSetData={handleSetCustomLists}
           onDragStart={handleListDragStart}
           onDragEnd={handleListDragEnd}>
-          <DraggablePageContent
+          <DraggableScrollablePageContent
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.scrollContentContainer}
             scrollEnabled>
               <PageContentContainer>
             <SmartLists
@@ -194,7 +193,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
               pointerEvents={'none'}
             />
             </PageContentContainer>
-          </DraggablePageContent>
+          </DraggableScrollablePageContent>
           <FloatingDelete
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}
