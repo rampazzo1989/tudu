@@ -76,7 +76,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     }, [internalList]);
 
     useEffect(() => {
-      console.log('List updated', {list});
       setInternalList(list);
     }, [list]);
 
@@ -112,7 +111,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleTuduPress = useCallback(
       (tudu: TuduViewModel) => {
-        console.log('Saving tudu' ,{tudu});
         if (!internalList) {
           return;
         }
