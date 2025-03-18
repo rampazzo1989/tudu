@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import Animated, {FadeInUp, LinearTransition} from 'react-native-reanimated';
+import Animated, {FadeInUp, FadeOutUp, LinearTransition} from 'react-native-reanimated';
 import {
   Container,
   OptionsIconContainer,
@@ -114,7 +114,7 @@ const TudusList: React.FC<TudusListProps> = memo(
 
     const getSectionTitle = useCallback((undoneListLength: number) => {
       return (
-        <Animated.View layout={LinearTransition} entering={FadeInUp}>
+        <Animated.View layout={LinearTransition} entering={FadeInUp} exiting={FadeOutUp}>
         <SectionTitle
           title={undoneListLength ? 'Done' : 'All done'}
           key="allTudus"
