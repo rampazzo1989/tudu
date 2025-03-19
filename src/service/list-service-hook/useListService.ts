@@ -325,9 +325,10 @@ const useListService = () => {
       
       listStateSetter(previousState => {
         const newState = new Map([...previousState]);
-        newState.set(list.id, list.mapBackList());
-
-        return newState;
+        var newMap = new Map<string, List>();
+        newMap.set(list.id, list.mapBackList());
+        newMap = new Map([...newMap, ...previousState]);
+        return newMap;
       });
     },
     [getStateSetter],

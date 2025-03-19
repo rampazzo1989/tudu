@@ -99,13 +99,14 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const handleListCompleted = useCallback(() => {
       cheersRef.current?.play();
       RNReactNativeHapticFeedback.trigger('notificationSuccess');
-      actionButtonRef.current?.animateThisIcon(CheckMarkIconActionAnimation);
     }, []);
 
     const handleEmojiAnimation = useCallback((text: string) => {
       var emojiInfo = trimEmoji(text);
       if (emojiInfo?.emoji) {
         actionButtonRef.current?.animateThisIcon(emojiInfo.emoji);
+      } else {
+        actionButtonRef.current?.animateThisIcon(CheckMarkIconActionAnimation);
       }
     }, []);
 
@@ -121,12 +122,15 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         const allDone = !!internalList.tudus?.filter(x => x.id !== tudu.id).every(x => x.done) && tudu.done;
 
         if (allDone) {
-          setTimeout(handleListCompleted, 600);
+          setTimeout(() => {
+            handleListCompleted();
+            handleEmojiAnimation(tudu.label);
+          }, 600);
         } else if (tudu.done) {
           handleEmojiAnimation(tudu.label);
         }
       },
-      [handleListCompleted, internalList, saveTudu],
+      [handleListCompleted, internalList, saveTudu, handleEmojiAnimation],
     );
 
     const handleTuduStarPress = useCallback(

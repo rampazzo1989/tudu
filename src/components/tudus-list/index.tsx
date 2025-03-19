@@ -188,35 +188,35 @@ const TudusList: React.FC<TudusListProps> = memo(
       }
 
       return (
-          <ShadowDecorator elevation={5} color='black' opacity={1} radius={2}>
+      <ShadowDecorator elevation={5} color='black' opacity={1} radius={2}>
         <ScaleDecorator activeScale={1.05}>
           <ShrinkableView onPress={() => onTuduPress(tudu)} scaleFactor={0.03} 
             style={{ height: 'auto', width: '100%', zIndex: tudu.done ? 0 : 9999, marginBottom: 8}} 
             onLongPress={tudu.done ? undefined : drag} disabled={isActive}>
-        <SwipeableTuduCard
-              enabled={!isActive}
-              done={tudu.done}
-              onDelete={handleDeleteGenerator(tudu)}
-              onEdit={handleEditGenerator(tudu)}
-              isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
-              onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                tudu,
-              )}>
-          <TuduCard
-              data={tudu}
-              onPress={onTuduPress}
-              onDelete={handleDeleteGenerator(tudu)}
-              onEdit={handleEditGenerator(tudu)}
-              onStarPress={onStarPress}
-              onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                tudu,
-              )}
-              additionalInfo={getAdditionalInformation(tudu)}
-            />
-          </SwipeableTuduCard>
+          <SwipeableTuduCard
+                enabled={!isActive}
+                done={tudu.done}
+                onDelete={handleDeleteGenerator(tudu)}
+                onEdit={handleEditGenerator(tudu)}
+                isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
+                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                  tudu,
+                )}>
+            <TuduCard
+                data={tudu}
+                onPress={onTuduPress}
+                onDelete={handleDeleteGenerator(tudu)}
+                onEdit={handleEditGenerator(tudu)}
+                onStarPress={onStarPress}
+                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                  tudu,
+                )}
+                additionalInfo={getAdditionalInformation(tudu)}
+              />
+            </SwipeableTuduCard>
           </ShrinkableView>
-          </ScaleDecorator>
-          </ShadowDecorator>
+        </ScaleDecorator>
+      </ShadowDecorator>
       );
     }, [handleDeleteGenerator, handleEditGenerator, handleSendToOrRemoveFromTodayGenerator, onStarPress, onTuduPress]);
 

@@ -20,7 +20,7 @@ const getNewEmptyTudu = () =>
     'default',
   );
 
-const MAX_TUDU_LENGTH = 35;
+const MAX_TUDU_LENGTH = 100;
 
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
   ({visible, editingTudu, onRequestClose, onInsertOrUpdate}) => {

@@ -5,7 +5,6 @@ import {ControlComponentContainer, IconLabelContainer, Label} from '../styles';
 import {SwipeableListCard} from '../swipeable-list-card';
 import {EditableListCardProps} from '../types';
 import {Emoji, ListCardContainer} from './styles';
-import { View } from 'react-native';
 
 const EditableListCard: React.FC<EditableListCardProps> = memo(
   ({

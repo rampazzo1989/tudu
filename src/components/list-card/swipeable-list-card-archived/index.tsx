@@ -7,7 +7,7 @@ import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
 import {SwipeableListCardArchivedProps} from './types';
 
 const SwipeableListCardArchived: React.FC<SwipeableListCardArchivedProps> =
-  memo(({children, onUnarchive, onDelete, enabled = false}) => {
+  memo(({children, onUnarchive, onDelete, style, enabled = false}) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
 
@@ -50,6 +50,7 @@ const SwipeableListCardArchived: React.FC<SwipeableListCardArchivedProps> =
         fullWidthOnRightOptions
         onSwipeRight={handleSwipeRight}
         onSwipeLeft={handleSwipeLeft}
+        style={style}
         optionsBackgroundColor={theme.colors.primary}>
         {children}
       </SwipeableCard>

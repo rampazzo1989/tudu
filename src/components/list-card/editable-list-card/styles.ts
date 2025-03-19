@@ -9,7 +9,7 @@ type HighlightableComponentProps = {
 export const ListCardContainer = styled(
   ShrinkableView,
 )<HighlightableComponentProps>`
-  height: 56px;
+  height: 54px;
   width: 100%;
   // flex-grow: 1;
   align-items: center;
