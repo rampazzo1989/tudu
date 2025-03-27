@@ -16,6 +16,7 @@ declare module 'styled-components/native' {
       listCardNumber: string;
       listCardNumberHighlighted: string;
       listCardGroup: string;
+      listCardGroupItem: string;
       tuduCard: string;
       tuduCardDone: string;
       button: string;

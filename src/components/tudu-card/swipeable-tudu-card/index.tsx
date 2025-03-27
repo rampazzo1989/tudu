@@ -17,6 +17,7 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
     onEdit,
     done,
     isOnToday = false,
+    enabled = true
   }) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
@@ -71,6 +72,7 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
         fullWidthOnLeftOptions
         onSwipeRight={handleSwipeRight}
         onSwipeLeft={handleSwipeLeft}
+        enabled={enabled}
         optionsBackgroundColor={theme.colors.primary}>
         {children}
       </SwipeableCard>

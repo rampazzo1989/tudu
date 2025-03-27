@@ -106,6 +106,7 @@ const HomeActionButton = memo(
           DefaultIcon={PlusIcon}
           ref={parentRef}
           animationMode="play"
+          animateOnPress
           menuOptions={options}
         />
         <NewListModal

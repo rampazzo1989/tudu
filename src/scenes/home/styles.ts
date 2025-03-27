@@ -20,13 +20,18 @@ export const styles = StyleSheet.create({
 export const RightFadingGradient = styled(LinearGradient)`
   position: absolute;
   end: 0;
-  width: 20px;
+  width: 14px;
   height: 100%;
 `;
 
 export const LeftFadingGradient = styled(LinearGradient)`
   position: absolute;
   start: 0;
-  width: 20px;
+  width: 14px;
   height: 100%;
 `;
+
+export const PageContentContainer = styled.View`
+  flex: 1;
+  padding: 30px 16px;
+  `;

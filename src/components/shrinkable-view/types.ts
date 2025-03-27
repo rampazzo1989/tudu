@@ -13,4 +13,5 @@ export interface ShrinkableViewProps
    * Waits for the animation to finish to call the onPress function.
    */
   waitForAnimation?: boolean;
+  newKey?: string;
 }

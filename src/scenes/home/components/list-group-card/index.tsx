@@ -74,6 +74,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
             return (
               <DraggableItem
                 key={`${list.label}${groupData.groupId}`}
+                style={{marginBottom: 8}}
                 payload={list}>
                 <SubListCard
                   Icon={ListDefaultIcon}

@@ -3,8 +3,6 @@ import {DEFAULT_PAGE_HORIZONTAL_PADDING} from '../../components/page-content/sty
 
 export const styles = StyleSheet.create({
   pageContent: {
-    // flexGrow: 1,
-    paddingHorizontal: DEFAULT_PAGE_HORIZONTAL_PADDING,
     paddingTop: 30,
     paddingBottom: 30,
   },

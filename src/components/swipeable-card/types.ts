@@ -1,3 +1,4 @@
+import { ViewStyle } from 'react-native';
 import {ForwardedRefAnimatedIcon} from '../animated-icons/animated-icon/types';
 import {MenuOption} from '../menu-options/types';
 
@@ -19,6 +20,7 @@ export type SwipeableCardProps = {
   fullWidthOnLeftOptions?: boolean;
   fullWidthOnRightOptions?: boolean;
   optionsSize?: 'medium' | 'large';
+  style?: ViewStyle;
   onSwipeRight?: () => void;
   onSwipeLeft?: () => void;
 };

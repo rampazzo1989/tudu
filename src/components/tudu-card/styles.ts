@@ -3,18 +3,20 @@ import {ShrinkableView} from '../shrinkable-view';
 
 type CheckableComponentType = {done: boolean};
 
-export const Card = styled(ShrinkableView)<CheckableComponentType>`
+export const Card = styled.View<CheckableComponentType>`
   flex-direction: row;
-  background-color: ${({theme}) => theme.colors.tuduCard};
+  background-color: ${({theme, done}) => done ? theme.colors.tuduCardDone : theme.colors.tuduCard};
   border-radius: 10px;
-  min-height: 60px;
+  min-height: 62px;
   flex-grow: 1;
-  // elevation: ${({done}) => (done ? '2' : '0')};
+  // border: 1px solid green;
+  padding: 8px 12px;
 `;
 
 export const CheckAndTextContainer = styled.View<CheckableComponentType>`
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   margin-right: 5px;
   margin-left: 5px;
   flex: 1;
@@ -25,13 +27,14 @@ export const Label = styled.Text<CheckableComponentType>`
   color: ${({theme}) => theme.colors.text};
   font-size: 16px;
   max-width: 85%;
-  flex-grow: 1;
+  // flex-grow: 1;
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};
 `;
 
 export const LabelAndAdditionalInfoContainer = styled.View`
   flex: 1;
+  justify-content: center;
 `;
 
 export const AdditionalInfoContainer = styled.View`

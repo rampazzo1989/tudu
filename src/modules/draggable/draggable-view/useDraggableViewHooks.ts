@@ -73,8 +73,8 @@ const useDraggableViewHooks = <T>({
   const handleContainerReceiveDragDrop = useCallback(
     (data: DraxDragWithReceiverEventData) => {
       hidePlaceholder();
-      const draggedItem = castItem(data.dragged.payload);
       const uncastedDraggedItem = data.dragged.payload;
+      const draggedItem = castItem(uncastedDraggedItem);
 
       if (draggedItem === payload) {
         return cancelDropping();

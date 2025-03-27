@@ -93,7 +93,7 @@ const DraggableItem: React.FC<DraggableItemProps> = memo(
           itemHeight.current = height + 4;
           setDraggedItemHeight(itemHeight.current);
         }}
-        style={styles.item}
+        style={[styles.item, props.style]}
         {...props}>
         {children}
       </DraxView>

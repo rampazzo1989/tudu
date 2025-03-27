@@ -26,6 +26,7 @@ const SwipeableCard = memo(
         fullWidthOnRightOptions,
         onSwipeLeft,
         onSwipeRight,
+        style,
         optionsSize = 'medium',
         enabled = true,
       },
@@ -154,6 +155,7 @@ const SwipeableCard = memo(
           leftThreshold={90}
           containerStyle={[
             styles.parent,
+            style,
             {backgroundColor: optionsBackgroundColor},
           ]}
           childrenContainerStyle={[styles.contentContainer, {backgroundColor}]}

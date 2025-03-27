@@ -10,6 +10,7 @@ import {ArchivedListCardProps} from '../types';
 import {SwipeableListCardArchived} from '../swipeable-list-card-archived';
 import {ListCardContainer} from './styles';
 import {trimEmoji} from '../../../utils/emoji-utils';
+import { View } from 'react-native';
 
 const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
   ({
@@ -26,17 +27,18 @@ const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
     const emojiInfo = useMemo(() => trimEmoji(label), [label]);
 
     return (
-      <ListCardContainer
-        activeOpacity={1}
-        delayPressEvent={150}
-        disabled={!onPress}
-        scaleFactor={0.02}
-        style={style}
-        onPress={onPress}>
         <SwipeableListCardArchived
           enabled={swipeEnabled}
           onUnarchive={onUnarchive}
+          style={{marginBottom: 8}}
           onDelete={onDelete}>
+            <ListCardContainer
+              activeOpacity={1}
+              delayPressEvent={150}
+              disabled={!onPress}
+              scaleFactor={0.02}
+              style={style}
+              onPress={onPress}>
           <IconLabelContainer>
             {ControlComponent && (
               <ControlComponentContainer>
@@ -51,8 +53,8 @@ const ArchivedListCard: React.FC<ArchivedListCardProps> = memo(
             <Label numberOfLines={1}>{emojiInfo?.formattedText ?? label}</Label>
           </IconLabelContainer>
           <NumberOfActiveItems numberOfActiveItems={numberOfActiveItems} />
-        </SwipeableListCardArchived>
       </ListCardContainer>
+        </SwipeableListCardArchived>
     );
   },
 );

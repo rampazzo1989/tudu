@@ -82,12 +82,12 @@ const TuduCard = memo<TuduCardProps>(
           return undefined;
         }}
         done={internalDone}>
-        <SwipeableTuduCard
+        {/* <SwipeableTuduCard
           done={internalDone}
           onDelete={onDelete}
           onEdit={onEdit}
           isOnToday={data.dueDate && isToday(data.dueDate)}
-          onSendToOrRemoveFromToday={onSendToOrRemoveFromToday}>
+          onSendToOrRemoveFromToday={onSendToOrRemoveFromToday}> */}
           <StarContainer>
             <Star checked={internalStarred} onPress={handleStarPress} />
           </StarContainer>
@@ -108,7 +108,7 @@ const TuduCard = memo<TuduCardProps>(
             </LabelAndAdditionalInfoContainer>
             <TuduCheckbox checked={internalDone} onPress={handleTuduPress} />
           </CheckAndTextContainer>
-        </SwipeableTuduCard>
+        {/* </SwipeableTuduCard> */}
       </Card>
     );
   },

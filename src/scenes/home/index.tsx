@@ -5,7 +5,7 @@ import {
   ListViewModel,
   SmartList,
 } from './types';
-import {DraggablePageContent} from '../../components/draggable-page-content';
+import {DraggablePageContent, DraggableScrollablePageContent} from '../../components/draggable-page-content';
 import {Page} from '../../components/page';
 import {SmartLists} from './components/smart-lists';
 import {useRecoilValue} from 'recoil';
@@ -14,6 +14,7 @@ import {HomeHeader} from './components/home-header';
 import {useTranslation} from 'react-i18next';
 import {
   LeftFadingGradient,
+  PageContentContainer,
   RightFadingGradient,
   SectionTitle,
   styles,
@@ -33,6 +34,7 @@ import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated-icon/types';
 import {useListService} from '../../service/list-service-hook/useListService';
 import {useCounterService} from '../../service/counter-service-hook/useCounterService';
+import { PageContent } from '../../components/page-content';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const smartLists = useRecoilValue(homeDefaultLists);
@@ -146,11 +148,11 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
           onSetData={handleSetCustomLists}
           onDragStart={handleListDragStart}
           onDragEnd={handleListDragEnd}>
-          <DraggablePageContent
+          <DraggableScrollablePageContent
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.scrollContentContainer}
             scrollEnabled>
+              <PageContentContainer>
             <SmartLists
               lists={smartLists}
               onListPress={handleDefaultListPress}
@@ -190,7 +192,8 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
               colors={theme.colors.scrollFadeGradientColorsPageBackground}
               pointerEvents={'none'}
             />
-          </DraggablePageContent>
+            </PageContentContainer>
+          </DraggableScrollablePageContent>
           <FloatingDelete
             visible={deleteVisible}
             confirmationPopupTitleBuilder={generateListAndGroupDeleteTitle}

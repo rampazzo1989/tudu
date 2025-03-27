@@ -18,7 +18,7 @@ import {
   archivedTudus as archivedTudusState,
 } from '../../scenes/home/state';
 import {ItemNotFoundError} from '../errors/item-not-found-error';
-import {useCallback} from 'react';
+import {useCallback, useEffect} from 'react';
 import {groupBy} from '../../utils/array-utils';
 import {getListFromViewModel} from '../../utils/list-and-group-utils';
 
@@ -44,6 +44,10 @@ const useListService = () => {
   const [archivedLists, setArchivedLists] = useRecoilState(archivedListsState);
   const [archivedTudus, setArchivedTudus] = useRecoilState(archivedTudusState);
   const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusState);
+
+  // useEffect(() => {
+  //   console.log({customLists: [...customLists]});
+  // }, [customLists]);
 
   const getListState = useCallback(
     (stateOrigin: ListOrigin) =>
@@ -318,12 +322,13 @@ const useListService = () => {
   const saveList = useCallback(
     (list: ListViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
-
+      
       listStateSetter(previousState => {
         const newState = new Map([...previousState]);
-        newState.set(list.id, list.mapBackList());
-
-        return newState;
+        var newMap = new Map<string, List>();
+        newMap.set(list.id, list.mapBackList());
+        newMap = new Map([...newMap, ...previousState]);
+        return newMap;
       });
     },
     [getStateSetter],

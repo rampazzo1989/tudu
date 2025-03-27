@@ -9,14 +9,15 @@ type HighlightableComponentProps = {
 export const ListCardContainer = styled(
   ShrinkableView,
 )<HighlightableComponentProps>`
-  height: 46px;
+  height: 54px;
   width: 100%;
-  flex-direction: row;
-  justify-content: space-between;
+  // flex-grow: 1;
   align-items: center;
   background-color: ${({theme, isHighlighted}) =>
     isHighlighted ? theme.colors.listCardHighlighted : theme.colors.listCard};
   border-radius: 10px;
+  flex-direction: row;
+  padding-horizontal: 16px;
 `;
 
 export const Emoji = styled(Animated.Text)`

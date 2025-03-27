@@ -19,7 +19,7 @@ export const showItemDeletedToast = (
       onPress: handleUndoPress,
       message,
     },
-    onShow: () => setRecoil(toastSpan, 40),
+    onShow: () => setRecoil(toastSpan, 60),
     onHide: () => setRecoil(toastSpan, 0),
   });
 };

@@ -5,9 +5,10 @@ import {DEFAULT_PAGE_HORIZONTAL_PADDING} from '../page-content/styles';
 export const styles = StyleSheet.create({
   scrollContentContainer: {
     flexGrow: 1,
-    paddingHorizontal: DEFAULT_PAGE_HORIZONTAL_PADDING,
+    // paddingHorizontal: DEFAULT_PAGE_HORIZONTAL_PADDING,
     paddingTop: 30,
     paddingBottom: 30,
+    overflow: 'visible'
   },
   skeleton: {
     width: '100%',

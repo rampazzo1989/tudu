@@ -17,5 +17,5 @@ export const styles = StyleSheet.create({
 });
 
 export const StyledArchivedListCard = styled(ArchivedListCard)`
-  margin-bottom: 8px;
+  padding-horizontal: 16px;
 `;

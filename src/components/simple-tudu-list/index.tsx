@@ -8,6 +8,8 @@ import {TuduCard} from '../tudu-card';
 import {TuduAnimatedContainer} from './styles';
 import {SimpleTuduListProps} from './types';
 import {isToday} from '../../utils/date-utils';
+import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
+import { ShrinkableView } from '../shrinkable-view';
 
 const LayoutAnimation = LinearTransition.springify().stiffness(300).damping(13).mass(0.3);
 /**
@@ -80,7 +82,30 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
             <TuduAnimatedContainer
               entering={FadeIn?.duration(100).delay(index * 50)}
               key={`${tudu.id}`} layout={LayoutAnimation}>
-              <TuduCard
+                <ShrinkableView onPress={() => handleTuduPress(tudu)} scaleFactor={0.03} 
+                  style={{ height: 'auto', width: '100%', zIndex: tudu.done ? 0 : 9999, marginBottom: 8}} >
+                    <SwipeableTuduCard
+                          done={tudu.done}
+                          onDelete={handleDeleteGenerator(tudu)}
+                          onEdit={handleEditGenerator(tudu)}
+                          isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
+                          onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                            tudu,
+                          )}>
+                      <TuduCard
+                          data={tudu}
+                          onPress={handleTuduPress}
+                          onDelete={handleDeleteGenerator(tudu)}
+                          onEdit={handleEditGenerator(tudu)}
+                          onStarPress={handleStarPress}
+                          onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                            tudu,
+                          )}
+                          additionalInfo={getAdditionalInformation(tudu)}
+                        />
+                    </SwipeableTuduCard>
+                </ShrinkableView>
+              {/* <TuduCard
                 data={tudu}
                 onPress={handleTuduPress}
                 onDelete={handleDeleteGenerator(tudu)}
@@ -90,7 +115,7 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
                   tudu,
                 )}
                 additionalInfo={getAdditionalInformation(tudu)}
-              />
+              /> */}
             </TuduAnimatedContainer>
           );
         })}
