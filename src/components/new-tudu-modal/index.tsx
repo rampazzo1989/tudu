@@ -8,6 +8,8 @@ import {PopupModal} from '../popup-modal';
 import {PopupButton} from '../popup-modal/types';
 import {Input} from './styles';
 import {NewTuduModalProps} from './types';
+import emojis from "emojilib-pt-br";
+import Fuse from 'fuse.js';
 
 const getNewEmptyTudu = () =>
   new TuduViewModel(
@@ -20,25 +22,60 @@ const getNewEmptyTudu = () =>
     'default',
   );
 
+const MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI = 3;
+
 const MAX_TUDU_LENGTH = 100;
+const TEXT_DEBOUNCE_DELAY = 2000;
 
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
   ({visible, editingTudu, onRequestClose, onInsertOrUpdate}) => {
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
       editingTudu ?? getNewEmptyTudu(),
     );
+    const timer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const {t} = useTranslation();
 
     const inputRef = useRef<TextInput>(null);
 
+    const debounce = useCallback((func: () => void, delay: number) => {
+      return () => {
+      clearTimeout(timer.current);
+      timer.current = setTimeout(func, delay);
+      };
+    }, []);
+
+    const searchEmojis = useCallback((text: string) => {
+      const words = text.split(/\s+/).filter(Boolean);
+      var sortedWords = words.sort((a, b) => b.length - a.length);
+      if (sortedWords.length > 1){
+        sortedWords = sortedWords.filter(word => word.length >= MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI);
+      }
+
+      const searchLimitPerWord = sortedWords.length > 2 ? 2 : 4;
+
+      var emojiEntries = Object.entries(emojis).map(([key, values]) => ({ key, values }));
+      const fuse = new Fuse(emojiEntries, { keys: ['values'], threshold: 0.25, distance: 100, includeScore: true });
+      
+      const resultSet = new Set(
+        sortedWords.flatMap(word => 
+          fuse.search(word, { limit: searchLimitPerWord }).sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
+        ).map(x => x.item.key)
+      );
+
+      const results = Array.from(resultSet);
+      console.log(results);
+    }, []);
+
     const handleTextChange = useCallback((text: string) => {
       setInternalTuduData(x => {
-        const newTudu = x.clone();
-        newTudu.label = text;
-        return newTudu;
+      const newTudu = x.clone();
+      newTudu.label = text;
+      return newTudu;
       });
-    }, []);
+
+      debounce(() => searchEmojis(text), TEXT_DEBOUNCE_DELAY)();
+    }, [debounce, searchEmojis]);
 
     const isEditing = useMemo(() => !!editingTudu, [editingTudu]);
 
