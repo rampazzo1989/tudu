@@ -8,7 +8,9 @@ import {PopupModal} from '../popup-modal';
 import {PopupButton} from '../popup-modal/types';
 import {Input} from './styles';
 import {NewTuduModalProps} from './types';
-import emojis from "emojilib-pt-br";
+import emojisPtBr from 'emojilib-pt-br/dist/emoji-pt-BR.json';
+import emojisEn from 'emojilib-pt-br/dist/emoji-en-US.json';
+import { getLocales } from "react-native-localize";
 import Fuse from 'fuse.js';
 
 const getNewEmptyTudu = () =>
@@ -37,6 +39,11 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const {t} = useTranslation();
 
     const inputRef = useRef<TextInput>(null);
+
+    const emojis = useMemo(() => {
+      const language = getLocales()[0].languageTag; // or use a prop/context to determine language
+      return language.startsWith('pt-BR') ? emojisPtBr : emojisEn;
+    }, []);
 
     const debounce = useCallback((func: () => void, delay: number) => {
       return () => {

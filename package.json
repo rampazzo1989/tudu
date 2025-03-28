@@ -37,6 +37,7 @@
     "react-native-gesture-handler": "^2.9.0",
     "react-native-haptic-feedback": "^2.0.3",
     "react-native-linear-gradient": "^2.7.3",
+    "react-native-localize": "^3.4.1",
     "react-native-mmkv": "^3.2.0",
     "react-native-navigation-bar-color": "^2.0.2",
     "react-native-popover-view": "^6.1.0",
