@@ -7,9 +7,10 @@ import { ListDefaultIcon } from '../animated-icons/list-default-icon';
 interface SuggestedEmojiListProps {
     emojis: string[];
     onEmojiSelect: (emoji: string) => void;
+    showDefaultIcon?: boolean;
 }
 
-const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, onEmojiSelect }) => {
+const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, onEmojiSelect, showDefaultIcon = false }) => {
     const { t } = useTranslation();
     const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
 
@@ -25,23 +26,25 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, onEmoji
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled">
-                    <EmojiButton
-                        key={'default'}
-                        onPress={() => handleEmojiPress('')}
-                        selected={selectedEmoji === ''}
-                        entering={FadeIn}>
-                        <ListDefaultIcon size={24} />
-                </EmojiButton>
-                {emojis.map((emoji, index) => (
-                    <EmojiButton
-                        key={emoji}
-                        onPress={() => handleEmojiPress(emoji)}
-                        selected={selectedEmoji === emoji}
-                        entering={FadeIn.delay(50 * (index + 1))}
-                    >
-                        <EmojiText>{emoji}</EmojiText>
-                    </EmojiButton>
-                ))}
+                        {showDefaultIcon && (
+                            <EmojiButton
+                                key={'default'}
+                                onPress={() => handleEmojiPress('')}
+                                selected={selectedEmoji === ''}
+                                entering={FadeIn}>
+                                    <ListDefaultIcon size={24} />
+                            </EmojiButton>)
+                        }
+                        {emojis.map((emoji, index) => (
+                            <EmojiButton
+                                key={emoji}
+                                onPress={() => handleEmojiPress(emoji)}
+                                selected={selectedEmoji === emoji}
+                                entering={FadeIn.delay(50 * (index + 1))}
+                            >
+                                <EmojiText>{emoji}</EmojiText>
+                            </EmojiButton>
+                        ))}
             </EmojiList>
         </Container>
     );

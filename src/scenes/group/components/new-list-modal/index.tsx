@@ -111,7 +111,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         topContainerVisible={isTopContainerVisible} 
         onRequestClose={handleRequestClose}
         TopContainerComponent={
-          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} />
+          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} showDefaultIcon />
         }
         onShow={() => {
           setInternalListData(editingList ?? getNewEmptyList());
