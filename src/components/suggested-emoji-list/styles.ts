@@ -1,5 +1,9 @@
 import styled from 'styled-components/native';
 import { DefaultTheme } from 'styled-components/native';
+import Animated from 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native';
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity) as any;
 
 export const Container = styled.View`
     display: flex;
@@ -18,7 +22,7 @@ export const EmojiList = styled.ScrollView`
     flex-direction: row;
 `;
 
-export const EmojiButton = styled.TouchableOpacity<{selected: boolean, theme: DefaultTheme}>`
+export const EmojiButton = styled(AnimatedTouchable)<{selected: boolean, theme: DefaultTheme}>`
     display: flex;
     align-items: center;
     justify-content: center;

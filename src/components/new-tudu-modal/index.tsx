@@ -9,6 +9,8 @@ import {PopupButton} from '../popup-modal/types';
 import {Input} from './styles';
 import {NewTuduModalProps} from './types';
 import { useEmojiSearch } from '../../hooks/useEmojiSearch';
+import SuggestedEmojiList from '../suggested-emoji-list';
+import { trimEmoji } from '../../utils/emoji-utils';
 
 const getNewEmptyTudu = () =>
   new TuduViewModel(
@@ -29,12 +31,20 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       editingTudu ?? getNewEmptyTudu(),
     );
     const timer = useRef<NodeJS.Timeout | undefined>(undefined);
+    const [suggestedEmojis, setSuggestedEmojis] = useState<string[]>([]);
+    const [isTopContainerVisible, setIsTopContainerVisible] = useState(false);
 
     const {t} = useTranslation();
 
     const inputRef = useRef<TextInput>(null);
 
-    const { debounceSearchEmojis } = useEmojiSearch(2000);
+    const { debounceSearchEmojis, searchEmojis } = useEmojiSearch(1000);
+
+    const handleRequestClose = useCallback(() => {
+      setIsTopContainerVisible(false); 
+      setSuggestedEmojis([]);
+      onRequestClose();
+    }, []);
 
     const handleTextChange = useCallback((text: string) => {
       setInternalTuduData(x => {
@@ -43,8 +53,10 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       return newTudu;
       });
 
+      setIsTopContainerVisible(true);
+
       debounceSearchEmojis(text, (results) => {
-        console.log("Olha", results);
+        setSuggestedEmojis(results);
       });
     }, [debounceSearchEmojis]);
 
@@ -64,8 +76,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
 
       handleInsertOrUpdateTudu(internalTuduData);
 
-      onRequestClose();
-    }, [handleInsertOrUpdateTudu, internalTuduData, onRequestClose]);
+      handleRequestClose();
+    }, [handleInsertOrUpdateTudu, internalTuduData, handleRequestClose]);
 
     const buttonsData = useMemo<PopupButton[]>(
       () => [
@@ -74,18 +86,38 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           onPress: handleConfirmButtonPress,
           disabled: !internalTuduData.label,
         },
-        {label: t('buttons.cancel'), onPress: onRequestClose},
+        {label: t('buttons.cancel'), onPress: handleRequestClose},
       ],
-      [handleConfirmButtonPress, internalTuduData.label, onRequestClose, t],
+      [handleConfirmButtonPress, internalTuduData.label, handleRequestClose, t],
     );
+
+    const handleEmojiSelect = useCallback((emoji: string) => {
+      setInternalTuduData((current) => {
+        var tuduClone = current.clone();
+        var label = tuduClone.label;
+        label = trimEmoji(label, "start")?.formattedText ?? '';
+        tuduClone.label = `${emoji} ${label.trim()}`;
+        return tuduClone;
+      });
+    }, []);
 
     return (
       <PopupModal
         visible={visible}
-        onRequestClose={onRequestClose}
+        topContainerVisible={isTopContainerVisible} 
+        onRequestClose={handleRequestClose}
+        TopContainerComponent={
+          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} />
+        }
         onShow={() => {
           setInternalTuduData(editingTudu ?? getNewEmptyTudu());
           setTimeout(() => inputRef.current?.focus(), 200);
+          setTimeout(() => {
+            if (editingTudu) {
+              setIsTopContainerVisible(true);
+              setSuggestedEmojis(searchEmojis(editingTudu.label));
+            }
+          }, 700);
         }}
         title={t(isEditing ? 'popupTitles.editTudu' : 'popupTitles.newTudu')}
         buttons={buttonsData}

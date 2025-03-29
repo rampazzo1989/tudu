@@ -31,11 +31,12 @@ const NewListModal: React.FC<NewListModalProps> = memo(
     const { getAllLists, saveList } = useListService();
     const { t } = useTranslation();
     const inputRef = useRef<TextInput>(null);
-    const { debounceSearchEmojis } = useEmojiSearch(2000);
+    const { debounceSearchEmojis, searchEmojis } = useEmojiSearch(1000);
 
     const handleRequestClose = useCallback(() => {
       setIsTopContainerVisible(false); 
-      setTimeout(onRequestClose, 100);
+      setSuggestedEmojis([]);
+      onRequestClose();
     }, []);
 
     const handleTextChange = useCallback(
@@ -46,7 +47,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
           return newList;
         });
 
-        setIsTopContainerVisible(text.trim().length > 0);
+        setIsTopContainerVisible(true);
 
         debounceSearchEmojis(text, (results) => {
           setSuggestedEmojis(results);
@@ -60,7 +61,6 @@ const NewListModal: React.FC<NewListModalProps> = memo(
     const insertOrUpdateList = useCallback(
       (newList: ListDataViewModel) => {
         const isUpdatingTitle = newList.label !== editingList?.label;
-
         const allLists = getAllLists();
 
         const duplicateProofListTitle = isUpdatingTitle
@@ -68,11 +68,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
           : newList.label;
 
         newList.label = duplicateProofListTitle;
-
-        
         const newListViewModel = new ListViewModel(newList);
-        console.log({newListViewModel});
-
         saveList(newListViewModel);
       },
       [editingList?.label, getAllLists, internalListData.label, saveList],
@@ -104,7 +100,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
     const handleEmojiSelect = useCallback((emoji: string) => {
       setInternalListData((current) => {
         var label = current.label;
-        label = trimEmoji(label)?.formattedText ?? '';
+        label = trimEmoji(label, "start")?.formattedText ?? '';
         return { ...current, label: `${emoji} ${label.trim()}` };
       });
     }, []);
@@ -118,9 +114,14 @@ const NewListModal: React.FC<NewListModalProps> = memo(
           <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} />
         }
         onShow={() => {
-          setIsTopContainerVisible(false); 
           setInternalListData(editingList ?? getNewEmptyList());
           setTimeout(() => inputRef.current?.focus(), 200);
+          setTimeout(() => {
+            if (editingList) {
+              setIsTopContainerVisible(true);
+              setSuggestedEmojis(searchEmojis(editingList.label));
+            }
+          }, 700);
         }}
         title={t(isEditing ? 'popupTitles.editList' : 'popupTitles.newList')}
         buttons={buttonsData}
