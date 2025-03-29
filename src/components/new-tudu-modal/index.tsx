@@ -46,7 +46,6 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       debounceSearchEmojis(text, (results) => {
         console.log("Olha", results);
       });
-
     }, [debounceSearchEmojis]);
 
     const isEditing = useMemo(() => !!editingTudu, [editingTudu]);

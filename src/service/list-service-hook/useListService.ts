@@ -324,7 +324,13 @@ const useListService = () => {
       const listStateSetter = getStateSetter(list.origin);
       
       listStateSetter(previousState => {
-        const newState = new Map([...previousState]);
+        const listExists = previousState.has(list.id);
+        if (listExists) {
+          const stateClone = new Map(previousState);
+          stateClone.set(list.id, list.mapBackList());
+          return stateClone;
+        }
+
         var newMap = new Map<string, List>();
         newMap.set(list.id, list.mapBackList());
         newMap = new Map([...newMap, ...previousState]);

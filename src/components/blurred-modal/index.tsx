@@ -6,8 +6,7 @@ import { View } from 'react-native';
 const BlurredModal: React.FC<BlurredModalProps> = memo(
   ({onRequestClose, children, ...props}) => {
     return (
-
-  <View>
+    <View>
       <Modal {...props} statusBarTranslucent>
         <Blur
           reducedTransparencyFallbackColor="grey"
@@ -20,7 +19,7 @@ const BlurredModal: React.FC<BlurredModalProps> = memo(
         </Blur>
 
       </Modal>
-      </View>
+    </View>
     );
   },
 );

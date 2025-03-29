@@ -27,6 +27,7 @@ const darkTheme: DefaultTheme = {
     counterIconBackground: '#2B3139',
     optionsButtonBackground: '#2B3139',
     popupBackground: '#3C414A',
+    popupTopBackground: '#5e626a',
     scrollFadeGradientColors: [
       'rgba(60, 65, 74, 0.1)',
       'rgba(60, 65, 74, 0.7)',
@@ -52,6 +53,9 @@ const darkTheme: DefaultTheme = {
       background: '#585f69',
     },
     star: '#F5B404',
+    suggestedEmoji: {
+      selectedEmojiBorder: 'rgba(255, 255, 255, 0.4)',
+    }
   },
   fonts: {
     header: 'Inter-SemiBold',

@@ -7,7 +7,6 @@ export const Blur = styled(BlurView)`
 
 export const Modal = styled.Modal`
   flex: 1;
-  // border: 2px solid red;
 `;
 
 export const ContentContainer = styled.TouchableOpacity`

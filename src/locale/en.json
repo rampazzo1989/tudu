@@ -57,6 +57,9 @@
     "newTudu": "Create new tudú",
     "editTudu": "Edit tudú"
   },
+  "popupLabels": {
+    "suggestedEmojis": "Suggested emojis:"
+  },
   "inputLabels": {
     "description": "Description",
     "initialValue": "Initial value",

@@ -10,6 +10,9 @@ import {ListDataViewModel, ListViewModel} from '../../../home/types';
 import {getDuplicateProofListTitle} from '../../../../utils/list-and-group-utils';
 import {generateRandomHash} from '../../../../hooks/useHashGenerator';
 import {useListService} from '../../../../service/list-service-hook/useListService';
+import {useEmojiSearch} from '../../../../hooks/useEmojiSearch';
+import SuggestedEmojiList from '../../../../components/suggested-emoji-list';
+import { trimEmoji } from '../../../../utils/emoji-utils';
 
 const getNewEmptyList = (): ListDataViewModel => ({
   id: generateRandomHash('New List'),
@@ -19,23 +22,38 @@ const getNewEmptyList = (): ListDataViewModel => ({
 });
 
 const NewListModal: React.FC<NewListModalProps> = memo(
-  ({visible, editingList, onRequestClose}) => {
+  ({ visible, editingList, onRequestClose }) => {
     const [internalListData, setInternalListData] = useState<ListDataViewModel>(
       editingList ?? getNewEmptyList(),
     );
-    const {getAllLists, saveList} = useListService();
-
-    const {t} = useTranslation();
-
+    const [suggestedEmojis, setSuggestedEmojis] = useState<string[]>([]);
+    const [isTopContainerVisible, setIsTopContainerVisible] = useState(false);
+    const { getAllLists, saveList } = useListService();
+    const { t } = useTranslation();
     const inputRef = useRef<TextInput>(null);
+    const { debounceSearchEmojis } = useEmojiSearch(2000);
 
-    const handleTextChange = useCallback((text: string) => {
-      setInternalListData(x => {
-        const newList = {...x};
-        newList.label = text;
-        return newList;
-      });
+    const handleRequestClose = useCallback(() => {
+      setIsTopContainerVisible(false); 
+      setTimeout(onRequestClose, 100);
     }, []);
+
+    const handleTextChange = useCallback(
+      (text: string) => {
+        setInternalListData((x) => {
+          const newList = { ...x };
+          newList.label = text;
+          return newList;
+        });
+
+        setIsTopContainerVisible(text.trim().length > 0);
+
+        debounceSearchEmojis(text, (results) => {
+          setSuggestedEmojis(results);
+        });
+      },
+      [debounceSearchEmojis],
+    );
 
     const isEditing = useMemo(() => !!editingList, [editingList]);
 
@@ -51,7 +69,9 @@ const NewListModal: React.FC<NewListModalProps> = memo(
 
         newList.label = duplicateProofListTitle;
 
+        
         const newListViewModel = new ListViewModel(newList);
+        console.log({newListViewModel});
 
         saveList(newListViewModel);
       },
@@ -62,13 +82,12 @@ const NewListModal: React.FC<NewListModalProps> = memo(
       if (!internalListData.label) {
         return;
       }
-
       internalListData.label = internalListData.label.trim();
 
       insertOrUpdateList(internalListData);
 
-      onRequestClose();
-    }, [insertOrUpdateList, internalListData, onRequestClose]);
+      handleRequestClose();
+    }, [insertOrUpdateList, internalListData, handleRequestClose]);
 
     const buttonsData = useMemo<PopupButton[]>(
       () => [
@@ -77,22 +96,36 @@ const NewListModal: React.FC<NewListModalProps> = memo(
           onPress: handleConfirmButtonPress,
           disabled: !internalListData.label,
         },
-        {label: t('buttons.cancel'), onPress: onRequestClose},
+        { label: t('buttons.cancel'), onPress: handleRequestClose },
       ],
-      [handleConfirmButtonPress, internalListData.label, onRequestClose, t],
+      [handleConfirmButtonPress, internalListData.label, handleRequestClose, t],
     );
+
+    const handleEmojiSelect = useCallback((emoji: string) => {
+      setInternalListData((current) => {
+        var label = current.label;
+        label = trimEmoji(label)?.formattedText ?? '';
+        return { ...current, label: `${emoji} ${label.trim()}` };
+      });
+    }, []);
 
     return (
       <PopupModal
         visible={visible}
-        onRequestClose={onRequestClose}
+        topContainerVisible={isTopContainerVisible} 
+        onRequestClose={handleRequestClose}
+        TopContainerComponent={
+          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} />
+        }
         onShow={() => {
+          setIsTopContainerVisible(false); 
           setInternalListData(editingList ?? getNewEmptyList());
           setTimeout(() => inputRef.current?.focus(), 200);
         }}
         title={t(isEditing ? 'popupTitles.editList' : 'popupTitles.newList')}
         buttons={buttonsData}
-        Icon={ListDefaultIcon}>
+        Icon={ListDefaultIcon}
+      >
         <Input
           value={internalListData.label}
           onChangeText={handleTextChange}
@@ -104,4 +137,4 @@ const NewListModal: React.FC<NewListModalProps> = memo(
   },
 );
 
-export {NewListModal};
+export { NewListModal };
