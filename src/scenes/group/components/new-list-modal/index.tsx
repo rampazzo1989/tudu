@@ -56,11 +56,18 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         setIsTopContainerVisible(true);
 
         debounceSearchEmojis(text, (results, isShowingMostUsed) => {
-          setSuggestedEmojis(results);
           setShowingMostUsedEmojis(isShowingMostUsed);
+
+          var emojis = results;
+
+          if (isShowingMostUsed) {
+            emojis = [...emojis, ...getDefaultEmojis('list')];
+          }
+
+          setSuggestedEmojis(emojis);
         });
       },
-      [debounceSearchEmojis],
+      [debounceSearchEmojis, getDefaultEmojis],
     );
 
     const isEditing = useMemo(() => !!editingList, [editingList]);
