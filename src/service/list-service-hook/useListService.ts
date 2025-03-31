@@ -112,7 +112,8 @@ const useListService = () => {
 
       const linkedLists = [...listState].map<ListDataViewModel>(
         ([listId, value]) => {
-          const tudus = customTudus.get(listId);
+          const tudusState = getTudusState(origin);
+          const tudus = tudusState.get(listId);
           const numberOfActiveItems = [...(tudus ?? [])].filter(
             ([_, tudu]) => !tudu.done,
           ).length;
@@ -128,7 +129,7 @@ const useListService = () => {
       );
       return linkedLists;
     },
-    [customTudus, getListState],
+    [getListState, getTudusState],
   );
 
   const saveAllLists = useCallback(

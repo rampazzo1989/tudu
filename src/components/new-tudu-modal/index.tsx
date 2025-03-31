@@ -75,8 +75,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       debounceSearchEmojis(text, (results, isShowingMostUsed) => {
         var emojis = results;
         
-        if (!emojis.length) {
-          emojis = searchEmojisForListName();
+        if (emojis.length < 8) {
+          emojis = [...emojis, ...searchEmojisForListName()];
         }
         setShowingMostUsedEmojis(isShowingMostUsed);
 
@@ -144,13 +144,16 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
             if (editingTudu) {
               setIsTopContainerVisible(true);
               var emojis = searchEmojis(editingTudu.label);
-              if (!emojis.length) {
-                emojis = searchEmojisForListName();
-              }
+              
               if (!emojis.length) {
                 emojis = [...getMostUsedEmojis(), ...getDefaultEmojis("tudu")];
                 setShowingMostUsedEmojis(!!emojis.length);
               }
+
+              if (emojis.length < 8) {
+                emojis = [...emojis, ...searchEmojisForListName()];
+              }
+              
               setSuggestedEmojis(emojis);
             }
           }, 700);
