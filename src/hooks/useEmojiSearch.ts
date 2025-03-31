@@ -3,11 +3,14 @@ import { getLocales } from 'react-native-localize';
 import emojisPtBr from 'emojilib-pt-br/dist/emoji-pt-BR.json';
 import emojisEn from 'emojilib-pt-br/dist/emoji-en-US.json';
 import Fuse from 'fuse.js';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { emojiUsageState } from '../state/atoms';
 
 const MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI = 3;
 
 export const useEmojiSearch = (debounceDelay: number) => {
   const timer = useRef<NodeJS.Timeout | undefined>(undefined);
+  const emojiUsage = useRecoilValue(emojiUsageState); // Estado global persistido
 
   const emojis = useMemo(() => {
     const language = getLocales()[0].languageTag;
@@ -31,7 +34,9 @@ export const useEmojiSearch = (debounceDelay: number) => {
         );
       }
 
-      const searchLimitPerWord = sortedWords.length > 2 ? 2 : 4;
+      const searchLimitPerWord = sortedWords.length === 1 
+        ? 10 
+        : sortedWords.length > 3 ? 4 : 8;
 
       const emojiEntries = Object.entries(emojis).map(([key, values]) => ({
         key,
@@ -49,8 +54,8 @@ export const useEmojiSearch = (debounceDelay: number) => {
           .flatMap((word) =>
             fuse
               .search(word, { limit: searchLimitPerWord })
-              .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
           )
+          .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
           .map((x) => x.item.key)
       );
 
@@ -59,15 +64,40 @@ export const useEmojiSearch = (debounceDelay: number) => {
     [emojis]
   );
 
+  const getMostUsedEmojis = useCallback(() => {
+    const sortedEmojis = Array.from(emojiUsage.entries()).sort(
+      (a, b) => b[1] - a[1]
+    );
+    return sortedEmojis.slice(0, 20).map(([emoji]) => emoji);
+  }, [emojiUsage]);
+
+  const getDefaultEmojis = useCallback((type: "tudu" | "list") => {
+    const defaultEmojis = {
+      tudu: [
+        '✅', '📝', '📅', '⏳', '🔔', '📌', '⭐', '🔑', '📍', '🎯'
+      ],
+      list: [
+        '🗂️', '📁', '🗃️', '📊', '📈', '📉', '📋', '🗒️'
+      ]
+    };
+    return defaultEmojis[type];
+  }
+  , []);
+
   const debounceSearchEmojis = useCallback(
-    (text: string, callback: (results: string[]) => void) => {
+    (text: string, callback: (results: string[], isShowingMostUsed: boolean) => void, fallbackToMostUsed: boolean = true) => {
+      var showingMostUsed = false;
       debounce(() => {
-        const results = searchEmojis(text);
-        callback(results);
+        var results = searchEmojis(text);
+        if (fallbackToMostUsed && results.length === 0) {
+          results = getMostUsedEmojis();
+          showingMostUsed = true;
+        }
+        callback(results, showingMostUsed);
       }, debounceDelay)();
     },
     [debounce, searchEmojis, debounceDelay]
   );
 
-  return { searchEmojis, debounceSearchEmojis };
+  return { searchEmojis, debounceSearchEmojis, getMostUsedEmojis, getDefaultEmojis };
 };

@@ -31,7 +31,13 @@ const NewListModal: React.FC<NewListModalProps> = memo(
     const { getAllLists, saveList } = useListService();
     const { t } = useTranslation();
     const inputRef = useRef<TextInput>(null);
-    const { debounceSearchEmojis, searchEmojis } = useEmojiSearch(1000);
+    const { 
+      debounceSearchEmojis, 
+      searchEmojis, 
+      getMostUsedEmojis, 
+      getDefaultEmojis 
+    } = useEmojiSearch(1000);
+    const [showingMostUsedEmojis, setShowingMostUsedEmojis] = useState(false);
 
     const handleRequestClose = useCallback(() => {
       setIsTopContainerVisible(false); 
@@ -49,8 +55,9 @@ const NewListModal: React.FC<NewListModalProps> = memo(
 
         setIsTopContainerVisible(true);
 
-        debounceSearchEmojis(text, (results) => {
+        debounceSearchEmojis(text, (results, isShowingMostUsed) => {
           setSuggestedEmojis(results);
+          setShowingMostUsedEmojis(isShowingMostUsed);
         });
       },
       [debounceSearchEmojis],
@@ -111,7 +118,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         topContainerVisible={isTopContainerVisible} 
         onRequestClose={handleRequestClose}
         TopContainerComponent={
-          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} showDefaultIcon />
+          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} showDefaultIcon isShowingMostUsedEmojis={showingMostUsedEmojis} />
         }
         onShow={() => {
           setInternalListData(editingList ?? getNewEmptyList());
@@ -119,9 +126,16 @@ const NewListModal: React.FC<NewListModalProps> = memo(
           setTimeout(() => {
             if (editingList) {
               setIsTopContainerVisible(true);
-              setSuggestedEmojis(searchEmojis(editingList.label));
+              var emojis = searchEmojis(editingList.label);
+              if (!emojis.length) {
+                emojis = [...getMostUsedEmojis(), ...getDefaultEmojis("list")];
+                setShowingMostUsedEmojis(true);
+              }
+              if (!emojis.length) {
+              }
+              setSuggestedEmojis(emojis);
             }
-          }, 700);
+          }, 1000);
         }}
         title={t(isEditing ? 'popupTitles.editList' : 'popupTitles.newList')}
         buttons={buttonsData}

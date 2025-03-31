@@ -3420,7 +3420,7 @@ emoji-regex@^8.0.0:
 
 "emojilib-pt-br@github:rampazzo1989/emojilib-pt-br#main":
   version "4.0.1"
-  resolved "https://codeload.github.com/rampazzo1989/emojilib-pt-br/tar.gz/90f99097b45b1151586057fe5a00b3430bb5bd1e"
+  resolved "https://codeload.github.com/rampazzo1989/emojilib-pt-br/tar.gz/dc7d07e8d53c04140106664c72c8541736dc6036"
 
 encodeurl@~1.0.2:
   version "1.0.2"
@@ -4011,9 +4011,9 @@ flow-enums-runtime@^0.0.6:
   integrity sha512-3PYnM29RFXwvAN6Pc/scUfkI7RwhQ/xqyLUyPNlXUp9S40zI8nup9tUSrTLSVnWGBN38FNiGWbwZOB6uR4OGdw==
 
 flow-parser@0.*:
-  version "0.266.0"
-  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.266.0.tgz#14e1b456dfa2a85ce033a7c191c3ecadba9cfe5d"
-  integrity sha512-FK3Zlmnrp5lwNQZ8Ul+m0vVwnA4/Ww84+HzXKCgTmO/1aBoZcQS5f2PJfBMaGYKH2HYIm/l8qpNhw0Wxzb8x5g==
+  version "0.266.1"
+  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.266.1.tgz#c90444e12475d388bc2cf80d45c37c6076a67dcd"
+  integrity sha512-dON6h+yO7FGa/FO5NQCZuZHN0o3I23Ev6VYOJf9d8LpdrArHPt39wE++LLmueNV/hNY5hgWGIIrgnrDkRcXkPg==
 
 for-each@^0.3.3, for-each@^0.3.5:
   version "0.3.5"

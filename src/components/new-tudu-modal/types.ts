@@ -5,4 +5,5 @@ export type NewTuduModalProps = {
   onRequestClose: () => void;
   onInsertOrUpdate: (tudu: TuduViewModel) => void;
   editingTudu?: TuduViewModel;
+  listName?: string;
 };

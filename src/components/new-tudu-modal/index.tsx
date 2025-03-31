@@ -26,25 +26,42 @@ const getNewEmptyTudu = () =>
 const MAX_TUDU_LENGTH = 100;
 
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
-  ({visible, editingTudu, onRequestClose, onInsertOrUpdate}) => {
+  ({visible, editingTudu, listName, onRequestClose, onInsertOrUpdate}) => {
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
       editingTudu ?? getNewEmptyTudu(),
     );
     const timer = useRef<NodeJS.Timeout | undefined>(undefined);
     const [suggestedEmojis, setSuggestedEmojis] = useState<string[]>([]);
     const [isTopContainerVisible, setIsTopContainerVisible] = useState(false);
+    const [showingMostUsedEmojis, setShowingMostUsedEmojis] = useState(false);
 
     const {t} = useTranslation();
 
     const inputRef = useRef<TextInput>(null);
 
-    const { debounceSearchEmojis, searchEmojis } = useEmojiSearch(1000);
+    const { 
+      debounceSearchEmojis, 
+      searchEmojis, 
+      getMostUsedEmojis, 
+      getDefaultEmojis 
+    } = useEmojiSearch(1000);
 
     const handleRequestClose = useCallback(() => {
-      setIsTopContainerVisible(false); 
+      setIsTopContainerVisible(false);
       setSuggestedEmojis([]);
       onRequestClose();
     }, []);
+
+    const searchEmojisForListName = useCallback(() => {
+      var resultsForListName: string[] = [];
+      const tuduListName = editingTudu?.listName || listName;
+      
+      if (tuduListName) {
+        resultsForListName = searchEmojis(tuduListName);
+      }
+
+      return resultsForListName;
+    }, [editingTudu, searchEmojis]);
 
     const handleTextChange = useCallback((text: string) => {
       setInternalTuduData(x => {
@@ -55,10 +72,14 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
 
       setIsTopContainerVisible(true);
 
-      debounceSearchEmojis(text, (results) => {
+      debounceSearchEmojis(text, (results, isShowingMostUsed) => {
+        if (!results.length) {
+          results = searchEmojisForListName();
+        }
+        setShowingMostUsedEmojis(isShowingMostUsed);
         setSuggestedEmojis(results);
       });
-    }, [debounceSearchEmojis]);
+    }, [debounceSearchEmojis, editingTudu]);
 
     const isEditing = useMemo(() => !!editingTudu, [editingTudu]);
 
@@ -104,10 +125,10 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     return (
       <PopupModal
         visible={visible}
-        topContainerVisible={isTopContainerVisible} 
+        topContainerVisible={isTopContainerVisible && suggestedEmojis.length > 0} 
         onRequestClose={handleRequestClose}
         TopContainerComponent={
-          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} />
+          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} isShowingMostUsedEmojis={showingMostUsedEmojis} />
         }
         onShow={() => {
           setInternalTuduData(editingTudu ?? getNewEmptyTudu());
@@ -115,7 +136,15 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           setTimeout(() => {
             if (editingTudu) {
               setIsTopContainerVisible(true);
-              setSuggestedEmojis(searchEmojis(editingTudu.label));
+              var emojis = searchEmojis(editingTudu.label);
+              if (!emojis.length) {
+                emojis = searchEmojisForListName();
+              }
+              if (!emojis.length) {
+                emojis = [...getMostUsedEmojis(), ...getDefaultEmojis("tudu")];
+                setShowingMostUsedEmojis(!!emojis.length);
+              }
+              setSuggestedEmojis(emojis);
             }
           }, 700);
         }}

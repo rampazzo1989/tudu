@@ -73,8 +73,9 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         visible={visible}
         {...props}>
         <KeyboardAvoidingView behavior="padding" pointerEvents="auto">
-          {visible && topContainerVisible && TopContainerComponent && (<PopupTopContainer entering={FadeInDown}>
-            {TopContainerComponent}
+          {visible && topContainerVisible && TopContainerComponent && 
+            (<PopupTopContainer entering={FadeInDown} exiting={FadeOutDown.duration(100)}>
+              {TopContainerComponent}
             </PopupTopContainer>)}
           
           <PopupContainer style={animatedStyle} minimumSized={!children}>

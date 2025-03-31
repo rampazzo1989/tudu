@@ -58,7 +58,8 @@
     "editTudu": "Edit tudú"
   },
   "popupLabels": {
-    "suggestedEmojis": "Suggested emojis:"
+    "suggestedEmojis": "Suggested emojis:",
+    "mostUsedEmojis": "Most used emojis:"
   },
   "inputLabels": {
     "description": "Description",

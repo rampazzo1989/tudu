@@ -282,6 +282,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
               }}
               onInsertOrUpdate={handleInsertOrUpdate}
               editingTudu={editingTudu}
+              listName={list?.label}
             />
           {/* </DraggableContextProvider> */}
         {/* </DraxProvider> */}
