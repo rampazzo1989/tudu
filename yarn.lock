@@ -3420,7 +3420,7 @@ emoji-regex@^8.0.0:
 
 "emojilib-pt-br@github:rampazzo1989/emojilib-pt-br#main":
   version "4.0.1"
-  resolved "https://codeload.github.com/rampazzo1989/emojilib-pt-br/tar.gz/dc7d07e8d53c04140106664c72c8541736dc6036"
+  resolved "https://codeload.github.com/rampazzo1989/emojilib-pt-br/tar.gz/9109fbea6e70859a916ca7b869f3d67ed2a540e8"
 
 encodeurl@~1.0.2:
   version "1.0.2"
