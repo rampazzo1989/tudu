@@ -48,6 +48,7 @@ declare module 'styled-components/native' {
       star: string;
       suggestedEmoji: {
         selectedEmojiBorder: string;
+        scrollFadeGradientColors: string[];
       };
     };
     fonts: {

@@ -55,6 +55,11 @@ const darkTheme: DefaultTheme = {
     star: '#F5B404',
     suggestedEmoji: {
       selectedEmojiBorder: 'rgba(255, 255, 255, 0.4)',
+      scrollFadeGradientColors: [
+        'rgba(94, 98, 106, 0.1)',
+        'rgba(94, 98, 106, 0.7)',
+        'rgba(94, 98, 106, 1)',
+      ],
     }
   },
   fonts: {

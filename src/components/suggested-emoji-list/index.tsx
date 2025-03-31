@@ -1,10 +1,11 @@
 import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState } from 'recoil';
-import { Container, Title, EmojiList, EmojiButton, EmojiText } from './styles';
+import { Container, Title, EmojiList, EmojiButton, EmojiText, RightFadingGradient } from './styles';
 import { FadeIn } from 'react-native-reanimated';
 import { ListDefaultIcon } from '../animated-icons/list-default-icon';
 import { emojiUsageState } from '../../state/atoms';
+import { useTheme } from 'styled-components/native';
 
 interface SuggestedEmojiListProps {
     emojis: string[];
@@ -16,7 +17,9 @@ interface SuggestedEmojiListProps {
 const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowingMostUsedEmojis, onEmojiSelect, showDefaultIcon = false }) => {
     const { t } = useTranslation();
     const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
-    const [emojiUsage, setEmojiUsage] = useRecoilState(emojiUsageState); // Estado global persistido
+    const [emojiUsage, setEmojiUsage] = useRecoilState(emojiUsageState);
+    const theme = useTheme();
+    
 
     const handleEmojiPress = (emoji: string) => {
         var emojiIsAlreadySelected: boolean = false;
@@ -28,7 +31,7 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
         });
         onEmojiSelect(emoji);
 
-        if (!emojiIsAlreadySelected) {
+        if (emoji !== '' && !emojiIsAlreadySelected) {
             setEmojiUsage((currentUsage) => {
                 const newUsage = new Map(currentUsage);
                 newUsage.set(emoji, (newUsage.get(emoji) || 0) + 1); // Incrementa o contador
@@ -72,6 +75,12 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
                     </EmojiButton>
                 ))}
             </EmojiList>
+            <RightFadingGradient
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                colors={theme.colors.suggestedEmoji.scrollFadeGradientColors}
+                pointerEvents={'none'}
+            />
         </Container>
     );
 };

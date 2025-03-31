@@ -2,6 +2,7 @@ import styled from 'styled-components/native';
 import { DefaultTheme } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity) as any;
 
@@ -36,4 +37,12 @@ export const EmojiButton = styled(AnimatedTouchable)<{selected: boolean, theme: 
 
 export const EmojiText = styled.Text`
     font-size: 24px;
+`;
+
+export const RightFadingGradient = styled(LinearGradient)`
+  position: absolute;
+  end: 0;
+  width: 24px;
+  height: 100%;
+  z-index: 999;
 `;

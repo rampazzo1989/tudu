@@ -59,7 +59,7 @@
   },
   "popupLabels": {
     "suggestedEmojis": "Suggested emojis:",
-    "mostUsedEmojis": "Most used emojis:"
+    "mostUsedEmojis": "Most used / suggested emojis:"
   },
   "inputLabels": {
     "description": "Description",
