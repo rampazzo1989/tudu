@@ -45,10 +45,6 @@ const useListService = () => {
   const [archivedTudus, setArchivedTudus] = useRecoilState(archivedTudusState);
   const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusState);
 
-  // useEffect(() => {
-  //   console.log({customLists: [...customLists]});
-  // }, [customLists]);
-
   const getListState = useCallback(
     (stateOrigin: ListOrigin) =>
       stateOrigin === 'default' ? customLists : archivedLists,

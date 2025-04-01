@@ -25,3 +25,8 @@ export const emojiUsageState = atom<Map<string, number>>({
   default: new Map<string, number>(),
   effects: [mmkvPersistAtom('emojiUsageState', true)],
 });
+
+export const showOutdatedTudus = atom<boolean>({
+  key: 'showOutdatedTudus',
+  default: false,
+});

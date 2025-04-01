@@ -1,6 +1,5 @@
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {ListViewModel, TuduViewModel} from '../home/types';
-import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {ListPageCore} from '../../components/list-page-core';
 import {ScheduledListPageProps} from './types';
 import {useScheduledTuduService} from '../../service/list-service-hook/useScheduledTuduService';
@@ -8,6 +7,8 @@ import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {getDaytimeIcon} from '../../utils/general-utils';
 import {UNLISTED} from '../home/state';
 import {UNLOADED_ID} from '../../constants';
+import { useRecoilState } from 'recoil';
+import { showOutdatedTudus } from '../../state/atoms';
 
 const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   ({navigation, route}) => {
@@ -15,6 +16,8 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       () => route.params?.date ?? new Date(),
       [route.params?.date],
     );
+
+    const [showOutdated, setShowOutdated] = useRecoilState(showOutdatedTudus);
 
     const {getTudusForDate, saveAllScheduledTudus} = useScheduledTuduService();
 
@@ -39,7 +42,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
 
     useEffect(() => {
       setTimeout(() => {
-        const tudusForDate = getTudusForDate(date);
+        const tudusForDate = getTudusForDate(date, true);
 
         setList(() => {
           const virtualListVM = new ListViewModel(
@@ -53,7 +56,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
           return virtualListVM;
         });
       }, 100);
-    }, [date, getListTitle, getTudusForDate]);
+    }, [date, getListTitle, getTudusForDate, showOutdated]);
 
     const setTudus = useCallback(
       (tudus: TuduViewModel[]) => {
@@ -80,7 +83,6 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         list={list}
         Icon={getDaytimeIcon()}
         isSmartList
-        showScheduleInformation={false}
         numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
       />
     );

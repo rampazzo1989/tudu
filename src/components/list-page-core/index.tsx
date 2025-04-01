@@ -30,7 +30,7 @@ import {ListPageCoreProps} from './types';
 import {TuduViewModel} from '../../scenes/home/types';
 import {ListHeader} from '../list-header';
 import {TuduAdditionalInformation} from '../tudu-card/types';
-import {formatToLocaleDate, isToday} from '../../utils/date-utils';
+import {formatToLocaleDate, isToday, isOutdated} from '../../utils/date-utils';
 import {UNLISTED} from '../../scenes/home/state';
 import {SkeletonTuduList} from '../skeleton-tudu-list';
 import {showItemDeletedToast} from '../../utils/toast-utils';
@@ -46,7 +46,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     list,
     Icon,
     numberOfUndoneTudus,
-    showScheduleInformation = true,
     isSmartList = false,
     draggableEnabled = true,
     allowAdding = true,
@@ -157,13 +156,24 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const getAdditionalInformation = useCallback(
       (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
+        // Rules for smart lists
         if (isSmartList && tudu.listName && tudu.listId !== UNLISTED) {
+          console.log('isSmartList', isSmartList, tudu.listName, tudu.listId);
+          // Outdated tudús
+          const outdated = tudu.dueDate && isOutdated(tudu.dueDate);
+          if (outdated) {
+            return {
+              label: formatToLocaleDate(tudu.dueDate!),
+              originType: 'scheduled',
+            };
+          }
           return {
             label: tudu.listName,
             originType: 'list',
           };
         }
-        if (showScheduleInformation && tudu.dueDate) {
+        // Rules for custom lists
+        if (tudu.dueDate) {
           const isScheduledForToday = isToday(tudu.dueDate);
           return {
             label: isScheduledForToday
@@ -173,7 +183,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           };
         }
       },
-      [isSmartList, showScheduleInformation],
+      [isSmartList],
     );
 
     const handleInsertOrUpdate = useCallback(
