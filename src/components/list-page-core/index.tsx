@@ -38,6 +38,7 @@ import {useTranslation} from 'react-i18next';
 import {UNLOADED_ID} from '../../constants';
 import { AnimatedEmojiIcon } from '../animated-icons/animated-emoji';
 import { trimEmoji } from '../../utils/emoji-utils';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -49,12 +50,14 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     isSmartList = false,
     draggableEnabled = true,
     allowAdding = true,
+    TopComponent,
   }) => {
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
 
     const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+    const hookContent = useCloseCurrentlyOpenSwipeable();
 
     const {saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup} = useListService();
 
@@ -67,7 +70,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [internalList?.id],
     );
 
-    const draggableTudus = useMemo(() => {
+    const tudus = useMemo(() => {
       return !internalList?.tudus ? [] : 
       [
         ...internalList.tudus
@@ -189,22 +192,22 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const handleInsertOrUpdate = useCallback(
       (tudu: TuduViewModel) => {
         if (editingTudu) {
-          const tuduIndex = draggableTudus.findIndex(
+          const tuduIndex = tudus.findIndex(
             x => x.id === tudu.id,
           );
           if (tuduIndex >= 0) {
-            const newList = [...draggableTudus];
+            const newList = [...tudus];
             newList[tuduIndex] = tudu;
             handleSetTudus(newList);
           }
         } else {
-          const newList = draggableTudus.length
-            ? [tudu, ...draggableTudus]
+          const newList = tudus.length
+            ? [tudu, ...tudus]
             : [tudu];
           handleSetTudus(newList);
         }
       },
-      [draggableTudus, editingTudu, handleSetTudus],
+      [tudus, editingTudu, handleSetTudus],
     );
 
     const handleTuduDelete = useCallback(
@@ -238,27 +241,25 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           onBackButtonPress={handleBackButtonPress}
           Icon={Icon}
         />
-        {/* <DraxProvider> */}
-          {/* <DraggableContextProvider<TuduViewModel>
-            data={draggableTudus}
-            onSetData={handleSetTudus}
-            onDragStart={handleListDragStart}> */}
-            <CheersAnimationContainer pointerEvents="none">
-              <CheersAnimation
-                ref={cheersRef}
-                speed={2}
-                style={{
-                  width: Dimensions.get('screen').width,
-                  height: Dimensions.get('screen').height,
-                }}
-              />
-            </CheersAnimationContainer>
+        <CheersAnimationContainer pointerEvents="none">
+          <CheersAnimation
+            ref={cheersRef}
+            speed={2}
+            style={{
+              width: Dimensions.get('screen').width,
+              height: Dimensions.get('screen').height,
+            }}
+          />
+        </CheersAnimationContainer>
 
-            <DraggablePageContent
-              style={styles.scrollContentContainer}>
-              {loading ? (
-                <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
-              ) : (
+        <DraggablePageContent
+          style={styles.scrollContentContainer}>
+          {loading ? (
+            <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
+          ) : (
+            <>
+              {TopComponent}
+              <Animated.View style={{flex: 1}} layout={LinearTransition}>
                 <TudusList
                   onTuduPress={handleTuduPress}
                   animateIcon={animateThisIcon}
@@ -275,27 +276,27 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   list={internalList}
                   setTudus={handleSetTudus}
                 />
-              )}
-              {allowAdding && !loading && (
-              <ListActionButton
-                ref={actionButtonRef}
-                onInsertTuduPress={handleInsertTudu}
-              />
-            )}
-            </DraggablePageContent>
-            <NewTuduModal
-              visible={newTuduPopupVisible}
-              onRequestClose={() => {
-                setNewTuduPopupVisible(false);
-                setEditingTudu(undefined);
-                closeCurrentlyOpenSwipeable();
-              }}
-              onInsertOrUpdate={handleInsertOrUpdate}
-              editingTudu={editingTudu}
-              listName={list?.label}
-            />
-          {/* </DraggableContextProvider> */}
-        {/* </DraxProvider> */}
+              </Animated.View>
+            </>
+          )}
+          {allowAdding && !loading && (
+          <ListActionButton
+            ref={actionButtonRef}
+            onInsertTuduPress={handleInsertTudu}
+          />
+        )}
+        </DraggablePageContent>
+        <NewTuduModal
+          visible={newTuduPopupVisible}
+          onRequestClose={() => {
+            setNewTuduPopupVisible(false);
+            setEditingTudu(undefined);
+            closeCurrentlyOpenSwipeable();
+          }}
+          onInsertOrUpdate={handleInsertOrUpdate}
+          editingTudu={editingTudu}
+          listName={list?.label}
+        />
       </Page>
     );
   },

@@ -36,7 +36,7 @@ const NewListModal: React.FC<NewListModalProps> = memo(
       searchEmojis, 
       getMostUsedEmojis, 
       getDefaultEmojis 
-    } = useEmojiSearch(1000);
+    } = useEmojiSearch(700);
     const [showingMostUsedEmojis, setShowingMostUsedEmojis] = useState(false);
 
     const handleRequestClose = useCallback(() => {

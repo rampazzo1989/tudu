@@ -224,30 +224,27 @@ const TudusList: React.FC<TudusListProps> = memo(
     const renderDoneItem = useCallback((params: RenderItemParams<IndexedTudu>) => renderItem({...params, renderDone: true}), [renderItem]);
 
     const handleDragEnd: (params: DragEndParams<IndexedTudu>) => void = useCallback(({ data }) => {
-      // var newList = list?.clone();
-      // if(newList) {
-      //   newList.tudus = data.flatMap(x => x.indexedTudu);
-      //   saveListAndTudus(newList);
-      // }
-
       setTudus(data.flatMap(x => x.indexedTudu));
     }, [setTudus]);
 
     return (
       <Container>
-         <NestableScrollContainer style={{flexGrow: 1,  overflow:'visible', marginTop: 30}}>
-          {indexedTudus.filter(x => !x.indexedTudu.done).length ? <NestableDraggableFlatList
-            data={indexedTudus}
-            renderItem={renderUndoneItem}
-            itemLayoutAnimation={LinearTransition}
-            enableLayoutAnimationExperimental
-            // ListFooterComponent={undoneTudus.length ? <View style={{height: 16, backgroundColor: 'transparent'}} /> : undefined}
-            keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
-            onDragEnd={handleDragEnd}
-            style={{zIndex: 9999,  flexGrow: 1, overflow: 'visible', marginBottom: 16}}
-            contentContainerStyle={{zIndex: 9999, overflow: 'visible', 
-              flexGrow: 1,
-            }}
+         <NestableScrollContainer style={{flexGrow: 1,  overflow:'visible'}}>
+          {indexedTudus.filter(x => !x.indexedTudu.done).length 
+          ? <NestableDraggableFlatList
+              data={indexedTudus}
+              renderItem={renderUndoneItem}
+              itemLayoutAnimation={LinearTransition}
+              enableLayoutAnimationExperimental
+              keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
+              onDragEnd={handleDragEnd}
+              style={{zIndex: 9999,  flexGrow: 1, overflow: 'visible', marginBottom: 16}}
+              contentContainerStyle={{zIndex: 9999, overflow: 'visible', 
+                flexGrow: 1,
+              }}
+              removeClippedSubviews
+              windowSize={10}
+              initialNumToRender={10}
             /> : undefined}
             {doneTudus.length ? getSectionTitle(undoneTudus.length) : undefined}
             <NestableDraggableFlatList
@@ -261,7 +258,9 @@ const TudusList: React.FC<TudusListProps> = memo(
               contentContainerStyle={{ overflow: 'visible', 
                 flexGrow: 1
               }}
-              
+              removeClippedSubviews
+              windowSize={8}
+              initialNumToRender={8}
             />
             </NestableScrollContainer>
       </Container>

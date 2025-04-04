@@ -3,12 +3,14 @@ import {ListViewModel, TuduViewModel} from '../home/types';
 import {ListPageCore} from '../../components/list-page-core';
 import {ScheduledListPageProps} from './types';
 import {useScheduledTuduService} from '../../service/list-service-hook/useScheduledTuduService';
-import {formatToLocaleDate, isToday} from '../../utils/date-utils';
+import {formatToLocaleDate, isToday, isOutdated} from '../../utils/date-utils';
 import {getDaytimeIcon} from '../../utils/general-utils';
 import {UNLISTED} from '../home/state';
 import {UNLOADED_ID} from '../../constants';
 import { useRecoilState } from 'recoil';
 import { showOutdatedTudus } from '../../state/atoms';
+import { SimpleTuduList } from '../../components/simple-tudu-list';
+import { OutdatedTudusList } from './components/outdated-tudus-list';
 
 const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   ({navigation, route}) => {
@@ -18,7 +20,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
     );
 
     const [showOutdated, setShowOutdated] = useRecoilState(showOutdatedTudus);
-
+    const [outdatedTudus, setOutdatedTudus] = useState<TuduViewModel[]>([]);
     const {getTudusForDate, saveAllScheduledTudus} = useScheduledTuduService();
 
     const handleBackButtonPress = useCallback(() => {
@@ -42,7 +44,11 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
 
     useEffect(() => {
       setTimeout(() => {
-        const tudusForDate = getTudusForDate(date, true);
+        const tudusWithOutdated = getTudusForDate(date, true);
+        const tudusForDate = tudusWithOutdated.filter(tudu => tudu.dueDate && !isOutdated(tudu.dueDate));
+        const outdated = tudusWithOutdated.filter(tudu => tudu.dueDate && isOutdated(tudu.dueDate));
+          
+        setOutdatedTudus(outdated);
 
         setList(() => {
           const virtualListVM = new ListViewModel(
@@ -75,7 +81,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       },
       [date, list, saveAllScheduledTudus],
     );
-
+    
     return (
       <ListPageCore
         handleBackButtonPress={handleBackButtonPress}
@@ -84,6 +90,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         Icon={getDaytimeIcon()}
         isSmartList
         numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
+        TopComponent={outdatedTudus.length ? (<OutdatedTudusList tudus={outdatedTudus} />) : undefined}
       />
     );
   },

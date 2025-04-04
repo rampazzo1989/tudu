@@ -7,7 +7,7 @@ export const Container = styled.View`
   flex: 1;
   overflow: hidden;
   padding: 0 16px;
-  margin-top: -30px;
+  // margin-top: -30px;
   margin-bottom: -30px;
 `;
 

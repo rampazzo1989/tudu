@@ -44,7 +44,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       searchEmojis, 
       getMostUsedEmojis, 
       getDefaultEmojis 
-    } = useEmojiSearch(1000);
+    } = useEmojiSearch(700);
 
     const handleRequestClose = useCallback(() => {
       setIsTopContainerVisible(false);
@@ -153,7 +153,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
               if (emojis.length < 8) {
                 emojis = [...emojis, ...searchEmojisForListName()];
               }
-              
+
               setSuggestedEmojis(emojis);
             }
           }, 700);

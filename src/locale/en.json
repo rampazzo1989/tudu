@@ -68,5 +68,17 @@
     "name": "Name",
     "pace": "Pace",
     "addLists": "+ Add lists"
+  },
+  "outdatedTudusList": {
+    "title": {
+      "outdated": "Outdated",
+      "countOne": "There is 1 outdated tudú",
+      "countMany": "There are {{count}} outdated tudús",
+      "upToDate": "Up-to-date"
+    },
+    "button": {
+      "show": "Show",
+      "hide": "Hide"
+    }
   }
 }

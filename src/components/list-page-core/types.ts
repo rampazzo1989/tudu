@@ -10,4 +10,5 @@ export type ListPageCoreProps = {
   draggableEnabled?: boolean;
   allowAdding?: boolean;
   numberOfUndoneTudus?: number;
+  TopComponent?: React.ReactNode;
 };

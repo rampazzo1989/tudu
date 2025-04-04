@@ -28,7 +28,7 @@ const useScheduledTuduService = () => {
             tudu.dueDate &&
             getDateOnlyTimeStamp(tudu.dueDate) === dateOnlyTimeStamp;
           const isOutdated = showOutdated 
-            && tudu.dueDate && getDateOnlyTimeStamp(tudu.dueDate) < dateOnlyTimeStamp;
+            && tudu.dueDate && !tudu.done && getDateOnlyTimeStamp(tudu.dueDate) < dateOnlyTimeStamp;
           return itsFromDate || isOutdated;
         });
 
