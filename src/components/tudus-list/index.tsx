@@ -237,14 +237,10 @@ const TudusList: React.FC<TudusListProps> = memo(
         return null;
 
       return (
-        // <TuduAnimatedContainer
-        //   entering={FadeIn?.duration(100).delay(index * 50)}
-        //   key={`item-${tudu.id}-${item.index}`} layout={LinearTransition}>
             <ShrinkableView onPress={() => onTuduPress(tudu)} scaleFactor={0.03} 
               style={{ height: 'auto', width: '100%', zIndex: tudu.done ? 0 : 9999, marginBottom: 8}} >
                 {SwipeableTudu({tudu, isActive: false})}
             </ShrinkableView>
-        // </TuduAnimatedContainer>
         );
     }, [renderItem]);
 

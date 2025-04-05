@@ -141,21 +141,19 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           setInternalTuduData(editingTudu ?? getNewEmptyTudu());
           setTimeout(() => inputRef.current?.focus(), 200);
           setTimeout(() => {
-            if (editingTudu) {
-              setIsTopContainerVisible(true);
-              var emojis = searchEmojis(editingTudu.label);
-              
-              if (!emojis.length) {
-                emojis = [...getMostUsedEmojis(), ...getDefaultEmojis("tudu")];
-                setShowingMostUsedEmojis(!!emojis.length);
-              }
-
-              if (emojis.length < 8) {
-                emojis = [...emojis, ...searchEmojisForListName()];
-              }
-
-              setSuggestedEmojis(emojis);
+            setIsTopContainerVisible(true);
+            var emojis = searchEmojis(editingTudu?.label ?? '');
+            
+            if (!emojis.length) {
+              emojis = [...new Set([...getMostUsedEmojis(), ...getDefaultEmojis("tudu")])];
+              setShowingMostUsedEmojis(!!emojis.length);
             }
+
+            if (emojis.length < 8) {
+              emojis = [...emojis, ...searchEmojisForListName()];
+            }
+
+            setSuggestedEmojis(emojis);
           }, 700);
         }}
         title={t(isEditing ? 'popupTitles.editTudu' : 'popupTitles.newTudu')}

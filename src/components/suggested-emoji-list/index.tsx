@@ -17,9 +17,8 @@ interface SuggestedEmojiListProps {
 const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowingMostUsedEmojis, onEmojiSelect, showDefaultIcon = false }) => {
     const { t } = useTranslation();
     const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
-    const [emojiUsage, setEmojiUsage] = useRecoilState(emojiUsageState);
+    const [_, setEmojiUsage] = useRecoilState(emojiUsageState);
     const theme = useTheme();
-    
 
     const handleEmojiPress = (emoji: string) => {
         var emojiIsAlreadySelected: boolean = false;
@@ -52,15 +51,13 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
             <EmojiList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-            >
+                keyboardShouldPersistTaps="handled">
                 {showDefaultIcon && (
                     <EmojiButton
                         key={'default'}
                         onPress={() => handleEmojiPress('')}
                         selected={selectedEmoji === ''}
-                        entering={FadeIn}
-                    >
+                        entering={FadeIn}>
                         <ListDefaultIcon size={24} />
                     </EmojiButton>
                 )}
@@ -69,8 +66,7 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
                         key={emoji}
                         onPress={() => handleEmojiPress(emoji)}
                         selected={selectedEmoji === emoji}
-                        entering={FadeIn.delay(50 * (index + 1))}
-                    >
+                        entering={FadeIn.delay(50 * (index + 1))}>
                         <EmojiText>{emoji}</EmojiText>
                     </EmojiButton>
                 ))}
@@ -79,8 +75,7 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 0}}
                 colors={theme.colors.suggestedEmoji.scrollFadeGradientColors}
-                pointerEvents={'none'}
-            />
+                pointerEvents={'none'} />
         </Container>
     );
 };

@@ -131,17 +131,13 @@ const NewListModal: React.FC<NewListModalProps> = memo(
           setInternalListData(editingList ?? getNewEmptyList());
           setTimeout(() => inputRef.current?.focus(), 200);
           setTimeout(() => {
-            if (editingList) {
-              setIsTopContainerVisible(true);
-              var emojis = searchEmojis(editingList.label);
-              if (!emojis.length) {
-                emojis = [...getMostUsedEmojis(), ...getDefaultEmojis("list")];
-                setShowingMostUsedEmojis(true);
-              }
-              if (!emojis.length) {
-              }
-              setSuggestedEmojis(emojis);
+            setIsTopContainerVisible(true);
+            var emojis = searchEmojis(editingList?.label ?? '');
+            if (!emojis.length) {
+              emojis = [...new Set([...getMostUsedEmojis(), ...getDefaultEmojis("list")])];
+              setShowingMostUsedEmojis(true);
             }
+            setSuggestedEmojis(emojis);
           }, 1000);
         }}
         title={t(isEditing ? 'popupTitles.editList' : 'popupTitles.newList')}
