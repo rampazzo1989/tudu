@@ -15,5 +15,5 @@ export type TudusListProps = {
   ) => TuduAdditionalInformation | undefined;
   list?: ListViewModel;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon | string) => void;
-  draggableEnabled?: boolean;
+  TopComponent?: React.ReactNode;
 };

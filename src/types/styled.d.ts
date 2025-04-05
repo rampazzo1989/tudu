@@ -28,6 +28,7 @@ declare module 'styled-components/native' {
       counterIconBackground: string;
       optionsButtonBackground: string;
       popupBackground: string;
+      popupTopBackground: string;
       scrollFadeGradientColors: string[];
       scrollFadeGradientColorsPageBackground: string[];
       defaultSeparatorGradientColors: string[];
@@ -45,6 +46,10 @@ declare module 'styled-components/native' {
         background: string;
       };
       star: string;
+      suggestedEmoji: {
+        selectedEmojiBorder: string;
+        scrollFadeGradientColors: string[];
+      };
     };
     fonts: {
       header: string;

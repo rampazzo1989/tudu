@@ -14,4 +14,6 @@ export type PopupModalProps = BlurredModalProps & {
   Icon?: React.FC<AnimatedIconProps>;
   shakeOnShow?: boolean;
   haptics?: boolean;
+  topContainerVisible?: boolean;
+  TopContainerComponent?: React.ReactNode;
 };

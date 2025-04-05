@@ -45,10 +45,6 @@ const useListService = () => {
   const [archivedTudus, setArchivedTudus] = useRecoilState(archivedTudusState);
   const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusState);
 
-  // useEffect(() => {
-  //   console.log({customLists: [...customLists]});
-  // }, [customLists]);
-
   const getListState = useCallback(
     (stateOrigin: ListOrigin) =>
       stateOrigin === 'default' ? customLists : archivedLists,
@@ -112,7 +108,8 @@ const useListService = () => {
 
       const linkedLists = [...listState].map<ListDataViewModel>(
         ([listId, value]) => {
-          const tudus = customTudus.get(listId);
+          const tudusState = getTudusState(origin);
+          const tudus = tudusState.get(listId);
           const numberOfActiveItems = [...(tudus ?? [])].filter(
             ([_, tudu]) => !tudu.done,
           ).length;
@@ -128,7 +125,7 @@ const useListService = () => {
       );
       return linkedLists;
     },
-    [customTudus, getListState],
+    [getListState, getTudusState],
   );
 
   const saveAllLists = useCallback(
@@ -324,7 +321,13 @@ const useListService = () => {
       const listStateSetter = getStateSetter(list.origin);
       
       listStateSetter(previousState => {
-        const newState = new Map([...previousState]);
+        const listExists = previousState.has(list.id);
+        if (listExists) {
+          const stateClone = new Map(previousState);
+          stateClone.set(list.id, list.mapBackList());
+          return stateClone;
+        }
+
         var newMap = new Map<string, List>();
         newMap.set(list.id, list.mapBackList());
         newMap = new Map([...newMap, ...previousState]);

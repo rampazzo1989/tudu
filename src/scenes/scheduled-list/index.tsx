@@ -1,13 +1,16 @@
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {ListViewModel, TuduViewModel} from '../home/types';
-import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {ListPageCore} from '../../components/list-page-core';
 import {ScheduledListPageProps} from './types';
 import {useScheduledTuduService} from '../../service/list-service-hook/useScheduledTuduService';
-import {formatToLocaleDate, isToday} from '../../utils/date-utils';
+import {formatToLocaleDate, isToday, isOutdated} from '../../utils/date-utils';
 import {getDaytimeIcon} from '../../utils/general-utils';
 import {UNLISTED} from '../home/state';
 import {UNLOADED_ID} from '../../constants';
+import { useRecoilState } from 'recoil';
+import { showOutdatedTudus } from '../../state/atoms';
+import { OutdatedTudusList } from './components/outdated-tudus-list';
+import {useTranslation} from 'react-i18next';
 
 const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   ({navigation, route}) => {
@@ -15,7 +18,9 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       () => route.params?.date ?? new Date(),
       [route.params?.date],
     );
-
+    const {t} = useTranslation();
+    const [showOutdated] = useRecoilState(showOutdatedTudus);
+    const [outdatedTudus, setOutdatedTudus] = useState<TuduViewModel[]>([]);
     const {getTudusForDate, saveAllScheduledTudus} = useScheduledTuduService();
 
     const handleBackButtonPress = useCallback(() => {
@@ -23,7 +28,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
     }, [navigation]);
 
     const getListTitle = useCallback(
-      () => (isToday(date) ? 'Today' : formatToLocaleDate(date)),
+      () => (isToday(date) ? t('listTitles.today') : formatToLocaleDate(date)),
       [date],
     );
 
@@ -39,7 +44,11 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
 
     useEffect(() => {
       setTimeout(() => {
-        const tudusForDate = getTudusForDate(date);
+        const tudusWithOutdated = getTudusForDate(date, true);
+        const tudusForDate = tudusWithOutdated.filter(tudu => tudu.dueDate && !isOutdated(tudu.dueDate));
+        const outdated = tudusWithOutdated.filter(tudu => tudu.dueDate && isOutdated(tudu.dueDate));
+          
+        setOutdatedTudus(outdated);
 
         setList(() => {
           const virtualListVM = new ListViewModel(
@@ -53,7 +62,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
           return virtualListVM;
         });
       }, 100);
-    }, [date, getListTitle, getTudusForDate]);
+    }, [date, getListTitle, getTudusForDate, showOutdated]);
 
     const setTudus = useCallback(
       (tudus: TuduViewModel[]) => {
@@ -72,7 +81,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       },
       [date, list, saveAllScheduledTudus],
     );
-
+    
     return (
       <ListPageCore
         handleBackButtonPress={handleBackButtonPress}
@@ -80,8 +89,8 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         list={list}
         Icon={getDaytimeIcon()}
         isSmartList
-        showScheduleInformation={false}
         numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
+        TopComponent={outdatedTudus.length ? (<OutdatedTudusList tudus={outdatedTudus} />) : undefined}
       />
     );
   },

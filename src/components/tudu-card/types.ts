@@ -14,11 +14,6 @@ export type TuduAdditionalInformation = {
 export type TuduCardProps = {
   data: TuduViewModel;
   onPress: (tudu: TuduViewModel) => void;
-  onDelete: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
-  onEdit: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   onStarPress: (tudu: TuduViewModel) => void;
-  onSendToOrRemoveFromToday: (
-    swipeableRef: React.RefObject<SwipeableCardRef>,
-  ) => void;
   additionalInfo?: TuduAdditionalInformation;
 };

@@ -4,5 +4,4 @@ import styled from 'styled-components/native';
 export const TuduAnimatedContainer = styled(Animated.View)`
   flex-grow: 1;
   width: 100%;
-  padding-horizontal: 16px;
 `;

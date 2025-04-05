@@ -1,6 +1,6 @@
 import React, {memo, useEffect} from 'react';
-import {View} from 'react-native';
-import Animated, {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import {Text, View} from 'react-native';
+import Animated, {FadeInDown, FadeOutDown, SlideInDown, SlideInUp, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {shake} from '../../utils/animation-utils';
 import {BlurredModal} from '../blurred-modal';
@@ -15,6 +15,8 @@ import {
   styles,
   ContentContainer,
   KeyboardAvoidingView,
+  PopupTopContainer,
+  TopContainerLabel,
 } from './styles';
 import {PopupModalProps} from './types';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -28,7 +30,9 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     Icon,
     visible,
     shakeOnShow,
+    TopContainerComponent,
     haptics = false,
+    topContainerVisible = false,
     ...props
   }) => {
     const shakeValue = useSharedValue(0);
@@ -69,6 +73,11 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         visible={visible}
         {...props}>
         <KeyboardAvoidingView behavior="padding" pointerEvents="auto">
+          {visible && topContainerVisible && TopContainerComponent && 
+            (<PopupTopContainer entering={FadeInDown} exiting={FadeOutDown.duration(100)}>
+              {TopContainerComponent}
+            </PopupTopContainer>)}
+          
           <PopupContainer style={animatedStyle} minimumSized={!children}>
             {title && (
               <>

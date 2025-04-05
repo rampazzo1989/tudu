@@ -5,7 +5,7 @@ import styled from 'styled-components/native';
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity) as any;
 
 export const KeyboardAvoidingView = styled.KeyboardAvoidingView`
-  flex: 1;
+  flex-grow: 1;
   align-items: center;
   justify-content: center;
 `;
@@ -13,13 +13,24 @@ export const KeyboardAvoidingView = styled.KeyboardAvoidingView`
 export const PopupContainer = styled(AnimatedTouchable).attrs({
   activeOpacity: 1,
 })<{minimumSized: boolean}>`
-  min-width: 280px;
-  max-width: ${({minimumSized}) => (minimumSized ? 280 : 320)}px;
+  min-width: 290px;
+  width: ${({minimumSized}) => (minimumSized ? 280 : 320)}px;
   background-color: ${({theme}) => theme.colors.popupBackground};
   border-radius: 8px;
   elevation: 15;
   padding: 14px 16px;
   border: 1px solid #ffffff30;
+  margin-top: -8px;
+`;
+
+export const PopupTopContainer = styled(Animated.View)`
+  padding: 14px 16px;
+  width: 320px;
+  background-color: ${({theme}) => theme.colors.popupTopBackground};
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  flex: 1;
+  max-height: 110px;
 `;
 
 export const PopupTitle = styled.Text`
@@ -67,6 +78,12 @@ export const PopupButton = styled.TouchableOpacity<HighlightableComponent>`
 `;
 
 export const ButtonLabel = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  color: ${({theme}) => theme.colors.text};
+  font-size: 14px;
+`;
+
+export const TopContainerLabel = styled.Text`
   font-family: ${({theme}) => theme.fonts.default};
   color: ${({theme}) => theme.colors.text};
   font-size: 14px;

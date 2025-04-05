@@ -59,17 +59,17 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
       return [
         {
           Icon: RenameIcon,
-          label: 'Rename',
+          label: t('menuLabels.rename'),
           onPress: handleRenameOptionPress,
         },
         {
           Icon: DeleteIcon,
-          label: 'Delete Group',
+          label: t('menuLabels.deleteGroup'),
           onPress: handleDeleteOptionPress,
         },
         {
           Icon: UngroupIcon,
-          label: 'Ungroup All',
+          label: t('menuLabels.ungroupAll'),
           onPress: handleUngroupOptionPress,
         },
       ];

@@ -31,12 +31,12 @@ const DoneItemsOptions: React.FC<DoneItemsOptionsProps> = memo(
       return [
         {
           Icon: RefreshIcon,
-          label: 'Undo All',
+          label: t('menuLabels.undoAll'),
           onPress: handleUndoAllPress,
         },
         {
           Icon: DeleteIcon,
-          label: 'Clear All',
+          label: t('menuLabels.clearAll'),
           onPress: handleClearAllPress,
         },
       ];

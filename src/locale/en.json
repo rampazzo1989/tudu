@@ -2,8 +2,14 @@
   "listTitles": {
     "today": "Today",
     "allTasks": "All tudús",
+    "allTasksPageTitle": "All undone tudús",
     "starred": "Starred",
-    "archived": "Archived"
+    "starredPageTitle": "Starred tudús",
+    "archived": "Archived",
+    "search": "Search tudús"
+  },
+  "labels": {
+    "today": "Today"
   },
   "listPageTitles": {
     "archived": "Archived Lists",
@@ -11,7 +17,9 @@
   },
   "sectionTitles": {
     "counters": "Counters",
-    "myLists": "My Lists"
+    "myLists": "My Lists",
+    "done": "Done",
+    "allDone": "All done"
   },
   "actions": {
     "delete": "Delete",
@@ -57,6 +65,10 @@
     "newTudu": "Create new tudú",
     "editTudu": "Edit tudú"
   },
+  "popupLabels": {
+    "suggestedEmojis": "Suggested emojis:",
+    "mostUsedEmojis": "Most used / suggested emojis:"
+  },
   "inputLabels": {
     "description": "Description",
     "initialValue": "Initial value",
@@ -64,5 +76,26 @@
     "name": "Name",
     "pace": "Pace",
     "addLists": "+ Add lists"
+  },
+  "outdatedTudusList": {
+    "title": {
+      "outdated": "Outdated",
+      "countOne": "There is 1 outdated tudú",
+      "countMany": "There are {{count}} outdated tudús",
+      "upToDate": "Up-to-date"
+    },
+    "button": {
+      "show": "Show",
+      "hide": "Hide"
+    }
+  },
+  "menuLabels": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "undoAll": "Undo all",
+    "clearAll": "Clear all",
+    "rename": "Rename",
+    "deleteGroup": "Delete group",
+    "ungroupAll": "Ungroup all"
   }
 }

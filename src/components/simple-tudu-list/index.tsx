@@ -95,27 +95,11 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
                       <TuduCard
                           data={tudu}
                           onPress={handleTuduPress}
-                          onDelete={handleDeleteGenerator(tudu)}
-                          onEdit={handleEditGenerator(tudu)}
                           onStarPress={handleStarPress}
-                          onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                            tudu,
-                          )}
                           additionalInfo={getAdditionalInformation(tudu)}
                         />
                     </SwipeableTuduCard>
                 </ShrinkableView>
-              {/* <TuduCard
-                data={tudu}
-                onPress={handleTuduPress}
-                onDelete={handleDeleteGenerator(tudu)}
-                onEdit={handleEditGenerator(tudu)}
-                onStarPress={handleStarPress}
-                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                  tudu,
-                )}
-                additionalInfo={getAdditionalInformation(tudu)}
-              /> */}
             </TuduAnimatedContainer>
           );
         })}

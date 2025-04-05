@@ -13,7 +13,7 @@ import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {SearchHeader} from './components/search-header';
-import {styles} from './styles';
+import {PaddedContainer, styles} from './styles';
 import {SearchPageProps} from './types';
 
 const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
@@ -59,7 +59,7 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
         const isScheduledForToday = isToday(tudu.dueDate);
         return {
           label: isScheduledForToday
-            ? 'Today'
+            ? t('labels.today')
             : formatToLocaleDate(tudu.dueDate),
           originType: isScheduledForToday ? 'today' : 'scheduled',
         };
@@ -76,7 +76,7 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
       id: 'search',
-      label: 'Search tudús',
+      label: t('listTitles.search'),
     });
     return list;
   }, []);
@@ -96,14 +96,16 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
         {!tudus ? (
           <SkeletonTuduList />
         ) : (
-          <SimpleTuduList
-            getAdditionalInformation={getAdditionalInformation}
-            tudus={tudus}
-            updateTuduFn={saveTudu}
-            deleteTuduFn={deleteTudu}
-            undoDeletionFn={restoreBackup}
-            onEditPress={handleEditPress}
-          />
+          <PaddedContainer>
+            <SimpleTuduList
+              getAdditionalInformation={getAdditionalInformation}
+              tudus={tudus}
+              updateTuduFn={saveTudu}
+              deleteTuduFn={deleteTudu}
+              undoDeletionFn={restoreBackup}
+              onEditPress={handleEditPress}
+            />
+          </PaddedContainer>
         )}
       </PageContent>
 

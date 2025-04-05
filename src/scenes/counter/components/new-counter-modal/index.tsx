@@ -177,7 +177,7 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
         },
         {
           pace: customPace,
-          label: customPace ? `+${customPace}...` : 'other...',
+          label: customPace ? `+${customPace}...` : `${t('buttons.other')}...`,
           onPress: () => {
             setCustomPaceInputVisible(true);
             setTimeout(() => {

@@ -12,7 +12,7 @@ import {useListService} from '../../service/list-service-hook/useListService';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
-import {styles} from './styles';
+import {PaddedContainer, styles} from './styles';
 import {AllTudusPageProps} from './types';
 
 const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
@@ -50,7 +50,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
         const isScheduledForToday = isToday(tudu.dueDate);
         return {
           label: isScheduledForToday
-            ? 'Today'
+            ? t('labels.today')
             : formatToLocaleDate(tudu.dueDate),
           originType: isScheduledForToday ? 'today' : 'scheduled',
         };
@@ -67,7 +67,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
       id: 'all-tudus',
-      label: 'All undone tudús',
+      label: t('listTitles.allTasksPageTitle'),
     });
 
     return list;
@@ -83,14 +83,16 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
         {!tudus ? (
           <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
         ) : (
-          <SimpleTuduList
-            getAdditionalInformation={getAdditionalInformation}
-            tudus={tudus}
-            updateTuduFn={saveTudu}
-            deleteTuduFn={deleteTudu}
-            undoDeletionFn={restoreBackup}
-            onEditPress={handleEditPress}
-          />
+          <PaddedContainer>
+            <SimpleTuduList
+              getAdditionalInformation={getAdditionalInformation}
+              tudus={tudus}
+              updateTuduFn={saveTudu}
+              deleteTuduFn={deleteTudu}
+              undoDeletionFn={restoreBackup}
+              onEditPress={handleEditPress}
+            />
+          </PaddedContainer>
         )}
       </PageContent>
 

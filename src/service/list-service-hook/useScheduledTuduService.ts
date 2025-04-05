@@ -17,7 +17,7 @@ const useScheduledTuduService = () => {
   const {saveTudu, saveAllTudus} = useListService();
 
   const getTudusForDate = useCallback(
-    (date: Date) => {
+    (date: Date, showOutdated: boolean = false) => {
       const dateOnlyTimeStamp = getDateOnlyTimeStamp(date);
 
       const tudusFromDate: Array<TuduViewModel> = [];
@@ -27,7 +27,9 @@ const useScheduledTuduService = () => {
           const itsFromDate =
             tudu.dueDate &&
             getDateOnlyTimeStamp(tudu.dueDate) === dateOnlyTimeStamp;
-          return itsFromDate;
+          const isOutdated = showOutdated 
+            && tudu.dueDate && !tudu.done && getDateOnlyTimeStamp(tudu.dueDate) < dateOnlyTimeStamp;
+          return itsFromDate || isOutdated;
         });
 
         const listName = customLists.get(listId)?.label;
@@ -52,9 +54,13 @@ const useScheduledTuduService = () => {
         ),
       );
 
-      tudusFromDate.sort(
-        (a, b) => (a.scheduledOrder ?? -1) - (b.scheduledOrder ?? -1),
-      );
+      tudusFromDate.sort((a, b) => {
+        const dateComparison = ((a.dueDate && getDateOnlyTimeStamp(a.dueDate)) || 0) - ((b.dueDate && getDateOnlyTimeStamp(b.dueDate)) || 0);
+        if (dateComparison !== 0) {
+          return dateComparison;
+        }
+        return (a.scheduledOrder || 0) - (b.scheduledOrder || 0);
+      });
 
       return tudusFromDate;
     },

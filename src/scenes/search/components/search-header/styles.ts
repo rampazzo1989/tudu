@@ -29,7 +29,7 @@ export const Emoji = styled(Animated.Text)`
 
 export const styles = StyleSheet.create({
   pageIcon: {marginRight: -15, marginTop: 0},
-  header: {height: 142},
+  header: {height: 142}
 });
 
 export const Input = styled.TextInput`
@@ -40,4 +40,14 @@ export const Input = styled.TextInput`
   height: 40px;
   padding-left: 10px;
   opacity: 0.7;
+`;
+
+export const TitleBackground = styled(Animated.View)<{titleWidth: number}>`
+  height: 82px;
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: ${({theme}) => theme.colors.secondary};
 `;

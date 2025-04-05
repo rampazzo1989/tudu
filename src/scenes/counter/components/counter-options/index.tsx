@@ -4,9 +4,12 @@ import {RenameIcon} from '../../../../components/animated-icons/rename-icon';
 import {MenuOptions} from '../../../../components/menu-options';
 import {MenuOption} from '../../../../components/menu-options/types';
 import {CounterOptionsProps} from './types';
+import { useTranslation } from 'react-i18next';
 
 const CounterOptions: React.FC<CounterOptionsProps> = memo(
   ({counterData, closeMenu, onEditOption, onDeleteOption}) => {
+    const {t} = useTranslation();
+    
     const handleDeleteOptionPress = useCallback(() => {
       closeMenu();
       onDeleteOption(counterData);
@@ -21,12 +24,12 @@ const CounterOptions: React.FC<CounterOptionsProps> = memo(
       return [
         {
           Icon: RenameIcon,
-          label: 'Edit',
+          label: t('menuLabels.edit'),
           onPress: handleEditOptionPress,
         },
         {
           Icon: DeleteIcon,
-          label: 'Delete',
+          label: t('menuLabels.delete'),
           onPress: handleDeleteOptionPress,
         },
       ];
