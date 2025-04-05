@@ -10,6 +10,7 @@ import {
   Number,
 } from './styles';
 import {ListCardProps, NumberOfActiveItemsProps} from './types';
+import i18next from 'i18next';
 
 const NumberOfActiveItems: React.FC<NumberOfActiveItemsProps> = memo(
   ({numberOfActiveItems, isHighlighted}) => {
@@ -23,7 +24,7 @@ const NumberOfActiveItems: React.FC<NumberOfActiveItemsProps> = memo(
   },
 );
 
-const autoAnimateIcons = ['Today'];
+const autoAnimateIcons = [i18next.t('labels.today')];
 
 const checkIfAutoAnimateIcon = (label: string) => {
   return autoAnimateIcons.includes(label);

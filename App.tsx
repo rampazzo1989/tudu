@@ -16,11 +16,14 @@ import {CurrentTheme} from './src/themes';
 import {toastConfig} from './src/config/toast';
 import RecoilNexus from 'recoil-nexus';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { I18nextProvider } from 'react-i18next';
+import i18next from './src/i18n';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 function App(): React.JSX.Element {
   return (
+    <I18nextProvider i18n={i18next}>
     <SafeAreaProvider>
       <GestureHandlerRootView style={{flex: 1}}>
         <ThemeProvider theme={CurrentTheme}>
@@ -40,6 +43,7 @@ function App(): React.JSX.Element {
         </ThemeProvider>
       </GestureHandlerRootView>
     </SafeAreaProvider>
+    </I18nextProvider>
   );
 }
 

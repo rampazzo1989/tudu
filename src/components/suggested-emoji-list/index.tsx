@@ -40,11 +40,11 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
         }
     };
 
-    React.useEffect(() => {
-        emojiUsage.forEach((value, key) => {
-            console.log(`Emoji: ${key}, Usos: ${value}`);
-        });
-    }, [emojiUsage]);
+    // React.useEffect(() => {
+    //     emojiUsage.forEach((value, key) => {
+    //         console.log(`Emoji: ${key}, Usos: ${value}`);
+    //     });
+    // }, [emojiUsage]);
 
     return (
         <Container>

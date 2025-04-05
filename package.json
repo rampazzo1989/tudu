@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@craftzdog/react-native-buffer": "^6.0.5",
+    "@os-team/i18next-react-native-language-detector": "^1.1.6",
     "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-native-community/blur": "^4.4.1",
     "@react-navigation/native": "^6.1.7",
@@ -32,7 +33,7 @@
     "react-i18next": "^12.3.1",
     "react-native": "0.77.0",
     "react-native-bootsplash": "^4.7.2",
-    "react-native-draggable-flatlist": "^4.0.1",
+    "react-native-draggable-flatlist": "4.0.1",
     "react-native-drax": "^0.10.3",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-haptic-feedback": "^2.0.3",

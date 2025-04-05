@@ -1,26 +1,32 @@
 import i18next from 'i18next';
-import {initReactI18next} from 'react-i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from '@os-team/i18next-react-native-language-detector'; // Importa o plugin para React Native
 import en from '../locale/en.json';
-import pt from '../locale/pt.json';
+import ptBr from '../locale/pt-BR.json';
 
 export const defaultNS = 'translation';
 
 export const resources = {
-  pt: {
-    translation: pt,
+  'pt': {
+    translation: ptBr,
   },
-  en: {
+  'en': {
     translation: en,
   },
 } as const;
 
-i18next.use(initReactI18next).init({
-  compatibilityJSON: 'v3',
-  lng: 'en',
-  ns: ['translation'],
-  defaultNS,
-  fallbackLng: 'en',
-  resources,
-});
+i18next
+  .use(LanguageDetector) // Usa o detector de idioma para React Native
+  .use(initReactI18next) // Integra com React
+  .init({
+    compatibilityJSON: 'v3',
+    ns: ['translation'],
+    defaultNS,
+    fallbackLng: 'en-US', // Idioma de fallback
+    resources,
+    detection: {
+      order: ['device'], // Detecta o idioma do dispositivo
+    },
+  });
 
 export default i18next;

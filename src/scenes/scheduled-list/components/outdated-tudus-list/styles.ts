@@ -10,7 +10,6 @@ export const TitleContainer = styled.View<{isShowingTudus: boolean}>`
   flex-direction: row;
   padding-right: 16px;
   padding-left: 12px;
-  margin: 0 16px;
   margin-bottom: 16px;
 `;
 
@@ -30,7 +29,6 @@ export const ControlContainer = styled(ShrinkableView)`
   width: 60px;
   align-items: center;
   justify-content: center;
-  border-width: 1px;
   border-color: white;
   border-radius: 8px;
 `;

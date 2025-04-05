@@ -24,7 +24,6 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
 
   useEffect(() => {
     var a = getListById(listId, listOrigin);
-    console.log('LIST AT LIST PAGE', {a});
     setTimeout(() => {
       setList(a);
     }, 100);

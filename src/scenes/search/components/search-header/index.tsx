@@ -1,5 +1,5 @@
 import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
-import {FadeIn} from 'react-native-reanimated';
+import {FadeIn, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
 
 import {useTheme} from 'styled-components/native';
 import {BackButton} from '../../../../components/back-button';
@@ -7,7 +7,8 @@ import {Header} from '../../../../components/header';
 import {SearchIcon} from '../../../../components/animated-icons/search';
 import {SearchHeaderProps} from './types';
 import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
-import {ContentRow, Input, styles, Title, TitleContainer} from './styles';
+import {ContentRow, Input, styles, Title, TitleBackground, TitleContainer} from './styles';
+import { HeaderContent } from '../../../../components/header/styles';
 
 const SearchHeader: React.FC<SearchHeaderProps> = memo(
   ({listData, onBackButtonPress, onTextChange}) => {
@@ -28,8 +29,23 @@ const SearchHeader: React.FC<SearchHeaderProps> = memo(
       [onTextChange],
     );
 
+    const width = useSharedValue(130);
+    
+        useEffect(() => {
+          const finalWidth = titleWidth ? 85 + titleWidth : 130;
+          width.value = withTiming(finalWidth, { duration: 200 });
+        }, [titleWidth]);
+    
+        const animatedStyle = useAnimatedStyle(() => {
+          return {
+            width: width.value,
+          };
+        });
+
     return (
-      <Header titleWidth={titleWidth} style={styles.header}>
+      <HeaderContent style={styles.header}>
+              <TitleBackground style={[animatedStyle]} />
+              
         <ContentRow entering={FadeIn.duration(500)}>
           <TitleContainer>
             <BackButton onPress={onBackButtonPress} />
@@ -57,7 +73,7 @@ const SearchHeader: React.FC<SearchHeaderProps> = memo(
           maxLength={30}
           autoFocus
         />
-      </Header>
+      </HeaderContent>
     );
   },
 );

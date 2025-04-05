@@ -6,11 +6,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {DraxProvider} from 'react-native-drax';
 import {Page} from '../../components/page';
 import {DraggablePageContent} from '../../components/draggable-page-content';
-import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
-import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {CheersAnimation} from '../../components/animated-components/cheers';
 import {
@@ -36,7 +33,6 @@ import {SkeletonTuduList} from '../skeleton-tudu-list';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
 import {UNLOADED_ID} from '../../constants';
-import { AnimatedEmojiIcon } from '../animated-icons/animated-emoji';
 import { trimEmoji } from '../../utils/emoji-utils';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
@@ -48,7 +44,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     Icon,
     numberOfUndoneTudus,
     isSmartList = false,
-    draggableEnabled = true,
     allowAdding = true,
     TopComponent,
   }) => {
@@ -161,7 +156,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
         // Rules for smart lists
         if (isSmartList && tudu.listName && tudu.listId !== UNLISTED) {
-          console.log('isSmartList', isSmartList, tudu.listName, tudu.listId);
           // Outdated tudús
           const outdated = tudu.dueDate && isOutdated(tudu.dueDate);
           if (outdated) {
@@ -180,7 +174,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           const isScheduledForToday = isToday(tudu.dueDate);
           return {
             label: isScheduledForToday
-              ? 'Today'
+              ? t('labels.today')
               : formatToLocaleDate(tudu.dueDate),
             originType: isScheduledForToday ? 'today' : 'scheduled',
           };
@@ -234,6 +228,11 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       setNewTuduPopupVisible(true);
     }, []);
 
+    const handleEditPress = useCallback((tudu: TuduViewModel) => {
+      setEditingTudu(tudu);
+      setNewTuduPopupVisible(true);
+    }, []);
+
     return (
       <Page>
         <ListHeader
@@ -257,27 +256,21 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           {loading ? (
             <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
           ) : (
-            <>
-              {TopComponent}
-              <Animated.View style={{flex: 1}} layout={LinearTransition}>
-                <TudusList
-                  onTuduPress={handleTuduPress}
-                  animateIcon={animateThisIcon}
-                  getAdditionalInformation={getAdditionalInformation}
-                  draggableEnabled={draggableEnabled}
-                  onStarPress={handleTuduStarPress}
-                  onEditPress={tudu => {
-                    setEditingTudu(tudu);
-                    setNewTuduPopupVisible(true);
-                  }}
-                  onDeletePress={handleTuduDelete}
-                  onClearAllDonePress={handleClearAllDone}
-                  onUndoAllPress={handleUndoAllPress}
-                  list={internalList}
-                  setTudus={handleSetTudus}
-                />
-              </Animated.View>
-            </>
+            <Animated.View style={{flex: 1}} layout={LinearTransition}>
+              <TudusList
+                onTuduPress={handleTuduPress}
+                animateIcon={animateThisIcon}
+                getAdditionalInformation={getAdditionalInformation}
+                onStarPress={handleTuduStarPress}
+                onEditPress={handleEditPress}
+                onDeletePress={handleTuduDelete}
+                onClearAllDonePress={handleClearAllDone}
+                onUndoAllPress={handleUndoAllPress}
+                list={internalList}
+                setTudus={handleSetTudus}
+                TopComponent={TopComponent}
+              />
+            </Animated.View>
           )}
           {allowAdding && !loading && (
           <ListActionButton

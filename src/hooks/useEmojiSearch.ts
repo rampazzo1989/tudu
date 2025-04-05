@@ -14,6 +14,7 @@ export const useEmojiSearch = (debounceDelay: number) => {
 
   const emojis = useMemo(() => {
     const language = getLocales()[0].languageTag;
+    console.log('language', language);
     return language.startsWith('pt-BR') ? emojisPtBr : emojisEn;
   }, []);
 
@@ -58,6 +59,8 @@ export const useEmojiSearch = (debounceDelay: number) => {
           .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
           .map((x) => x.item.key)
       );
+
+      console.log('resultSet', Array.from(resultSet));
 
       return Array.from(resultSet);
     },

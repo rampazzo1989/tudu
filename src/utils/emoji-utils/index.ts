@@ -22,7 +22,7 @@ export const trimEmoji = (text: string, side: "start" | "end" | "both" = "both")
 
   const splittedText = splitter.splitGraphemes(trimmedText);
   const firstEmoji = splittedText[0];
-  console.log({splittedText, firstEmoji});
+  // console.log({splittedText, firstEmoji});
 
   if (side === "start" || side === "both") {
     const startsWithEmoji = !!firstEmoji.match(EMOJI_REGEX)?.length;
@@ -36,7 +36,7 @@ export const trimEmoji = (text: string, side: "start" | "end" | "both" = "both")
     const lastEmoji = getLastItem(splittedText);
     
     const endsWithEmoji = !!lastEmoji?.match(EMOJI_REGEX)?.length;
-    console.log({splittedText, lastEmoji, endsWithEmoji});
+    // console.log({splittedText, lastEmoji, endsWithEmoji});
 
     if (endsWithEmoji && !lastEmoji.match(REMOVE_NUMBERS_REGEX)) {
       splittedText.pop();

@@ -2,8 +2,14 @@
   "listTitles": {
     "today": "Today",
     "allTasks": "All tudús",
+    "allTasksPageTitle": "All undone tudús",
     "starred": "Starred",
-    "archived": "Archived"
+    "starredPageTitle": "Starred tudús",
+    "archived": "Archived",
+    "search": "Search tudús"
+  },
+  "labels": {
+    "today": "Today"
   },
   "listPageTitles": {
     "archived": "Archived Lists",
@@ -11,7 +17,9 @@
   },
   "sectionTitles": {
     "counters": "Counters",
-    "myLists": "My Lists"
+    "myLists": "My Lists",
+    "done": "Done",
+    "allDone": "All done"
   },
   "actions": {
     "delete": "Delete",
@@ -80,5 +88,14 @@
       "show": "Show",
       "hide": "Hide"
     }
+  },
+  "menuLabels": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "undoAll": "Undo all",
+    "clearAll": "Clear all",
+    "rename": "Rename",
+    "deleteGroup": "Delete group",
+    "ungroupAll": "Ungroup all"
   }
 }

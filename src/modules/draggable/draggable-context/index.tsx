@@ -8,6 +8,7 @@ import {
   DraggableContextType,
   DraggableItem,
 } from './types';
+import {useTranslation} from 'react-i18next';
 
 const DraggableContext = React.createContext({} as DraggableContextType<T>);
 
@@ -30,6 +31,7 @@ const DraggableContextProvider = <T,>({
   const [confirmationPopupTitleBuilder, setConfirmationPopupTitleBuilder] =
     useState<(item?: DraggableItem<T> | T) => string>();
   const previousStateRef = useRef<DraggableItem<T>[]>();
+  const {t} = useTranslation();
 
   const handleSetData = useCallback(
     (newData: DraggableItem<T>[], allowUndoThisSave?: boolean) => {
@@ -102,8 +104,8 @@ const DraggableContextProvider = <T,>({
         onRequestClose={handleCancelAction}
         title={confirmationPopupTitleBuilder?.(dealingItem)}
         buttons={[
-          {label: 'Yes', onPress: handleConfirmAction},
-          {label: 'No', onPress: handleCancelAction},
+          {label: t('buttons.yes'), onPress: handleConfirmAction},
+          {label: t('buttons.no'), onPress: handleCancelAction},
         ]}
         Icon={modal?.action === 'delete' ? DeleteIcon : FolderIcon}
         shakeOnShow

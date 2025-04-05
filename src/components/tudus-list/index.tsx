@@ -6,12 +6,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import Animated, {FadeInUp, FadeOutUp, LinearTransition} from 'react-native-reanimated';
+import Animated, {FadeIn, FadeInUp, FadeOutUp, LinearTransition} from 'react-native-reanimated';
 import {
   Container,
   OptionsIconContainer,
   OptionsTouchable,
   SectionTitle,
+  TuduAnimatedContainer,
 } from './styles';
 import {TudusListProps} from './types';
 
@@ -30,7 +31,9 @@ import { DragEndParams, NestableDraggableFlatList, NestableScrollContainer, Rend
 import { useListService } from '../../service/list-service-hook/useListService';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
 import { ShrinkableView } from '../shrinkable-view';
-import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { SimpleTuduList } from '../simple-tudu-list';
+import { FlatList, LayoutAnimation, ListRenderItem } from 'react-native';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({
@@ -44,13 +47,14 @@ const TudusList: React.FC<TudusListProps> = memo(
     getAdditionalInformation,
     animateIcon,
     list,
-    draggableEnabled = true,
+    TopComponent,
   }) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
     const [allDoneReactionVisible, setAllDoneReactionVisible] = useState(false);
+    const {t} = useTranslation();
 
-    const {saveTudu, saveListAndTudus} = useListService();
+    const {saveTudu} = useListService();
 
     const handleOptionsButtonPress = useCallback(() => {
       iconRef.current?.toggle();
@@ -118,7 +122,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       return (
         <Animated.View layout={LinearTransition} entering={FadeInUp} exiting={FadeOutUp}>
         <SectionTitle
-          title={undoneListLength ? 'Done' : 'All done'}
+          title={undoneListLength ? t('sectionTitles.done') : t('sectionTitles.allDone')}
           key="allTudus"
           marginTop={0}
           ControlComponent={
@@ -172,13 +176,39 @@ const TudusList: React.FC<TudusListProps> = memo(
 
     type IndexedTudu = typeof indexedTudus[number];
 
-    const undoneTudus = useMemo(() => {
+    const undoneIndexedTudus = useMemo(() => {
       return indexedTudus.filter(x => !x.indexedTudu.done);
     }, [indexedTudus]);
 
-    const doneTudus = useMemo(() => {
+    const doneIndexedTudus = useMemo(() => {
       return indexedTudus.filter(x => x.indexedTudu.done);
     }, [indexedTudus]);
+
+    const doneTudus = useMemo(() => {
+      return tuduList.filter(x => x.done);
+    }, [tuduList]);
+
+    const SwipeableTudu : React.FC<{tudu: TuduViewModel, isActive: boolean}> = useCallback(({tudu, isActive}) => {
+      return (
+        <SwipeableTuduCard
+                enabled={!isActive}
+                done={tudu.done}
+                onDelete={handleDeleteGenerator(tudu)}
+                onEdit={handleEditGenerator(tudu)}
+                isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
+                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                  tudu,
+                )}>
+            <TuduCard
+                data={tudu}
+                onPress={onTuduPress}
+                onStarPress={onStarPress}
+                additionalInfo={getAdditionalInformation(tudu)}
+              />
+            </SwipeableTuduCard>
+      ); 
+    }, [handleDeleteGenerator, handleEditGenerator, 
+      handleSendToOrRemoveFromTodayGenerator, onStarPress, onTuduPress]);
 
     const renderItem = useCallback(({ item, drag, isActive, renderDone }: RenderItemParams<IndexedTudu> & {renderDone: boolean}) => {
       const tudu = item.indexedTudu;
@@ -193,27 +223,8 @@ const TudusList: React.FC<TudusListProps> = memo(
           <ShrinkableView onPress={() => onTuduPress(tudu)} scaleFactor={0.03} 
             style={{ height: 'auto', width: '100%', zIndex: tudu.done ? 0 : 9999, marginBottom: 8}} 
             onLongPress={tudu.done ? undefined : drag} disabled={isActive}>
-          <SwipeableTuduCard
-                enabled={!isActive}
-                done={tudu.done}
-                onDelete={handleDeleteGenerator(tudu)}
-                onEdit={handleEditGenerator(tudu)}
-                isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
-                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                  tudu,
-                )}>
-            <TuduCard
-                data={tudu}
-                onPress={onTuduPress}
-                onDelete={handleDeleteGenerator(tudu)}
-                onEdit={handleEditGenerator(tudu)}
-                onStarPress={onStarPress}
-                onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                  tudu,
-                )}
-                additionalInfo={getAdditionalInformation(tudu)}
-              />
-            </SwipeableTuduCard>
+            {/* <SwipeableTudu tudu={tudu} isActive={isActive} /> */}
+            {SwipeableTudu({tudu, isActive})}
           </ShrinkableView>
         </ScaleDecorator>
       </ShadowDecorator>
@@ -221,18 +232,33 @@ const TudusList: React.FC<TudusListProps> = memo(
     }, [handleDeleteGenerator, handleEditGenerator, handleSendToOrRemoveFromTodayGenerator, onStarPress, onTuduPress]);
 
     const renderUndoneItem = useCallback((params: RenderItemParams<IndexedTudu>) => renderItem({...params, renderDone: false}), [renderItem]);
-    const renderDoneItem = useCallback((params: RenderItemParams<IndexedTudu>) => renderItem({...params, renderDone: true}), [renderItem]);
+    const renderDoneItem: ListRenderItem<TuduViewModel> = useCallback(({item: tudu}) => {
+      if (!tudu.done)
+        return null;
+
+      return (
+        // <TuduAnimatedContainer
+        //   entering={FadeIn?.duration(100).delay(index * 50)}
+        //   key={`item-${tudu.id}-${item.index}`} layout={LinearTransition}>
+            <ShrinkableView onPress={() => onTuduPress(tudu)} scaleFactor={0.03} 
+              style={{ height: 'auto', width: '100%', zIndex: tudu.done ? 0 : 9999, marginBottom: 8}} >
+                {SwipeableTudu({tudu, isActive: false})}
+            </ShrinkableView>
+        // </TuduAnimatedContainer>
+        );
+    }, [renderItem]);
 
     const handleDragEnd: (params: DragEndParams<IndexedTudu>) => void = useCallback(({ data }) => {
-      setTudus(data.flatMap(x => x.indexedTudu));
-    }, [setTudus]);
+      setTudus([...data.flatMap(x => x.indexedTudu), ...doneIndexedTudus.flatMap(x => x.indexedTudu)]);
+    }, [setTudus, doneIndexedTudus]);
 
     return (
       <Container>
          <NestableScrollContainer style={{flexGrow: 1,  overflow:'visible'}}>
-          {indexedTudus.filter(x => !x.indexedTudu.done).length 
+          {TopComponent}
+          {undoneIndexedTudus.length 
           ? <NestableDraggableFlatList
-              data={indexedTudus}
+              data={undoneIndexedTudus}
               renderItem={renderUndoneItem}
               itemLayoutAnimation={LinearTransition}
               enableLayoutAnimationExperimental
@@ -243,25 +269,23 @@ const TudusList: React.FC<TudusListProps> = memo(
                 flexGrow: 1,
               }}
               removeClippedSubviews
-              windowSize={10}
-              initialNumToRender={10}
-            /> : undefined}
-            {doneTudus.length ? getSectionTitle(undoneTudus.length) : undefined}
-            <NestableDraggableFlatList
-              data={doneTudus}
-              renderItem={renderDoneItem}
-              itemLayoutAnimation={LinearTransition}
-              enableLayoutAnimationExperimental
-              keyExtractor={(item) => `item-${item.indexedTudu.id}-${item.index}`}
-              onDragEnd={handleDragEnd}
-              style={{ width: '100%', overflow: 'visible', marginTop: 16}}
-              contentContainerStyle={{ overflow: 'visible', 
-                flexGrow: 1
-              }}
-              removeClippedSubviews
               windowSize={8}
               initialNumToRender={8}
-            />
+            /> : undefined}
+            {doneTudus.length ? getSectionTitle(doneTudus.length) : undefined}
+              <Animated.FlatList
+                data={doneTudus}
+                itemLayoutAnimation={LinearTransition}
+                renderItem={renderDoneItem}
+                keyExtractor={(item) => `item-${item.id}`}
+                style={{ width: '100%', overflow: 'visible', marginTop: 16}}
+                contentContainerStyle={{ overflow: 'visible', 
+                  flexGrow: 1
+                }}
+                removeClippedSubviews
+                windowSize={6}
+                initialNumToRender={6}
+                />
             </NestableScrollContainer>
       </Container>
     );

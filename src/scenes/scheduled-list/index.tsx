@@ -9,8 +9,8 @@ import {UNLISTED} from '../home/state';
 import {UNLOADED_ID} from '../../constants';
 import { useRecoilState } from 'recoil';
 import { showOutdatedTudus } from '../../state/atoms';
-import { SimpleTuduList } from '../../components/simple-tudu-list';
 import { OutdatedTudusList } from './components/outdated-tudus-list';
+import {useTranslation} from 'react-i18next';
 
 const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   ({navigation, route}) => {
@@ -18,8 +18,8 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
       () => route.params?.date ?? new Date(),
       [route.params?.date],
     );
-
-    const [showOutdated, setShowOutdated] = useRecoilState(showOutdatedTudus);
+    const {t} = useTranslation();
+    const [showOutdated] = useRecoilState(showOutdatedTudus);
     const [outdatedTudus, setOutdatedTudus] = useState<TuduViewModel[]>([]);
     const {getTudusForDate, saveAllScheduledTudus} = useScheduledTuduService();
 
@@ -28,7 +28,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
     }, [navigation]);
 
     const getListTitle = useCallback(
-      () => (isToday(date) ? 'Today' : formatToLocaleDate(date)),
+      () => (isToday(date) ? t('listTitles.today') : formatToLocaleDate(date)),
       [date],
     );
 

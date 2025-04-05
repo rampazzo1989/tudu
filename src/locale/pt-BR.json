@@ -1,0 +1,101 @@
+{
+  "listTitles": {
+    "today": "Hoje",
+    "allTasks": "Todos os tudús",
+    "allTasksPageTitle": "Todos os tudús",
+    "starred": "Favoritos",
+    "starredPageTitle": "Favoritos",
+    "archived": "Listas Arquivadas",
+    "search": "Pesquisar tudús"
+  },
+  "labels": {
+    "today": "Hoje"
+  },
+  "listPageTitles": {
+    "archived": "Listas Arquivadas",
+    "allTudus": "Todos os tudús"
+  },
+  "sectionTitles": {
+    "counters": "Contadores",
+    "myLists": "Minhas Listas",
+    "done": "Concluídos",
+    "allDone": "Todos concluídos!"
+  },
+  "actions": {
+    "delete": "Excluir",
+    "newList": "Nova lista",
+    "newGroup": "Novo grupo",
+    "newCounter": "Novo contador",
+    "sendToToday": "Enviar para Hoje",
+    "removeFromToday": "Remover de Hoje"
+  },
+  "messages": {
+    "confirmListDelete": "Confirmar exclusão de {{itemType}} {{listName}}?",
+    "confirmListArchive": "Confirmar arquivamento de {{itemType}} {{listName}}?",
+    "confirmListDeleteItemType": {
+      "list": "lista",
+      "group": "grupo"
+    },
+    "confirmCounterDelete": "Confirmar exclusão do contador '{{counterTitle}}'?"
+  },
+  "toast": {
+    "tuduDeleted": "Tudú excluído",
+    "itemDeleted": "{{itemType}} excluído",
+    "itemType": {
+      "list": "Lista",
+      "group": "Grupo"
+    },
+    "undo": "DESFAZER",
+    "allDoneDeleted": "Todos os tudús concluídos foram excluídos"
+  },
+  "buttons": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "yes": "Sim",
+    "no": "Não",
+    "other": "outro"
+  },
+  "popupTitles": {
+    "renameGroup": "Renomear Grupo",
+    "newList": "Criar nova lista",
+    "editList": "Editar lista",
+    "newCounter": "Criar novo contador",
+    "editCounter": "Editar contador",
+    "newGroup": "Criar novo grupo",
+    "newTudu": "Criar novo tudú",
+    "editTudu": "Editar tudú"
+  },
+  "popupLabels": {
+    "suggestedEmojis": "Emojis sugeridos:",
+    "mostUsedEmojis": "Emojis mais usados / sugeridos:"
+  },
+  "inputLabels": {
+    "description": "Descrição",
+    "initialValue": "Valor inicial",
+    "currentValue": "Valor atual",
+    "name": "Nome",
+    "pace": "Ritmo",
+    "addLists": "+ Adicionar listas"
+  },
+  "outdatedTudusList": {
+    "title": {
+      "outdated": "Vencidos",
+      "countOne": "Há 1 tudú vencido",
+      "countMany": "Há {{count}} tudús vencidos",
+      "upToDate": "Em dia"
+    },
+    "button": {
+      "show": "Mostrar",
+      "hide": "Ocultar"
+    }
+  },
+  "menuLabels": {
+    "edit": "Editar",
+    "delete": "Excluir",
+    "undoAll": "Desfazer todos",
+    "clearAll": "Limpar todos",
+    "rename": "Renomear",
+    "deleteGroup": "Excluir grupo",
+    "ungroupAll": "Desagrupar todos"
+  }
+}

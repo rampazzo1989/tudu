@@ -13,7 +13,7 @@ import {useListService} from '../../service/list-service-hook/useListService';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
 import {UNLISTED} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
-import {styles} from './styles';
+import {PaddedContainer, styles} from './styles';
 import {StarredTudusPageProps} from './types';
 
 const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
@@ -54,7 +54,7 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
         const isScheduledForToday = isToday(tudu.dueDate);
         return {
           label: isScheduledForToday
-            ? 'Today'
+            ? t('labels.today')
             : formatToLocaleDate(tudu.dueDate),
           originType: isScheduledForToday ? 'today' : 'scheduled',
         };
@@ -71,7 +71,7 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
       id: 'starred-tudus',
-      label: 'Starred tudús',
+      label: t('listTitles.starredPageTitle'),
     });
     return list;
   }, []);
@@ -87,14 +87,16 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
         {!tudus ? (
           <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
         ) : (
-          <SimpleTuduList
-            getAdditionalInformation={getAdditionalInformation}
-            tudus={tudus}
-            updateTuduFn={saveTudu}
-            deleteTuduFn={deleteTudu}
-            undoDeletionFn={restoreBackup}
-            onEditPress={handleEditPress}
-          />
+          <PaddedContainer>
+            <SimpleTuduList
+              getAdditionalInformation={getAdditionalInformation}
+              tudus={tudus}
+              updateTuduFn={saveTudu}
+              deleteTuduFn={deleteTudu}
+              undoDeletionFn={restoreBackup}
+              onEditPress={handleEditPress}
+            />
+          </PaddedContainer>
         )}
       </PageContent>
 
