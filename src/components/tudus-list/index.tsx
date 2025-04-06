@@ -13,9 +13,11 @@ import {
   OptionsTouchable,
   SectionTitle,
   TuduAnimatedContainer,
+  TuduAnimatedWrapper,
 } from './styles';
 import {TudusListProps} from './types';
-
+import {LegendList, LegendListRenderItemProps} from '@legendapp/list'
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {CheckMarkIcon} from '../animated-icons/check-mark';
 import {TuduCard} from '../tudu-card';
 import {TuduViewModel} from '../../scenes/home/types';
@@ -32,8 +34,6 @@ import { useListService } from '../../service/list-service-hook/useListService';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
 import { ShrinkableView } from '../shrinkable-view';
 import { useTranslation } from 'react-i18next';
-import { SimpleTuduList } from '../simple-tudu-list';
-import { FlatList, LayoutAnimation, ListRenderItem } from 'react-native';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({
@@ -232,17 +232,24 @@ const TudusList: React.FC<TudusListProps> = memo(
     }, [handleDeleteGenerator, handleEditGenerator, handleSendToOrRemoveFromTodayGenerator, onStarPress, onTuduPress]);
 
     const renderUndoneItem = useCallback((params: RenderItemParams<IndexedTudu>) => renderItem({...params, renderDone: false}), [renderItem]);
-    const renderDoneItem: ListRenderItem<TuduViewModel> = useCallback(({item: tudu}) => {
+    const renderDoneItem = useCallback(({ item: tudu }: LegendListRenderItemProps<TuduViewModel>) => {
       if (!tudu.done)
         return null;
 
       return (
+        <TuduAnimatedWrapper key={tudu.id}
+          layout={LinearTransition}>
             <ShrinkableView onPress={() => onTuduPress(tudu)} scaleFactor={0.03} 
               style={{ height: 'auto', width: '100%', zIndex: tudu.done ? 0 : 9999, marginBottom: 8}} >
                 {SwipeableTudu({tudu, isActive: false})}
             </ShrinkableView>
+            </TuduAnimatedWrapper>
         );
     }, [renderItem]);
+
+    const handleDragBegin = useCallback(() => {
+      RNReactNativeHapticFeedback.trigger('soft');
+    }, []);
 
     const handleDragEnd: (params: DragEndParams<IndexedTudu>) => void = useCallback(({ data }) => {
       setTudus([...data.flatMap(x => x.indexedTudu), ...doneIndexedTudus.flatMap(x => x.indexedTudu)]);
@@ -267,22 +274,23 @@ const TudusList: React.FC<TudusListProps> = memo(
               removeClippedSubviews
               windowSize={8}
               initialNumToRender={8}
+              onDragBegin={handleDragBegin}
             /> : undefined}
             {doneTudus.length ? getSectionTitle(doneTudus.length) : undefined}
-              <Animated.FlatList
-                data={doneTudus}
-                itemLayoutAnimation={LinearTransition}
-                renderItem={renderDoneItem}
-                keyExtractor={(item) => `item-${item.id}`}
-                style={{ width: '100%', overflow: 'visible', marginTop: 16}}
-                contentContainerStyle={{ overflow: 'visible', 
-                  flexGrow: 1
-                }}
-                removeClippedSubviews
-                windowSize={6}
-                initialNumToRender={6}
-                />
+                <LegendList
+                  data={doneTudus}
+                  renderItem={renderDoneItem}
+                  estimatedItemSize={70}
+                  keyExtractor={(item, index) => `doneitem-${item.id}`}
+                  style={{ width: '100%', overflow: 'visible', marginTop: 16}}
+                  contentContainerStyle={{ overflow: 'visible', 
+                    flexGrow: 1
+                  }}
+                  removeClippedSubviews
+                  nestedScrollEnabled
+                  />
             </NestableScrollContainer>
+            
       </Container>
     );
   },
