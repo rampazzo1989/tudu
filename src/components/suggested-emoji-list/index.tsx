@@ -6,15 +6,17 @@ import { FadeIn } from 'react-native-reanimated';
 import { ListDefaultIcon } from '../animated-icons/list-default-icon';
 import { emojiUsageState } from '../../state/atoms';
 import { useTheme } from 'styled-components/native';
+import Skeleton from '../skeleton';
 
 interface SuggestedEmojiListProps {
     emojis: string[];
     isShowingMostUsedEmojis: boolean;
     onEmojiSelect: (emoji: string) => void;
     showDefaultIcon?: boolean;
+    isLoading?: boolean;
 }
 
-const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowingMostUsedEmojis, onEmojiSelect, showDefaultIcon = false }) => {
+const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowingMostUsedEmojis, onEmojiSelect, showDefaultIcon = false, isLoading = false }) => {
     const { t } = useTranslation();
     const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
     const [_, setEmojiUsage] = useRecoilState(emojiUsageState);
@@ -33,17 +35,27 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
         if (emoji !== '' && !emojiIsAlreadySelected) {
             setEmojiUsage((currentUsage) => {
                 const newUsage = new Map(currentUsage);
-                newUsage.set(emoji, (newUsage.get(emoji) || 0) + 1); // Incrementa o contador
+                newUsage.set(emoji, (newUsage.get(emoji) || 0) + 1);
                 return newUsage;
             });
         }
     };
 
-    // React.useEffect(() => {
-    //     emojiUsage.forEach((value, key) => {
-    //         console.log(`Emoji: ${key}, Usos: ${value}`);
-    //     });
-    // }, [emojiUsage]);
+    if (isLoading) {
+        return (
+            <Container>
+                <Title>{t('popupLabels.loading')}</Title>
+                <EmojiList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                        <Skeleton key={index} style={{ width: 48, height: 48, borderRadius: 8, marginHorizontal: 4, backgroundColor: '#585f69' }} />
+                    ))}
+                </EmojiList>
+            </Container>
+        );
+    }
 
     return (
         <Container>

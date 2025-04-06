@@ -14,7 +14,6 @@ export const useEmojiSearch = (debounceDelay: number) => {
 
   const emojis = useMemo(() => {
     const language = getLocales()[0].languageTag;
-    console.log('language', language);
     return language.startsWith('pt-BR') ? emojisPtBr : emojisEn;
   }, []);
 
@@ -35,9 +34,13 @@ export const useEmojiSearch = (debounceDelay: number) => {
         );
       }
 
-      const searchLimitPerWord = sortedWords.length === 1 
+      var searchLimitPerWord = sortedWords.length === 1 
         ? 10 
-        : sortedWords.length > 3 ? 4 : 8;
+        : sortedWords.length < 4
+          ? 6 
+          : 3;
+
+      searchLimitPerWord = Math.min(searchLimitPerWord, 18);
 
       const emojiEntries = Object.entries(emojis).map(([key, values]) => ({
         key,
@@ -88,15 +91,19 @@ export const useEmojiSearch = (debounceDelay: number) => {
   , []);
 
   const debounceSearchEmojis = useCallback(
-    (text: string, callback: (results: string[], isShowingMostUsed: boolean) => void, fallbackToMostUsed: boolean = true) => {
+    (text: string, callback: (results: string[], isShowingMostUsed: boolean) => void, 
+    fallbackToMostUsed: boolean = true, beforeCallback: undefined | (() => void) = undefined) => {
       var showingMostUsed = false;
       debounce(() => {
-        var results = searchEmojis(text);
-        if (fallbackToMostUsed && results.length === 0) {
-          results = getMostUsedEmojis();
-          showingMostUsed = true;
-        }
-        callback(results, showingMostUsed);
+        beforeCallback?.();
+        setTimeout(() => {
+          var results = searchEmojis(text);
+          if (fallbackToMostUsed && results.length === 0) {
+            results = getMostUsedEmojis();
+            showingMostUsed = true;
+          }
+          callback(results, showingMostUsed);
+        }, 0);
       }, debounceDelay)();
     },
     [debounce, searchEmojis, debounceDelay]

@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@craftzdog/react-native-buffer": "^6.0.5",
+    "@legendapp/list": "^1.0.0-beta.28",
     "@os-team/i18next-react-native-language-detector": "^1.1.6",
     "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-native-community/blur": "^4.4.1",

@@ -24,7 +24,7 @@ import {NewTuduModal} from '../new-tudu-modal';
 import {ListActionButton} from '../list-action-button';
 import {TudusList} from '../tudus-list';
 import {ListPageCoreProps} from './types';
-import {TuduViewModel} from '../../scenes/home/types';
+import {ListViewModel, TuduViewModel} from '../../scenes/home/types';
 import {ListHeader} from '../list-header';
 import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday, isOutdated} from '../../utils/date-utils';
@@ -89,10 +89,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       [setTudus],
     );
 
-    const handleListDragStart = useCallback(() => {
-      RNReactNativeHapticFeedback.trigger('soft');
-    }, []);
-
     const handleListCompleted = useCallback(() => {
       cheersRef.current?.play();
       RNReactNativeHapticFeedback.trigger('notificationSuccess');
@@ -114,7 +110,25 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         }
 
         tudu.done = !tudu.done;
-        saveTudu(tudu);
+        
+        // First updates the internal list
+        setInternalList(current => {
+          if (!current) {
+            return undefined;
+          }
+          return {
+            ...current,
+            tudus: current.tudus?.map(x => {
+              if (x.id === tudu.id) {
+                return tudu;
+              }
+              return x;
+            }),
+          } as ListViewModel;
+        });
+
+        // Then updates the global list
+        setTimeout(() => saveTudu(tudu), 50);
 
         const allDone = !!internalList.tudus?.filter(x => x.id !== tudu.id).every(x => x.done) && tudu.done;
 

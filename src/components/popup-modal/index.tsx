@@ -73,10 +73,11 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         visible={visible}
         {...props}>
         <KeyboardAvoidingView behavior="padding" pointerEvents="auto">
-          {visible && topContainerVisible && TopContainerComponent && 
-            (<PopupTopContainer entering={FadeInDown} exiting={FadeOutDown.duration(100)}>
+          {visible && topContainerVisible && TopContainerComponent && (
+            <PopupTopContainer entering={FadeInDown} exiting={FadeOutDown.duration(100)}>
               {TopContainerComponent}
-            </PopupTopContainer>)}
+            </PopupTopContainer>
+          )}
           
           <PopupContainer style={animatedStyle} minimumSized={!children}>
             {title && (
@@ -87,15 +88,13 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                       autoPlay
                       autoPlayDelay={iconAnimationDelay}
                       style={styles.icon}
-                      size={22}
-                    />
+                      size={22} />
                   )}
                   <PopupTitle>{`${title}`}</PopupTitle>
                 </PopupTitleContainer>
                 <GradientSeparator
                   colorArray={theme.colors.defaultSeparatorGradientColors}
-                  marginTop={10}
-                />
+                  marginTop={10} />
               </>
             )}
             {!!children && <ContentContainer>{children}</ContentContainer>}
