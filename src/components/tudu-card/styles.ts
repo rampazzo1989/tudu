@@ -27,7 +27,6 @@ export const Label = styled.Text<CheckableComponentType>`
   color: ${({theme}) => theme.colors.text};
   font-size: 16px;
   max-width: 85%;
-  // flex-grow: 1;
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};
   text-decoration-line: ${({done}) => (done ? 'line-through' : 'none')};
 `;

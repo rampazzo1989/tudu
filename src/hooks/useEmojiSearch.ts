@@ -3,10 +3,11 @@ import { getLocales } from 'react-native-localize';
 import emojisPtBr from 'emojilib-pt-br/dist/emoji-pt-BR.json';
 import emojisEn from 'emojilib-pt-br/dist/emoji-en-US.json';
 import Fuse from 'fuse.js';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { emojiUsageState } from '../state/atoms';
 
 const MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI = 3;
+const MAX_NUMBER_OF_WORDS = 6;
 
 export const useEmojiSearch = (debounceDelay: number) => {
   const timer = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -26,21 +27,18 @@ export const useEmojiSearch = (debounceDelay: number) => {
 
   const searchEmojis = useCallback(
     (text: string) => {
-      const words = text.split(/\s+/).filter(Boolean);
-      let sortedWords = words.sort((a, b) => b.length - a.length);
-      if (sortedWords.length > 1) {
-        sortedWords = sortedWords.filter(
+      let words = text.split(/\s+/).filter(Boolean);
+      if (words.length > 1) {
+        words = words.filter(
           (word) => word.length >= MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI
-        );
+        ).slice(0, MAX_NUMBER_OF_WORDS);
       }
 
-      var searchLimitPerWord = sortedWords.length === 1 
-        ? 10 
-        : sortedWords.length < 4
-          ? 6 
+      var searchLimitPerWord = words.length === 1 
+        ? 8 
+        : words.length < 4
+          ? 5
           : 3;
-
-      searchLimitPerWord = Math.min(searchLimitPerWord, 18);
 
       const emojiEntries = Object.entries(emojis).map(([key, values]) => ({
         key,
@@ -54,7 +52,7 @@ export const useEmojiSearch = (debounceDelay: number) => {
       });
 
       const resultSet = new Set(
-        sortedWords
+        words
           .flatMap((word) =>
             fuse
               .search(word, { limit: searchLimitPerWord })
@@ -62,8 +60,6 @@ export const useEmojiSearch = (debounceDelay: number) => {
           .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
           .map((x) => x.item.key)
       );
-
-      console.log('resultSet', Array.from(resultSet));
 
       return Array.from(resultSet);
     },

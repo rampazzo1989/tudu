@@ -90,7 +90,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         Icon={getDaytimeIcon()}
         isSmartList
         numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
-        TopComponent={outdatedTudus.length ? (<OutdatedTudusList tudus={outdatedTudus} />) : undefined}
+        TopComponent={outdatedTudus.length ? (<OutdatedTudusList tudus={outdatedTudus} showUpToDateHeader={!!list.tudus.length} />) : undefined}
       />
     );
   },

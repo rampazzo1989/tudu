@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { WarningIcon } from "../../../../components/animated-icons/warning-icon";
 import { AnimatedIconRef } from "../../../../components/animated-icons/animated-icon/types";
 
-const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus }) => {
+const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDateHeader = false }) => {
     const { t } = useTranslation();
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
@@ -95,9 +95,11 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus }) => {
                             onEditPress={handleEditPress}
                         />
                     </View>
-                    <TitleContainer isShowingTudus={showTudus}>
+                    {showUpToDateHeader && (
+                        <TitleContainer isShowingTudus={showTudus}>
                         <Title>{t("outdatedTudusList.title.upToDate")}</Title>
-                    </TitleContainer>
+                        </TitleContainer>
+                    )}
                 </Animated.View>
             ) : null}
             <NewTuduModal
