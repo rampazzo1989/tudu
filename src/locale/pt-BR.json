@@ -6,7 +6,9 @@
     "starred": "Favoritos",
     "starredPageTitle": "Favoritos",
     "archived": "Listas Arquivadas",
-    "search": "Pesquisar tudús"
+    "search": "Pesquisar tudús",
+    "sampleList": "💎 Lista de exemplo",
+    "swipeToArchive": "➡️ Deslize para arquivar"
   },
   "labels": {
     "today": "Hoje"
@@ -98,5 +100,10 @@
     "rename": "Renomear",
     "deleteGroup": "Excluir grupo",
     "ungroupAll": "Desagrupar todos"
+  },
+  "tuduSamples": {
+    "checkThis": "Toque aqui para concluir este tudú 👆",
+    "swipeSidesOptions": "Deslize para os lados para opções 👈👉",
+    "holdAndDragToReorder": "Segure e arraste para reorganizar ↕️"
   }
 }

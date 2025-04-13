@@ -1,4 +1,4 @@
-package com.tudu
+package com.rampazzo.tudu
 
 import android.app.Application
 import com.facebook.react.PackageList

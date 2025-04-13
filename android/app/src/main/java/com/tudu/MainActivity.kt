@@ -1,4 +1,4 @@
-package com.tudu
+package com.rampazzo.tudu
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity

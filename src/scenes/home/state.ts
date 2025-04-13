@@ -66,7 +66,7 @@ export const myLists = atom<Map<string, List>>({
       '1',
       {
         id: '1',
-        label: 'Sample list 💎',
+        label: i18next.t('listTitles.sampleList'),
       },
     ],
   ]),
@@ -83,7 +83,7 @@ export const tudus = atom<Map<string, TuduItemMap>>({
           '10',
           {
             id: '10',
-            label: 'Check this tudú 👆',
+            label: i18next.t('tuduSamples.checkThis'),
             done: false,
           },
         ],
@@ -91,7 +91,15 @@ export const tudus = atom<Map<string, TuduItemMap>>({
           '11',
           {
             id: '11',
-            label: 'Swipe for options 👈👉',
+            label: i18next.t('tuduSamples.swipeSidesOptions'),
+            done: false,
+          },
+        ],
+        [
+          '12',
+          {
+            id: '12',
+            label: i18next.t('tuduSamples.holdAndDragToReorder'),
             done: false,
           },
         ],

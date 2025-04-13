@@ -6,7 +6,9 @@
     "starred": "Starred",
     "starredPageTitle": "Starred tudús",
     "archived": "Archived",
-    "search": "Search tudús"
+    "search": "Search tudús",
+    "sampleList": "💎 Sample list",
+    "swipeToArchive": "➡️ Swipe to archive"
   },
   "labels": {
     "today": "Today"
@@ -98,5 +100,10 @@
     "rename": "Rename",
     "deleteGroup": "Delete group",
     "ungroupAll": "Ungroup all"
+  },
+  "tuduSamples": {
+    "checkThis": "Touch here to finish this tudú 👆",
+    "swipeSidesOptions": "Swipe to the sides for options 👈👉",
+    "holdAndDragToReorder": "Hold and drag to reorder ↕️"
   }
 }
