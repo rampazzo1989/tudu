@@ -105,5 +105,35 @@
     "checkThis": "Toque aqui para concluir este tudú 👆",
     "swipeSidesOptions": "Deslize para os lados para opções 👈👉",
     "holdAndDragToReorder": "Segure e arraste para reorganizar ↕️"
+  },
+  "onboarding": {
+    "welcome": "Bem-vindo ao Tudú!",
+    "finish": "Concluir",
+    "steps": {
+      "lists": {
+        "title": "Listas",
+        "description": "Deslize para os lados para ver opções, arraste e solte para reorganizar. Crie grupos para organizar seus Tudús."
+      },
+      "tudus": {
+        "title": "Tudús",
+        "description": "Deslize para opções, arraste e solte para reorganizar, toque para marcar como concluído."
+      },
+      "emojis": {
+        "title": "Sugestão de Emojis",
+        "description": "Ao editar ou inserir listas e tudús, veja sugestões de emojis."
+      },
+      "counters": {
+        "title": "Contadores",
+        "description": "Crie contadores simples para acompanhar o progresso do que quiser!"
+      },
+      "scheduled": {
+        "title": "Tudús Agendados",
+        "description": "Veja os tudús agendados para hoje na lista 'Hoje' (em breve agendamento para outros dias)."
+      },
+      "search": {
+        "title": "Pesquisa",
+        "description": "Use a pesquisa para encontrar tudús rapidamente."
+      }
+    }
   }
 }

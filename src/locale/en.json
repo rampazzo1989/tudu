@@ -105,5 +105,35 @@
     "checkThis": "Touch here to finish this tudú 👆",
     "swipeSidesOptions": "Swipe to the sides for options 👈👉",
     "holdAndDragToReorder": "Hold and drag to reorder ↕️"
+  },
+  "onboarding": {
+    "welcome": "Welcome to Tudú!",
+    "finish": "Finish",
+    "steps": {
+      "lists": {
+        "title": "Lists",
+        "description": "Swipe to the sides for options, drag and drop to reorder. Create groups to organize your Tudús."
+      },
+      "tudus": {
+        "title": "Tudús",
+        "description": "Swipe for options, drag and drop to reorder, tap to mark as done."
+      },
+      "emojis": {
+        "title": "Emoji Suggestions",
+        "description": "When editing or adding lists and tudús, see emoji suggestions."
+      },
+      "counters": {
+        "title": "Counters",
+        "description": "Create simple counters to track progress on anything!"
+      },
+      "scheduled": {
+        "title": "Scheduled Tudús",
+        "description": "See tudús scheduled for today in the 'Today' list (scheduling for other days coming soon)."
+      },
+      "search": {
+        "title": "Search",
+        "description": "Use search to quickly find tudús."
+      }
+    }
   }
 }

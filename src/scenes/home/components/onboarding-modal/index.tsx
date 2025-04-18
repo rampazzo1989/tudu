@@ -13,41 +13,48 @@ import { PopupModal } from '../../../../components/popup-modal';
 import { BackButton } from '../../../../components/back-button';
 import { NextButton } from '../../../../components/next-button';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
+import { TranslationKeys } from './types';
 
-const onboardingSteps = [
+const onboardingSteps: Array<{
+  titleKey: TranslationKeys;
+  descriptionKey: TranslationKeys;
+  image: string;
+}> = [
   {
-    title: 'Listas',
-    description: 'Deslize para os lados para ver opções, arraste e solte para reorganizar. Crie grupos para organizar seus Tudús.',
+    titleKey: 'onboarding.steps.lists.title',
+    descriptionKey: 'onboarding.steps.lists.description',
     image: 'https://res.cloudinary.com/dnizif4j6/image/upload/v1744994793/lists_hjpxmc.png',
   },
   {
-    title: 'Tudús',
-    description: 'Deslize para opções, arraste e solte para reorganizar, toque para marcar como concluído.',
+    titleKey: 'onboarding.steps.tudus.title',
+    descriptionKey: 'onboarding.steps.tudus.description',
     image: 'https://res.cloudinary.com/dnizif4j6/image/upload/v1744995053/tudus_dpwis7.png',
   },
   {
-    title: 'Sugestão de Emojis',
-    description: 'Ao editar ou inserir listas e tudús, veja sugestões de emojis.',
+    titleKey: 'onboarding.steps.emojis.title',
+    descriptionKey: 'onboarding.steps.emojis.description',
     image: 'https://res.cloudinary.com/dnizif4j6/image/upload/v1744994793/emojis_owgxbz.png',
   },
   {
-    title: 'Contadores',
-    description: 'Crie contadores simples para acompanhar o progresso do que quiser!',
+    titleKey: 'onboarding.steps.counters.title',
+    descriptionKey: 'onboarding.steps.counters.description',
     image: 'https://res.cloudinary.com/dnizif4j6/image/upload/v1744994823/Captura_de_Tela_2025-04-18_a%CC%80s_13.43.37_cbhvfk.png',
   },
   {
-    title: 'Tudús Agendados',
-    description: 'Veja os tudús agendados para hoje na lista "Hoje" (em breve agendamento para outros dias).',
+    titleKey: 'onboarding.steps.scheduled.title',
+    descriptionKey: 'onboarding.steps.scheduled.description',
     image: 'https://res.cloudinary.com/dnizif4j6/image/upload/v1744994824/Captura_de_Tela_2025-04-18_a%CC%80s_13.45.05_krjyhw.png',
   },
   {
-    title: 'Pesquisa',
-    description: 'Use a pesquisa para encontrar tudús rapidamente.',
+    titleKey: 'onboarding.steps.search.title',
+    descriptionKey: 'onboarding.steps.search.description',
     image: 'https://res.cloudinary.com/dnizif4j6/image/upload/v1744994824/Captura_de_Tela_2025-04-18_a%CC%80s_13.45.53_wbexqt.png',
   },
 ];
 
 export const OnboardingModal: React.FC = () => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useRecoilState(hasSeenOnboardingState);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -73,17 +80,15 @@ export const OnboardingModal: React.FC = () => {
   useEffect(() => {
     setTimeout(() => {
       setIsShowingWelcome(false);
-    }
-    , 4300);
+    }, 4300);
     setTimeout(() => {
       setIsShowingWelcomeText(false);
-    }
-    , 2500);
+    }, 2500);
   }, []);
 
   if (hasSeenOnboarding) return null;
 
-  const { title, description, image } = onboardingSteps[currentStep];
+  const { titleKey, descriptionKey, image } = onboardingSteps[currentStep];
 
   return (
     <PopupModal visible={!hasSeenOnboarding} animationType="fade" transparent onRequestClose={() => setHasSeenOnboarding(false)}>
@@ -91,7 +96,7 @@ export const OnboardingModal: React.FC = () => {
         {/* Welcome Message */}
         {isShowingWelcome ? (isShowingWelcomeText && (
           <Animated.View entering={FadeIn.duration(2500)} exiting={FadeOut.duration(2000)}>
-            <Text style={styles.title}>Bem-vindo ao Tudú!</Text>
+            <Text style={styles.title}>{t('onboarding.welcome')}</Text>
           </Animated.View>)) : (
           <>
         <Animated.View style={styles.stepperContainer}>
@@ -116,8 +121,8 @@ export const OnboardingModal: React.FC = () => {
           onError={() => setIsImageLoading(false)}
         />
 
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.title}>{t(titleKey)}</Text>
+        <Text style={styles.description}>{t(descriptionKey)}</Text>
 
         <View style={styles.buttonContainer}>
           {currentStep > 0 && (
@@ -128,7 +133,7 @@ export const OnboardingModal: React.FC = () => {
           )}
           {currentStep === onboardingSteps.length - 1 && (
             <Button
-              title="Concluir"
+              title={t('onboarding.finish')}
               onPress={handleNext}
               color="#7956BF"
             />

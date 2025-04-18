@@ -1,0 +1,15 @@
+export type TranslationKeys =
+  | 'onboarding.steps.lists.title'
+  | 'onboarding.steps.lists.description'
+  | 'onboarding.steps.tudus.title'
+  | 'onboarding.steps.tudus.description'
+  | 'onboarding.steps.emojis.title'
+  | 'onboarding.steps.emojis.description'
+  | 'onboarding.steps.counters.title'
+  | 'onboarding.steps.counters.description'
+  | 'onboarding.steps.scheduled.title'
+  | 'onboarding.steps.scheduled.description'
+  | 'onboarding.steps.search.title'
+  | 'onboarding.steps.search.description'
+  | 'onboarding.welcome'
+  | 'onboarding.finish';
