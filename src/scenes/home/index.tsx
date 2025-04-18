@@ -35,6 +35,7 @@ import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated
 import {useListService} from '../../service/list-service-hook/useListService';
 import {useCounterService} from '../../service/counter-service-hook/useCounterService';
 import { PageContent } from '../../components/page-content';
+import { OnboardingModal } from './components/onboarding-modal';
 
 const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   const smartLists = useRecoilValue(homeDefaultLists);
@@ -141,6 +142,7 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
 
   return (
     <Page>
+      <OnboardingModal />
       <HomeHeader onSearchPress={handleSearchPress} />
       <DraxProvider>
         <DraggableContextProvider<ListDataViewModel>

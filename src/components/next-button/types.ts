@@ -1,6 +1,6 @@
 import { ViewStyle } from "react-native";
 
-export type BackButtonProps = {
+export type NextButtonProps = {
   onPress: () => void;
-    style?: ViewStyle;
+  style?: ViewStyle;
 };
