@@ -28,7 +28,7 @@ const StackNavigator = () => {
   const configSlow: TransitionSpec = {
     animation: 'timing',
     config: {
-      duration: 100,
+      duration: 200,
     },
   };
 
@@ -40,9 +40,10 @@ const StackNavigator = () => {
         name="SplashScreen"
         component={SplashScreen}
         options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {
             open: config,
-            close: configSlow,
+            close: config,
           },
         }}
       />

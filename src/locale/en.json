@@ -11,7 +11,8 @@
     "swipeToArchive": "➡️ Swipe to archive"
   },
   "labels": {
-    "today": "Today"
+    "today": "Today",
+    "in": "in"
   },
   "listPageTitles": {
     "archived": "Archived Lists",
@@ -135,5 +136,11 @@
         "description": "Use search to quickly find tudús."
       }
     }
+  },
+  "recurrence": {
+    "daily": "every day",
+    "weekly": "every week",
+    "monthly": "every month",
+    "yearly": "every year"
   }
 }

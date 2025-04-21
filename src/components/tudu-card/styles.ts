@@ -48,6 +48,19 @@ export const AdditionalInfoLabel = styled.Text`
   color: ${({theme}) => theme.colors.text};
 `;
 
+export const RecurrenceInfoLabel = styled.Text`
+  margin-left: 3px;
+  font-size: 10px;
+  color: ${({theme}) => theme.colors.text};
+`;
+
 export const StarContainer = styled.View`
   width: 10%;
 `;
+
+export const RecurrenceInfoContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  `;

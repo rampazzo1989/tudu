@@ -11,7 +11,8 @@
     "swipeToArchive": "➡️ Deslize para arquivar"
   },
   "labels": {
-    "today": "Hoje"
+    "today": "Hoje",
+    "in": "em"
   },
   "listPageTitles": {
     "archived": "Listas Arquivadas",
@@ -135,5 +136,11 @@
         "description": "Use a pesquisa para encontrar tudús rapidamente."
       }
     }
+  },
+  "recurrence": {
+    "daily": "todos os dias",
+    "weekly": "toda semana",
+    "monthly": "todo mês",
+    "yearly": "todo ano"
   }
 }

@@ -1,11 +1,11 @@
-import React, {memo, useCallback, useEffect, useState} from 'react';
-import {isToday} from '../../utils/date-utils';
-import {toggle} from '../../utils/state-utils';
-import {CalendarIcon} from '../animated-icons/calendar';
-import {ListDefaultIcon} from '../animated-icons/list-default-icon';
-import {SunIcon} from '../animated-icons/sun-icon';
-import {Star} from '../star';
-import {TuduCheckbox} from '../tudu-checkbox';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { isToday } from '../../utils/date-utils';
+import { toggle } from '../../utils/state-utils';
+import { CalendarIcon } from '../animated-icons/calendar';
+import { ListDefaultIcon } from '../animated-icons/list-default-icon';
+import { SunIcon } from '../animated-icons/sun-icon';
+import { Star } from '../star';
+import { TuduCheckbox } from '../tudu-checkbox';
 import {
   AdditionalInfoContainer,
   AdditionalInfoLabel,
@@ -13,10 +13,16 @@ import {
   CheckAndTextContainer,
   Label,
   LabelAndAdditionalInfoContainer,
+  RecurrenceInfoContainer,
+  RecurrenceInfoLabel,
   StarContainer,
 } from './styles';
-import {SwipeableTuduCard} from './swipeable-tudu-card';
-import {TuduAdditionalInformationOriginType, TuduCardProps} from './types';
+import { SwipeableTuduCard } from './swipeable-tudu-card';
+import { TuduAdditionalInformationOriginType, TuduCardProps } from './types';
+import { RecurrenceType } from '../../scenes/home/types';
+import { RefreshIcon } from '../animated-icons/refresh-icon';
+import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
+import { useTranslation } from 'react-i18next';
 
 const TuduCard = memo<TuduCardProps>(
   ({
@@ -25,6 +31,7 @@ const TuduCard = memo<TuduCardProps>(
     onStarPress,
     additionalInfo,
   }) => {
+    const { t } = useTranslation();
     const [internalDone, setInternalDone] = useState(data.done);
     const [internalStarred, setInternalStarred] = useState(!!data.starred);
 
@@ -60,7 +67,7 @@ const TuduCard = memo<TuduCardProps>(
             return label;
           case 'list':
           default:
-            return `in ${label}`;
+            return `${t('labels.in')} ${label}`;
         }
       },
       [],
@@ -71,6 +78,13 @@ const TuduCard = memo<TuduCardProps>(
       setTimeout(() => onStarPress(data), 100);
     }, [data, onStarPress]);
 
+    const getRecurrenceInfoLabel = useCallback(
+      (recurrence: RecurrenceType) => {
+        return t(`recurrence.${recurrence}`);
+      },
+      [t],
+    );
+
     return (
       <Card
         scaleFactor={0.03}
@@ -79,29 +93,36 @@ const TuduCard = memo<TuduCardProps>(
           return undefined;
         }}
         done={internalDone}>
-          <StarContainer>
-            <Star checked={internalStarred} onPress={handleStarPress} />
-          </StarContainer>
-          <CheckAndTextContainer done={data.done}>
-            <LabelAndAdditionalInfoContainer>
-              <Label done={internalDone}>{data.label}</Label>
-              {additionalInfo && (
-                <AdditionalInfoContainer>
-                  {AdditionalInfoIcon(additionalInfo.originType)}
-                  <AdditionalInfoLabel>
-                    {getAdditionalInformationLabel(
-                      additionalInfo.originType,
-                      additionalInfo.label,
-                    )}
-                  </AdditionalInfoLabel>
-                </AdditionalInfoContainer>
-              )}
-            </LabelAndAdditionalInfoContainer>
-            <TuduCheckbox checked={internalDone} onPress={handleTuduPress} />
-          </CheckAndTextContainer>
+        <StarContainer>
+          <Star checked={internalStarred} onPress={handleStarPress} />
+        </StarContainer>
+        <CheckAndTextContainer done={data.done}>
+          <LabelAndAdditionalInfoContainer>
+            <Label done={internalDone}>{data.label}</Label>
+            {additionalInfo && (
+              <AdditionalInfoContainer>
+                {AdditionalInfoIcon(additionalInfo.originType)}
+                <AdditionalInfoLabel>
+                  {getAdditionalInformationLabel(
+                    additionalInfo.originType,
+                    additionalInfo.label,
+                  )}
+                </AdditionalInfoLabel>
+                {data.recurrence && 
+                <RecurrenceInfoContainer>
+                  <RecurrenceIcon size={10} autoPlay />
+                  <RecurrenceInfoLabel>
+                    {getRecurrenceInfoLabel(data.recurrence)}
+                  </RecurrenceInfoLabel>
+                </RecurrenceInfoContainer>}
+              </AdditionalInfoContainer>
+            )}
+          </LabelAndAdditionalInfoContainer>
+          <TuduCheckbox checked={internalDone} onPress={handleTuduPress} />
+        </CheckAndTextContainer>
       </Card>
     );
   },
 );
 
-export {TuduCard};
+export { TuduCard };
