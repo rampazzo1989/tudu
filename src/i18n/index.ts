@@ -22,7 +22,7 @@ i18next
     compatibilityJSON: 'v3',
     ns: ['translation'],
     defaultNS,
-    fallbackLng: 'en-US', // Idioma de fallback
+    fallbackLng: 'en', // Idioma de fallback
     resources,
     detection: {
       order: ['device'], // Detecta o idioma do dispositivo
