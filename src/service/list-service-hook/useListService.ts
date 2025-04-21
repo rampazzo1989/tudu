@@ -316,6 +316,33 @@ const useListService = () => {
     [getListState, getTudusState, unlistedTudus],
   );
 
+  const getAllRecurrentTudusToUpdate = useCallback(
+    () => {
+      const state = getTudusState('default');
+      const listState = getListState('default');
+      const allTudus =
+        [...state].flatMap(([listId, tudus]) => {
+          const listName = listState.get(listId)?.label;
+          return [...tudus].map(
+            ([_, tudu]) => new TuduViewModel(tudu, listId, 'default', listName),
+          );
+        }) ?? [];
+      const unlisted = [...unlistedTudus].map(
+        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'),
+      );
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+
+      return allTudus.concat(unlisted).filter(tudu => {
+        if (!tudu.recurrence || !tudu.dueDate) return false;
+
+        return (tudu.recurrence === 'daily' && tudu.dueDate < today) || tudu.dueDate <= tomorrow;
+      });
+    },
+    [getListState, getTudusState, unlistedTudus],
+  );
+
   const saveList = useCallback(
     (list: ListViewModel) => {
       const listStateSetter = getStateSetter(list.origin);
@@ -608,6 +635,7 @@ const useListService = () => {
     getAllTudus,
     getAllUndoneTudus,
     getAllStarredTudus,
+    getAllRecurrentTudusToUpdate,
     getTuduById,
     saveTudu,
     saveAllTudus,

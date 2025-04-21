@@ -6,6 +6,8 @@ type HomePageProps = NativeStackScreenProps<StackNavigatorParamList, 'Home'>;
 
 export type {HomePageProps};
 
+export type RecurrenceType = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
 export type TuduItem = {
   id: string;
   label: string;
@@ -13,6 +15,7 @@ export type TuduItem = {
   dueDate?: Date;
   scheduledOrder?: number;
   starred?: boolean;
+  recurrence?: RecurrenceType;
 };
 
 interface Clonable<T> {
@@ -29,6 +32,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
   scheduledOrder?: number;
   listName?: string;
   starred?: boolean;
+  recurrence?: RecurrenceType;
 
   public mapBack() {
     const listModel: TuduItem = {
@@ -38,6 +42,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
       dueDate: this.dueDate,
       scheduledOrder: this.scheduledOrder,
       starred: this.starred,
+      recurrence: this.recurrence,
     };
 
     return listModel;
@@ -69,6 +74,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
     this.origin = origin;
     this.listName = listName;
     this.starred = data.starred;
+    this.recurrence = data.recurrence;
   }
 }
 

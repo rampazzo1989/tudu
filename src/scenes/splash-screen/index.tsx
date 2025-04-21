@@ -1,8 +1,8 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useRef} from 'react';
-import {Dimensions, StatusBar} from 'react-native';
+import {StatusBar} from 'react-native';
 import {AnimatedIconRef} from '../../components/animated-icons/animated-icon/types';
-import {AppIcon, Logo, Spacer, StyledSafeAreaView} from './styles';
+import {AppIcon, Logo, StyledSafeAreaView} from './styles';
 import {StackNavigatorParamList} from '../../navigation/stack-navigator/types';
 import {useTheme} from 'styled-components/native';
 
@@ -24,7 +24,6 @@ const SplashScreen = React.memo(
 
     return (
       <>
-        {/* <Spacer /> */}
         <StyledSafeAreaView>
           <StatusBar
             backgroundColor={theme.colors.secondary}

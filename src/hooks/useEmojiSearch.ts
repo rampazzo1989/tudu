@@ -5,6 +5,7 @@ import emojisEn from 'emojilib-pt-br/dist/emoji-en-US.json';
 import Fuse from 'fuse.js';
 import { useRecoilValue } from 'recoil';
 import { emojiUsageState } from '../state/atoms';
+import { PARAMETERS_REGEX } from '../constants';
 
 const MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI = 3;
 const MAX_NUMBER_OF_WORDS = 6;
@@ -27,6 +28,9 @@ export const useEmojiSearch = (debounceDelay: number) => {
 
   const searchEmojis = useCallback(
     (text: string) => {
+      // Remove parameters from the text, if there are any:
+      text = text.replace(PARAMETERS_REGEX, '').trim();
+      
       let words = text.split(/\s+/).filter(Boolean);
       if (words.length > 1) {
         words = words.filter(

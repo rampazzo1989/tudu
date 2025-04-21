@@ -12,7 +12,7 @@ import {useTranslation} from 'react-i18next';
 const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
   ({
     children,
-    onSendToOrRemoveFromToday: onSendOrRemoveFromToday,
+    onSendToOrRemoveFromToday,
     onDelete,
     onEdit,
     done,
@@ -55,8 +55,8 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
     );
 
     const handleSwipeRight = useCallback(() => {
-      onSendOrRemoveFromToday(swipeableRef);
-    }, [onSendOrRemoveFromToday]);
+      onSendToOrRemoveFromToday(swipeableRef);
+    }, [onSendToOrRemoveFromToday]);
 
     const handleSwipeLeft = useCallback(() => {}, []);
 

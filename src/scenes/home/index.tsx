@@ -1,55 +1,98 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   HomePageProps,
   ListDataViewModel,
-  ListViewModel,
   SmartList,
 } from './types';
-import {DraggablePageContent, DraggableScrollablePageContent} from '../../components/draggable-page-content';
-import {Page} from '../../components/page';
-import {SmartLists} from './components/smart-lists';
-import {useRecoilValue} from 'recoil';
-import {homeDefaultLists} from './state';
-import {HomeHeader} from './components/home-header';
-import {useTranslation} from 'react-i18next';
+import {  DraggableScrollablePageContent } from '../../components/draggable-page-content';
+import { Page } from '../../components/page';
+import { SmartLists } from './components/smart-lists';
+import { useRecoilValue } from 'recoil';
+import { homeDefaultLists } from './state';
+import { HomeHeader } from './components/home-header';
+import { useTranslation } from 'react-i18next';
 import {
   LeftFadingGradient,
   PageContentContainer,
   RightFadingGradient,
   SectionTitle,
-  styles,
 } from './styles';
-import {CountersList} from './components/counters-list';
-import {DraggableItem} from '../../modules/draggable/draggable-context/types';
-import {CustomLists} from './components/custom-lists';
-import {mapListToDraggableItems} from '../../modules/draggable/draggable-utils';
-import {DraxProvider} from 'react-native-drax';
-import {FloatingDelete} from '../../components/floating-delete';
-import {DraggableContextProvider} from '../../modules/draggable/draggable-context';
-import {useTheme} from 'styled-components/native';
-import {generateListAndGroupDeleteTitle} from '../../utils/list-and-group-utils';
-import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
-import {HomeActionButton} from './components/home-action-button';
+import { CountersList } from './components/counters-list';
+import { DraggableItem } from '../../modules/draggable/draggable-context/types';
+import { CustomLists } from './components/custom-lists';
+import { mapListToDraggableItems } from '../../modules/draggable/draggable-utils';
+import { DraxProvider } from 'react-native-drax';
+import { FloatingDelete } from '../../components/floating-delete';
+import { DraggableContextProvider } from '../../modules/draggable/draggable-context';
+import { useTheme } from 'styled-components/native';
+import { generateListAndGroupDeleteTitle } from '../../utils/list-and-group-utils';
+import { FloatingActionButtonRef } from '../../components/floating-action-button/types';
+import { HomeActionButton } from './components/home-action-button';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {ForwardedRefAnimatedIcon} from '../../components/animated-icons/animated-icon/types';
-import {useListService} from '../../service/list-service-hook/useListService';
-import {useCounterService} from '../../service/counter-service-hook/useCounterService';
-import { PageContent } from '../../components/page-content';
+import { ForwardedRefAnimatedIcon } from '../../components/animated-icons/animated-icon/types';
+import { useListService } from '../../service/list-service-hook/useListService';
+import { useCounterService } from '../../service/counter-service-hook/useCounterService';
 import { OnboardingModal } from './components/onboarding-modal';
 
-const HomePage: React.FC<HomePageProps> = ({navigation}) => {
+const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
   const smartLists = useRecoilValue(homeDefaultLists);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const theme = useTheme();
 
-  const {getAllLists, saveAllLists, deleteList, restoreBackup} =
+  const { getAllLists, saveAllLists, deleteList, restoreBackup, getAllRecurrentTudusToUpdate, saveAllTudus } =
     useListService();
-  const {getAllCounters} = useCounterService();
+  const { getAllCounters } = useCounterService();
 
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
     actionButtonRef.current?.animateThisIcon(Icon);
+  }, []);
+
+  // Filters all tudus with recurrence and last date past today to update their date
+  useEffect(() => {
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    const recurrentTudusToUpdate = getAllRecurrentTudusToUpdate();
+    recurrentTudusToUpdate.forEach(tudu => {
+      if (!tudu.dueDate || !tudu.recurrence) return;
+
+      let nextDueDate = new Date(tudu.dueDate);
+
+      while (nextDueDate < today) {
+        switch (tudu.recurrence) {
+          case 'daily':
+            nextDueDate = today;
+            break;
+          case 'weekly':
+            nextDueDate.setDate(nextDueDate.getDate() + 7);
+            break;
+          case 'monthly':
+            nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+            break;
+          case 'yearly':
+            nextDueDate.setFullYear(nextDueDate.getFullYear() + 1);
+            break;
+          default:
+            break;
+        }
+      }
+
+      const isDailyAndIsOutdated = tudu.recurrence === 'daily' && tudu.dueDate < today;
+
+      if (isDailyAndIsOutdated || (['weekly', 'monthly', 'yearly'].includes(tudu.recurrence) && tudu.dueDate <= tomorrow)) {
+        tudu.done = false;
+      }
+
+      tudu.dueDate = nextDueDate;
+    });
+
+    if (recurrentTudusToUpdate.length === 0) return;
+
+    saveAllTudus(recurrentTudusToUpdate);
+
   }, []);
 
   const mapDraggableItemsToList = (
@@ -154,46 +197,46 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             scrollEnabled>
-              <PageContentContainer>
-            <SmartLists
-              lists={smartLists}
-              onListPress={handleDefaultListPress}
-            />
-            {countersList.length ? (
-              <>
-                <SectionTitle title={t('sectionTitles.counters')} />
-                <CountersList
-                  list={countersList}
-                  animateIcon={animateThisIcon}
-                />
-              </>
-            ) : (
-              <></>
-            )}
-            {groupedCustomLists.length ? (
-              <>
-                <SectionTitle title={t('sectionTitles.myLists')} />
-                <CustomLists
-                  onListPress={handleListPress}
-                  animateIcon={animateThisIcon}
-                />
-              </>
-            ) : (
-              <></>
-            )}
+            <PageContentContainer>
+              <SmartLists
+                lists={smartLists}
+                onListPress={handleDefaultListPress}
+              />
+              {countersList.length ? (
+                <>
+                  <SectionTitle title={t('sectionTitles.counters')} />
+                  <CountersList
+                    list={countersList}
+                    animateIcon={animateThisIcon}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+              {groupedCustomLists.length ? (
+                <>
+                  <SectionTitle title={t('sectionTitles.myLists')} />
+                  <CustomLists
+                    onListPress={handleListPress}
+                    animateIcon={animateThisIcon}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
 
-            <LeftFadingGradient
-              start={{x: 1, y: 0}}
-              end={{x: 0, y: 0}}
-              colors={theme.colors.scrollFadeGradientColorsPageBackground}
-              pointerEvents={'none'}
-            />
-            <RightFadingGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={theme.colors.scrollFadeGradientColorsPageBackground}
-              pointerEvents={'none'}
-            />
+              <LeftFadingGradient
+                start={{ x: 1, y: 0 }}
+                end={{ x: 0, y: 0 }}
+                colors={theme.colors.scrollFadeGradientColorsPageBackground}
+                pointerEvents={'none'}
+              />
+              <RightFadingGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                colors={theme.colors.scrollFadeGradientColorsPageBackground}
+                pointerEvents={'none'}
+              />
             </PageContentContainer>
           </DraggableScrollablePageContent>
           <FloatingDelete
@@ -210,4 +253,4 @@ const HomePage: React.FC<HomePageProps> = ({navigation}) => {
   );
 };
 
-export {HomePage};
+export { HomePage };
