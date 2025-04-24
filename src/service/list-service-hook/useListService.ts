@@ -21,6 +21,7 @@ import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback, useEffect} from 'react';
 import {groupBy} from '../../utils/array-utils';
 import {getListFromViewModel} from '../../utils/list-and-group-utils';
+import { getDateOnlyTimeStamp, isOutdated } from '../../utils/date-utils';
 
 class SingletonBackup {
   private static instance: SingletonBackup;
@@ -337,7 +338,7 @@ const useListService = () => {
       return allTudus.concat(unlisted).filter(tudu => {
         if (!tudu.recurrence || !tudu.dueDate) return false;
 
-        return (tudu.recurrence === 'daily' && tudu.dueDate < today) || tudu.dueDate <= tomorrow;
+        return (tudu.recurrence === 'daily' && isOutdated(tudu.dueDate)) || getDateOnlyTimeStamp(tudu.dueDate) <= getDateOnlyTimeStamp(tomorrow);
       });
     },
     [getListState, getTudusState, unlistedTudus],

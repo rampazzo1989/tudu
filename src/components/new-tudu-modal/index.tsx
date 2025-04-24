@@ -132,7 +132,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                 dateRegex.lastIndex = match.index; // Set the lastIndex to the start of the match
                 const dateMatch = text.match(dateRegex); // Matches a date in YYYY-MM-DD format
                 if (dateMatch) {
-                  const parsedDate = new Date(dateMatch[0]);
+                  const [year, month, day] = dateMatch[0].split('-').map(Number);
+                  const parsedDate = new Date(year, month - 1, day);
                   if (!isNaN(parsedDate.getTime())) {
                     params.dueDate = parsedDate; // Set the parsed date as the due date
                   }

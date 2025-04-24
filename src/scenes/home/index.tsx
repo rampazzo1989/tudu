@@ -33,6 +33,7 @@ import { ForwardedRefAnimatedIcon } from '../../components/animated-icons/animat
 import { useListService } from '../../service/list-service-hook/useListService';
 import { useCounterService } from '../../service/counter-service-hook/useCounterService';
 import { OnboardingModal } from './components/onboarding-modal';
+import { getDateOnlyTimeStamp } from '../../utils/date-utils';
 
 const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
   const smartLists = useRecoilValue(homeDefaultLists);
@@ -82,7 +83,7 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
 
       const isDailyAndIsOutdated = tudu.recurrence === 'daily' && tudu.dueDate < today;
 
-      if (isDailyAndIsOutdated || (['weekly', 'monthly', 'yearly'].includes(tudu.recurrence) && tudu.dueDate <= tomorrow)) {
+      if (isDailyAndIsOutdated || (['weekly', 'monthly', 'yearly'].includes(tudu.recurrence) && getDateOnlyTimeStamp(tudu.dueDate) <= getDateOnlyTimeStamp(tomorrow))) {
         tudu.done = false;
       }
 
