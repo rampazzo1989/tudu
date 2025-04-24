@@ -181,25 +181,28 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           updatedTudu.dueDate = tomorrow;
         }
 
-        const dueDate = params.dueDate ? params.dueDate as Date : updatedTudu.dueDate ?? new Date();
+        const dueDate = params.dueDate ? params.dueDate as Date : updatedTudu.dueDate;
         updatedTudu.dueDate = dueDate;
-
-        console.log('dueDate', dueDate.toDateString());
 
         if (params.daily) {
           updatedTudu.recurrence = 'daily';
+          updatedTudu.dueDate ||= new Date();
         }
 
         if (params.weekly) {
           updatedTudu.recurrence = 'weekly';
+          updatedTudu.dueDate ||= new Date();
         }
 
         if (params.monthly) {
           updatedTudu.recurrence = 'monthly';
+          updatedTudu.dueDate ||= new Date();
         }
 
         if (params.yearly) {
           updatedTudu.recurrence = 'yearly';
+          updatedTudu.dueDate ||= new Date();
+          console.log({updatedTudu, params})
         }
 
         // Call the original onInsertOrUpdate with the updated tudú
