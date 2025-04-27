@@ -30,7 +30,9 @@
     "newGroup": "Novo grupo",
     "newCounter": "Novo contador",
     "sendToToday": "Enviar para Hoje",
-    "removeFromToday": "Remover de Hoje"
+    "removeFromToday": "Remover de Hoje",
+    "archive": "Arquivar",
+    "unarchive": "Desarquivar"
   },
   "messages": {
     "confirmListDelete": "Confirmar exclusão de {{itemType}} {{listName}}?",

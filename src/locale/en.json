@@ -30,7 +30,9 @@
     "newGroup": "New group",
     "newCounter": "New counter",
     "sendToToday": "Send to Today",
-    "removeFromToday": "Remove from Today"
+    "removeFromToday": "Remove from Today",
+    "archive": "Archive",
+    "unarchive": "Unarchive"
   },
   "messages": {
     "confirmListDelete": "Confirm deletion of {{itemType}} {{listName}}?",

@@ -5,17 +5,19 @@ import {FolderIcon} from '../../animated-icons/folder-icon';
 import {SwipeableCard} from '../../swipeable-card';
 import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
 import {SwipeableListCardArchivedProps} from './types';
+import { useTranslation } from 'react-i18next';
 
 const SwipeableListCardArchived: React.FC<SwipeableListCardArchivedProps> =
   memo(({children, onUnarchive, onDelete, style, enabled = false}) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
+    const {t} = useTranslation();
 
     const rightOptions = useMemo<SwipeableOption[]>(
       () => [
         {
           Icon: DeleteIcon,
-          text: 'Delete',
+          text: t('actions.delete'),
         },
       ],
       [],
@@ -25,7 +27,7 @@ const SwipeableListCardArchived: React.FC<SwipeableListCardArchivedProps> =
       () => [
         {
           Icon: FolderIcon,
-          text: 'Unarchive',
+          text: t('actions.unarchive'),
         },
       ],
       [],
