@@ -21,6 +21,7 @@ import {ItemNotFoundError} from '../errors/item-not-found-error';
 import {useCallback, useEffect} from 'react';
 import {groupBy} from '../../utils/array-utils';
 import {getListFromViewModel} from '../../utils/list-and-group-utils';
+import { getDateOnlyTimeStamp, isOutdated } from '../../utils/date-utils';
 
 class SingletonBackup {
   private static instance: SingletonBackup;
@@ -312,6 +313,33 @@ const useListService = () => {
         .filter(([_, tudu]) => !tudu.done && !!tudu.starred)
         .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'));
       return allTudus.concat(unlisted);
+    },
+    [getListState, getTudusState, unlistedTudus],
+  );
+
+  const getAllRecurrentTudusToUpdate = useCallback(
+    () => {
+      const state = getTudusState('default');
+      const listState = getListState('default');
+      const allTudus =
+        [...state].flatMap(([listId, tudus]) => {
+          const listName = listState.get(listId)?.label;
+          return [...tudus].map(
+            ([_, tudu]) => new TuduViewModel(tudu, listId, 'default', listName),
+          );
+        }) ?? [];
+      const unlisted = [...unlistedTudus].map(
+        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'),
+      );
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+
+      return allTudus.concat(unlisted).filter(tudu => {
+        if (!tudu.recurrence || !tudu.dueDate) return false;
+
+        return (tudu.recurrence === 'daily' && isOutdated(tudu.dueDate)) || getDateOnlyTimeStamp(tudu.dueDate) <= getDateOnlyTimeStamp(tomorrow);
+      });
     },
     [getListState, getTudusState, unlistedTudus],
   );
@@ -608,6 +636,7 @@ const useListService = () => {
     getAllTudus,
     getAllUndoneTudus,
     getAllStarredTudus,
+    getAllRecurrentTudusToUpdate,
     getTuduById,
     saveTudu,
     saveAllTudus,

@@ -6,11 +6,13 @@ import {SwipeableCard} from '../../swipeable-card';
 import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
 import {SwipeableListCardProps} from './types';
 import {FolderAddIcon} from '../../animated-icons/folder-add-icon';
+import { useTranslation } from 'react-i18next';
 
 const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
   ({children, isHighlighted, onArchive, onDelete, onEdit, style, enabled = false}) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
+    const {t} = useTranslation();
 
     const rightOptions = useMemo<SwipeableOption[]>(
       () => [
@@ -30,7 +32,7 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
       () => [
         {
           Icon: FolderAddIcon,
-          text: 'Archive',
+          text: t('actions.archive'),
         },
       ],
       [],

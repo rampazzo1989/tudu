@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    minHeight: 180,
+    minHeight: 90,
   },
   stepperContainer: {
     flexDirection: 'row',

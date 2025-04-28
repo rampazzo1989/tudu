@@ -11,7 +11,8 @@
     "swipeToArchive": "➡️ Swipe to archive"
   },
   "labels": {
-    "today": "Today"
+    "today": "Today",
+    "in": "in"
   },
   "listPageTitles": {
     "archived": "Archived Lists",
@@ -29,7 +30,9 @@
     "newGroup": "New group",
     "newCounter": "New counter",
     "sendToToday": "Send to Today",
-    "removeFromToday": "Remove from Today"
+    "removeFromToday": "Remove from Today",
+    "archive": "Archive",
+    "unarchive": "Unarchive"
   },
   "messages": {
     "confirmListDelete": "Confirm deletion of {{itemType}} {{listName}}?",
@@ -112,7 +115,7 @@
     "steps": {
       "lists": {
         "title": "Lists",
-        "description": "Swipe to the sides for options, drag and drop to reorder. Create groups to organize your Tudús."
+        "description": "Swipe to the sides for options, drag and drop to reorder. Create groups to organize your lists."
       },
       "tudus": {
         "title": "Tudús",
@@ -135,5 +138,11 @@
         "description": "Use search to quickly find tudús."
       }
     }
+  },
+  "recurrence": {
+    "daily": "every day",
+    "weekly": "every week",
+    "monthly": "every month",
+    "yearly": "every year"
   }
 }

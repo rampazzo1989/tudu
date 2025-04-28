@@ -11,7 +11,8 @@
     "swipeToArchive": "➡️ Deslize para arquivar"
   },
   "labels": {
-    "today": "Hoje"
+    "today": "Hoje",
+    "in": "em"
   },
   "listPageTitles": {
     "archived": "Listas Arquivadas",
@@ -29,7 +30,9 @@
     "newGroup": "Novo grupo",
     "newCounter": "Novo contador",
     "sendToToday": "Enviar para Hoje",
-    "removeFromToday": "Remover de Hoje"
+    "removeFromToday": "Remover de Hoje",
+    "archive": "Arquivar",
+    "unarchive": "Desarquivar"
   },
   "messages": {
     "confirmListDelete": "Confirmar exclusão de {{itemType}} {{listName}}?",
@@ -112,7 +115,7 @@
     "steps": {
       "lists": {
         "title": "Listas",
-        "description": "Deslize para os lados para ver opções, arraste e solte para reorganizar. Crie grupos para organizar seus Tudús."
+        "description": "Deslize para os lados para ver opções, arraste e solte para reorganizar. Crie grupos para organizar suas listas."
       },
       "tudus": {
         "title": "Tudús",
@@ -135,5 +138,11 @@
         "description": "Use a pesquisa para encontrar tudús rapidamente."
       }
     }
+  },
+  "recurrence": {
+    "daily": "todos os dias",
+    "weekly": "toda semana",
+    "monthly": "todo mês",
+    "yearly": "todo ano"
   }
 }

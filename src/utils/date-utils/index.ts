@@ -10,4 +10,4 @@ export const isOutdated = (date: Date) =>
   getDateOnlyTimeStamp(date) < getDateOnlyTimeStamp(new Date());
 
 export const formatToLocaleDate = (date: Date) =>
-  date.toLocaleDateString('pt-BR');
+  date.toLocaleDateString();
