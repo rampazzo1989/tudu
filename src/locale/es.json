@@ -1,0 +1,148 @@
+{
+  "listTitles": {
+    "today": "Hoy",
+    "allTasks": "Todos los tudús",
+    "allTasksPageTitle": "Todos los tudús",
+    "starred": "Favoritos",
+    "starredPageTitle": "Favoritos",
+    "archived": "Listas Archivadas",
+    "search": "Buscar tudús",
+    "sampleList": "💎 Lista de ejemplo",
+    "swipeToArchive": "➡️ Desliza para archivar"
+  },
+  "labels": {
+    "today": "Hoy",
+    "in": "en"
+  },
+  "listPageTitles": {
+    "archived": "Listas Archivadas",
+    "allTudus": "Todos los tudús"
+  },
+  "sectionTitles": {
+    "counters": "Contadores",
+    "myLists": "Mis Listas",
+    "done": "Completados",
+    "allDone": "¡Todos completados!"
+  },
+  "actions": {
+    "delete": "Eliminar",
+    "newList": "Nueva lista",
+    "newGroup": "Nuevo grupo",
+    "newCounter": "Nuevo contador",
+    "sendToToday": "Enviar a Hoy",
+    "removeFromToday": "Quitar de Hoy",
+    "archive": "Archivar",
+    "unarchive": "Desarchivar"
+  },
+  "messages": {
+    "confirmListDelete": "¿Confirmar eliminación de {{itemType}} {{listName}}?",
+    "confirmListArchive": "¿Confirmar archivado de {{itemType}} {{listName}}?",
+    "confirmListDeleteItemType": {
+      "list": "lista",
+      "group": "grupo"
+    },
+    "confirmCounterDelete": "¿Confirmar eliminación del contador '{{counterTitle}}'?"
+  },
+  "toast": {
+    "tuduDeleted": "Tudú eliminado",
+    "itemDeleted": "{{itemType}} eliminado",
+    "itemType": {
+      "list": "Lista",
+      "group": "Grupo"
+    },
+    "undo": "DESHACER",
+    "allDoneDeleted": "Todos los tudús completados fueron eliminados"
+  },
+  "buttons": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "yes": "Sí",
+    "no": "No",
+    "other": "otro"
+  },
+  "popupTitles": {
+    "renameGroup": "Renombrar Grupo",
+    "newList": "Crear nueva lista",
+    "editList": "Editar lista",
+    "newCounter": "Crear nuevo contador",
+    "editCounter": "Editar contador",
+    "newGroup": "Crear nuevo grupo",
+    "newTudu": "Crear nuevo tudú",
+    "editTudu": "Editar tudú"
+  },
+  "popupLabels": {
+    "suggestedEmojis": "Emojis sugeridos:",
+    "mostUsedEmojis": "Emojis más usados / sugeridos:",
+    "loading": "Cargando..."
+  },
+  "inputLabels": {
+    "description": "Descripción",
+    "initialValue": "Valor inicial",
+    "currentValue": "Valor actual",
+    "name": "Nombre",
+    "pace": "Ritmo",
+    "addLists": "+ Agregar listas"
+  },
+  "outdatedTudusList": {
+    "title": {
+      "outdated": "Vencidos",
+      "countOne": "Hay 1 tudú vencido",
+      "countMany": "Hay {{count}} tudús vencidos",
+      "upToDate": "Al día"
+    },
+    "button": {
+      "show": "Mostrar",
+      "hide": "Ocultar"
+    }
+  },
+  "menuLabels": {
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "undoAll": "Deshacer todos",
+    "clearAll": "Limpiar todos",
+    "rename": "Renombrar",
+    "deleteGroup": "Eliminar grupo",
+    "ungroupAll": "Desagrupar todos"
+  },
+  "tuduSamples": {
+    "checkThis": "Toca aquí para completar este tudú 👆",
+    "swipeSidesOptions": "Desliza hacia los lados para opciones 👈👉",
+    "holdAndDragToReorder": "Mantén y arrastra para reorganizar ↕️"
+  },
+  "onboarding": {
+    "welcome": "¡Bienvenido a Tudú!",
+    "finish": "Finalizar",
+    "steps": {
+      "lists": {
+        "title": "Listas",
+        "description": "Desliza hacia los lados para ver opciones, arrastra y suelta para reorganizar. Crea grupos para organizar tus listas."
+      },
+      "tudus": {
+        "title": "Tudús",
+        "description": "Desliza para opciones, arrastra y suelta para reorganizar, toca para marcar como completado."
+      },
+      "emojis": {
+        "title": "Sugerencia de Emojis",
+        "description": "Al editar o insertar listas y tudús, verás sugerencias de emojis."
+      },
+      "counters": {
+        "title": "Contadores",
+        "description": "¡Crea contadores simples para seguir el progreso de lo que quieras!"
+      },
+      "scheduled": {
+        "title": "Tudús Programados",
+        "description": "Consulta los tudús programados para hoy en la lista 'Hoy' (próximamente programación para otros días)."
+      },
+      "search": {
+        "title": "Búsqueda",
+        "description": "Usa la búsqueda para encontrar tudús rápidamente."
+      }
+    }
+  },
+  "recurrence": {
+    "daily": "todos los días",
+    "weekly": "todas las semanas",
+    "monthly": "todos los meses",
+    "yearly": "todos los años"
+  }
+}
