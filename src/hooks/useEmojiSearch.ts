@@ -2,6 +2,8 @@ import { useCallback, useMemo, useRef } from 'react';
 import { getLocales } from 'react-native-localize';
 import emojisPtBr from 'emojilib-pt-br/dist/emoji-pt-BR.json';
 import emojisEn from 'emojilib-pt-br/dist/emoji-en-US.json';
+import emojisEs from 'emojilib-pt-br/dist/emoji-es.json';
+import emojisIt from 'emojilib-pt-br/dist/emoji-it.json';
 import Fuse from 'fuse.js';
 import { useRecoilValue } from 'recoil';
 import { emojiUsageState } from '../state/atoms';
@@ -15,6 +17,13 @@ type EmojiEntry = {
   values: string[];
 };
 
+const emojisDictionary = {
+  'pt-BR': emojisPtBr,
+  'en-US': emojisEn,
+  'es': emojisEs,
+  'it': emojisIt,
+};
+
 export const useEmojiSearch = (debounceDelay: number) => {
   const timer = useRef<NodeJS.Timeout | undefined>(undefined);
   const emojiUsage = useRecoilValue(emojiUsageState); // Estado global persistido
@@ -24,7 +33,8 @@ export const useEmojiSearch = (debounceDelay: number) => {
 
   const emojis = useMemo(() => {
     const language = getLocales()[0].languageTag;
-    return language.startsWith('pt-BR') ? emojisPtBr : emojisEn;
+    const languageWithoutRegion = language.split('-')[0];
+    return emojisDictionary[languageWithoutRegion as keyof typeof emojisDictionary] || emojisDictionary['en-US'];
   }, []);
 
   const debounce = useCallback((func: () => void, delay: number) => {
@@ -76,9 +86,6 @@ export const useEmojiSearch = (debounceDelay: number) => {
       });
 
       let wordsWithoutCache: string[] = [];
-
-      console.log('>>>>>>>>>>>>', words)
-
 
       const resultsFromCache = words.map((word) => {
         const cachedResult = searchCache.current.get(word)?.slice(0, searchLimitPerWord);
