@@ -23,6 +23,7 @@ import { RecurrenceType } from '../../scenes/home/types';
 import { RefreshIcon } from '../animated-icons/refresh-icon';
 import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
 import { useTranslation } from 'react-i18next';
+import { updateRecurrentTudu } from '../../utils/tudu-utils';
 
 const TuduCard = memo<TuduCardProps>(
   ({
@@ -42,6 +43,7 @@ const TuduCard = memo<TuduCardProps>(
 
     const handleTuduPress = useCallback(() => {
       setInternalDone(toggle);
+    
       const toggleTimeout = data.done ? 0 : 100;
       setTimeout(() => onPress(data), toggleTimeout);
     }, [data, onPress]);

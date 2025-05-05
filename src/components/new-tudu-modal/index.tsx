@@ -103,6 +103,13 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
             weekly: false,
             monthly: false,
             yearly: false,
+            sunday: false,
+            monday: false,
+            tuesday: false,
+            wednesday: false,
+            thursday: false,
+            friday: false,
+            saturday: false,
           };
 
           let match;
@@ -126,16 +133,14 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                 break;
               case '-D':
               case '--date':
-                // Extract the date from the match
-                // const dateMatch = match[0].match(/\d{4}-\d{2}-\d{2}/); // Matches a date in YYYY-MM-DD format
                 const dateRegex = /(\d{4}-\d{2}-\d{2})/;
-                dateRegex.lastIndex = match.index; // Set the lastIndex to the start of the match
-                const dateMatch = text.match(dateRegex); // Matches a date in YYYY-MM-DD format
+                dateRegex.lastIndex = match.index;
+                const dateMatch = text.match(dateRegex);
                 if (dateMatch) {
                   const [year, month, day] = dateMatch[0].split('-').map(Number);
                   const parsedDate = new Date(year, month - 1, day);
                   if (!isNaN(parsedDate.getTime())) {
-                    params.dueDate = parsedDate; // Set the parsed date as the due date
+                    params.dueDate = parsedDate;
                   }
                 }
                 break;
@@ -151,21 +156,55 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
               case '--yearly':
                 params.yearly = true;
                 break;
+              case '-ns':
+              case '--sunday':
+                params.sunday = true;
+                break;
+              case '-nm':
+              case '--monday':
+                params.monday = true;
+                break;
+              case '-nt':
+              case '--tuesday':
+                params.tuesday = true;
+                break;
+              case '-nw':
+              case '--wednesday':
+                params.wednesday = true;
+                break;
+              case '-nh':
+              case '--thursday':
+                params.thursday = true;
+                break;
+              case '-nf':
+              case '--friday':
+                params.friday = true;
+                break;
+              case '-na':
+              case '--saturday':
+                params.saturday = true;
+                break;
               default:
                 break;
             }
           }
 
-          // Remove parameters from the text
           const cleanedText = text.replace(DATE_PARAMETERS_REGEX, '').replace(PARAMETERS_REGEX, '').trim();
 
           return { params, cleanedText };
         };
 
-        // Parse the parameters from the tudú label
+        const getNextDateForDay = (day: number): Date => {
+          const today = new Date();
+          const currentDay = today.getDay();
+          const daysUntilNext = (day + 7 - currentDay) % 7 || 7;
+          const nextDate = new Date(today);
+          nextDate.setDate(today.getDate() + daysUntilNext);
+          return nextDate;
+        };
+
         const { params, cleanedText } = parseParameters(tudu.label);
 
-        // Update the tudú based on the parsed parameters
         const updatedTudu = tudu.clone();
         updatedTudu.label = cleanedText;
 
@@ -181,8 +220,24 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           updatedTudu.dueDate = tomorrow;
         }
 
-        const dueDate = params.dueDate ? params.dueDate as Date : updatedTudu.dueDate;
-        updatedTudu.dueDate = dueDate;
+        if (params.sunday) {
+          updatedTudu.dueDate = getNextDateForDay(0);
+        } else if (params.monday) {
+          updatedTudu.dueDate = getNextDateForDay(1);
+        } else if (params.tuesday) {
+          updatedTudu.dueDate = getNextDateForDay(2);
+        } else if (params.wednesday) {
+          updatedTudu.dueDate = getNextDateForDay(3);
+        } else if (params.thursday) {
+          updatedTudu.dueDate = getNextDateForDay(4);
+        } else if (params.friday) {
+          updatedTudu.dueDate = getNextDateForDay(5);
+        } else if (params.saturday) {
+          updatedTudu.dueDate = getNextDateForDay(6);
+        } else {
+          const dueDate = params.dueDate ? params.dueDate as Date : updatedTudu.dueDate;
+          updatedTudu.dueDate = dueDate;
+        }
 
         if (params.daily) {
           updatedTudu.recurrence = 'daily';
@@ -202,10 +257,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         if (params.yearly) {
           updatedTudu.recurrence = 'yearly';
           updatedTudu.dueDate ||= new Date();
-          console.log({updatedTudu, params})
         }
 
-        // Call the original onInsertOrUpdate with the updated tudú
         onInsertOrUpdate(updatedTudu);
       },
       [onInsertOrUpdate],

@@ -48,7 +48,7 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
 
     const handleSaveTudu = useCallback(
         (editingItem: TuduViewModel) => {
-            if (editingItem.dueDate && isOutdated(editingItem.dueDate)) {
+            if (editingItem.dueDate && isOutdated(editingItem.dueDate) && !editingItem.recurrence) {
                 editingItem.dueDate = new Date();
             }
             saveTudu(editingItem);

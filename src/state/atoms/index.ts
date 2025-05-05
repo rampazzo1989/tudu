@@ -3,6 +3,7 @@ import {IdlyAnimatedComponent} from './types';
 import React from 'react';
 import {Swipeable} from 'react-native-gesture-handler';
 import { mmkvPersistAtom } from '../../utils/state-utils/mmkv-persist-atom';
+import { TuduViewModel } from '../../scenes/home/types';
 
 export const idlyAnimatedComponents = atom<IdlyAnimatedComponent[]>({
   key: 'idlyAnimatedComponents',
@@ -29,4 +30,9 @@ export const emojiUsageState = atom<Map<string, number>>({
 export const showOutdatedTudus = atom<boolean>({
   key: 'showOutdatedTudus',
   default: false,
+});
+
+export const recalculateRecurrence = atom<TuduViewModel | undefined>({
+  key: 'recalculateRecurrence',
+  default: undefined,
 });
