@@ -32,10 +32,7 @@ export const updateRecurrentTudu = (tudu: TuduViewModel): TuduViewModel => {
   const wasDone = tudu.done;
 
   if (isOutdated && wasDone) {
-    console.log('A tarefa estava concluída e está vencida, marcando como não concluída');
-    // Se a tarefa estava concluída (done) e está vencida, marcamos como undone
     tudu.done = false;
-      // Atualiza a data de vencimento
     tudu.dueDate = nextDueDate;
   }
 

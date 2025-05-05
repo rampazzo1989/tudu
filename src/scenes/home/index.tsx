@@ -55,13 +55,11 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
 
   // Recalculate the recurrence of a tudu when it is updated
   useEffect(() => {
-      console.log('recurrentTuduToRecalculate', recurrentTuduToRecalculate, recurrentTuduToRecalculate?.dueDate?.toDateString());
       if (!recurrentTuduToRecalculate) return;
 
       const tuduClone = recurrentTuduToRecalculate.clone();
 
       const updatedTudu = updateRecurrentTudu(tuduClone);
-      console.log('updatedTudu', updatedTudu, updatedTudu.dueDate?.toDateString());
 
       saveTudu(updatedTudu);
 
