@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from '@os-team/i18next-react-native-language-detector'; // Importa o plugin para React Native
 import en from '../locale/en.json';
 import ptBr from '../locale/pt-BR.json';
+import es from '../locale/es.json';
+import it from '../locale/it.json';
 
 export const defaultNS = 'translation';
 
@@ -13,6 +15,12 @@ export const resources = {
   'en': {
     translation: en,
   },
+  'es': {
+    translation: es,
+  },
+  'it': {
+    translation: it,
+  }
 } as const;
 
 i18next
