@@ -3,7 +3,7 @@ import {useRecoilState} from 'recoil';
 import {
   myLists,
   tudus as tudusState,
-  UNLISTED,
+  UNLISTED_LIST_ID,
   unlistedTudus as unlistedTudusState,
 } from '../../scenes/home/state';
 import {TuduViewModel} from '../../scenes/home/types';
@@ -50,7 +50,7 @@ const useScheduledTuduService = () => {
 
       filteredTudus.forEach(([_, tudu]) =>
         tudusFromDate.push(
-          new TuduViewModel(tudu, UNLISTED, 'default', 'Unlisted'),
+          new TuduViewModel(tudu, UNLISTED_LIST_ID, 'default', 'Unlisted'),
         ),
       );
 

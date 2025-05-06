@@ -10,7 +10,7 @@ import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables'
 import {useListService} from '../../service/list-service-hook/useListService';
 import {useSearchService} from '../../service/list-service-hook/useSearchService';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
-import {UNLISTED} from '../home/state';
+import {UNLISTED_LIST_ID} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {SearchHeader} from './components/search-header';
 import {PaddedContainer, styles} from './styles';
@@ -49,7 +49,7 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
 
   const getAdditionalInformation = useCallback(
     (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
-      if (tudu.listName && tudu.listId !== UNLISTED) {
+      if (tudu.listName && tudu.listId !== UNLISTED_LIST_ID) {
         return {
           label: tudu.listName,
           originType: 'list',

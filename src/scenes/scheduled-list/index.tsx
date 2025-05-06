@@ -5,7 +5,7 @@ import {ScheduledListPageProps} from './types';
 import {useScheduledTuduService} from '../../service/list-service-hook/useScheduledTuduService';
 import {formatToLocaleDate, isToday, isOutdated} from '../../utils/date-utils';
 import {getDaytimeIcon} from '../../utils/general-utils';
-import {UNLISTED} from '../home/state';
+import {UNLISTED_LIST_ID} from '../home/state';
 import {UNLOADED_ID} from '../../constants';
 import { useRecoilState } from 'recoil';
 import { showOutdatedTudus } from '../../state/atoms';
@@ -73,7 +73,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         tudus.forEach(tudu => {
           if (!tudu.listId) {
             tudu.dueDate = date;
-            tudu.listId = UNLISTED;
+            tudu.listId = UNLISTED_LIST_ID;
           }
         });
 

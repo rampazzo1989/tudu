@@ -1,18 +1,17 @@
 import { TuduViewModel } from '../../scenes/home/types';
 import { getDateOnlyTimeStamp } from '../date-utils';
 
-export const updateRecurrentTudu = (tudu: TuduViewModel): TuduViewModel => {
+export const updateRecurrenceFromDate = (tudu: TuduViewModel, baseDate: Date): TuduViewModel => {
   if (!tudu.dueDate || !tudu.recurrence) return tudu;
 
   let nextDueDate = new Date(tudu.dueDate);
 
-  const today = new Date();
-
-  // Atualiza a data de vencimento para a próxima recorrência
-  while (getDateOnlyTimeStamp(nextDueDate) < getDateOnlyTimeStamp(today)) {
-    switch (tudu.recurrence) {
+  // Update the next due date based on the recurrence type
+  // and the current date
+  while (getDateOnlyTimeStamp(nextDueDate) < getDateOnlyTimeStamp(baseDate)) {
+  switch (tudu.recurrence) {
       case 'daily':
-        nextDueDate.setDate(today.getDate());
+        nextDueDate.setDate(baseDate.getDate());
         break;
       case 'weekly':
         nextDueDate.setDate(nextDueDate.getDate() + 7);
@@ -28,13 +27,26 @@ export const updateRecurrentTudu = (tudu: TuduViewModel): TuduViewModel => {
     }
   }
 
-  const isOutdated = getDateOnlyTimeStamp(tudu.dueDate) < getDateOnlyTimeStamp(today);
-  const wasDone = tudu.done;
+  const updatedTudu = tudu.clone();
+  updatedTudu.dueDate = nextDueDate;
+  return updatedTudu;
+}
 
-  if (isOutdated && wasDone) {
-    tudu.done = false;
-    tudu.dueDate = nextDueDate;
+export const updateRecurrentTudu = (tudu: TuduViewModel): TuduViewModel => {
+  if (!tudu.dueDate || !tudu.recurrence) return tudu;
+
+  const today = new Date();
+
+  const updatedTudu = updateRecurrenceFromDate(tudu, today);
+
+  if (!updatedTudu.dueDate) return tudu;
+
+  const wasOutdated= getDateOnlyTimeStamp(tudu.dueDate) < getDateOnlyTimeStamp(today);
+  const wasDone = updatedTudu.done;
+
+  if (wasOutdated && wasDone) {
+    updatedTudu.done = false;
   }
 
-  return tudu;
-};
+  return updatedTudu;
+}

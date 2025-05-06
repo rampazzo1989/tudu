@@ -13,7 +13,7 @@ import {
   myLists,
   archivedLists as archivedListsState,
   unlistedTudus as unlistedTudusState,
-  UNLISTED,
+  UNLISTED_LIST_ID,
   tudus as tudusState,
   archivedTudus as archivedTudusState,
 } from '../../scenes/home/state';
@@ -200,7 +200,7 @@ const useListService = () => {
 
   const saveTudu = useCallback(
     (tudu: TuduViewModel) => {
-      if (tudu.listId === UNLISTED) {
+      if (tudu.listId === UNLISTED_LIST_ID) {
         return saveUnlistedTudus([tudu]);
       }
       const tudusStateSetter = getTudusStateSetter(tudu.origin);
@@ -228,14 +228,14 @@ const useListService = () => {
 
   const saveAllTudus = useCallback(
     (tudus: TuduViewModel[], origin: ListOrigin = 'default') => {
-      const unlistedTudusVMs = tudus.filter(x => x.listId === UNLISTED);
+      const unlistedTudusVMs = tudus.filter(x => x.listId === UNLISTED_LIST_ID);
 
       if (unlistedTudusVMs) {
         saveUnlistedTudus(unlistedTudusVMs);
       }
 
       const groupedTudus = groupBy(
-        tudus.filter(x => x.listId !== UNLISTED),
+        tudus.filter(x => x.listId !== UNLISTED_LIST_ID),
         tudu => tudu.listId,
       );
 
@@ -276,7 +276,7 @@ const useListService = () => {
           );
         }) ?? [];
       const unlisted = [...unlistedTudus].map(
-        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'),
+        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'),
       );
       return allTudus.concat(unlisted);
     },
@@ -298,7 +298,7 @@ const useListService = () => {
         }) ?? [];
       const unlisted = [...unlistedTudus]
         .filter(([_, tudu]) => !tudu.done)
-        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'));
+        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'));
       return allTudus.concat(unlisted);
     },
     [getListState, getTudusState, unlistedTudus],
@@ -319,7 +319,7 @@ const useListService = () => {
         }) ?? [];
       const unlisted = [...unlistedTudus]
         .filter(([_, tudu]) => !tudu.done && !!tudu.starred)
-        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'));
+        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'));
       return allTudus.concat(unlisted);
     },
     [getListState, getTudusState, unlistedTudus],
@@ -337,7 +337,7 @@ const useListService = () => {
           );
         }) ?? [];
       const unlisted = [...unlistedTudus].map(
-        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'),
+        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'),
       );
       const today = new Date();
       const tomorrow = new Date();
