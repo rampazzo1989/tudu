@@ -99,7 +99,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
             )}
             {!!children && <ContentContainer>{children}</ContentContainer>}
             {buttons && (
-              <ButtonsContainer shouldMarginTop={!children}>
+              <ButtonsContainer shouldMarginTop={!children} alignCenter={buttons.length > 1}>
                 {buttons.map(button => (
                   <PopupButton
                     onPress={button.onPress}

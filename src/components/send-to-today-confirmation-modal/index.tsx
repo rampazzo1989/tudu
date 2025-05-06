@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { getDaytimeIcon } from '../../utils/general-utils';
 import { View } from 'react-native';
 import { SendToTodayConfirmationModalProps } from './types';
+import { OptionTile } from '../option-tile';
+import { CalendarIcon } from '../animated-icons/calendar';
+import { OptionsContainer } from './styles';
+import { SunIcon } from '../animated-icons/sun-icon';
 
 const SendToTodayConfirmationModal: React.FC<SendToTodayConfirmationModalProps> = ({ isVisible: isOpen, onReschedule, onCreateCopy, onModalClose }) => {
     if (!isOpen) return null;
@@ -20,7 +24,10 @@ const SendToTodayConfirmationModal: React.FC<SendToTodayConfirmationModalProps> 
           Icon={getDaytimeIcon()}
           shakeOnShow
           haptics>
-            <View style={{backgroundColor: 'white', padding: 20, borderRadius: 10}} />
+            <OptionsContainer>
+              <OptionTile Icon={CalendarIcon} label={'Reagendar a partir de hoje'} onPress={onReschedule} iconAnimationDelay={800}  />
+              <OptionTile Icon={SunIcon} label={'Criar cópia em Hoje'} onPress={onCreateCopy} iconAnimationDelay={1600} />
+            </OptionsContainer>
         </PopupModal>
     );
 };

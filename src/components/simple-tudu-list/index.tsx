@@ -14,6 +14,7 @@ import SendToTodayConfirmationModal from '../send-to-today-confirmation-modal';
 import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
 import { updateRecurrenceFromDate } from '../../utils/tudu-utils';
 import { UNLISTED_LIST_ID } from '../../scenes/home/state';
+import { generateRandomHash } from '../../hooks/useHashGenerator';
 
 const LayoutAnimation = LinearTransition.springify().stiffness(300).damping(13).mass(0.3);
 /**
@@ -128,6 +129,9 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
     const handleCreateCopy = useCallback(() => {
       if (tuduWaitingForConfirmation) {
         const tuduClone = tuduWaitingForConfirmation.clone();
+
+        // Set a new ID
+        tuduClone.id = generateRandomHash('New Tudu');
 
         // Set the due date to today
         tuduClone.dueDate = new Date();
