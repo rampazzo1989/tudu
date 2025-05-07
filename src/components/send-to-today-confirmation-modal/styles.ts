@@ -5,5 +5,11 @@ export const OptionsContainer = styled.View`
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    margin-top: 8px;
+    margin-top: 16px;
+`;
+
+export const Label = styled.Text`
+    font-size: 14px;
+    color: ${({ theme }) => theme.colors.text};
+    font-family: ${({ theme }) => theme.fonts.default};
 `;

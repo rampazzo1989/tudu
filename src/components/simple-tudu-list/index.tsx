@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FadeIn, LinearTransition, SlideInRight } from 'react-native-reanimated';
+import { FadeIn, LinearTransition } from 'react-native-reanimated';
 import { TuduViewModel } from '../../scenes/home/types';
 import { showItemDeletedToast } from '../../utils/toast-utils';
 import { SwipeableCardRef } from '../swipeable-card/types';
@@ -10,11 +10,9 @@ import { SimpleTuduListProps } from './types';
 import { isToday } from '../../utils/date-utils';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
 import { ShrinkableView } from '../shrinkable-view';
-import SendToTodayConfirmationModal from '../send-to-today-confirmation-modal';
 import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
 import { updateRecurrenceFromDate } from '../../utils/tudu-utils';
-import { UNLISTED_LIST_ID } from '../../scenes/home/state';
-import { generateRandomHash } from '../../hooks/useHashGenerator';
+import { SendToTodayModal } from '../send-to-today-modal';
 
 const LayoutAnimation = LinearTransition.springify().stiffness(300).damping(13).mass(0.3);
 /**
@@ -119,37 +117,6 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
       closeCurrentlyOpenSwipeable();
     }, [setTuduWaitingForConfirmation, closeCurrentlyOpenSwipeable]);
 
-    const handleReschedule = useCallback(() => {
-      if (tuduWaitingForConfirmation) {
-        sendToToday(tuduWaitingForConfirmation);
-        handleModalClose();
-      }
-    }, [tuduWaitingForConfirmation, sendToToday, handleModalClose]);
-
-    const handleCreateCopy = useCallback(() => {
-      if (tuduWaitingForConfirmation) {
-        const tuduClone = tuduWaitingForConfirmation.clone();
-
-        // Set a new ID
-        tuduClone.id = generateRandomHash('New Tudu');
-
-        // Set the due date to today
-        tuduClone.dueDate = new Date();
-
-        // Remove the scheduled order
-        tuduClone.scheduledOrder = undefined;
-
-        // Remove the recurrence
-        tuduClone.recurrence = undefined;
-
-        // Sets the list to "unlisted"
-        tuduClone.listId = UNLISTED_LIST_ID;
-
-        updateTuduFn(tuduClone);
-        handleModalClose();
-      }
-    }, [tuduWaitingForConfirmation, updateTuduFn, handleModalClose]);
-
     return (
       <>
         {tudus.map((tudu, index) => {
@@ -178,11 +145,10 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
             </TuduAnimatedContainer>
           );
         })}
-        <SendToTodayConfirmationModal
-          isVisible={!!tuduWaitingForConfirmation}
-          onReschedule={handleReschedule}
-          onCreateCopy={handleCreateCopy}
-          onModalClose={handleModalClose}
+        <SendToTodayModal
+          tudu={tuduWaitingForConfirmation}
+          onUpdateTudu={updateTuduFn}
+          onClose={handleModalClose}
         />
       </>
     );

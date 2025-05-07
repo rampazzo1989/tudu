@@ -6,13 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import Animated, {FadeIn, FadeInUp, FadeOutUp, LinearTransition} from 'react-native-reanimated';
+import Animated, {FadeInUp, FadeOutUp, LinearTransition} from 'react-native-reanimated';
 import {
   Container,
   OptionsIconContainer,
   OptionsTouchable,
   SectionTitle,
-  TuduAnimatedContainer,
   TuduAnimatedWrapper,
 } from './styles';
 import {TudusListProps} from './types';
@@ -34,6 +33,9 @@ import { useListService } from '../../service/list-service-hook/useListService';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
 import { ShrinkableView } from '../shrinkable-view';
 import { useTranslation } from 'react-i18next';
+import { SendToTodayModal } from '../send-to-today-modal';
+import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
+import { updateRecurrenceFromDate } from '../../utils/tudu-utils';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({
@@ -52,6 +54,8 @@ const TudusList: React.FC<TudusListProps> = memo(
     const iconRef = useRef<BaseAnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
     const [allDoneReactionVisible, setAllDoneReactionVisible] = useState(false);
+    const [tuduWaitingForConfirmation, setTuduWaitingForConfirmation] = useState<TuduViewModel | null>(null);
+    const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
     const {t} = useTranslation();
 
     const {saveTudu} = useListService();
@@ -151,20 +155,50 @@ const TudusList: React.FC<TudusListProps> = memo(
       [onEditPress],
     );
 
+    const sendToToday = useCallback((editingItem: TuduViewModel) => {
+      editingItem.dueDate = new Date();
+      saveTudu(editingItem);
+    }, [saveTudu]);
+
+    const removeFromToday = useCallback((editingItem: TuduViewModel) => {
+        const dueDate = editingItem.dueDate;
+        if (dueDate && isToday(dueDate)) {
+          if (editingItem.recurrence) {
+            const tomorrowAsBaseDate = new Date();
+            tomorrowAsBaseDate.setDate(tomorrowAsBaseDate.getDate() + 1);
+            const updatedTudu = updateRecurrenceFromDate(editingItem, tomorrowAsBaseDate);
+            updatedTudu.scheduledOrder = undefined;
+            saveTudu(updatedTudu);
+            return;
+          }
+            
+          editingItem.dueDate = undefined;
+          editingItem.scheduledOrder = undefined;
+        }
+      
+        saveTudu(editingItem);
+      },
+      [saveTudu]);
+
     const handleSendToOrRemoveFromTodayGenerator = useCallback(
       (editingItem: TuduViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
           const dueDate = editingItem.dueDate;
           if (dueDate && isToday(dueDate)) {
-            editingItem.dueDate = undefined;
-            editingItem.scheduledOrder = undefined;
+            setTimeout(() => {
+              removeFromToday(editingItem);
+              swipeableRef.current?.closeOptions();
+            }, 700);
           } else {
-            editingItem.dueDate = new Date();
+            if (editingItem.recurrence) {
+              setTuduWaitingForConfirmation(editingItem);
+              return;
+            }
+            setTimeout(() => {
+              sendToToday(editingItem);
+              swipeableRef.current?.closeOptions();
+            }, 700);
           }
-          setTimeout(() => {
-            saveTudu(editingItem);
-            swipeableRef.current?.closeOptions();
-          }, 700);
         },
       [saveTudu],
     );
@@ -255,6 +289,11 @@ const TudusList: React.FC<TudusListProps> = memo(
       setTudus([...data.flatMap(x => x.indexedTudu), ...doneIndexedTudus.flatMap(x => x.indexedTudu)]);
     }, [setTudus, doneIndexedTudus]);
 
+    const handleModalClose = useCallback(() => {
+      setTuduWaitingForConfirmation(null);
+      closeCurrentlyOpenSwipeable();
+    }, [setTuduWaitingForConfirmation, closeCurrentlyOpenSwipeable]);
+
     return (
       <Container>
          <NestableScrollContainer style={{flexGrow: 1,  overflow:'visible'}}>
@@ -290,7 +329,11 @@ const TudusList: React.FC<TudusListProps> = memo(
                   nestedScrollEnabled
                   />
             </NestableScrollContainer>
-            
+            <SendToTodayModal
+              tudu={tuduWaitingForConfirmation}
+              onUpdateTudu={saveTudu}
+              onClose={handleModalClose}
+            />
       </Container>
     );
   },
