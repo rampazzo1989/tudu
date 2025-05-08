@@ -74,11 +74,11 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
     tomorrow.setDate(today.getDate() + 1);
 
     const recurrentTudusToUpdate = getAllRecurrentTudusToUpdate();
-    recurrentTudusToUpdate.forEach(updateRecurrentTudu);
+    const updatedTudus = recurrentTudusToUpdate.map(updateRecurrentTudu);
 
-    if (recurrentTudusToUpdate.length === 0) return;
+    if (updatedTudus.length === 0) return;
 
-    saveAllTudus(recurrentTudusToUpdate);
+    saveAllTudus(updatedTudus);
   }, []);
 
   const mapDraggableItemsToList = (
