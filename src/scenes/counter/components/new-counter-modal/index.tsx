@@ -262,7 +262,7 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
             </ValueContainer>
           </InputsContainer>
           <PaceContainer>
-            <Label>{'Pace'}</Label>
+            <Label>{t('inputLabels.pace')}</Label>
             <PaceOptions>
               {paceOptions.map((option, index) =>
                 customPaceInputVisible && index === paceOptions.length - 1 ? (

@@ -34,6 +34,10 @@
     "archive": "Archivar",
     "unarchive": "Desarchivar"
   },
+  "options": {
+    "rescheduleForToday": "Reprogramar para Hoy",
+    "copyToToday": "Crear copia en Hoy"
+  },
   "messages": {
     "confirmListDelete": "¿Confirmar eliminación de {{itemType}} {{listName}}?",
     "confirmListArchive": "¿Confirmar archivado de {{itemType}} {{listName}}?",
@@ -41,7 +45,8 @@
       "list": "lista",
       "group": "grupo"
     },
-    "confirmCounterDelete": "¿Confirmar eliminación del contador '{{counterTitle}}'?"
+    "confirmCounterDelete": "¿Confirmar eliminación del contador '{{counterTitle}}'?",
+    "confirmSendRecurrentToToday": "Reprogramar afecta a todas las ocurrencias posteriores. Puedes:"
   },
   "toast": {
     "tuduDeleted": "Tudú eliminado",
@@ -80,7 +85,7 @@
     "initialValue": "Valor inicial",
     "currentValue": "Valor actual",
     "name": "Nombre",
-    "pace": "Ritmo",
+    "pace": "Paso",
     "addLists": "+ Agregar listas"
   },
   "outdatedTudusList": {

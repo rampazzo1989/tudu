@@ -55,12 +55,13 @@ export const SeparatorContainer = styled.View`
   background-color: white;
 `;
 
-export const ButtonsContainer = styled.View<{shouldMarginTop: boolean}>`
+export const ButtonsContainer = styled.View<{shouldMarginTop: boolean, alignCenter?: boolean}>`
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
+  justify-content: ${({alignCenter}) => (alignCenter ? 'space-around' : 'flex-end')};
   height: 50px;
   margin-top: ${({shouldMarginTop}) => (shouldMarginTop ? 10 : 0)}px;
+  padding: 0 12px;
 `;
 
 type HighlightableComponent = {highlight?: boolean};

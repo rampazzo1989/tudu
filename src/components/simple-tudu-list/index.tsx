@@ -1,15 +1,18 @@
-import React, {memo, useCallback} from 'react';
-import {useTranslation} from 'react-i18next';
-import {FadeIn, LinearTransition, SlideInRight} from 'react-native-reanimated';
-import {TuduViewModel} from '../../scenes/home/types';
-import {showItemDeletedToast} from '../../utils/toast-utils';
-import {SwipeableCardRef} from '../swipeable-card/types';
-import {TuduCard} from '../tudu-card';
-import {TuduAnimatedContainer} from './styles';
-import {SimpleTuduListProps} from './types';
-import {isToday} from '../../utils/date-utils';
+import React, { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FadeIn, LinearTransition } from 'react-native-reanimated';
+import { TuduViewModel } from '../../scenes/home/types';
+import { showItemDeletedToast } from '../../utils/toast-utils';
+import { SwipeableCardRef } from '../swipeable-card/types';
+import { TuduCard } from '../tudu-card';
+import { TuduAnimatedContainer } from './styles';
+import { SimpleTuduListProps } from './types';
+import { isToday } from '../../utils/date-utils';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
 import { ShrinkableView } from '../shrinkable-view';
+import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
+import { updateRecurrenceFromDate } from '../../utils/tudu-utils';
+import { SendToTodayModal } from '../send-to-today-modal';
 
 const LayoutAnimation = LinearTransition.springify().stiffness(300).damping(13).mass(0.3);
 /**
@@ -24,7 +27,9 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
     undoDeletionFn,
     onEditPress,
   }) => {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
+    const [tuduWaitingForConfirmation, setTuduWaitingForConfirmation] = React.useState<TuduViewModel | null>(null);
+    const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
 
     const handleDeleteGenerator = useCallback(
       (deletingItem: TuduViewModel) => () => {
@@ -59,21 +64,58 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
       [updateTuduFn],
     );
 
+    const sendToToday = useCallback((editingItem: TuduViewModel) => {
+      editingItem.dueDate = new Date();
+      updateTuduFn(editingItem);
+    }, [updateTuduFn]);
+    
+    const removeFromToday = useCallback((editingItem: TuduViewModel) => {
+      const dueDate = editingItem.dueDate;
+      if (dueDate && isToday(dueDate)) {
+        if (editingItem.recurrence) {
+          const tomorrowAsBaseDate = new Date();
+          tomorrowAsBaseDate.setDate(tomorrowAsBaseDate.getDate() + 1);
+          const updatedTudu = updateRecurrenceFromDate(editingItem, tomorrowAsBaseDate);
+          updatedTudu.scheduledOrder = undefined;
+          updateTuduFn(updatedTudu);
+          return;
+        }
+          
+        editingItem.dueDate = undefined;
+        editingItem.scheduledOrder = undefined;
+      }
+    
+      updateTuduFn(editingItem);
+    },
+    [updateTuduFn]);
+
     const handleSendToOrRemoveFromTodayGenerator = useCallback(
       (editingItem: TuduViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-          const dueDate = editingItem.dueDate;
-          if (dueDate && isToday(dueDate)) {
-            editingItem.dueDate = undefined;
-            editingItem.scheduledOrder = undefined;
+
+          if (editingItem.dueDate && isToday(editingItem.dueDate)) {
+            setTimeout(() => {
+              removeFromToday(editingItem);
+              swipeableRef.current?.closeOptions();
+            }, 700);
           } else {
-            editingItem.dueDate = new Date();
+            if (editingItem.recurrence) {
+              setTuduWaitingForConfirmation(editingItem);
+              return;
+            }
+            setTimeout(() => {
+              sendToToday(editingItem);
+              swipeableRef.current?.closeOptions();
+            }, 700);
           }
-          updateTuduFn(editingItem);
-          swipeableRef.current?.closeOptions();
         },
-      [updateTuduFn],
+      [removeFromToday, sendToToday, setTuduWaitingForConfirmation],
     );
+
+    const handleModalClose = useCallback(() => {
+      setTuduWaitingForConfirmation(null);
+      closeCurrentlyOpenSwipeable();
+    }, [setTuduWaitingForConfirmation, closeCurrentlyOpenSwipeable]);
 
     return (
       <>
@@ -82,30 +124,35 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
             <TuduAnimatedContainer
               entering={FadeIn?.duration(100).delay(index * 50)}
               key={`${tudu.id}`} layout={LayoutAnimation}>
-                <ShrinkableView onPress={() => handleTuduPress(tudu)} scaleFactor={0.03} 
-                  style={{ height: 'auto', width: '100%', zIndex: tudu.done ? 0 : 9999, marginBottom: 8}} >
-                    <SwipeableTuduCard
-                          done={tudu.done}
-                          onDelete={handleDeleteGenerator(tudu)}
-                          onEdit={handleEditGenerator(tudu)}
-                          isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
-                          onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                            tudu,
-                          )}>
-                      <TuduCard
-                          data={tudu}
-                          onPress={handleTuduPress}
-                          onStarPress={handleStarPress}
-                          additionalInfo={getAdditionalInformation(tudu)}
-                        />
-                    </SwipeableTuduCard>
-                </ShrinkableView>
+              <ShrinkableView onPress={() => handleTuduPress(tudu)} scaleFactor={0.03}
+                style={{ height: 'auto', width: '100%', zIndex: tudu.done ? 0 : 9999, marginBottom: 8 }} >
+                <SwipeableTuduCard
+                  done={tudu.done}
+                  onDelete={handleDeleteGenerator(tudu)}
+                  onEdit={handleEditGenerator(tudu)}
+                  isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
+                  onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
+                    tudu,
+                  )}>
+                  <TuduCard
+                    data={tudu}
+                    onPress={handleTuduPress}
+                    onStarPress={handleStarPress}
+                    additionalInfo={getAdditionalInformation(tudu)}
+                  />
+                </SwipeableTuduCard>
+              </ShrinkableView>
             </TuduAnimatedContainer>
           );
         })}
+        <SendToTodayModal
+          tudu={tuduWaitingForConfirmation}
+          onUpdateTudu={updateTuduFn}
+          onClose={handleModalClose}
+        />
       </>
     );
   },
 );
 
-export {SimpleTuduList};
+export { SimpleTuduList };

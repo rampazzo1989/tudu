@@ -7,7 +7,7 @@ import {
 import {  DraggableScrollablePageContent } from '../../components/draggable-page-content';
 import { Page } from '../../components/page';
 import { SmartLists } from './components/smart-lists';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { homeDefaultLists } from './state';
 import { HomeHeader } from './components/home-header';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,8 @@ import { useListService } from '../../service/list-service-hook/useListService';
 import { useCounterService } from '../../service/counter-service-hook/useCounterService';
 import { OnboardingModal } from './components/onboarding-modal';
 import { getDateOnlyTimeStamp } from '../../utils/date-utils';
+import { updateRecurrentTudu } from '../../utils/tudu-utils';
+import { recalculateRecurrence } from '../../state/atoms';
 
 const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
   const smartLists = useRecoilValue(homeDefaultLists);
@@ -41,14 +43,29 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const { t } = useTranslation();
   const theme = useTheme();
+  const [recurrentTuduToRecalculate, setRecurrentTuduToRecalculate] = useRecoilState(recalculateRecurrence);
 
-  const { getAllLists, saveAllLists, deleteList, restoreBackup, getAllRecurrentTudusToUpdate, saveAllTudus } =
+  const { saveTudu, getAllLists, saveAllLists, deleteList, restoreBackup, getAllRecurrentTudusToUpdate, saveAllTudus } =
     useListService();
   const { getAllCounters } = useCounterService();
 
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
     actionButtonRef.current?.animateThisIcon(Icon);
   }, []);
+
+  // Recalculate the recurrence of a tudu when it is updated
+  useEffect(() => {
+      if (!recurrentTuduToRecalculate) return;
+
+      const tuduClone = recurrentTuduToRecalculate.clone();
+
+      const updatedTudu = updateRecurrentTudu(tuduClone);
+
+      saveTudu(updatedTudu);
+
+      setRecurrentTuduToRecalculate(undefined);
+  }, [recurrentTuduToRecalculate, setRecurrentTuduToRecalculate]);
+
 
   // Filters all tudus with recurrence and last date past today to update their date
   useEffect(() => {
@@ -57,43 +74,11 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
     tomorrow.setDate(today.getDate() + 1);
 
     const recurrentTudusToUpdate = getAllRecurrentTudusToUpdate();
-    recurrentTudusToUpdate.forEach(tudu => {
-      if (!tudu.dueDate || !tudu.recurrence) return;
-
-      let nextDueDate = new Date(tudu.dueDate);
-
-      while (nextDueDate < today) {
-        switch (tudu.recurrence) {
-          case 'daily':
-            nextDueDate = today;
-            break;
-          case 'weekly':
-            nextDueDate.setDate(nextDueDate.getDate() + 7);
-            break;
-          case 'monthly':
-            nextDueDate.setMonth(nextDueDate.getMonth() + 1);
-            break;
-          case 'yearly':
-            nextDueDate.setFullYear(nextDueDate.getFullYear() + 1);
-            break;
-          default:
-            break;
-        }
-      }
-
-      const isDailyAndIsOutdated = tudu.recurrence === 'daily' && tudu.dueDate < today;
-
-      if (isDailyAndIsOutdated || (['weekly', 'monthly', 'yearly'].includes(tudu.recurrence) && getDateOnlyTimeStamp(tudu.dueDate) <= getDateOnlyTimeStamp(tomorrow))) {
-        tudu.done = false;
-      }
-
-      tudu.dueDate = nextDueDate;
-    });
+    recurrentTudusToUpdate.forEach(updateRecurrentTudu);
 
     if (recurrentTudusToUpdate.length === 0) return;
 
     saveAllTudus(recurrentTudusToUpdate);
-
   }, []);
 
   const mapDraggableItemsToList = (

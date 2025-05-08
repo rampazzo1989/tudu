@@ -2,7 +2,7 @@ import React, {forwardRef, memo, useImperativeHandle, useRef} from 'react';
 import {BaseAnimatedIcon} from '../animated-icon';
 import {AnimatedIconProps, AnimatedIconRef, AnimationOptions, BaseAnimatedIconRef} from '../animated-icon/types';
 
-const CalendarIcon = memo(
+const CopyIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
 
@@ -29,11 +29,12 @@ const CalendarIcon = memo(
         
     return (
       <BaseAnimatedIcon
-        source={require('../../../assets/lottie/calendar_black.json')}
+        source={require('../../../assets/lottie/copy.lottie')}
         loop={false}
-        componentName="CalendarIcon"
-        initialFrame={60}
-        finalFrame={120}
+        componentName="CopyIcon"
+        initialFrame={80}
+        finalFrame={150}
+        staticStateFrame={80}
         ref={iconRef}
         {...props}
       />
@@ -41,6 +42,6 @@ const CalendarIcon = memo(
   })
 );
 
-export {CalendarIcon};
+export {CopyIcon};
 
 

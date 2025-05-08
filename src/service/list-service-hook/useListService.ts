@@ -1,4 +1,4 @@
-import {SetterOrUpdater, useRecoilState} from 'recoil';
+import {SetterOrUpdater, useRecoilState, useSetRecoilState} from 'recoil';
 import {
   ListViewModel,
   TuduViewModel,
@@ -13,7 +13,7 @@ import {
   myLists,
   archivedLists as archivedListsState,
   unlistedTudus as unlistedTudusState,
-  UNLISTED,
+  UNLISTED_LIST_ID,
   tudus as tudusState,
   archivedTudus as archivedTudusState,
 } from '../../scenes/home/state';
@@ -22,6 +22,7 @@ import {useCallback, useEffect} from 'react';
 import {groupBy} from '../../utils/array-utils';
 import {getListFromViewModel} from '../../utils/list-and-group-utils';
 import { getDateOnlyTimeStamp, isOutdated } from '../../utils/date-utils';
+import { recalculateRecurrence } from '../../state/atoms';
 
 class SingletonBackup {
   private static instance: SingletonBackup;
@@ -45,7 +46,8 @@ const useListService = () => {
   const [archivedLists, setArchivedLists] = useRecoilState(archivedListsState);
   const [archivedTudus, setArchivedTudus] = useRecoilState(archivedTudusState);
   const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusState);
-
+  const setRecurrentTuduToRecalculate = useSetRecoilState(recalculateRecurrence);
+  
   const getListState = useCallback(
     (stateOrigin: ListOrigin) =>
       stateOrigin === 'default' ? customLists : archivedLists,
@@ -198,7 +200,7 @@ const useListService = () => {
 
   const saveTudu = useCallback(
     (tudu: TuduViewModel) => {
-      if (tudu.listId === UNLISTED) {
+      if (tudu.listId === UNLISTED_LIST_ID) {
         return saveUnlistedTudus([tudu]);
       }
       const tudusStateSetter = getTudusStateSetter(tudu.origin);
@@ -214,20 +216,26 @@ const useListService = () => {
 
         return newState;
       });
+
+      // If the tudu is recurrent, marked as done and is outdated, recalculate the recurrence
+      if (tudu.dueDate && tudu.recurrence && tudu.done && isOutdated(tudu.dueDate)) {
+        setTimeout(() => setRecurrentTuduToRecalculate(tudu), 1000);
+      }
+      
     },
-    [getTudusStateSetter, saveUnlistedTudus],
+    [getTudusStateSetter, saveUnlistedTudus, setRecurrentTuduToRecalculate],
   );
 
   const saveAllTudus = useCallback(
     (tudus: TuduViewModel[], origin: ListOrigin = 'default') => {
-      const unlistedTudusVMs = tudus.filter(x => x.listId === UNLISTED);
+      const unlistedTudusVMs = tudus.filter(x => x.listId === UNLISTED_LIST_ID);
 
       if (unlistedTudusVMs) {
         saveUnlistedTudus(unlistedTudusVMs);
       }
 
       const groupedTudus = groupBy(
-        tudus.filter(x => x.listId !== UNLISTED),
+        tudus.filter(x => x.listId !== UNLISTED_LIST_ID),
         tudu => tudu.listId,
       );
 
@@ -268,7 +276,7 @@ const useListService = () => {
           );
         }) ?? [];
       const unlisted = [...unlistedTudus].map(
-        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'),
+        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'),
       );
       return allTudus.concat(unlisted);
     },
@@ -290,7 +298,7 @@ const useListService = () => {
         }) ?? [];
       const unlisted = [...unlistedTudus]
         .filter(([_, tudu]) => !tudu.done)
-        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'));
+        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'));
       return allTudus.concat(unlisted);
     },
     [getListState, getTudusState, unlistedTudus],
@@ -311,7 +319,7 @@ const useListService = () => {
         }) ?? [];
       const unlisted = [...unlistedTudus]
         .filter(([_, tudu]) => !tudu.done && !!tudu.starred)
-        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'));
+        .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'));
       return allTudus.concat(unlisted);
     },
     [getListState, getTudusState, unlistedTudus],
@@ -329,7 +337,7 @@ const useListService = () => {
           );
         }) ?? [];
       const unlisted = [...unlistedTudus].map(
-        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED, 'unlisted'),
+        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'),
       );
       const today = new Date();
       const tomorrow = new Date();
@@ -338,7 +346,7 @@ const useListService = () => {
       return allTudus.concat(unlisted).filter(tudu => {
         if (!tudu.recurrence || !tudu.dueDate) return false;
 
-        return (tudu.recurrence === 'daily' && isOutdated(tudu.dueDate)) || getDateOnlyTimeStamp(tudu.dueDate) <= getDateOnlyTimeStamp(tomorrow);
+        return isOutdated(tudu.dueDate) && tudu.done;
       });
     },
     [getListState, getTudusState, unlistedTudus],

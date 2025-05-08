@@ -28,7 +28,7 @@ import {ListViewModel, TuduViewModel} from '../../scenes/home/types';
 import {ListHeader} from '../list-header';
 import {TuduAdditionalInformation} from '../tudu-card/types';
 import {formatToLocaleDate, isToday, isOutdated} from '../../utils/date-utils';
-import {UNLISTED} from '../../scenes/home/state';
+import {UNLISTED_LIST_ID} from '../../scenes/home/state';
 import {SkeletonTuduList} from '../skeleton-tudu-list';
 import {showItemDeletedToast} from '../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
@@ -169,7 +169,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const getAdditionalInformation = useCallback(
       (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
         // Rules for smart lists
-        if (isSmartList && tudu.listName && tudu.listId !== UNLISTED) {
+        if (isSmartList && tudu.listName && tudu.listId !== UNLISTED_LIST_ID) {
           // Outdated tudús
           const outdated = tudu.dueDate && isOutdated(tudu.dueDate);
           if (outdated) {

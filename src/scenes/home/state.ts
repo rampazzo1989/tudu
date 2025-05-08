@@ -11,7 +11,7 @@ import {
   StateBackup,
 } from './types';
 
-export const UNLISTED = 'unlisted';
+export const UNLISTED_LIST_ID = 'unlisted';
 
 export const homeDefaultLists = atom<SmartList[]>({
   key: 'homeDefaultLists',

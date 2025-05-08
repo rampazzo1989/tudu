@@ -43,8 +43,6 @@ const FloatingActionButton = memo(
 
       // Animates the current icon when option is set
       useEffect(() => {
-        console.log('Safe area insets:', insets, {toastBottomSpan});
-
         if (animateNextIcon.current) {
           iconRef.current?.play({
             onAnimationFinish: () => {

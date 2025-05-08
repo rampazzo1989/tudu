@@ -11,7 +11,7 @@ import {TuduAdditionalInformation} from '../../components/tudu-card/types';
 import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
 import {useListService} from '../../service/list-service-hook/useListService';
 import {formatToLocaleDate, isToday} from '../../utils/date-utils';
-import {UNLISTED} from '../home/state';
+import {UNLISTED_LIST_ID} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {PaddedContainer, styles} from './styles';
 import {StarredTudusPageProps} from './types';
@@ -44,7 +44,7 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
 
   const getAdditionalInformation = useCallback(
     (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
-      if (tudu.listName && tudu.listId !== UNLISTED) {
+      if (tudu.listName && tudu.listId !== UNLISTED_LIST_ID) {
         return {
           label: tudu.listName,
           originType: 'list',
