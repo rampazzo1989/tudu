@@ -71,6 +71,7 @@
     "editList": "Editar lista",
     "newCounter": "Criar novo contador",
     "editCounter": "Editar contador",
+    "schedule": "Agendar tudú",
     "newGroup": "Criar novo grupo",
     "newTudu": "Criar novo tudú",
     "editTudu": "Editar tudú"
@@ -149,5 +150,16 @@
     "weekly": "toda semana",
     "monthly": "todo mês",
     "yearly": "todo ano"
+  },
+  "scheduleDays": {
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "sunday": "Domingo",
+    "monday": "Segunda-feira",
+    "tuesday": "Terça-feira",
+    "wednesday": "Quarta-feira",
+    "thursday": "Quinta-feira",
+    "friday": "Sexta-feira",
+    "saturday": "Sábado"
   }
 }

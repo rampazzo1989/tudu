@@ -45,6 +45,7 @@ const TudusList: React.FC<TudusListProps> = memo(
     onClearAllDonePress,
     onUndoAllPress,
     onStarPress,
+    onSchedulePress,
     setTudus,
     getAdditionalInformation,
     animateIcon,
@@ -155,6 +156,15 @@ const TudusList: React.FC<TudusListProps> = memo(
       [onEditPress],
     );
 
+    const handleScheduleGenerator = useCallback(
+      (editingItem: TuduViewModel) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          onSchedulePress(editingItem);
+          swipeableRef.current?.closeOptions();
+        },
+      [onSchedulePress],
+    );
+
     const sendToToday = useCallback((editingItem: TuduViewModel) => {
       editingItem.dueDate = new Date();
       saveTudu(editingItem);
@@ -229,6 +239,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                 done={tudu.done}
                 onDelete={handleDeleteGenerator(tudu)}
                 onEdit={handleEditGenerator(tudu)}
+                onSchedule={handleScheduleGenerator(tudu)}
                 isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   tudu,

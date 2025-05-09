@@ -6,35 +6,36 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {Page} from '../../components/page';
-import {DraggablePageContent} from '../../components/draggable-page-content';
+import { Page } from '../../components/page';
+import { DraggablePageContent } from '../../components/draggable-page-content';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {CheersAnimation} from '../../components/animated-components/cheers';
+import { CheersAnimation } from '../../components/animated-components/cheers';
 import {
   AnimatedIconRef,
   ForwardedRefAnimatedIcon,
 } from '../../components/animated-icons/animated-icon/types';
-import {Dimensions} from 'react-native';
-import {FloatingActionButtonRef} from '../../components/floating-action-button/types';
-import {CheckMarkIconActionAnimation} from '../../components/animated-icons/check-mark';
-import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
-import {useListService} from '../../service/list-service-hook/useListService';
-import {CheersAnimationContainer, styles} from './styles';
-import {NewTuduModal} from '../new-tudu-modal';
-import {ListActionButton} from '../list-action-button';
-import {TudusList} from '../tudus-list';
-import {ListPageCoreProps} from './types';
-import {ListViewModel, TuduViewModel} from '../../scenes/home/types';
-import {ListHeader} from '../list-header';
-import {TuduAdditionalInformation} from '../tudu-card/types';
-import {formatToLocaleDate, isToday, isOutdated} from '../../utils/date-utils';
-import {UNLISTED_LIST_ID} from '../../scenes/home/state';
-import {SkeletonTuduList} from '../skeleton-tudu-list';
-import {showItemDeletedToast} from '../../utils/toast-utils';
-import {useTranslation} from 'react-i18next';
-import {UNLOADED_ID} from '../../constants';
+import { Dimensions } from 'react-native';
+import { FloatingActionButtonRef } from '../../components/floating-action-button/types';
+import { CheckMarkIconActionAnimation } from '../../components/animated-icons/check-mark';
+import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
+import { useListService } from '../../service/list-service-hook/useListService';
+import { CheersAnimationContainer, styles } from './styles';
+import { NewTuduModal } from '../new-tudu-modal';
+import { ListActionButton } from '../list-action-button';
+import { TudusList } from '../tudus-list';
+import { ListPageCoreProps } from './types';
+import { ListViewModel, TuduViewModel } from '../../scenes/home/types';
+import { ListHeader } from '../list-header';
+import { TuduAdditionalInformation } from '../tudu-card/types';
+import { formatToLocaleDate, isToday, isOutdated } from '../../utils/date-utils';
+import { UNLISTED_LIST_ID } from '../../scenes/home/state';
+import { SkeletonTuduList } from '../skeleton-tudu-list';
+import { showItemDeletedToast } from '../../utils/toast-utils';
+import { useTranslation } from 'react-i18next';
+import { UNLOADED_ID } from '../../constants';
 import { trimEmoji } from '../../utils/emoji-utils';
 import Animated, { LinearTransition } from 'react-native-reanimated';
+import { ScheduleModal } from '../schedule-modal';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -50,13 +51,14 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
+    const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
 
-    const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+    const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
     const hookContent = useCloseCurrentlyOpenSwipeable();
 
-    const {saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup} = useListService();
+    const { saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup } = useListService();
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const [internalList, setInternalList] = useState(list);
 
@@ -66,10 +68,10 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     );
 
     const tudus = useMemo(() => {
-      return !internalList?.tudus ? [] : 
-      [
-        ...internalList.tudus
-      ];
+      return !internalList?.tudus ? [] :
+        [
+          ...internalList.tudus
+        ];
     }, [internalList]);
 
     useEffect(() => {
@@ -82,7 +84,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           if (!current) {
             return undefined;
           }
-          return {...current, tudus: tudusList};
+          return { ...current, tudus: tudusList };
         });
         setTudus(tudusList);
       },
@@ -110,7 +112,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         }
 
         tudu.done = !tudu.done;
-        
+
         // First updates the internal list
         setInternalList(current => {
           if (!current) {
@@ -247,6 +249,11 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       setNewTuduPopupVisible(true);
     }, []);
 
+    const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
+      setEditingTudu(tudu);
+      setScheduleModalVisible(true);
+    }, []);
+
     return (
       <Page>
         <ListHeader
@@ -270,7 +277,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           {loading ? (
             <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
           ) : (
-            <Animated.View style={{flex: 1}} layout={LinearTransition}>
+            <Animated.View style={{ flex: 1 }} layout={LinearTransition}>
               <TudusList
                 onTuduPress={handleTuduPress}
                 animateIcon={animateThisIcon}
@@ -279,6 +286,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 onEditPress={handleEditPress}
                 onDeletePress={handleTuduDelete}
                 onClearAllDonePress={handleClearAllDone}
+                onSchedulePress={handleTuduSchedulePress}
                 onUndoAllPress={handleUndoAllPress}
                 list={internalList}
                 setTudus={handleSetTudus}
@@ -287,11 +295,11 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             </Animated.View>
           )}
           {allowAdding && !loading && (
-          <ListActionButton
-            ref={actionButtonRef}
-            onInsertTuduPress={handleInsertTudu}
-          />
-        )}
+            <ListActionButton
+              ref={actionButtonRef}
+              onInsertTuduPress={handleInsertTudu}
+            />
+          )}
         </DraggablePageContent>
         <NewTuduModal
           visible={newTuduPopupVisible}
@@ -304,9 +312,17 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           editingTudu={editingTudu}
           listName={list?.label}
         />
+        <ScheduleModal
+          isVisible={scheduleModalVisible}
+          onModalClose={() => {
+            setScheduleModalVisible(false);
+            setEditingTudu(undefined);
+            closeCurrentlyOpenSwipeable();
+          }}
+        />
       </Page>
     );
   },
 );
 
-export {ListPageCore};
+export { ListPageCore };
