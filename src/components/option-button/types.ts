@@ -5,5 +5,6 @@ export type OptionButtonProps = {
     Icon: React.FC<AnimatedIconProps>;
     label: string;
     onPress: () => void;
+    autoAnimateIcon?: boolean;
     iconAnimationDelay?: number;
 } & ViewStyle;

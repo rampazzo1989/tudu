@@ -18,12 +18,12 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ isVisible, onModalClose }
       buttons={[
         { label: t('buttons.cancel'), onPress: onModalClose },
       ]}
-      Icon={CalendarIcon}
-      shakeOnShow
-      haptics>
+      Icon={CalendarIcon}>
       <OptionsContainer>
-        <OptionButtonStyled Icon={getDaytimeIcon()} label={t('scheduleDays.today')} onPress={() => {}} iconAnimationDelay={800} />
-        <OptionButtonStyled Icon={CalendarIcon} label={t('scheduleDays.tomorrow')} onPress={() => {}} iconAnimationDelay={1600} />
+        <OptionButtonStyled Icon={getDaytimeIcon()} label={t('scheduleOptions.today')} onPress={() => {}} autoAnimateIcon iconAnimationDelay={800} />
+        <OptionButtonStyled Icon={CalendarIcon} label={t('scheduleOptions.tomorrow')} onPress={() => {}} />
+        <OptionButtonStyled Icon={CalendarIcon} label={t('scheduleOptions.nextDays')} onPress={() => {}} />
+        <OptionButtonStyled Icon={CalendarIcon} label={t('scheduleOptions.date')} onPress={() => {}} autoAnimateIcon iconAnimationDelay={1600} />
       </OptionsContainer>
     </PopupModal>
   );

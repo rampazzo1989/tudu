@@ -100,5 +100,5 @@ export const styles = StyleSheet.create({
 export const ContentContainer = styled.View`
   justify-content: center;
   align-items: center;
-  padding: 12px;
+  padding: 12px 8px;
 `;

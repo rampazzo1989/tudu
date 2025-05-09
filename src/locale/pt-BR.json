@@ -152,8 +152,6 @@
     "yearly": "todo ano"
   },
   "scheduleDays": {
-    "today": "Hoje",
-    "tomorrow": "Amanhã",
     "sunday": "Domingo",
     "monday": "Segunda-feira",
     "tuesday": "Terça-feira",
@@ -161,5 +159,11 @@
     "thursday": "Quinta-feira",
     "friday": "Sexta-feira",
     "saturday": "Sábado"
+  },
+  "scheduleOptions": {
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "nextDays": "Próximos dias...",
+    "date": "Data..."
   }
 }
