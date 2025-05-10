@@ -13,23 +13,23 @@ export const KeyboardAvoidingView = styled.KeyboardAvoidingView`
 export const PopupContainer = styled(AnimatedTouchable).attrs({
   activeOpacity: 1,
 })<{minimumSized: boolean}>`
-  min-width: 290px;
-  width: ${({minimumSized}) => (minimumSized ? 280 : 320)}px;
   background-color: ${({theme}) => theme.colors.popupBackground};
   border-radius: 8px;
   elevation: 15;
   padding: 14px 16px;
   border: 1px solid #ffffff30;
   margin-top: -8px;
+  max-width: 90%;
 `;
 
 export const PopupTopContainer = styled(Animated.View)`
-  padding: 14px 16px;
-  width: 320px;
+  padding: 14px 24px;
+  width: auto;
   background-color: ${({theme}) => theme.colors.popupTopBackground};
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   flex: 1;
+  max-width: 90%;
   max-height: 110px;
 `;
 
@@ -41,6 +41,7 @@ export const PopupTitle = styled.Text`
   text-align: left;
   margin-left: 10px;
   flex-wrap: wrap;
+  flex: 1;
   max-width: 90%;
 `;
 

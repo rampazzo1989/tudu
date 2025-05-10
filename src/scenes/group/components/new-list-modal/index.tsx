@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next';
 import {TextInput} from 'react-native';
 import {PopupModal} from '../../../../components/popup-modal';
 import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
-import {Input} from './styles';
+import {ContentContainer, Input} from './styles';
 import {PopupButton} from '../../../../components/popup-modal/types';
 import {NewListModalProps} from './types';
 import {ListDataViewModel, ListViewModel} from '../../../home/types';
@@ -144,12 +144,14 @@ const NewListModal: React.FC<NewListModalProps> = memo(
         buttons={buttonsData}
         Icon={ListDefaultIcon}
       >
+        <ContentContainer>
         <Input
           value={internalListData.label}
           onChangeText={handleTextChange}
           maxLength={30}
           ref={inputRef}
         />
+        </ContentContainer>
       </PopupModal>
     );
   },

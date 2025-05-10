@@ -63,6 +63,7 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
             <EmojiList
                 horizontal
                 showsHorizontalScrollIndicator={false}
+                // contentContainerStyle={{ width: 300 }}
                 keyboardShouldPersistTaps="handled">
                 {showDefaultIcon && (
                     <EmojiButton

@@ -13,7 +13,7 @@ export const REMOVE_NUMBERS_REGEX = /^[\d]+/gu;
  *          or undefined if the input text is empty or no emoji is found at the start or end.
  */
 export const trimEmoji = (text: string, side: "start" | "end" | "both" = "both") => {
-  if (text === '') {
+  if (text.trim() === '') {
     return;
   }
   var splitter = new GraphemeSplitter();

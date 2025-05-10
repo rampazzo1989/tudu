@@ -41,6 +41,14 @@ const CalendarIcon = memo(
   })
 );
 
-export {CalendarIcon};
+const OpenCalendarIcon = memo(
+  forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
+    return (
+      <CalendarIcon ref={ref} initialFrame={90} finalFrame={60} staticStateFrame={90} {...props} />
+    );
+  })
+);
+
+export {CalendarIcon, OpenCalendarIcon};
 
 

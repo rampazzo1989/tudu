@@ -319,6 +319,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             setEditingTudu(undefined);
             closeCurrentlyOpenSwipeable();
           }}
+          onSchedule={(date: Date) => {
+            if (editingTudu) {
+              editingTudu.dueDate = date;
+              handleInsertOrUpdate(editingTudu);
+            }
+          }}
         />
       </Page>
     );

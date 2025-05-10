@@ -8,3 +8,7 @@ export const Input = styled.TextInput`
   height: 40px;
   padding-left: 10px;
 `;
+
+export const ContentContainer = styled.View`
+  width: 300px;
+`;
