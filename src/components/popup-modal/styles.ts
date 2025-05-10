@@ -56,7 +56,7 @@ export const SeparatorContainer = styled.View`
   background-color: white;
 `;
 
-export const ButtonsContainer = styled.View<{shouldMarginTop: boolean, alignCenter?: boolean}>`
+export const ButtonsContainer = styled(Animated.View)<{shouldMarginTop: boolean, alignCenter?: boolean}>`
   flex-direction: row;
   align-items: center;
   justify-content: ${({alignCenter}) => (alignCenter ? 'space-around' : 'flex-end')};

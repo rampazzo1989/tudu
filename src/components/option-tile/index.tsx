@@ -1,15 +1,12 @@
 import React from 'react';
-import { OptionTileContainer, OptionTileText, styles } from './styles';
 import { OptionTileProps } from './types';
+import { FadeIn } from 'react-native-reanimated';
+import { OptionTileContainer, OptionTileText } from './styles';
 
-const OptionTile: React.FC<OptionTileProps> = ({ Icon, label, onPress, autoAnimateIcon, iconAnimationDelay }) => {
+const OptionTile: React.FC<OptionTileProps> = ({ TopComponent, label, onPress }) => {
     return (
-        <OptionTileContainer onPress={onPress}>
-            <Icon
-                autoPlay={autoAnimateIcon}
-                autoPlayDelay={iconAnimationDelay}
-                style={styles.icon}
-                size={38} />
+        <OptionTileContainer onPress={onPress} entering={FadeIn.duration(1000)}>
+            {TopComponent && <TopComponent />}
             <OptionTileText>{label}</OptionTileText>
         </OptionTileContainer>
     );

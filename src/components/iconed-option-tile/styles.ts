@@ -1,4 +1,4 @@
-import { Animated, TouchableOpacity } from "react-native";
+import { Animated, StyleSheet, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity) as any;
@@ -20,3 +20,10 @@ export const OptionTileText = styled.Text`
     margin-top: 6px;
     max-width: 90%;
 `;
+
+export const styles = StyleSheet.create({
+  icon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
