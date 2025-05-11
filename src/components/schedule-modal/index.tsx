@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { PopupModal } from '../popup-modal';
 import { getDaytimeIcon } from '../../utils/general-utils';
 import { CalendarIcon, OpenCalendarIcon } from '../animated-icons/calendar';
 import { ScheduleModalProps, ScheduleOptionsProps } from './types';
 import { OptionsContainer } from './styles';
-import { t } from 'i18next';
+import { t, use } from 'i18next';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 import { IconedOptionTile } from '../iconed-option-tile';
 import { ScrollView, Text, View } from 'react-native';
@@ -33,18 +33,21 @@ const NextDays: React.FC<{ onScheduleToDay: (date: Date) => void }> = ({ onSched
     t('scheduleDays.saturday'),
   ];
 
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  const next7Days = useMemo(() => {
 
-  const next7Days = Array.from({ length: 7 }, (_, i) => {
-    const nextDate = new Date(tomorrow);
-    nextDate.setDate(tomorrow.getDate() + i + 1);
-    return {
-      dayOfWeek: daysOfWeek[nextDate.getDay()],
-      dayOfMonth: nextDate.getDate(),
-      date: nextDate,
-    };
-  });
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const nextDate = new Date(tomorrow);
+      nextDate.setDate(tomorrow.getDate() + i + 1);
+      return {
+        dayOfWeek: daysOfWeek[nextDate.getDay()],
+        dayOfMonth: nextDate.getDate(),
+        date: nextDate,
+      };
+    });
+  }, [daysOfWeek]);
 
   return (
     <Animated.View entering={EnteringAnimation} style={{ height: 124 }}>
@@ -68,19 +71,17 @@ const NextDays: React.FC<{ onScheduleToDay: (date: Date) => void }> = ({ onSched
   );
 };
 
-const ScheduleOptions: React.FC<ScheduleOptionsProps> = ({ onSchedule, onModalClose, onPressDate, onPressNextDays }) => {
+const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(({ onSchedule, onPressDate, onPressNextDays }) => {
 
-  const handleScheduleToday = () => {
+  const handleScheduleToday = useCallback(() => {
     onSchedule(new Date());
-    onModalClose();
-  };
+  }, [onSchedule]);
 
-  const handleScheduleTomorrow = () => {
+  const handleScheduleTomorrow = useCallback(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     onSchedule(tomorrow);
-    onModalClose();
-  };
+  }, [onSchedule]);
 
   return (
     <>
@@ -115,49 +116,73 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = ({ onSchedule, onModalCl
       </Animated.View>
     </>
   );
+});
+
+type PopupStage = {
+  title: string;
+  Icon: React.FC<any>;
+  Content: React.ReactNode;
+  ActionButton: React.ReactNode | undefined;
+};
+
+type PopupStages = {
+  initial: PopupStage;
+  nextDays: PopupStage;
+};
+
+enum PopupStageEnum {
+  INITIAL = 'initial',
+  NEXT_DAYS = 'nextDays',
 }
 
-const ScheduleModal: React.FC<ScheduleModalProps> = ({ isVisible, onModalClose, onSchedule }) => {
+const ScheduleModal: React.FC<ScheduleModalProps> = memo(({ isVisible, onModalClose, onSchedule }) => {
+
+  const [popupStage, setPopupStage] = useState(PopupStageEnum.INITIAL);
 
   const onPressDate = () => {
     // Handle date selection
   };
 
-  const onPressNextDays = () => {
+  const onPressNextDays = useCallback(() => {
     // Handle next days selection
-    setPopupStage(popupStages.nextDays);
-  };
+    setPopupStage(PopupStageEnum.NEXT_DAYS);
+  }, []);
 
   const handleModalClose = useCallback(() => {
-    setPopupStage(popupStages.initial);
+    setPopupStage(PopupStageEnum.INITIAL);
     onModalClose();
   }, [onModalClose]);
 
-  const handleScheduleToDate = (date: Date) => {
+  const handleScheduleToDate = useCallback((date: Date) => {
     onSchedule(date);
     handleModalClose();
-  };
+  }, [onSchedule, handleModalClose]);
 
-  const popupStages = {
-    initial: {
-      title: t('popupTitles.schedule'),
-      Icon: CalendarIcon,
-      Content: (
-        <ScheduleOptions onSchedule={onSchedule} onModalClose={handleModalClose} onPressNextDays={onPressNextDays} onPressDate={onPressDate} />
-      ),
-      ActionButton: undefined as React.ReactNode
-    },
-    nextDays: {
-      title: t('popupTitles.scheduleToNext'),
-      Icon: OpenCalendarIcon,
-      Content: (<NextDays onScheduleToDay={handleScheduleToDate} />),
-      ActionButton: (
-        <BackButton onPress={() => setPopupStage(popupStages.initial)} />
-      )
-    }
-  };
-
-  const [popupStage, setPopupStage] = useState(popupStages.initial);
+  const popupStages: Record<PopupStageEnum, PopupStage> = useMemo(
+    () => ({
+      [PopupStageEnum.INITIAL]: {
+        title: t('popupTitles.schedule'),
+        Icon: CalendarIcon,
+        Content: (
+          <ScheduleOptions
+            onSchedule={handleScheduleToDate}
+            onPressNextDays={onPressNextDays}
+            onPressDate={onPressDate}
+          />
+        ),
+        ActionButton: undefined,
+      },
+      [PopupStageEnum.NEXT_DAYS]: {
+        title: t('popupTitles.scheduleToNext'),
+        Icon: OpenCalendarIcon,
+        Content: <NextDays onScheduleToDay={handleScheduleToDate} />,
+        ActionButton: (
+          <BackButton onPress={() => setPopupStage(PopupStageEnum.INITIAL)} />
+        ),
+      },
+    }),
+    [handleScheduleToDate, handleModalClose, onPressNextDays, onPressDate]
+  );
 
   if (!isVisible) return null;
 
@@ -165,17 +190,17 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ isVisible, onModalClose, 
     <PopupModal
       visible
       onRequestClose={handleModalClose}
-      title={popupStage.title}
+      title={popupStages[popupStage].title}
       buttons={[
         { label: t('buttons.cancel'), onPress: handleModalClose },
       ]}
-      ActionButton={popupStage.ActionButton}
-      Icon={popupStage.Icon}>
+      ActionButton={popupStages[popupStage].ActionButton}
+      Icon={popupStages[popupStage].Icon}>
       <OptionsContainer>
-        {popupStage.Content}
+        {popupStages[popupStage].Content}
       </OptionsContainer>
     </PopupModal>
   );
-};
+});
 
 export { ScheduleModal };

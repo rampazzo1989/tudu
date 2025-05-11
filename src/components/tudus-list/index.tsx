@@ -160,7 +160,6 @@ const TudusList: React.FC<TudusListProps> = memo(
       (editingItem: TuduViewModel) =>
         (swipeableRef: React.RefObject<SwipeableCardRef>) => {
           onSchedulePress(editingItem);
-          swipeableRef.current?.closeOptions();
         },
       [onSchedulePress],
     );
