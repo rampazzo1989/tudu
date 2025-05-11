@@ -16,4 +16,5 @@ export type PopupModalProps = BlurredModalProps & {
   haptics?: boolean;
   topContainerVisible?: boolean;
   TopContainerComponent?: React.ReactNode;
+  ActionButton?: React.ReactNode;
 };

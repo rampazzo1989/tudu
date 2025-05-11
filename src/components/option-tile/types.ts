@@ -4,5 +4,5 @@ export type BaseOptionTileProps = {
 }
 
 export type OptionTileProps = BaseOptionTileProps & {
-    TopComponent?: React.FC;
+    TopComponent?: React.ReactNode;
 }

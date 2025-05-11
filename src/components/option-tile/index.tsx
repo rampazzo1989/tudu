@@ -6,7 +6,7 @@ import { OptionTileContainer, OptionTileText } from './styles';
 const OptionTile: React.FC<OptionTileProps> = ({ TopComponent, label, onPress }) => {
     return (
         <OptionTileContainer onPress={onPress} entering={FadeIn.duration(1000)}>
-            {TopComponent && <TopComponent />}
+            {TopComponent}
             <OptionTileText>{label}</OptionTileText>
         </OptionTileContainer>
     );

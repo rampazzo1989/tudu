@@ -250,9 +250,19 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     }, []);
 
     const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
+      console.log('Schedule tudu:', tudu);
       setEditingTudu(tudu);
       setScheduleModalVisible(true);
     }, []);
+
+    const handleSchedule = useCallback((date: Date) => {
+      console.log('Schedule date:', date, editingTudu);
+      if (editingTudu) {
+        editingTudu.dueDate = date;
+        handleInsertOrUpdate(editingTudu);
+      }
+    }, [editingTudu, handleInsertOrUpdate]);
+
 
     return (
       <Page>
@@ -315,16 +325,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         <ScheduleModal
           isVisible={scheduleModalVisible}
           onModalClose={() => {
+            console.log('ModalClose:');
             setScheduleModalVisible(false);
             setEditingTudu(undefined);
             closeCurrentlyOpenSwipeable();
           }}
-          onSchedule={(date: Date) => {
-            if (editingTudu) {
-              editingTudu.dueDate = date;
-              handleInsertOrUpdate(editingTudu);
-            }
-          }}
+          onSchedule={handleSchedule}
         />
       </Page>
     );

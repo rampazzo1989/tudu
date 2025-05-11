@@ -74,7 +74,8 @@
     "schedule": "Programar tudú",
     "newGroup": "Crear nuevo grupo",
     "newTudu": "Crear nuevo tudú",
-    "editTudu": "Editar tudú"
+    "editTudu": "Editar tudú",
+    "scheduleToNext": "Programar para el próximo…"
   },
   "popupLabels": {
     "suggestedEmojis": "Emojis sugeridos:",

@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
-import Animated, {FadeInDown, FadeOutDown, LinearTransition, SlideInDown, SlideInUp, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import Animated, {FadeIn, FadeInDown, FadeOutDown, LinearTransition, SlideInDown, SlideInUp, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {shake} from '../../utils/animation-utils';
 import {BlurredModal} from '../blurred-modal';
@@ -31,6 +31,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     visible,
     shakeOnShow,
     TopContainerComponent,
+    ActionButton,
     haptics = false,
     topContainerVisible = false,
     ...props
@@ -99,6 +100,11 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                       size={22} />
                   )}
                   <PopupTitle>{`${title}`}</PopupTitle>
+                  {ActionButton && (
+                    <Animated.View entering={FadeIn.delay(300)} style={{height: 24, width: 24, alignItems: 'center', justifyContent: 'center'}}>
+                      {ActionButton}
+                    </Animated.View>
+                  )}
                 </PopupTitleContainer>
                 <GradientSeparator
                   colorArray={theme.colors.defaultSeparatorGradientColors}
