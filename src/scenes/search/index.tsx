@@ -15,6 +15,7 @@ import {ListViewModel, TuduViewModel} from '../home/types';
 import {SearchHeader} from './components/search-header';
 import {PaddedContainer, styles} from './styles';
 import {SearchPageProps} from './types';
+import { ScheduleModal } from '../../components/schedule-modal';
 
 const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
   const {t} = useTranslation();
@@ -23,6 +24,7 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
   const [searchText, setSearchText] = useState('');
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
 
   const {saveTudu, deleteTudu, restoreBackup} = useListService();
 
@@ -85,6 +87,18 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
     setSearchText(text);
   }, []);
 
+    const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
+      setEditingTudu(tudu);
+      setScheduleModalVisible(true);
+    }, []);
+  
+    const handleSchedule = useCallback((date: Date) => {
+      if (editingTudu) {
+        editingTudu.dueDate = date;
+        saveTudu(editingTudu);
+      }
+    }, [editingTudu, saveTudu]);
+
   return (
     <Page>
       <SearchHeader
@@ -104,6 +118,7 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
               deleteTuduFn={deleteTudu}
               undoDeletionFn={restoreBackup}
               onEditPress={handleEditPress}
+              onSchedulePress={handleTuduSchedulePress}
             />
           </PaddedContainer>
         )}
@@ -118,6 +133,16 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
         }}
         editingTudu={editingTudu}
         onInsertOrUpdate={saveTudu}
+      />
+      <ScheduleModal
+        isVisible={scheduleModalVisible}
+        onModalClose={() => {
+          setScheduleModalVisible(false);
+          setEditingTudu(undefined);
+          setTimeout(closeCurrentlyOpenSwipeable, 500);
+        }}
+        onSchedule={handleSchedule}
+        currentDate={editingTudu?.dueDate}
       />
     </Page>
   );

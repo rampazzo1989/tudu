@@ -49,6 +49,13 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     });
 
     useEffect(() => {
+      // Dismissing the modal
+      if (!visible) {
+        setShowLayoutAnimation(false);
+      }
+    }, [visible]);
+
+    useEffect(() => {
       if (!visible) {
         return;
       }
@@ -77,7 +84,9 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     return (
       <BlurredModal
         transparent
-        onRequestClose={onRequestClose}
+        onRequestClose={() => {
+          onRequestClose();
+        }}
         onShow={handleShow}
         visible={visible}
         {...props}>
@@ -101,7 +110,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                   )}
                   <PopupTitle>{`${title}`}</PopupTitle>
                   {ActionButton && (
-                    <Animated.View entering={FadeIn.delay(300)} style={{height: 24, width: 24, alignItems: 'center', justifyContent: 'center'}}>
+                    <Animated.View entering={FadeIn.delay(300)} style={{height: 24, width: 24, alignItems: 'center', justifyContent: 'center', position: 'absolute', right: 0}}>
                       {ActionButton}
                     </Animated.View>
                   )}

@@ -41,8 +41,7 @@ export const PopupTitle = styled.Text`
   text-align: left;
   margin-left: 10px;
   flex-wrap: wrap;
-  flex: 1;
-  max-width: 90%;
+  max-width: 80%;
 `;
 
 export const PopupTitleContainer = styled.View`

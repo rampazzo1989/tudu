@@ -15,6 +15,7 @@ import {UNLISTED_LIST_ID} from '../home/state';
 import {ListViewModel, TuduViewModel} from '../home/types';
 import {PaddedContainer, styles} from './styles';
 import {StarredTudusPageProps} from './types';
+import { ScheduleModal } from '../../components/schedule-modal';
 
 const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
   navigation,
@@ -25,6 +26,7 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
 
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
 
   const {getAllStarredTudus, saveTudu, deleteTudu, restoreBackup} =
     useListService();
@@ -68,6 +70,18 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
     setNewTuduPopupVisible(true);
   }, []);
 
+    const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
+      setEditingTudu(tudu);
+      setScheduleModalVisible(true);
+    }, []);
+  
+    const handleSchedule = useCallback((date: Date) => {
+      if (editingTudu) {
+        editingTudu.dueDate = date;
+        saveTudu(editingTudu);
+      }
+    }, [editingTudu, saveTudu]);
+
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
       id: 'starred-tudus',
@@ -95,6 +109,7 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
               deleteTuduFn={deleteTudu}
               undoDeletionFn={restoreBackup}
               onEditPress={handleEditPress}
+              onSchedulePress={handleTuduSchedulePress}
             />
           </PaddedContainer>
         )}
@@ -109,6 +124,16 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
         }}
         editingTudu={editingTudu}
         onInsertOrUpdate={saveTudu}
+      />
+      <ScheduleModal
+        isVisible={scheduleModalVisible}
+        onModalClose={() => {
+          setScheduleModalVisible(false);
+          setEditingTudu(undefined);
+          setTimeout(closeCurrentlyOpenSwipeable, 500);
+        }}
+        onSchedule={handleSchedule}
+        currentDate={editingTudu?.dueDate}
       />
     </Page>
   );

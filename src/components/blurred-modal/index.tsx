@@ -7,7 +7,7 @@ const BlurredModal: React.FC<BlurredModalProps> = memo(
   ({onRequestClose, children, ...props}) => {
     return (
     <View>
-      <Modal {...props} statusBarTranslucent onShow={props.onShow}>
+      <Modal {...props} onRequestClose={onRequestClose} statusBarTranslucent onShow={props.onShow}>
         <Blur
           reducedTransparencyFallbackColor="grey"
           overlayColor="#00000020"
