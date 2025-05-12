@@ -63,7 +63,8 @@
     "cancel": "Cancelar",
     "yes": "Sí",
     "no": "No",
-    "other": "otro"
+    "other": "otro",
+    "confirm": "Confirmar"
   },
   "popupTitles": {
     "renameGroup": "Renombrar Grupo",
@@ -75,7 +76,8 @@
     "newGroup": "Crear nuevo grupo",
     "newTudu": "Crear nuevo tudú",
     "editTudu": "Editar tudú",
-    "scheduleToNext": "Programar para el próximo…"
+    "scheduleToNext": "Programar para el próximo…",
+    "scheduleToDate": "Programar para la fecha"
   },
   "popupLabels": {
     "suggestedEmojis": "Emojis sugeridos:",

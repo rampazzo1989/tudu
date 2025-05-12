@@ -63,7 +63,8 @@
     "cancel": "Cancel",
     "yes": "Yes",
     "no": "No",
-    "other": "other"
+    "other": "other",
+    "confirm": "Confirm"
   }, 
   "popupTitles": {
     "renameGroup": "Rename Group",
@@ -73,6 +74,7 @@
     "editCounter": "Edit counter",
     "schedule": "Schedule tudú",
     "scheduleToNext": "Schedule to next...",
+    "scheduleToDate": "Schedule to date",
     "newGroup": "Create new group",
     "newTudu": "Create new tudú",
     "editTudu": "Edit tudú"

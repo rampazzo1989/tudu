@@ -301,7 +301,7 @@ const TudusList: React.FC<TudusListProps> = memo(
 
     const handleModalClose = useCallback(() => {
       setTuduWaitingForConfirmation(null);
-      closeCurrentlyOpenSwipeable();
+      setTimeout(closeCurrentlyOpenSwipeable, 500);
     }, [setTuduWaitingForConfirmation, closeCurrentlyOpenSwipeable]);
 
     return (

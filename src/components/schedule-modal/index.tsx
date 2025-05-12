@@ -10,6 +10,8 @@ import { IconedOptionTile } from '../iconed-option-tile';
 import { ScrollView, Text, View } from 'react-native';
 import { OptionTile } from '../option-tile';
 import { BackButton } from '../back-button';
+import DatePicker from 'react-native-date-picker';
+import { PopupButton } from '../popup-modal/types';
 
 const EnteringAnimation = FadeIn.duration(600);
 
@@ -118,33 +120,48 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(({ onSchedule, onPr
   );
 });
 
+const DatePickerComponent: React.FC<{ date: Date, onDateSelected: (date: Date) => void }> = ({ date, onDateSelected }) => {
+
+  return (
+    <Animated.View entering={EnteringAnimation} style={{ height: 180, justifyContent: 'center', alignItems: 'center' }}>
+      <DatePicker
+        date={date}
+        onDateChange={onDateSelected}
+        mode="date"
+        theme='dark'
+      />
+    </Animated.View>
+  )
+}
+
 type PopupStage = {
   title: string;
   Icon: React.FC<any>;
   Content: React.ReactNode;
   ActionButton: React.ReactNode | undefined;
-};
-
-type PopupStages = {
-  initial: PopupStage;
-  nextDays: PopupStage;
+  buttons: PopupButton[];
 };
 
 enum PopupStageEnum {
   INITIAL = 'initial',
   NEXT_DAYS = 'nextDays',
+  DATE = 'date',
 }
 
-const ScheduleModal: React.FC<ScheduleModalProps> = memo(({ isVisible, onModalClose, onSchedule }) => {
+const ScheduleModal: React.FC<ScheduleModalProps> = memo(({ isVisible, currentDate, onModalClose, onSchedule }) => {
 
   const [popupStage, setPopupStage] = useState(PopupStageEnum.INITIAL);
+  const [internalDate, setInternalDate] = useState(currentDate || new Date());
 
-  const onPressDate = () => {
-    // Handle date selection
-  };
+  useEffect(() => {
+    setInternalDate(currentDate ?? new Date());
+  }, [currentDate]);
+
+  const onPressDate = useCallback(() => {
+    setPopupStage(PopupStageEnum.DATE);
+  }, []);
 
   const onPressNextDays = useCallback(() => {
-    // Handle next days selection
     setPopupStage(PopupStageEnum.NEXT_DAYS);
   }, []);
 
@@ -153,10 +170,16 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(({ isVisible, onModalCl
     onModalClose();
   }, [onModalClose]);
 
+  const handlePickDate = useCallback((date: Date) => {
+    setInternalDate(date);
+  }, []);
+
   const handleScheduleToDate = useCallback((date: Date) => {
     onSchedule(date);
     handleModalClose();
   }, [onSchedule, handleModalClose]);
+
+  const cancelButton: PopupButton = useMemo(() => ({ label: t('buttons.cancel'), onPress: handleModalClose }), [handleModalClose]);
 
   const popupStages: Record<PopupStageEnum, PopupStage> = useMemo(
     () => ({
@@ -171,6 +194,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(({ isVisible, onModalCl
           />
         ),
         ActionButton: undefined,
+        buttons: [cancelButton],
       },
       [PopupStageEnum.NEXT_DAYS]: {
         title: t('popupTitles.scheduleToNext'),
@@ -179,9 +203,24 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(({ isVisible, onModalCl
         ActionButton: (
           <BackButton onPress={() => setPopupStage(PopupStageEnum.INITIAL)} />
         ),
+        buttons: [cancelButton],
+      },
+      [PopupStageEnum.DATE]: {
+        title: t('popupTitles.scheduleToDate'),
+        Icon: CalendarIcon,
+        Content: <DatePickerComponent date={internalDate} onDateSelected={handlePickDate} />,
+        ActionButton: (
+          <BackButton onPress={() => setPopupStage(PopupStageEnum.INITIAL)} />
+        ),
+        buttons: [{
+          label: t('buttons.confirm'),
+          onPress: () => {
+            handleScheduleToDate(internalDate);
+          },
+        }, cancelButton],
       },
     }),
-    [handleScheduleToDate, handleModalClose, onPressNextDays, onPressDate]
+    [handleScheduleToDate, handleModalClose, onPressNextDays, onPressDate, handlePickDate, internalDate, cancelButton]
   );
 
   if (!isVisible) return null;
@@ -191,9 +230,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(({ isVisible, onModalCl
       visible
       onRequestClose={handleModalClose}
       title={popupStages[popupStage].title}
-      buttons={[
-        { label: t('buttons.cancel'), onPress: handleModalClose },
-      ]}
+      buttons={popupStages[popupStage].buttons}
       ActionButton={popupStages[popupStage].ActionButton}
       Icon={popupStages[popupStage].Icon}>
       <OptionsContainer>

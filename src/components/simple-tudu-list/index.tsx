@@ -26,6 +26,7 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
     updateTuduFn,
     undoDeletionFn,
     onEditPress,
+    onSchedulePress,
   }) => {
     const { t } = useTranslation();
     const [tuduWaitingForConfirmation, setTuduWaitingForConfirmation] = React.useState<TuduViewModel | null>(null);
@@ -112,6 +113,14 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
       [removeFromToday, sendToToday, setTuduWaitingForConfirmation],
     );
 
+    const handleScheduleGenerator = useCallback(
+      (editingItem: TuduViewModel) =>
+        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
+          onSchedulePress(editingItem);
+        },
+      [onSchedulePress],
+    );
+
     const handleModalClose = useCallback(() => {
       setTuduWaitingForConfirmation(null);
       closeCurrentlyOpenSwipeable();
@@ -130,6 +139,7 @@ const SimpleTuduList: React.FC<SimpleTuduListProps> = memo(
                   done={tudu.done}
                   onDelete={handleDeleteGenerator(tudu)}
                   onEdit={handleEditGenerator(tudu)}
+                  onSchedule={handleScheduleGenerator(tudu)}
                   isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
                   onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                     tudu,

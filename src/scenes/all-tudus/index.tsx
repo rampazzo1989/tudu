@@ -1,31 +1,32 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {ListHeader} from '../../components/list-header';
-import {NewTuduModal} from '../../components/new-tudu-modal';
-import {Page} from '../../components/page';
-import {PageContent} from '../../components/page-content';
-import {SimpleTuduList} from '../../components/simple-tudu-list';
-import {SkeletonTuduList} from '../../components/skeleton-tudu-list';
-import {TuduAdditionalInformation} from '../../components/tudu-card/types';
-import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
-import {useListService} from '../../service/list-service-hook/useListService';
-import {formatToLocaleDate, isToday} from '../../utils/date-utils';
-import {UNLISTED_LIST_ID} from '../home/state';
-import {ListViewModel, TuduViewModel} from '../home/types';
-import {PaddedContainer, styles} from './styles';
-import {AllTudusPageProps} from './types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ListHeader } from '../../components/list-header';
+import { NewTuduModal } from '../../components/new-tudu-modal';
+import { Page } from '../../components/page';
+import { PageContent } from '../../components/page-content';
+import { SimpleTuduList } from '../../components/simple-tudu-list';
+import { SkeletonTuduList } from '../../components/skeleton-tudu-list';
+import { TuduAdditionalInformation } from '../../components/tudu-card/types';
+import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
+import { useListService } from '../../service/list-service-hook/useListService';
+import { formatToLocaleDate, isToday } from '../../utils/date-utils';
+import { UNLISTED_LIST_ID } from '../home/state';
+import { ListViewModel, TuduViewModel } from '../home/types';
+import { PaddedContainer, styles } from './styles';
+import { AllTudusPageProps } from './types';
+import { ScheduleModal } from '../../components/schedule-modal';
 
-const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
-  const {t} = useTranslation();
+const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const [tudus, setTudus] = useState<TuduViewModel[]>();
-
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
 
-  const {getAllUndoneTudus, saveTudu, deleteTudu, restoreBackup} =
+  const { getAllUndoneTudus, saveTudu, deleteTudu, restoreBackup } =
     useListService();
 
-  const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+  const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -64,6 +65,18 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
     setNewTuduPopupVisible(true);
   }, []);
 
+  const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
+    setEditingTudu(tudu);
+    setScheduleModalVisible(true);
+  }, []);
+
+  const handleSchedule = useCallback((date: Date) => {
+    if (editingTudu) {
+      editingTudu.dueDate = date;
+      saveTudu(editingTudu);
+    }
+  }, [editingTudu, saveTudu]);
+
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
       id: 'all-tudus',
@@ -91,6 +104,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
               deleteTuduFn={deleteTudu}
               undoDeletionFn={restoreBackup}
               onEditPress={handleEditPress}
+              onSchedulePress={handleTuduSchedulePress}
             />
           </PaddedContainer>
         )}
@@ -106,8 +120,18 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({navigation, route}) => {
         editingTudu={editingTudu}
         onInsertOrUpdate={saveTudu}
       />
+      <ScheduleModal
+        isVisible={scheduleModalVisible}
+        onModalClose={() => {
+          setScheduleModalVisible(false);
+          setEditingTudu(undefined);
+          setTimeout(closeCurrentlyOpenSwipeable, 500);
+        }}
+        onSchedule={handleSchedule}
+        currentDate={editingTudu?.dueDate}
+      />
     </Page>
   );
 };
 
-export {AllTudusPage};
+export { AllTudusPage };

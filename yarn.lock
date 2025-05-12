@@ -6449,6 +6449,11 @@ react-native-bootsplash@^4.7.2:
     picocolors "^1.0.0"
     sharp "^0.32.1"
 
+react-native-date-picker@^5.0.12:
+  version "5.0.12"
+  resolved "https://registry.yarnpkg.com/react-native-date-picker/-/react-native-date-picker-5.0.12.tgz#12540b6a58500811ee7e4fc0244e3accc7cca9c1"
+  integrity sha512-R/mUnCKhcuxbhKPFwYdBQCxQt9HHLqpM4ruRUqlcBjiUZ3N2wdnwOMyc888Ps8qp8e7v29PrDHtUlG8LPuFn9w==
+
 react-native-draggable-flatlist@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/react-native-draggable-flatlist/-/react-native-draggable-flatlist-4.0.1.tgz#2f027d387ba4b8f3eb0907340e32cb85e6460df2"

@@ -84,7 +84,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           if (!current) {
             return undefined;
           }
-          return { ...current, tudus: tudusList };
+          const newList = current.clone();
+          newList.tudus = tudusList;
+          return newList;
         });
         setTudus(tudusList);
       },
@@ -327,6 +329,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             setTimeout(closeCurrentlyOpenSwipeable, 500);
           }}
           onSchedule={handleSchedule}
+          currentDate={editingTudu?.dueDate}
         />
       </Page>
     );
