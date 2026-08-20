@@ -168,5 +168,39 @@
     "tomorrow": "Mañana",
     "nextDays": "Próximos días...",
     "date": "Fecha..."
+  },
+  "settings": {
+    "title": "Configuración",
+    "sections": {
+      "ai": "Inteligencia Artificial",
+      "general": "General"
+    },
+    "ai": {
+      "title": "IA Generativa",
+      "subtitle": "Configura tu proveedor y clave de API para funciones inteligentes",
+      "statusActive": "Activo ({{provider}})",
+      "statusNotConfigured": "No configurado",
+      "selectProvider": "Proveedor de IA",
+      "apiKeyLabel": "Clave de API (API Key)",
+      "apiKeyPlaceholder": "Pega tu clave de API aquí",
+      "securityNotice": "Tu clave se almacena de forma segura y encriptada en tu dispositivo y se usa solo para llamadas directas al proveedor.",
+      "getApiKey": "Cómo obtener una clave",
+      "testConnection": "Probar Conexión",
+      "testingConnection": "Probando conexión...",
+      "connectionSuccess": "¡Conexión establecida con éxito!",
+      "connectionError": "Error de conexión: {{error}}",
+      "saveKey": "Guardar Clave",
+      "removeKey": "Eliminar Clave",
+      "confirmRemoveKey": "¿Deseas eliminar la clave de API configurada?",
+      "keySaved": "¡Clave de API guardada con éxito!",
+      "keyRemoved": "Clave de API eliminada.",
+      "emojiSuggestions": "Sugerencia de emojis por IA",
+      "emojiSuggestionsDescription": "Sugiere emojis relevantes según el contexto de la lista y tudús",
+      "providers": {
+        "gemini": "Google Gemini",
+        "openai": "OpenAI",
+        "claude": "Anthropic Claude"
+      }
+    }
   }
 }

@@ -12,6 +12,8 @@ import {ScheduledListPage} from '../../scenes/scheduled-list';
 import {AllTudusPage} from '../../scenes/all-tudus';
 import {StarredTudusPage} from '../../scenes/starred-tudus';
 import {SearchPage} from '../../scenes/search';
+import {SettingsPage} from '../../scenes/settings';
+import {AISettingsPage} from '../../scenes/settings/ai-settings';
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 
@@ -121,6 +123,28 @@ const StackNavigator = () => {
           transitionSpec: {
             open: config,
             close: config,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: configSlow,
+            close: configSlow,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="AISettings"
+        component={AISettingsPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: configSlow,
+            close: configSlow,
           },
         }}
       />

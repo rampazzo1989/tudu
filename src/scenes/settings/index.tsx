@@ -1,0 +1,87 @@
+import React, {useCallback} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Text} from 'react-native';
+import {FadeIn} from 'react-native-reanimated';
+import {useRecoilValue} from 'recoil';
+import {AdjustIcon} from '../../components/animated-icons/adjust-icon';
+import {DefaultHeader} from '../../components/default-header';
+import {Page} from '../../components/page';
+import {PageContent} from '../../components/page-content';
+import {aiSettingsState} from '../../state/atoms';
+import {
+  Container,
+  SectionContainer,
+  SectionTitleText,
+  SettingsCard,
+  CardLeftContent,
+  IconContainer,
+  CardTextContainer,
+  CardTitle,
+  CardSubtitle,
+  StatusBadge,
+  StatusText,
+} from './styles';
+import {styles} from '../home/styles';
+import {SettingsPageProps} from './types';
+
+const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
+  const {t} = useTranslation();
+  const aiSettings = useRecoilValue(aiSettingsState);
+
+  const handleBackButtonPress = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const handleAISettingsPress = useCallback(() => {
+    navigation.navigate('AISettings');
+  }, [navigation]);
+
+  const getProviderName = (providerKey: string) => {
+    return t(`settings.ai.providers.${providerKey}`, {
+      defaultValue: providerKey,
+    });
+  };
+
+  const isAIActive = aiSettings.hasApiKey;
+
+  return (
+    <Page>
+      <DefaultHeader
+        Icon={AdjustIcon}
+        title={t('settings.title')}
+        onBackButtonPress={handleBackButtonPress}
+      />
+      <PageContent contentContainerStyle={styles.scrollContentContainer}>
+        <Container>
+          <SectionContainer>
+            <SectionTitleText>{t('settings.sections.ai')}</SectionTitleText>
+            <SettingsCard onPress={handleAISettingsPress}>
+              <CardLeftContent>
+                <IconContainer>
+                  <Text style={{fontSize: 22}}>✨</Text>
+                </IconContainer>
+                <CardTextContainer>
+                  <CardTitle>{t('settings.ai.title')}</CardTitle>
+                  <CardSubtitle numberOfLines={2}>
+                    {t('settings.ai.subtitle')}
+                  </CardSubtitle>
+                </CardTextContainer>
+              </CardLeftContent>
+              <StatusBadge active={isAIActive}>
+                <StatusText active={isAIActive}>
+                  {isAIActive
+                    ? t('settings.ai.statusActive', {
+                        provider: getProviderName(aiSettings.provider),
+                      })
+                    : t('settings.ai.statusNotConfigured')}
+                </StatusText>
+              </StatusBadge>
+            </SettingsCard>
+          </SectionContainer>
+        </Container>
+      </PageContent>
+    </Page>
+  );
+};
+
+export {SettingsPage};

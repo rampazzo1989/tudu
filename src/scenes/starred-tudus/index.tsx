@@ -1,37 +1,37 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {StarIcon} from '../../components/animated-icons/star-icon';
-import {ListHeader} from '../../components/list-header';
-import {NewTuduModal} from '../../components/new-tudu-modal';
-import {Page} from '../../components/page';
-import {PageContent} from '../../components/page-content';
-import {SimpleTuduList} from '../../components/simple-tudu-list';
-import {SkeletonTuduList} from '../../components/skeleton-tudu-list';
-import {TuduAdditionalInformation} from '../../components/tudu-card/types';
-import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
-import {useListService} from '../../service/list-service-hook/useListService';
-import {formatToLocaleDate, isToday} from '../../utils/date-utils';
-import {UNLISTED_LIST_ID} from '../home/state';
-import {ListViewModel, TuduViewModel} from '../home/types';
-import {PaddedContainer, styles} from './styles';
-import {StarredTudusPageProps} from './types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StarIcon } from '../../components/animated-icons/star-icon';
+import { ListHeader } from '../../components/list-header';
+import { NewTuduModal } from '../../components/new-tudu-modal';
+import { Page } from '../../components/page';
+import { PageContent } from '../../components/page-content';
+import { SimpleTuduList } from '../../components/simple-tudu-list';
+import { SkeletonTuduList } from '../../components/skeleton-tudu-list';
+import { TuduAdditionalInformation } from '../../components/tudu-card/types';
+import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
+import { useListService } from '../../service/list-service-hook/useListService';
+import { formatToLocaleDate, isToday } from '../../utils/date-utils';
+import { UNLISTED_LIST_ID } from '../home/state';
+import { ListViewModel, TuduViewModel } from '../home/types';
+import { PaddedContainer, styles } from './styles';
+import { StarredTudusPageProps } from './types';
 import { ScheduleModal } from '../../components/schedule-modal';
 
 const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
   navigation,
   route,
 }) => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [tudus, setTudus] = useState<TuduViewModel[]>();
 
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
 
-  const {getAllStarredTudus, saveTudu, deleteTudu, restoreBackup} =
+  const { getAllStarredTudus, saveTudu, deleteTudu, restoreBackup } =
     useListService();
 
-  const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+  const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -70,17 +70,17 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
     setNewTuduPopupVisible(true);
   }, []);
 
-    const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
-      setEditingTudu(tudu);
-      setScheduleModalVisible(true);
-    }, []);
-  
-    const handleSchedule = useCallback((date: Date) => {
-      if (editingTudu) {
-        editingTudu.dueDate = date;
-        saveTudu(editingTudu);
-      }
-    }, [editingTudu, saveTudu]);
+  const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
+    setEditingTudu(tudu);
+    setScheduleModalVisible(true);
+  }, []);
+
+  const handleSchedule = useCallback((date: Date) => {
+    if (editingTudu) {
+      editingTudu.dueDate = date;
+      saveTudu(editingTudu);
+    }
+  }, [editingTudu, saveTudu]);
 
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
@@ -139,4 +139,4 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
   );
 };
 
-export {StarredTudusPage};
+export { StarredTudusPage };

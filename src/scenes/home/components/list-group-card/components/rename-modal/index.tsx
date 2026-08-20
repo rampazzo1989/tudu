@@ -78,7 +78,7 @@ const RenameModal: React.FC<RenameModalProps> = memo(
     return (
       <PopupModal
         visible={visible}
-        onRequestClose={onRequestClose}
+        onTouchBackground={onRequestClose}
         onShow={() => {
           setInternalGroupName(groupData.groupId);
           setTimeout(() => inputRef.current?.focus(), 200);

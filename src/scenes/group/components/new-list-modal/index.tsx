@@ -28,6 +28,8 @@ const NewListModal: React.FC<NewListModalProps> = memo(
     );
     const [suggestedEmojis, setSuggestedEmojis] = useState<string[]>([]);
     const [isTopContainerVisible, setIsTopContainerVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isAIGenerated, setIsAIGenerated] = useState(false);
     const { getAllLists, saveList } = useListService();
     const { t } = useTranslation();
     const inputRef = useRef<TextInput>(null);
@@ -36,14 +38,16 @@ const NewListModal: React.FC<NewListModalProps> = memo(
       searchEmojis, 
       getMostUsedEmojis, 
       getDefaultEmojis 
-    } = useEmojiSearch(700);
+    } = useEmojiSearch(1200);
     const [showingMostUsedEmojis, setShowingMostUsedEmojis] = useState(false);
 
     const handleRequestClose = useCallback(() => {
       setIsTopContainerVisible(false); 
       setSuggestedEmojis([]);
+      setIsLoading(false);
+      setIsAIGenerated(false);
       onRequestClose();
-    }, []);
+    }, [onRequestClose]);
 
     const handleTextChange = useCallback(
       (text: string) => {
@@ -55,19 +59,31 @@ const NewListModal: React.FC<NewListModalProps> = memo(
 
         setIsTopContainerVisible(true);
 
-        debounceSearchEmojis(text, (results, isShowingMostUsed) => {
-          setShowingMostUsedEmojis(isShowingMostUsed);
+        debounceSearchEmojis(
+          text,
+          (results, isShowingMostUsed, isAI) => {
+            setShowingMostUsedEmojis(isShowingMostUsed);
+            setIsAIGenerated(isAI);
 
-          var emojis = results;
+            var emojis = results;
 
-          if (isShowingMostUsed) {
-            emojis = [...emojis, ...getDefaultEmojis('list')];
-          }
+            if (isShowingMostUsed) {
+              emojis = [...emojis, ...getDefaultEmojis('list')];
+            }
 
-          setSuggestedEmojis(emojis);
-        });
+            setIsLoading(false);
+            setSuggestedEmojis(emojis);
+          },
+          true,
+          () => {
+            if (suggestedEmojis.length === 0) {
+              setIsLoading(true);
+            }
+          },
+          { type: 'list' },
+        );
       },
-      [debounceSearchEmojis, getDefaultEmojis],
+      [debounceSearchEmojis, getDefaultEmojis, suggestedEmojis.length],
     );
 
     const isEditing = useMemo(() => !!editingList, [editingList]);
@@ -123,9 +139,16 @@ const NewListModal: React.FC<NewListModalProps> = memo(
       <PopupModal
         visible={visible}
         topContainerVisible={isTopContainerVisible} 
-        onRequestClose={handleRequestClose}
+        onTouchBackground={handleRequestClose}
         TopContainerComponent={
-          <SuggestedEmojiList emojis={suggestedEmojis} onEmojiSelect={handleEmojiSelect} showDefaultIcon isShowingMostUsedEmojis={showingMostUsedEmojis} />
+          <SuggestedEmojiList
+            emojis={suggestedEmojis}
+            onEmojiSelect={handleEmojiSelect}
+            showDefaultIcon
+            isShowingMostUsedEmojis={showingMostUsedEmojis}
+            isAIGenerated={isAIGenerated}
+            isLoading={isLoading}
+          />
         }
         onShow={() => {
           setInternalListData(editingList ?? getNewEmptyList());

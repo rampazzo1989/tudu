@@ -25,13 +25,14 @@ const PopupModal: React.FC<PopupModalProps> = memo(
   ({
     children,
     title,
-    onRequestClose,
     buttons,
     Icon,
     visible,
     shakeOnShow,
     TopContainerComponent,
     ActionButton,
+    onTouchBackground,
+    onRequestClose,
     haptics = false,
     topContainerVisible = false,
     ...props
@@ -84,10 +85,9 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     return (
       <BlurredModal
         transparent
-        onRequestClose={() => {
-          onRequestClose();
-        }}
+        onTouchBackground={onTouchBackground}
         onShow={handleShow}
+        onRequestClose={onRequestClose}
         visible={visible}
         {...props}>
         <KeyboardAvoidingView behavior="padding" pointerEvents="auto">

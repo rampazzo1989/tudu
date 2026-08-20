@@ -118,7 +118,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
     return (
       <PopupModal
         visible={visible}
-        onRequestClose={onRequestClose}
+        onTouchBackground={onRequestClose}
         onShow={handlePopupShow}
         title={t('popupTitles.newGroup')}
         buttons={buttonsData}

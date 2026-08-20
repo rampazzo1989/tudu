@@ -19,7 +19,8 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
     onSchedule,
     done,
     isOnToday = false,
-    enabled = true
+    enabled = true,
+    allowSchedule = true,
   }) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
@@ -50,8 +51,8 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
     );
 
     const rightOptions = useMemo<SwipeableOption[]>(
-      () => [scheduleOption, editOption, deleteOption],
-      [scheduleOption, editOption, deleteOption],
+      () => [allowSchedule ? scheduleOption : undefined, editOption, deleteOption].filter(option => !!option),
+      [allowSchedule, scheduleOption, editOption, deleteOption],
     );
 
     const leftOptions = useMemo<SwipeableOption[]>(
@@ -79,7 +80,7 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
           done ? theme.colors.tuduCardDone : theme.colors.tuduCard
         }
         rightOptions={!done ? rightOptions : [deleteOption]}
-        leftOptions={!done ? leftOptions : undefined}
+        leftOptions={!done && allowSchedule ? leftOptions : undefined}
         optionsSize="large"
         fullWidthOnLeftOptions
         onSwipeRight={handleSwipeRight}

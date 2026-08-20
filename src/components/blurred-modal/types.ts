@@ -1,3 +1,3 @@
 import {ModalProps} from 'react-native';
 
-export type BlurredModalProps = ModalProps & {onRequestClose: () => void};
+export type BlurredModalProps = ModalProps & {onTouchBackground: () => void, onRequestClose?: () => void};

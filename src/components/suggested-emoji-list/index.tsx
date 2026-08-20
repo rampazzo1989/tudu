@@ -11,12 +11,20 @@ import Skeleton from '../skeleton';
 interface SuggestedEmojiListProps {
     emojis: string[];
     isShowingMostUsedEmojis: boolean;
+    isAIGenerated?: boolean;
     onEmojiSelect: (emoji: string) => void;
     showDefaultIcon?: boolean;
     isLoading?: boolean;
 }
 
-const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowingMostUsedEmojis, onEmojiSelect, showDefaultIcon = false, isLoading = false }) => {
+const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({
+    emojis,
+    isShowingMostUsedEmojis,
+    isAIGenerated = false,
+    onEmojiSelect,
+    showDefaultIcon = false,
+    isLoading = false,
+}) => {
     const { t } = useTranslation();
     const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
     const [_, setEmojiUsage] = useRecoilState(emojiUsageState);
@@ -41,7 +49,8 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
         }
     };
 
-    if (isLoading) {
+    // Only display full skeleton loading if there are NO existing emojis on screen
+    if (isLoading && emojis.length === 0) {
         return (
             <Container>
                 <Title>{t('popupLabels.loading')}</Title>
@@ -50,20 +59,38 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
                     showsHorizontalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled">
                     {Array.from({ length: 5 }).map((_, index) => (
-                        <Skeleton key={index} style={{ width: 48, height: 48, borderRadius: 8, marginHorizontal: 4, backgroundColor: '#585f69' }} />
+                        <Skeleton
+                            key={index}
+                            style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: 8,
+                                marginHorizontal: 4,
+                                backgroundColor: '#585f69',
+                            }}
+                        />
                     ))}
                 </EmojiList>
             </Container>
         );
     }
 
+    const getTitle = () => {
+        if (isShowingMostUsedEmojis) {
+            return t('popupLabels.mostUsedEmojis');
+        }
+        if (isAIGenerated) {
+            return `✨ ${t('popupLabels.suggestedEmojis')}`;
+        }
+        return t('popupLabels.suggestedEmojis');
+    };
+
     return (
         <Container>
-            <Title>{isShowingMostUsedEmojis ? t('popupLabels.mostUsedEmojis') : t('popupLabels.suggestedEmojis')}</Title>
+            <Title>{getTitle()}</Title>
             <EmojiList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                // contentContainerStyle={{ width: 300 }}
                 keyboardShouldPersistTaps="handled">
                 {showDefaultIcon && (
                     <EmojiButton
@@ -79,7 +106,7 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({ emojis, isShowi
                         key={emoji}
                         onPress={() => handleEmojiPress(emoji)}
                         selected={selectedEmoji === emoji}
-                        entering={FadeIn.delay(50 * (index + 1))}>
+                        entering={FadeIn.delay(30 * (index + 1))}>
                         <EmojiText>{emoji}</EmojiText>
                     </EmojiButton>
                 ))}

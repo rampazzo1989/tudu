@@ -11,4 +11,5 @@ export type SwipeableTuduCardProps = {
   onSchedule: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   isOnToday?: boolean;
   enabled?: boolean;
+  allowSchedule?: boolean;
 };

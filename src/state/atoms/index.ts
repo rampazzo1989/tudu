@@ -36,3 +36,19 @@ export const recalculateRecurrence = atom<TuduViewModel | undefined>({
   key: 'recalculateRecurrence',
   default: undefined,
 });
+
+export interface AISettingsState {
+  provider: 'openai' | 'gemini' | 'claude';
+  aiEmojiSuggestionsEnabled: boolean;
+  hasApiKey: boolean;
+}
+
+export const aiSettingsState = atom<AISettingsState>({
+  key: 'aiSettingsState',
+  default: {
+    provider: 'gemini',
+    aiEmojiSuggestionsEnabled: false,
+    hasApiKey: false,
+  },
+  effects: [mmkvPersistAtom('aiSettingsState')],
+});

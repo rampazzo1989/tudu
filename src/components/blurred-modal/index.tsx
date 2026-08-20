@@ -4,16 +4,16 @@ import {Blur, ContentContainer, Modal} from './styles';
 import { View } from 'react-native';
 
 const BlurredModal: React.FC<BlurredModalProps> = memo(
-  ({onRequestClose, children, ...props}) => {
+  ({onTouchBackground, children, ...props}) => {
     return (
     <View>
-      <Modal {...props} onRequestClose={onRequestClose} statusBarTranslucent onShow={props.onShow}>
+      <Modal {...props} statusBarTranslucent onShow={props.onShow}>
         <Blur
           reducedTransparencyFallbackColor="grey"
           overlayColor="#00000020"
           blurType="dark"
           blurAmount={5}>
-          <ContentContainer onPress={onRequestClose}>
+          <ContentContainer onPress={onTouchBackground}>
             {children}
           </ContentContainer>
         </Blur>

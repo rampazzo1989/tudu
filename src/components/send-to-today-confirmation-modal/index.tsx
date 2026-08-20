@@ -15,7 +15,7 @@ const SendToTodayConfirmationModal: React.FC<SendToTodayConfirmationModalProps> 
   return (
     <PopupModal
       visible
-      onRequestClose={onModalClose}
+      onTouchBackground={onModalClose}
       title={t('actions.sendToToday')}
       buttons={[
         { label: t('buttons.cancel'), onPress: onModalClose },

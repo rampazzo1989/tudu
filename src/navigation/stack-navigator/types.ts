@@ -19,6 +19,8 @@ type StackNavigatorParamList = {
   AllTudus: ListCommonProps;
   StarredTudus: ListCommonProps;
   Search: undefined;
+  Settings: undefined;
+  AISettings: undefined;
 };
 
 export type {StackNavigatorParamList};

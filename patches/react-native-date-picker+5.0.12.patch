@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-date-picker/src/modules.js b/node_modules/react-native-date-picker/src/modules.js
+index e925dea..b1d6e0e 100644
+--- a/node_modules/react-native-date-picker/src/modules.js
++++ b/node_modules/react-native-date-picker/src/modules.js
+@@ -12,7 +12,7 @@ export const getNativeComponent = () => {
+     switch (Platform.OS) {
+       case 'android':
+       case 'ios':
+-        return requireNativeComponent('RNDatePicker')
++        return require('./fabric/RNDatePickerNativeComponent').default
+       default:
+         throw Error(
+           'react-native-date-picker is not supported on this platform'

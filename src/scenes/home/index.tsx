@@ -167,12 +167,19 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
     navigation.navigate('Search');
   }, [navigation]);
 
+  const handleSettingsPress = useCallback(() => {
+    navigation.navigate('Settings');
+  }, [navigation]);
+
   const countersList = useMemo(() => getAllCounters(), [getAllCounters]);
 
   return (
     <Page>
       <OnboardingModal />
-      <HomeHeader onSearchPress={handleSearchPress} />
+      <HomeHeader
+        onSearchPress={handleSearchPress}
+        onSettingsPress={handleSettingsPress}
+      />
       <DraxProvider>
         <DraggableContextProvider<ListDataViewModel>
           data={groupedCustomLists}

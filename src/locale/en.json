@@ -168,5 +168,39 @@
     "tomorrow": "Tomorrow",
     "nextDays": "Next days...",
     "date": "Date..."
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "ai": "Artificial Intelligence",
+      "general": "General"
+    },
+    "ai": {
+      "title": "Generative AI",
+      "subtitle": "Configure your provider and API key for smart features",
+      "statusActive": "Active ({{provider}})",
+      "statusNotConfigured": "Not configured",
+      "selectProvider": "AI Provider",
+      "apiKeyLabel": "API Key",
+      "apiKeyPlaceholder": "Paste your API key here",
+      "securityNotice": "Your key is stored securely and encrypted on your device and used only for direct calls to the provider.",
+      "getApiKey": "How to get a key",
+      "testConnection": "Test Connection",
+      "testingConnection": "Testing connection...",
+      "connectionSuccess": "Connection successfully established!",
+      "connectionError": "Connection failed: {{error}}",
+      "saveKey": "Save Key",
+      "removeKey": "Remove Key",
+      "confirmRemoveKey": "Do you want to remove the configured API key?",
+      "keySaved": "API key saved successfully!",
+      "keyRemoved": "API key removed.",
+      "emojiSuggestions": "AI Emoji Suggestions",
+      "emojiSuggestionsDescription": "Suggests relevant emojis based on the list context and tudús",
+      "providers": {
+        "gemini": "Google Gemini",
+        "openai": "OpenAI",
+        "claude": "Anthropic Claude"
+      }
+    }
   }
 }

@@ -242,7 +242,8 @@ const TudusList: React.FC<TudusListProps> = memo(
                 isOnToday={tudu.dueDate && isToday(tudu.dueDate)}
                 onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
                   tudu,
-                )}>
+                )}
+                allowSchedule={tudu.origin !== 'archived'}>
             <TuduCard
                 data={tudu}
                 onPress={onTuduPress}

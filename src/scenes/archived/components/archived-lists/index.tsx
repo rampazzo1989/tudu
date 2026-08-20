@@ -94,7 +94,7 @@ const ArchivedLists: React.FC<ArchivedListsProps> = memo(
         {memoizedItems}
         <PopupModal
           visible={confirmationModalVisible}
-          onRequestClose={handleCleanDeletingList}
+          onTouchBackground={handleCleanDeletingList}
           title={generateListAndGroupDeleteTitle(deletingList)}
           buttons={[
             {label: t('buttons.yes'), onPress: handleConfirmDelete},

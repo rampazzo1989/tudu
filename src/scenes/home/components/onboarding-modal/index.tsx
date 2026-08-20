@@ -91,7 +91,7 @@ export const OnboardingModal: React.FC = () => {
   const { titleKey, descriptionKey, image } = onboardingSteps[currentStep];
 
   return (
-    <PopupModal visible={!hasSeenOnboarding} animationType="fade" transparent onRequestClose={() => setHasSeenOnboarding(false)}>
+    <PopupModal visible={!hasSeenOnboarding} animationType="fade" transparent onTouchBackground={() => setHasSeenOnboarding(false)}>
       <View style={styles.container}>
         {/* Welcome Message */}
         {isShowingWelcome ? (isShowingWelcomeText && (
@@ -125,8 +125,10 @@ export const OnboardingModal: React.FC = () => {
         <Text style={styles.description}>{t(descriptionKey)}</Text>
 
         <View style={styles.buttonContainer}>
-          {currentStep > 0 && (
+          {currentStep > 0 ? (
             <BackButton onPress={handlePrevious} style={styles.button} />
+          ) : (
+            <View style={styles.buttonPlaceholder} />
           )}
           {currentStep < onboardingSteps.length - 1 && (
             <NextButton onPress={handleNext} style={styles.button} />
@@ -146,23 +148,24 @@ export const OnboardingModal: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 16,
     minHeight: 90,
+    width: 290,
   },
   stepperContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   step: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
   },
   activeStep: {
     backgroundColor: '#7956BF',
@@ -179,34 +182,38 @@ const styles = StyleSheet.create({
     width: 200,
   },
   image: {
-    width: 280,
-    height: 280,
-    marginBottom: 20,
+    width: 220,
+    height: 220,
+    marginBottom: 16,
     resizeMode: 'contain',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 10,
+    marginBottom: 8,
     textAlign: 'center',
   },
   description: {
-    fontSize: 16,
-    color: '#fff',
+    fontSize: 15,
+    color: '#ccc',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
+    lineHeight: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 20,
-    marginTop: 20,
+    paddingHorizontal: 8,
+    marginTop: 12,
   },
   button: {
     backgroundColor: '#7956BF',
     width: 36,
-  }
+  },
+  buttonPlaceholder: {
+    width: 36,
+  },
 });
