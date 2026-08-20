@@ -41,16 +41,18 @@ const useScheduledTuduService = () => {
         );
       });
 
-      const filteredTudus = [...unlistedTudus].filter(([_, tudu]) => {
+      const filteredUnlistedTudus = [...unlistedTudus].filter(([_, tudu]) => {
         const itsFromDate =
           tudu.dueDate &&
           getDateOnlyTimeStamp(tudu.dueDate) === dateOnlyTimeStamp;
-        return itsFromDate;
+          const isOutdated = showOutdated 
+            && tudu.dueDate && !tudu.done && getDateOnlyTimeStamp(tudu.dueDate) < dateOnlyTimeStamp;
+          return itsFromDate || isOutdated;
       });
 
-      filteredTudus.forEach(([_, tudu]) =>
+      filteredUnlistedTudus.forEach(([_, tudu]) =>
         tudusFromDate.push(
-          new TuduViewModel(tudu, UNLISTED_LIST_ID, 'default', 'Unlisted'),
+          new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted', 'Unlisted'),
         ),
       );
 

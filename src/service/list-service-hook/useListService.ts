@@ -89,12 +89,13 @@ const useListService = () => {
     );
 
   const getTudusStateSetter = useCallback(
-    (stateOrigin: ListOrigin) =>
-      stateOrigin === 'default'
+    (stateOrigin: ListOrigin) => {
+      return stateOrigin === 'default'
         ? setCustomTudus
         : stateOrigin === 'unlisted'
         ? unlistedTudusStandardSetter
-        : setArchivedTudus,
+        : setArchivedTudus;
+    },
     [setCustomTudus, unlistedTudusStandardSetter, setArchivedTudus],
   );
 

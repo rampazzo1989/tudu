@@ -101,7 +101,7 @@ const DraggableContextProvider = <T,>({
       {children}
       <PopupModal
         visible={!!modal?.visible}
-        onRequestClose={handleCancelAction}
+        onTouchBackground={handleCancelAction}
         title={confirmationPopupTitleBuilder?.(dealingItem)}
         buttons={[
           {label: t('buttons.yes'), onPress: handleConfirmAction},

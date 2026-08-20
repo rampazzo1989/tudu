@@ -1,13 +1,14 @@
-import React, {memo, useCallback, useMemo, useRef} from 'react';
-import {useTheme} from 'styled-components/native';
-import {DeleteIcon} from '../../animated-icons/delete-icon';
-import {RenameIcon} from '../../animated-icons/rename-icon';
-import {SwipeableCard} from '../../swipeable-card';
-import {SwipeableCardRef, SwipeableOption} from '../../swipeable-card/types';
-import {SunIcon} from '../../animated-icons/sun-icon';
-import {SwipeableTuduCardProps} from './types';
-import {UndoSunIcon} from '../../animated-icons/undo-sun-icon';
-import {useTranslation} from 'react-i18next';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
+import { useTheme } from 'styled-components/native';
+import { DeleteIcon } from '../../animated-icons/delete-icon';
+import { RenameIcon } from '../../animated-icons/rename-icon';
+import { SwipeableCard } from '../../swipeable-card';
+import { SwipeableCardRef, SwipeableOption } from '../../swipeable-card/types';
+import { SunIcon } from '../../animated-icons/sun-icon';
+import { SwipeableTuduCardProps } from './types';
+import { UndoSunIcon } from '../../animated-icons/undo-sun-icon';
+import { useTranslation } from 'react-i18next';
+import { CalendarIcon } from '../../animated-icons/calendar';
 
 const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
   ({
@@ -15,13 +16,15 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
     onSendToOrRemoveFromToday,
     onDelete,
     onEdit,
+    onSchedule,
     done,
     isOnToday = false,
-    enabled = true
+    enabled = true,
+    allowSchedule = true,
   }) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const deleteOption = useMemo<SwipeableOption>(
       () => ({
@@ -31,15 +34,25 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
       [onDelete],
     );
 
+    const editOption = useMemo<SwipeableOption>(
+      () => ({
+        Icon: RenameIcon,
+        onPress: () => onEdit(swipeableRef),
+      }),
+      [onEdit],
+    );
+
+    const scheduleOption = useMemo<SwipeableOption>(
+      () => ({
+        Icon: CalendarIcon,
+        onPress: () => onSchedule(swipeableRef),
+      }),
+      [onSchedule],
+    );
+
     const rightOptions = useMemo<SwipeableOption[]>(
-      () => [
-        {
-          Icon: RenameIcon,
-          onPress: () => onEdit(swipeableRef),
-        },
-        deleteOption,
-      ],
-      [onDelete, onEdit, deleteOption],
+      () => [allowSchedule ? scheduleOption : undefined, editOption, deleteOption].filter(option => !!option),
+      [allowSchedule, scheduleOption, editOption, deleteOption],
     );
 
     const leftOptions = useMemo<SwipeableOption[]>(
@@ -58,7 +71,7 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
       onSendToOrRemoveFromToday(swipeableRef);
     }, [onSendToOrRemoveFromToday]);
 
-    const handleSwipeLeft = useCallback(() => {}, []);
+    const handleSwipeLeft = useCallback(() => { }, []);
 
     return (
       <SwipeableCard
@@ -67,7 +80,7 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
           done ? theme.colors.tuduCardDone : theme.colors.tuduCard
         }
         rightOptions={!done ? rightOptions : [deleteOption]}
-        leftOptions={!done ? leftOptions : undefined}
+        leftOptions={!done && allowSchedule ? leftOptions : undefined}
         optionsSize="large"
         fullWidthOnLeftOptions
         onSwipeRight={handleSwipeRight}
@@ -80,4 +93,4 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
   },
 );
 
-export {SwipeableTuduCard};
+export { SwipeableTuduCard };

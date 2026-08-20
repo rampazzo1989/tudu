@@ -223,7 +223,7 @@ const NewCounterModal: React.FC<NewCounterModalProps> = memo(
     return (
       <PopupModal
         visible={visible}
-        onRequestClose={onRequestClose}
+        onTouchBackground={onRequestClose}
         onShow={handlePopupShow}
         title={t(
           isEditing ? 'popupTitles.editCounter' : 'popupTitles.newCounter',

@@ -13,25 +13,33 @@ import {
 } from './styles';
 import {HomeHeaderProps} from './types';
 
-const HomeHeader: React.FC<HomeHeaderProps> = memo(({onSearchPress}) => {
-  const iconRef = useRef<AnimatedIconRef>(null);
+import {AdjustIcon} from '../../../../components/animated-icons/adjust-icon';
 
-  return (
-    <Header>
-      <ContentRow>
-        <LogoAndTitle>
-          <LogoIcon ref={iconRef} speed={2} />
-          <LogoTitle />
-        </LogoAndTitle>
-        <SearchAndProfile>
-          <ShrinkableView onPress={onSearchPress}>
-            <SearchIcon animateWhenIdle size={30} />
-          </ShrinkableView>
-          {/* <StyledProfileIcon animateWhenIdle size={30} /> */}
-        </SearchAndProfile>
-      </ContentRow>
-    </Header>
-  );
-});
+const HomeHeader: React.FC<HomeHeaderProps> = memo(
+  ({onSearchPress, onSettingsPress}) => {
+    const iconRef = useRef<AnimatedIconRef>(null);
+
+    return (
+      <Header>
+        <ContentRow>
+          <LogoAndTitle>
+            <LogoIcon ref={iconRef} speed={2} />
+            <LogoTitle />
+          </LogoAndTitle>
+          <SearchAndProfile>
+            <ShrinkableView onPress={onSearchPress}>
+              <SearchIcon animateWhenIdle size={30} />
+            </ShrinkableView>
+            <ShrinkableView
+              onPress={onSettingsPress}
+              style={{marginLeft: 14}}>
+              <AdjustIcon animateWhenIdle size={30} />
+            </ShrinkableView>
+          </SearchAndProfile>
+        </ContentRow>
+      </Header>
+    );
+  },
+);
 
 export {HomeHeader};

@@ -16,11 +16,13 @@ import { showOutdatedTudus } from "../../../../state/atoms";
 import { useTranslation } from "react-i18next";
 import { WarningIcon } from "../../../../components/animated-icons/warning-icon";
 import { AnimatedIconRef } from "../../../../components/animated-icons/animated-icon/types";
+import { ScheduleModal } from "../../../../components/schedule-modal";
 
 const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDateHeader = false }) => {
     const { t } = useTranslation();
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
+    const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
     const [showTudus, setShowTudus] = useRecoilState(showOutdatedTudus);
     const { saveTudu, deleteTudu, restoreBackup } = useListService();
     const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
@@ -61,6 +63,19 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
         setNewTuduPopupVisible(true);
     }, []);
 
+
+    const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
+        setEditingTudu(tudu);
+        setScheduleModalVisible(true);
+    }, []);
+
+    const handleSchedule = useCallback((date: Date) => {
+        if (editingTudu) {
+        editingTudu.dueDate = date;
+        handleSaveTudu(editingTudu);
+        }
+    }, [editingTudu, handleSaveTudu]);
+
     return (
         <Animated.View layout={LinearTransition}>
             <TitleContainer isShowingTudus={showTudus}>
@@ -68,8 +83,8 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
                 <Title>
                     {showTudus
                         ? t("outdatedTudusList.title.outdated")
-                        : tudus.length === 1 
-                            ? t("outdatedTudusList.title.countOne") 
+                        : tudus.length === 1
+                            ? t("outdatedTudusList.title.countOne")
                             : t("outdatedTudusList.title.countMany", { count: tudus.length })}
                 </Title>
                 <ControlContainer
@@ -93,11 +108,12 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
                             deleteTuduFn={deleteTudu}
                             undoDeletionFn={restoreBackup}
                             onEditPress={handleEditPress}
+                            onSchedulePress={handleTuduSchedulePress}
                         />
                     </View>
                     {showUpToDateHeader && (
                         <TitleContainer isShowingTudus={showTudus}>
-                        <Title>{t("outdatedTudusList.title.upToDate")}</Title>
+                            <Title>{t("outdatedTudusList.title.upToDate")}</Title>
                         </TitleContainer>
                     )}
                 </Animated.View>
@@ -111,6 +127,16 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
                 }}
                 editingTudu={editingTudu}
                 onInsertOrUpdate={handleSaveTudu}
+            />
+            <ScheduleModal
+                isVisible={scheduleModalVisible}
+                onModalClose={() => {
+                    setScheduleModalVisible(false);
+                    setEditingTudu(undefined);
+                    setTimeout(closeCurrentlyOpenSwipeable, 500);
+                }}
+                onSchedule={handleSchedule}
+                currentDate={editingTudu?.dueDate}
             />
         </Animated.View>
     );

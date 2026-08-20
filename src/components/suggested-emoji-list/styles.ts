@@ -10,6 +10,7 @@ export const Container = styled.View`
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 300px;
 `;
 
 export const Title = styled.Text`
@@ -42,7 +43,7 @@ export const EmojiText = styled.Text`
 export const RightFadingGradient = styled(LinearGradient)`
   position: absolute;
   end: 0;
-  width: 24px;
+  width: 42px;
   height: 100%;
   z-index: 999;
 `;

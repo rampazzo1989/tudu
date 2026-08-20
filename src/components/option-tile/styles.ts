@@ -1,7 +1,9 @@
-import { StyleSheet } from "react-native";
+import { Animated, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
-export const OptionTileContainer = styled.TouchableOpacity`
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity) as any;
+
+export const OptionTileContainer = styled(AnimatedTouchable)`
     width: 120px;
     height: 120px;
     border-radius: 8px;
@@ -18,10 +20,3 @@ export const OptionTileText = styled.Text`
     margin-top: 6px;
     max-width: 90%;
 `;
-
-export const styles = StyleSheet.create({
-  icon: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

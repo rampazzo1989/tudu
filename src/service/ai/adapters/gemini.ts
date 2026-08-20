@@ -1,0 +1,223 @@
+interface GeminiResolvedConfig {
+  apiVersion: 'v1beta' | 'v1';
+  model: string;
+}
+
+let cachedGeminiConfig: GeminiResolvedConfig | null = null;
+
+const CANDIDATE_MODELS = [
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-001',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash-lite-preview-02-05',
+  'gemini-2.0-flash-exp',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-flash-001',
+  'gemini-1.5-flash-002',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
+  'gemini-1.5-pro-latest',
+  'gemini-1.5-pro-001',
+  'gemini-1.5-pro-002',
+  'gemini-pro',
+];
+
+const API_VERSIONS: ('v1beta' | 'v1')[] = ['v1beta', 'v1'];
+
+/**
+ * Queries Google API to discover models enabled for this API key.
+ */
+export const discoverGeminiModels = async (
+  apiKey: string,
+  signal?: AbortSignal,
+): Promise<GeminiResolvedConfig[]> => {
+  const cleanKey = apiKey.trim();
+  const discovered: GeminiResolvedConfig[] = [];
+
+  for (const apiVersion of API_VERSIONS) {
+    try {
+      const listUrl = `https://generativelanguage.googleapis.com/${apiVersion}/models?key=${encodeURIComponent(cleanKey)}`;
+      const response = await fetch(listUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': cleanKey,
+        },
+        signal,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const models = data?.models as Array<{
+          name: string;
+          supportedGenerationMethods?: string[];
+        }>;
+
+        if (Array.isArray(models) && models.length > 0) {
+          const supported = models.filter(m =>
+            m.supportedGenerationMethods?.includes('generateContent'),
+          );
+
+          for (const m of supported) {
+            const cleanModelName = m.name.replace(/^models\//, '');
+            discovered.push({apiVersion, model: cleanModelName});
+          }
+        }
+      }
+    } catch {
+      // Continue to next version
+    }
+  }
+
+  // Sort discovered: prioritize flash models, then pro, then others
+  return discovered.sort((a, b) => {
+    const aIsFlash = a.model.includes('flash') ? 0 : 1;
+    const bIsFlash = b.model.includes('flash') ? 0 : 1;
+    return aIsFlash - bIsFlash;
+  });
+};
+
+export const requestGeminiEmojis = async (
+  apiKey: string,
+  prompt: string,
+  signal?: AbortSignal,
+): Promise<string> => {
+  const cleanKey = apiKey.trim();
+
+  // 1. If we have a cached working configuration, try it first
+  if (cachedGeminiConfig) {
+    try {
+      return await executeGeminiRequest(
+        cleanKey,
+        cachedGeminiConfig.apiVersion,
+        cachedGeminiConfig.model,
+        prompt,
+        signal,
+      );
+    } catch (err: any) {
+      // If model not found or invalid, invalidate cache and proceed to full resolution
+      cachedGeminiConfig = null;
+    }
+  }
+
+  // 2. Discover models dynamically from the user's API key
+  const discoveredConfigs = await discoverGeminiModels(cleanKey, signal);
+
+  // 3. Prepare full list of configurations to try
+  const configsToTry: GeminiResolvedConfig[] = [...discoveredConfigs];
+
+  // Add fallback candidates across API versions if not already in list
+  for (const apiVersion of API_VERSIONS) {
+    for (const model of CANDIDATE_MODELS) {
+      if (
+        !configsToTry.some(
+          c => c.apiVersion === apiVersion && c.model === model,
+        )
+      ) {
+        configsToTry.push({apiVersion, model});
+      }
+    }
+  }
+
+  let lastError: Error | null = null;
+
+  for (const config of configsToTry) {
+    try {
+      console.log(`✨ [Gemini Adapter] Testando endpoint: ${config.apiVersion}/models/${config.model}...`);
+      const result = await executeGeminiRequest(
+        cleanKey,
+        config.apiVersion,
+        config.model,
+        prompt,
+        signal,
+      );
+
+      // Successfully generated content! Cache working config
+      console.log(`✅ [Gemini Adapter] Sucesso com modelo: "${config.model}" (${config.apiVersion})`);
+      cachedGeminiConfig = config;
+      return result;
+    } catch (err: any) {
+      if (err.name === 'AbortError') throw err;
+      lastError = err;
+
+      const isNotFound =
+        err.status === 404 ||
+        (err.message &&
+          (err.message.includes('404') ||
+            err.message.includes('not found') ||
+            err.message.includes('not supported')));
+
+      // If model not found or not supported on this version, try next candidate silently
+      if (isNotFound) {
+        continue;
+      }
+
+      // If error is authentication/quota (400, 401, 403, 429), throw immediately
+      if (
+        err.status === 400 ||
+        err.status === 401 ||
+        err.status === 403 ||
+        err.status === 429 ||
+        (err.message &&
+          (err.message.includes('API_KEY_INVALID') ||
+            err.message.includes('quota') ||
+            err.message.includes('RESOURCE_EXHAUSTED')))
+      ) {
+        throw err;
+      }
+    }
+  }
+
+  throw (
+    lastError ||
+    new Error('Nenhum modelo compatível encontrado no Gemini para esta chave.')
+  );
+};
+
+const executeGeminiRequest = async (
+  apiKey: string,
+  apiVersion: 'v1beta' | 'v1',
+  model: string,
+  prompt: string,
+  signal?: AbortSignal,
+): Promise<string> => {
+  const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey,
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            {
+              text: `You are an assistant that suggests relevant emojis for tasks and lists in a todo app. Return ONLY a raw JSON array containing 5 to 10 emoji characters, like ["🛒", "🍎", "🥛"]. No markdown code formatting, no backticks, no explanations.\n\nContext:\n${prompt}`,
+            },
+          ],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.5,
+        maxOutputTokens: 100,
+      },
+    }),
+    signal,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const message =
+      errorData?.error?.message ||
+      `Google Gemini API Error (${response.status})`;
+    const error = new Error(message);
+    (error as any).status = response.status;
+    throw error;
+  }
+
+  const data = await response.json();
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+};

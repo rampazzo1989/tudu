@@ -6,8 +6,9 @@ import emojisEs from 'emojilib-pt-br/dist/emoji-es.json';
 import emojisIt from 'emojilib-pt-br/dist/emoji-it.json';
 import Fuse from 'fuse.js';
 import { useRecoilValue } from 'recoil';
-import { emojiUsageState } from '../state/atoms';
+import { aiSettingsState, emojiUsageState } from '../state/atoms';
 import { PARAMETERS_REGEX } from '../constants';
+import { suggestEmojisWithAI } from '../service/ai';
 
 const MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI = 3;
 const MAX_NUMBER_OF_WORDS = 6;
@@ -17,24 +18,40 @@ type EmojiEntry = {
   values: string[];
 };
 
+export interface EmojiSearchContext {
+  type?: 'list' | 'tudu';
+  listName?: string;
+}
+
 const emojisDictionary = {
-  'pt-BR': emojisPtBr,
-  'en-US': emojisEn,
+  'pt': emojisPtBr,
+  'en': emojisEn,
   'es': emojisEs,
   'it': emojisIt,
 };
 
-export const useEmojiSearch = (debounceDelay: number) => {
+export const useEmojiSearch = (debounceDelay: number = 1200) => {
   const timer = useRef<NodeJS.Timeout | undefined>(undefined);
   const emojiUsage = useRecoilValue(emojiUsageState); // Estado global persistido
+  const aiSettings = useRecoilValue(aiSettingsState); // Configurações de IA
   const searchCache = useRef<Map<string, string[]>>(new Map());
   const emojiEntries = useRef<EmojiEntry[]>([]);
-  const lastSearch = useRef<{ words: string[], emojis: string[] }>({ words: [], emojis: [] });
+  const lastSearch = useRef<{
+    queryKey: string;
+    emojis: string[];
+    isShowingMostUsed: boolean;
+    isAIGenerated: boolean;
+  }>({
+    queryKey: '',
+    emojis: [],
+    isShowingMostUsed: false,
+    isAIGenerated: false,
+  });
 
   const emojis = useMemo(() => {
     const language = getLocales()[0].languageTag;
     const languageWithoutRegion = language.split('-')[0];
-    return emojisDictionary[languageWithoutRegion as keyof typeof emojisDictionary] || emojisDictionary['en-US'];
+    return emojisDictionary[languageWithoutRegion as keyof typeof emojisDictionary] || emojisDictionary['en'];
   }, []);
 
   const debounce = useCallback((func: () => void, delay: number) => {
@@ -59,7 +76,6 @@ export const useEmojiSearch = (debounceDelay: number) => {
 
   const searchEmojisByWords = useCallback(
     (words: string[]) => {
-      
       if (words.length === 0) {
         return [];
       }
@@ -141,33 +157,112 @@ export const useEmojiSearch = (debounceDelay: number) => {
       ]
     };
     return defaultEmojis[type];
-  }
-  , []);
+  }, []);
 
   const debounceSearchEmojis = useCallback(
-    (text: string, callback: (results: string[], isShowingMostUsed: boolean) => void, 
-    fallbackToMostUsed: boolean = true, beforeCallback: undefined | (() => void) = undefined) => {
-      var showingMostUsed = false;
-      debounce(() => {
-        const words = selectWordsToSearch(text);
-        if (words.length && lastSearch.current.words.join('-') === words.join('-')) {
-          callback(lastSearch.current.emojis, showingMostUsed);
+    (
+      text: string,
+      callback: (
+        results: string[],
+        isShowingMostUsed: boolean,
+        isAIGenerated: boolean,
+      ) => void, 
+      fallbackToMostUsed: boolean = true,
+      beforeCallback?: () => void,
+      context?: EmojiSearchContext,
+    ) => {
+      debounce(async () => {
+        // Normalizes spaces, removes parameters
+        const cleanText = text
+          .replace(PARAMETERS_REGEX, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        const queryKey = `${context?.type ?? 'tudu'}:${
+          context?.listName ? context.listName.replace(/\s+/g, ' ').trim().toLowerCase() : ''
+        }:${cleanText.toLowerCase()}`;
+
+        // Return immediately if the normalized query has not changed
+        if (
+          lastSearch.current.queryKey === queryKey &&
+          lastSearch.current.emojis.length > 0
+        ) {
+          callback(
+            lastSearch.current.emojis,
+            lastSearch.current.isShowingMostUsed,
+            lastSearch.current.isAIGenerated,
+          );
           return;
         }
+
+        // 1. Try AI-powered suggestion if configured, enabled and text is meaningful
+        if (
+          aiSettings.hasApiKey &&
+          aiSettings.aiEmojiSuggestionsEnabled &&
+          cleanText.length >= 2
+        ) {
+          console.log(`✨ [useEmojiSearch] Disparando busca por IA (${aiSettings.provider}) para "${cleanText}"...`);
+          beforeCallback?.();
+          try {
+            const aiEmojis = await suggestEmojisWithAI(aiSettings.provider, {
+              type: context?.type ?? 'tudu',
+              title: cleanText,
+              listName: context?.listName,
+            });
+
+            if (aiEmojis && aiEmojis.length > 0) {
+              console.log(`🎯 [useEmojiSearch] Atualizando modais com ${aiEmojis.length} emojis da IA`);
+              lastSearch.current = {
+                queryKey,
+                emojis: aiEmojis,
+                isShowingMostUsed: false,
+                isAIGenerated: true,
+              };
+              callback(aiEmojis, false, true);
+              return;
+            }
+          } catch (error: any) {
+            console.warn(`⚠️ [useEmojiSearch] Falha na IA, usando busca offline como fallback:`, error?.message || error);
+          }
+        } else {
+          console.log(`ℹ️ [useEmojiSearch] Busca offline direta (IA desativada ou sem chave). Texto: "${cleanText}"`);
+        }
+
+        // 2. Offline fallback (Fuse.js fuzzy search)
+        const words = selectWordsToSearch(text);
         beforeCallback?.();
         setTimeout(() => {
-          var results = searchEmojisByWords(words);
+          let results = searchEmojisByWords(words);
+          let showingMostUsed = false;
           if (fallbackToMostUsed && results.length === 0) {
             results = getMostUsedEmojis();
             showingMostUsed = true;
           }
-          lastSearch.current = { words, emojis: results };
-          callback(results, showingMostUsed);
+          lastSearch.current = {
+            queryKey,
+            emojis: results,
+            isShowingMostUsed: showingMostUsed,
+            isAIGenerated: false,
+          };
+          callback(results, showingMostUsed, false);
         }, 0);
       }, debounceDelay)();
     },
-    [debounce, searchEmojisByWords, debounceDelay]
+    [
+      debounce,
+      aiSettings,
+      selectWordsToSearch,
+      searchEmojisByWords,
+      getMostUsedEmojis,
+      debounceDelay,
+    ]
   );
 
-  return { searchEmojis, debounceSearchEmojis, getMostUsedEmojis, getDefaultEmojis };
+  return {
+    searchEmojis,
+    debounceSearchEmojis,
+    getMostUsedEmojis,
+    getDefaultEmojis,
+    isAIEnabled: aiSettings.hasApiKey && aiSettings.aiEmojiSuggestionsEnabled,
+  };
 };

@@ -63,7 +63,8 @@
     "cancel": "Cancelar",
     "yes": "Sim",
     "no": "Não",
-    "other": "outro"
+    "other": "outro",
+    "confirm": "Confirmar"
   },
   "popupTitles": {
     "renameGroup": "Renomear Grupo",
@@ -71,9 +72,12 @@
     "editList": "Editar lista",
     "newCounter": "Criar novo contador",
     "editCounter": "Editar contador",
+    "schedule": "Agendar tudú",
     "newGroup": "Criar novo grupo",
     "newTudu": "Criar novo tudú",
-    "editTudu": "Editar tudú"
+    "editTudu": "Editar tudú",
+    "scheduleToNext": "Agendar para o próximo...",
+    "scheduleToDate": "Agendar para a data"
   },
   "popupLabels": {
     "suggestedEmojis": "Emojis sugeridos:",
@@ -149,5 +153,54 @@
     "weekly": "toda semana",
     "monthly": "todo mês",
     "yearly": "todo ano"
+  },
+  "scheduleDays": {
+    "sunday": "Domingo",
+    "monday": "Segunda-feira",
+    "tuesday": "Terça-feira",
+    "wednesday": "Quarta-feira",
+    "thursday": "Quinta-feira",
+    "friday": "Sexta-feira",
+    "saturday": "Sábado"
+  },
+  "scheduleOptions": {
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "nextDays": "Próximos dias...",
+    "date": "Data..."
+  },
+  "settings": {
+    "title": "Configurações",
+    "sections": {
+      "ai": "Inteligência Artificial",
+      "general": "Geral"
+    },
+    "ai": {
+      "title": "IA Generativa",
+      "subtitle": "Configure seu provedor e chave de API para recursos inteligentes",
+      "statusActive": "Ativo ({{provider}})",
+      "statusNotConfigured": "Não configurado",
+      "selectProvider": "Provedor de IA",
+      "apiKeyLabel": "Chave de API (API Key)",
+      "apiKeyPlaceholder": "Cole sua chave de API aqui",
+      "securityNotice": "Sua chave é armazenada de forma segura e criptografada no seu dispositivo e usada exclusivamente para chamadas diretas ao provedor.",
+      "getApiKey": "Como obter uma chave",
+      "testConnection": "Testar Conexão",
+      "testingConnection": "Testando conexão...",
+      "connectionSuccess": "Conexão estabelecida com sucesso!",
+      "connectionError": "Falha na conexão: {{error}}",
+      "saveKey": "Salvar Chave",
+      "removeKey": "Remover Chave",
+      "confirmRemoveKey": "Deseja remover a chave de API configurada?",
+      "keySaved": "Chave de API salva com sucesso!",
+      "keyRemoved": "Chave de API removida.",
+      "emojiSuggestions": "Sugestão de emojis por IA",
+      "emojiSuggestionsDescription": "Sugere emojis relevantes com base no contexto da lista e tudús",
+      "providers": {
+        "gemini": "Google Gemini",
+        "openai": "OpenAI",
+        "claude": "Anthropic Claude"
+      }
+    }
   }
 }

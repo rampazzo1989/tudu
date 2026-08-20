@@ -1,34 +1,36 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {NewTuduModal} from '../../components/new-tudu-modal';
-import {Page} from '../../components/page';
-import {PageContent} from '../../components/page-content';
-import {SimpleTuduList} from '../../components/simple-tudu-list';
-import {SkeletonTuduList} from '../../components/skeleton-tudu-list';
-import {TuduAdditionalInformation} from '../../components/tudu-card/types';
-import {useCloseCurrentlyOpenSwipeable} from '../../hooks/useCloseAllSwipeables';
-import {useListService} from '../../service/list-service-hook/useListService';
-import {useSearchService} from '../../service/list-service-hook/useSearchService';
-import {formatToLocaleDate, isToday} from '../../utils/date-utils';
-import {UNLISTED_LIST_ID} from '../home/state';
-import {ListViewModel, TuduViewModel} from '../home/types';
-import {SearchHeader} from './components/search-header';
-import {PaddedContainer, styles} from './styles';
-import {SearchPageProps} from './types';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { NewTuduModal } from '../../components/new-tudu-modal';
+import { Page } from '../../components/page';
+import { PageContent } from '../../components/page-content';
+import { SimpleTuduList } from '../../components/simple-tudu-list';
+import { SkeletonTuduList } from '../../components/skeleton-tudu-list';
+import { TuduAdditionalInformation } from '../../components/tudu-card/types';
+import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
+import { useListService } from '../../service/list-service-hook/useListService';
+import { useSearchService } from '../../service/list-service-hook/useSearchService';
+import { formatToLocaleDate, isToday } from '../../utils/date-utils';
+import { UNLISTED_LIST_ID } from '../home/state';
+import { ListViewModel, TuduViewModel } from '../home/types';
+import { SearchHeader } from './components/search-header';
+import { PaddedContainer, styles } from './styles';
+import { SearchPageProps } from './types';
+import { ScheduleModal } from '../../components/schedule-modal';
 
-const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
-  const {t} = useTranslation();
+const SearchPage: React.FC<SearchPageProps> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const [tudus, setTudus] = useState<TuduViewModel[]>();
 
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
   const [searchText, setSearchText] = useState('');
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
 
-  const {saveTudu, deleteTudu, restoreBackup} = useListService();
+  const { saveTudu, deleteTudu, restoreBackup } = useListService();
 
-  const {searchTudus} = useSearchService();
+  const { searchTudus } = useSearchService();
 
-  const {closeCurrentlyOpenSwipeable} = useCloseCurrentlyOpenSwipeable();
+  const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -85,6 +87,18 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
     setSearchText(text);
   }, []);
 
+  const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
+    setEditingTudu(tudu);
+    setScheduleModalVisible(true);
+  }, []);
+
+  const handleSchedule = useCallback((date: Date) => {
+    if (editingTudu) {
+      editingTudu.dueDate = date;
+      saveTudu(editingTudu);
+    }
+  }, [editingTudu, saveTudu]);
+
   return (
     <Page>
       <SearchHeader
@@ -104,6 +118,7 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
               deleteTuduFn={deleteTudu}
               undoDeletionFn={restoreBackup}
               onEditPress={handleEditPress}
+              onSchedulePress={handleTuduSchedulePress}
             />
           </PaddedContainer>
         )}
@@ -119,8 +134,18 @@ const SearchPage: React.FC<SearchPageProps> = ({navigation, route}) => {
         editingTudu={editingTudu}
         onInsertOrUpdate={saveTudu}
       />
+      <ScheduleModal
+        isVisible={scheduleModalVisible}
+        onModalClose={() => {
+          setScheduleModalVisible(false);
+          setEditingTudu(undefined);
+          setTimeout(closeCurrentlyOpenSwipeable, 500);
+        }}
+        onSchedule={handleSchedule}
+        currentDate={editingTudu?.dueDate}
+      />
     </Page>
   );
 };
 
-export {SearchPage};
+export { SearchPage };

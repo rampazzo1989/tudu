@@ -1,6 +1,6 @@
-import React, {memo, useEffect} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
-import Animated, {FadeInDown, FadeOutDown, SlideInDown, SlideInUp, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import Animated, {FadeIn, FadeInDown, FadeOutDown, LinearTransition, SlideInDown, SlideInUp, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {shake} from '../../utils/animation-utils';
 import {BlurredModal} from '../blurred-modal';
@@ -25,18 +25,21 @@ const PopupModal: React.FC<PopupModalProps> = memo(
   ({
     children,
     title,
-    onRequestClose,
     buttons,
     Icon,
     visible,
     shakeOnShow,
     TopContainerComponent,
+    ActionButton,
+    onTouchBackground,
+    onRequestClose,
     haptics = false,
     topContainerVisible = false,
     ...props
   }) => {
     const shakeValue = useSharedValue(0);
     const theme = useTheme();
+    const [showLayoutAnimation, setShowLayoutAnimation] = useState(false);
 
     const iconAnimationDelay = 400;
 
@@ -45,6 +48,13 @@ const PopupModal: React.FC<PopupModalProps> = memo(
         transform: [{translateX: shakeValue.value}],
       };
     });
+
+    useEffect(() => {
+      // Dismissing the modal
+      if (!visible) {
+        setShowLayoutAnimation(false);
+      }
+    }, [visible]);
 
     useEffect(() => {
       if (!visible) {
@@ -66,9 +76,17 @@ const PopupModal: React.FC<PopupModalProps> = memo(
       }, 100);
     }, [haptics, shakeOnShow, shakeValue, visible]);
 
+    const handleShow = useCallback(() => {
+      setTimeout(() => {
+        setShowLayoutAnimation(true);
+      }, 300);
+    }, []);
+
     return (
       <BlurredModal
         transparent
+        onTouchBackground={onTouchBackground}
+        onShow={handleShow}
         onRequestClose={onRequestClose}
         visible={visible}
         {...props}>
@@ -79,7 +97,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
             </PopupTopContainer>
           )}
           
-          <PopupContainer style={animatedStyle} minimumSized={!children}>
+          <PopupContainer layout={showLayoutAnimation && LinearTransition} style={animatedStyle} minimumSized={!children}>
             {title && (
               <>
                 <PopupTitleContainer>
@@ -91,6 +109,11 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                       size={22} />
                   )}
                   <PopupTitle>{`${title}`}</PopupTitle>
+                  {ActionButton && (
+                    <Animated.View entering={FadeIn.delay(300)} style={{height: 24, width: 24, alignItems: 'center', justifyContent: 'center', position: 'absolute', right: 0}}>
+                      {ActionButton}
+                    </Animated.View>
+                  )}
                 </PopupTitleContainer>
                 <GradientSeparator
                   colorArray={theme.colors.defaultSeparatorGradientColors}
@@ -99,7 +122,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
             )}
             {!!children && <ContentContainer>{children}</ContentContainer>}
             {buttons && (
-              <ButtonsContainer shouldMarginTop={!children} alignCenter={buttons.length > 1}>
+              <ButtonsContainer layout={showLayoutAnimation && LinearTransition} shouldMarginTop={!children} alignCenter={buttons.length > 1}>
                 {buttons.map(button => (
                   <PopupButton
                     onPress={button.onPress}

@@ -1,8 +1,8 @@
-import { AnimatedIconProps } from "../animated-icons/animated-icon/types";
-
-export type OptionTileProps = {
-    Icon: React.FC<AnimatedIconProps>;
+export type BaseOptionTileProps = {
     label: string;
     onPress: () => void;
-    iconAnimationDelay?: number;
+}
+
+export type OptionTileProps = BaseOptionTileProps & {
+    TopComponent?: React.ReactNode;
 }

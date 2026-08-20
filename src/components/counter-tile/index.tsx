@@ -264,7 +264,7 @@ const CounterTile: React.FC<CounterTileProps> = memo(
         />
         <PopupModal
           visible={deleteModalVisible}
-          onRequestClose={() => setDeleteModalVisible(false)}
+          onTouchBackground={() => setDeleteModalVisible(false)}
           title={t('messages.confirmCounterDelete', {
             counterTitle: counterData.title,
           })}

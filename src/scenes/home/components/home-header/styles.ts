@@ -28,7 +28,13 @@ export const SearchAndProfile = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  width: 22%;
+  height: 100%;
+`;
+
+export const HeaderActions = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
   height: 100%;
 `;
 

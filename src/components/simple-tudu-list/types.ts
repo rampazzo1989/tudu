@@ -10,4 +10,5 @@ export type SimpleTuduListProps = {
   updateTuduFn: (tudu: TuduViewModel) => void;
   undoDeletionFn: () => void;
   onEditPress: (tudu: TuduViewModel) => void;
+  onSchedulePress: (tudu: TuduViewModel) => void;
 };

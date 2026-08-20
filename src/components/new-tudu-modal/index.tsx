@@ -1,13 +1,13 @@
-import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {TextInput} from 'react-native';
-import {generateRandomHash} from '../../hooks/useHashGenerator';
-import {TuduViewModel} from '../../scenes/home/types';
-import {CheckMarkIcon} from '../animated-icons/check-mark';
-import {PopupModal} from '../popup-modal';
-import {PopupButton} from '../popup-modal/types';
-import {Input} from './styles';
-import {NewTuduModalProps} from './types';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { TextInput } from 'react-native';
+import { generateRandomHash } from '../../hooks/useHashGenerator';
+import { TuduViewModel } from '../../scenes/home/types';
+import { CheckMarkIcon } from '../animated-icons/check-mark';
+import { PopupModal } from '../popup-modal';
+import { PopupButton } from '../popup-modal/types';
+import { ContentContainer, Input } from './styles';
+import { NewTuduModalProps } from './types';
 import { useEmojiSearch } from '../../hooks/useEmojiSearch';
 import SuggestedEmojiList from '../suggested-emoji-list';
 import { trimEmoji } from '../../utils/emoji-utils';
@@ -27,7 +27,7 @@ const getNewEmptyTudu = () =>
 const MAX_TUDU_LENGTH = 100;
 
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
-  ({visible, editingTudu, listName, onRequestClose, onInsertOrUpdate}) => {
+  ({ visible, editingTudu, listName, onRequestClose, onInsertOrUpdate }) => {
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
       editingTudu ?? getNewEmptyTudu(),
     );
@@ -35,8 +35,9 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const [isTopContainerVisible, setIsTopContainerVisible] = useState(false);
     const [showingMostUsedEmojis, setShowingMostUsedEmojis] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isAIGenerated, setIsAIGenerated] = useState(false);
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const inputRef = useRef<TextInput>(null);
 
@@ -45,13 +46,15 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       searchEmojis,
       getMostUsedEmojis,
       getDefaultEmojis
-    } = useEmojiSearch(1000);
+    } = useEmojiSearch(1200);
 
     const handleRequestClose = useCallback(() => {
       setIsTopContainerVisible(false);
       setSuggestedEmojis([]);
+      setIsLoading(false);
+      setIsAIGenerated(false);
       onRequestClose();
-    }, []);
+    }, [onRequestClose]);
 
     const searchEmojisForListName = useCallback(() => {
       var resultsForListName: string[] = [];
@@ -73,21 +76,36 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
 
       setIsTopContainerVisible(true);
 
-      debounceSearchEmojis(text, (results, isShowingMostUsed) => {
-        var emojis = results;
+      const targetListName = editingTudu?.listName || listName;
 
-        if (emojis.length < 3) {
-          emojis = [...emojis, ...searchEmojisForListName()];
-        }
-        setShowingMostUsedEmojis(isShowingMostUsed);
+      debounceSearchEmojis(
+        text,
+        (results, isShowingMostUsed, isAI) => {
+          var emojis = results;
 
-        if (isShowingMostUsed) {
-          emojis = [...new Set([...emojis, ...getDefaultEmojis('tudu')])];
-        }
-        setIsLoading(false);
-        setSuggestedEmojis(emojis);
-      },true, () => setIsLoading(true));
-    }, [debounceSearchEmojis, editingTudu]);
+          if (isShowingMostUsed) {
+            if (emojis.length < 3) {
+              emojis = [...emojis, ...searchEmojisForListName()];
+            }
+            emojis = [...new Set([...emojis, ...getDefaultEmojis('tudu')])];
+          }
+          setShowingMostUsedEmojis(isShowingMostUsed);
+          setIsAIGenerated(isAI);
+          setIsLoading(false);
+          setSuggestedEmojis(emojis);
+        },
+        true,
+        () => {
+          if (suggestedEmojis.length === 0) {
+            setIsLoading(true);
+          }
+        },
+        {
+          type: 'tudu',
+          listName: targetListName,
+        },
+      );
+    }, [debounceSearchEmojis, editingTudu, listName, searchEmojisForListName, getDefaultEmojis, suggestedEmojis.length]);
 
     const isEditing = useMemo(() => !!editingTudu, [editingTudu]);
 
@@ -281,7 +299,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           onPress: handleConfirmButtonPress,
           disabled: !internalTuduData.label,
         },
-        {label: t('buttons.cancel'), onPress: handleRequestClose},
+        { label: t('buttons.cancel'), onPress: handleRequestClose },
       ],
       [handleConfirmButtonPress, internalTuduData.label, handleRequestClose, t],
     );
@@ -302,16 +320,17 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           emojis={suggestedEmojis}
           onEmojiSelect={handleEmojiSelect}
           isShowingMostUsedEmojis={showingMostUsedEmojis}
+          isAIGenerated={isAIGenerated}
           isLoading={isLoading}
         />
       );
-    }, [suggestedEmojis, handleEmojiSelect, showingMostUsedEmojis, isLoading]);
+    }, [suggestedEmojis, handleEmojiSelect, showingMostUsedEmojis, isAIGenerated, isLoading]);
 
     return (
       <PopupModal
         visible={visible}
         topContainerVisible={isTopContainerVisible}
-        onRequestClose={handleRequestClose}
+        onTouchBackground={handleRequestClose}
         TopContainerComponent={TopContainerComponent}
         onShow={() => {
           setInternalTuduData(editingTudu ?? getNewEmptyTudu());
@@ -340,15 +359,17 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         title={t(isEditing ? 'popupTitles.editTudu' : 'popupTitles.newTudu')}
         buttons={buttonsData}
         Icon={CheckMarkIcon}>
-        <Input
-          value={internalTuduData.label}
-          onChangeText={handleTextChange}
-          maxLength={MAX_TUDU_LENGTH}
-          ref={inputRef}
-        />
+        <ContentContainer>
+          <Input
+            value={internalTuduData.label}
+            onChangeText={handleTextChange}
+            maxLength={MAX_TUDU_LENGTH}
+            ref={inputRef}
+          />
+        </ContentContainer>
       </PopupModal>
     );
   },
 );
 
-export {NewTuduModal};
+export { NewTuduModal };
