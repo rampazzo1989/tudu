@@ -174,7 +174,10 @@
     "today": "Oggi",
     "tomorrow": "Domani",
     "nextDays": "Prossimi giorni...",
-    "date": "Data..."
+    "date": "Data...",
+    "schedule": "Pianifica",
+    "addSchedule": "+ Pianifica data/ora",
+    "clearSchedule": "Rimuovi pianificazione"
   },
   "settings": {
     "title": "Impostazioni",

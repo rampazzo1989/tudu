@@ -125,4 +125,56 @@ describe('Schedule with Time feature', () => {
       expect(cleaned).toBe('Dentista');
     });
   });
+
+  describe('Tudu schedule in creation and editing', () => {
+    it('should support scheduling tudu with date and time', () => {
+      const tudu = new TuduViewModel(
+        {
+          id: 'test-1',
+          label: 'Nova tarefa',
+          done: false,
+        },
+        'list-1',
+      );
+
+      expect(tudu.dueDate).toBeUndefined();
+      expect(tudu.hasTime).toBeUndefined();
+
+      const scheduledDate = new Date(2026, 7, 25, 14, 0, 0);
+      tudu.dueDate = scheduledDate;
+      tudu.hasTime = true;
+
+      const cloned = tudu.clone();
+      expect(cloned.dueDate).toEqual(scheduledDate);
+      expect(cloned.hasTime).toBe(true);
+
+      // Unschedule / clear schedule
+      cloned.dueDate = undefined;
+      cloned.hasTime = undefined;
+      expect(cloned.dueDate).toBeUndefined();
+      expect(cloned.hasTime).toBeUndefined();
+    });
+
+    it('should correctly format scheduled date for badge with and without time', () => {
+      const mockT = (key: string, options?: any) => {
+        if (key === 'labels.today') return 'Hoje';
+        if (key === 'scheduleOptions.tomorrow') return 'Amanhã';
+        if (key === 'labels.at') return 'às';
+        return key;
+      };
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(18, 30, 0, 0);
+
+      const formattedWithTime = formatScheduledDateTime(tomorrow, true, mockT);
+      expect(formattedWithTime).toContain('Amanhã');
+      expect(formattedWithTime).toContain('às');
+      expect(formattedWithTime).toMatch(/18:30|6:30/);
+
+      const formattedWithoutTime = formatScheduledDateTime(tomorrow, false, mockT);
+      expect(formattedWithoutTime).toBe('Amanhã');
+    });
+  });
 });
+

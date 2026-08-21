@@ -13,7 +13,7 @@ import {
 } from './styles';
 import {HomeHeaderProps} from './types';
 
-import {AdjustIcon} from '../../../../components/animated-icons/adjust-icon';
+import {SettingsIcon} from '../../../../components/animated-icons/settings-icon';
 
 const HomeHeader: React.FC<HomeHeaderProps> = memo(
   ({onSearchPress, onSettingsPress}) => {
@@ -33,7 +33,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = memo(
             <ShrinkableView
               onPress={onSettingsPress}
               style={{marginLeft: 14}}>
-              <AdjustIcon animateWhenIdle size={30} />
+              <SettingsIcon animateWhenIdle size={30} />
             </ShrinkableView>
           </SearchAndProfile>
         </ContentRow>

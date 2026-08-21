@@ -3,7 +3,7 @@ import { Switch, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'styled-components/native';
 import DatePicker from 'react-native-date-picker';
-import { AdjustIcon } from '../../../components/animated-icons/adjust-icon';
+import { SettingsIcon } from '../../../components/animated-icons/settings-icon';
 import { DefaultHeader } from '../../../components/default-header';
 import { Page } from '../../../components/page';
 import { PageContent } from '../../../components/page-content';
@@ -140,7 +140,7 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
   return (
     <Page>
       <DefaultHeader
-        Icon={AdjustIcon}
+        Icon={SettingsIcon}
         title={t('settings.notifications.title')}
         onBackButtonPress={handleBackButtonPress}
       />

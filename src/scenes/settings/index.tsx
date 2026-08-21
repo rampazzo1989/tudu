@@ -2,7 +2,7 @@ import React, {useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Text} from 'react-native';
 import {useRecoilValue} from 'recoil';
-import {AdjustIcon} from '../../components/animated-icons/adjust-icon';
+import {SettingsIcon} from '../../components/animated-icons/settings-icon';
 import {DefaultHeader} from '../../components/default-header';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
@@ -72,7 +72,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   return (
     <Page>
       <DefaultHeader
-        Icon={AdjustIcon}
+        Icon={SettingsIcon}
         title={t('settings.title')}
         onBackButtonPress={handleBackButtonPress}
       />

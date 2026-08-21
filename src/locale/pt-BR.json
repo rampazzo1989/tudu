@@ -174,7 +174,10 @@
     "today": "Hoje",
     "tomorrow": "Amanhã",
     "nextDays": "Próximos dias...",
-    "date": "Data..."
+    "date": "Data...",
+    "schedule": "Agendar",
+    "addSchedule": "+ Agendar data/hora",
+    "clearSchedule": "Remover agendamento"
   },
   "settings": {
     "title": "Configurações",

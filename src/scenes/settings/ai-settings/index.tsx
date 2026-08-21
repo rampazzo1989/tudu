@@ -10,7 +10,7 @@ import {
 import {useTranslation} from 'react-i18next';
 import {FadeIn} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
-import {AdjustIcon} from '../../../components/animated-icons/adjust-icon';
+import {SettingsIcon} from '../../../components/animated-icons/settings-icon';
 import {DefaultHeader} from '../../../components/default-header';
 import {Page} from '../../../components/page';
 import {PageContent} from '../../../components/page-content';
@@ -199,7 +199,7 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
   return (
     <Page>
       <DefaultHeader
-        Icon={AdjustIcon}
+        Icon={SettingsIcon}
         title={t('settings.ai.title')}
         onBackButtonPress={handleBackButtonPress}
       />

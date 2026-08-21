@@ -1,12 +1,28 @@
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TextInput } from 'react-native';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
 import { TuduViewModel } from '../../scenes/home/types';
 import { CheckMarkIcon } from '../animated-icons/check-mark';
+import { CalendarIcon } from '../animated-icons/calendar';
 import { PopupModal } from '../popup-modal';
 import { PopupButton } from '../popup-modal/types';
-import { ContentContainer, Input } from './styles';
+import { ScheduleModal } from '../schedule-modal';
+import { formatScheduledDateTime } from '../../utils/date-utils';
+import {
+  ClearScheduleButton,
+  ClearScheduleText,
+  ContentContainer,
+  HeaderCalendarButton,
+  Input,
+  ScheduleAddButton,
+  ScheduleAddButtonText,
+  ScheduledBadgeButton,
+  ScheduledBadgeContainer,
+  ScheduledBadgeText,
+  ScheduleRowContainer,
+} from './styles';
 import { NewTuduModalProps } from './types';
 import { useEmojiSearch } from '../../hooks/useEmojiSearch';
 import SuggestedEmojiList from '../suggested-emoji-list';
@@ -33,13 +49,14 @@ const MAX_TUDU_LENGTH = 100;
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
   ({ visible, editingTudu, listName, onRequestClose, onInsertOrUpdate }) => {
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
-      editingTudu ?? getNewEmptyTudu(),
+      editingTudu ? editingTudu.clone() : getNewEmptyTudu(),
     );
     const [suggestedEmojis, setSuggestedEmojis] = useState<string[]>([]);
     const [isTopContainerVisible, setIsTopContainerVisible] = useState(false);
     const [showingMostUsedEmojis, setShowingMostUsedEmojis] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isAIGenerated, setIsAIGenerated] = useState(false);
+    const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
 
     const { t } = useTranslation();
 
@@ -49,14 +66,22 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       debounceSearchEmojis,
       searchEmojis,
       getMostUsedEmojis,
-      getDefaultEmojis
+      getDefaultEmojis,
     } = useEmojiSearch(1200);
+
+    useEffect(() => {
+      if (visible) {
+        setInternalTuduData(editingTudu ? editingTudu.clone() : getNewEmptyTudu());
+        setIsScheduleModalVisible(false);
+      }
+    }, [visible, editingTudu]);
 
     const handleRequestClose = useCallback(() => {
       setIsTopContainerVisible(false);
       setSuggestedEmojis([]);
       setIsLoading(false);
       setIsAIGenerated(false);
+      setIsScheduleModalVisible(false);
       onRequestClose();
     }, [onRequestClose]);
 
@@ -69,49 +94,90 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       }
 
       return resultsForListName;
-    }, [editingTudu, searchEmojis]);
+    }, [editingTudu, searchEmojis, listName]);
 
-    const handleTextChange = useCallback((text: string) => {
-      setInternalTuduData(x => {
-        const newTudu = x.clone();
-        newTudu.label = text;
-        return newTudu;
-      });
+    const handleTextChange = useCallback(
+      (text: string) => {
+        setInternalTuduData(x => {
+          const newTudu = x.clone();
+          newTudu.label = text;
+          return newTudu;
+        });
 
-      setIsTopContainerVisible(true);
+        setIsTopContainerVisible(true);
 
-      const targetListName = editingTudu?.listName || listName;
+        const targetListName = editingTudu?.listName || listName;
 
-      debounceSearchEmojis(
-        text,
-        (results, isShowingMostUsed, isAI) => {
-          var emojis = results;
+        debounceSearchEmojis(
+          text,
+          (results, isShowingMostUsed, isAI) => {
+            var emojis = results;
 
-          if (isShowingMostUsed) {
-            if (emojis.length < 3) {
-              emojis = [...emojis, ...searchEmojisForListName()];
+            if (isShowingMostUsed) {
+              if (emojis.length < 3) {
+                emojis = [...emojis, ...searchEmojisForListName()];
+              }
+              emojis = [...new Set([...emojis, ...getDefaultEmojis('tudu')])];
             }
-            emojis = [...new Set([...emojis, ...getDefaultEmojis('tudu')])];
-          }
-          setShowingMostUsedEmojis(isShowingMostUsed);
-          setIsAIGenerated(isAI);
-          setIsLoading(false);
-          setSuggestedEmojis(emojis);
-        },
-        true,
-        () => {
-          if (suggestedEmojis.length === 0) {
-            setIsLoading(true);
-          }
-        },
-        {
-          type: 'tudu',
-          listName: targetListName,
-        },
-      );
-    }, [debounceSearchEmojis, editingTudu, listName, searchEmojisForListName, getDefaultEmojis, suggestedEmojis.length]);
+            setShowingMostUsedEmojis(isShowingMostUsed);
+            setIsAIGenerated(isAI);
+            setIsLoading(false);
+            setSuggestedEmojis(emojis);
+          },
+          true,
+          () => {
+            if (suggestedEmojis.length === 0) {
+              setIsLoading(true);
+            }
+          },
+          {
+            type: 'tudu',
+            listName: targetListName,
+          },
+        );
+      },
+      [
+        debounceSearchEmojis,
+        editingTudu,
+        listName,
+        searchEmojisForListName,
+        getDefaultEmojis,
+        suggestedEmojis.length,
+      ],
+    );
 
     const isEditing = useMemo(() => !!editingTudu, [editingTudu]);
+
+    const handleOpenScheduleModal = useCallback(() => {
+      setIsScheduleModalVisible(true);
+    }, []);
+
+    const handleCloseScheduleModal = useCallback(() => {
+      setIsScheduleModalVisible(false);
+    }, []);
+
+    const handleScheduleConfirm = useCallback(
+      (date: Date, withTime?: boolean) => {
+        setInternalTuduData(prev => {
+          const updated = prev.clone();
+          updated.dueDate = date;
+          updated.hasTime = withTime ?? false;
+          return updated;
+        });
+        setIsScheduleModalVisible(false);
+      },
+      [],
+    );
+
+    const handleClearSchedule = useCallback(() => {
+      RNReactNativeHapticFeedback.trigger('impactLight');
+      setInternalTuduData(prev => {
+        const updated = prev.clone();
+        updated.dueDate = undefined;
+        updated.hasTime = undefined;
+        return updated;
+      });
+    }, []);
 
     const handleInsertOrUpdateTudu = useCallback(
       (tudu: TuduViewModel) => {
@@ -263,9 +329,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           const tomorrow = new Date();
           tomorrow.setDate(tomorrow.getDate() + 1);
           updatedTudu.dueDate = tomorrow;
-        }
-
-        if (params.sunday) {
+        } else if (params.sunday) {
           updatedTudu.dueDate = getNextDateForDay(0);
         } else if (params.monday) {
           updatedTudu.dueDate = getNextDateForDay(1);
@@ -280,7 +344,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         } else if (params.saturday) {
           updatedTudu.dueDate = getNextDateForDay(6);
         } else {
-          const dueDate = params.dueDate ? params.dueDate as Date : updatedTudu.dueDate;
+          const dueDate = params.dueDate ? (params.dueDate as Date) : updatedTudu.dueDate;
           updatedTudu.dueDate = dueDate;
         }
 
@@ -294,6 +358,10 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
             0,
           );
           updatedTudu.hasTime = true;
+        } else if (updatedTudu.dueDate) {
+          updatedTudu.hasTime = updatedTudu.hasTime ?? false;
+        } else {
+          updatedTudu.hasTime = false;
         }
 
         if (params.daily) {
@@ -344,10 +412,10 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     );
 
     const handleEmojiSelect = useCallback((emoji: string) => {
-      setInternalTuduData((current) => {
+      setInternalTuduData(current => {
         var tuduClone = current.clone();
         var label = tuduClone.label;
-        label = trimEmoji(label, "start")?.formattedText ?? '';
+        label = trimEmoji(label, 'start')?.formattedText ?? '';
         tuduClone.label = `${emoji} ${label.trim()}`;
         return tuduClone;
       });
@@ -363,50 +431,107 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           isLoading={isLoading}
         />
       );
-    }, [suggestedEmojis, handleEmojiSelect, showingMostUsedEmojis, isAIGenerated, isLoading]);
+    }, [
+      suggestedEmojis,
+      handleEmojiSelect,
+      showingMostUsedEmojis,
+      isAIGenerated,
+      isLoading,
+    ]);
+
+    const ActionButtonComponent = useMemo(
+      () => (
+        <HeaderCalendarButton onPress={handleOpenScheduleModal}>
+          <CalendarIcon size={20} />
+        </HeaderCalendarButton>
+      ),
+      [handleOpenScheduleModal],
+    );
 
     return (
-      <PopupModal
-        visible={visible}
-        topContainerVisible={isTopContainerVisible}
-        onTouchBackground={handleRequestClose}
-        TopContainerComponent={TopContainerComponent}
-        onShow={() => {
-          setInternalTuduData(editingTudu ?? getNewEmptyTudu());
-          setTimeout(() => inputRef.current?.focus(), 200);
-          setTimeout(() => {
-            setIsLoading(true);
-            setIsTopContainerVisible(true);
-
+      <>
+        <PopupModal
+          visible={visible && !isScheduleModalVisible}
+          topContainerVisible={isTopContainerVisible}
+          onTouchBackground={handleRequestClose}
+          TopContainerComponent={TopContainerComponent}
+          onShow={() => {
+            setTimeout(() => inputRef.current?.focus(), 200);
             setTimeout(() => {
-              var emojis = searchEmojis(editingTudu?.label ?? '');
+              setIsLoading(true);
+              setIsTopContainerVisible(true);
 
-              if (!emojis.length) {
-                emojis = [...new Set([...getMostUsedEmojis(), ...getDefaultEmojis("tudu")])];
-                setShowingMostUsedEmojis(!!emojis.length);
-              }
+              setTimeout(() => {
+                var emojis = searchEmojis(editingTudu?.label ?? '');
 
-              if (emojis.length < 3) {
-                emojis = [...emojis, ...searchEmojisForListName()];
-              }
+                if (!emojis.length) {
+                  emojis = [
+                    ...new Set([
+                      ...getMostUsedEmojis(),
+                      ...getDefaultEmojis('tudu'),
+                    ]),
+                  ];
+                  setShowingMostUsedEmojis(!!emojis.length);
+                }
 
-              setSuggestedEmojis(emojis);
-              setIsLoading(false);
-            }, 0);
-          }, 700);
-        }}
-        title={t(isEditing ? 'popupTitles.editTudu' : 'popupTitles.newTudu')}
-        buttons={buttonsData}
-        Icon={CheckMarkIcon}>
-        <ContentContainer>
-          <Input
-            value={internalTuduData.label}
-            onChangeText={handleTextChange}
-            maxLength={MAX_TUDU_LENGTH}
-            ref={inputRef}
-          />
-        </ContentContainer>
-      </PopupModal>
+                if (emojis.length < 3) {
+                  emojis = [...emojis, ...searchEmojisForListName()];
+                }
+
+                setSuggestedEmojis(emojis);
+                setIsLoading(false);
+              }, 0);
+            }, 700);
+          }}
+          title={t(isEditing ? 'popupTitles.editTudu' : 'popupTitles.newTudu')}
+          buttons={buttonsData}
+          ActionButton={ActionButtonComponent}
+          Icon={CheckMarkIcon}>
+          <ContentContainer>
+            <Input
+              value={internalTuduData.label}
+              onChangeText={handleTextChange}
+              maxLength={MAX_TUDU_LENGTH}
+              ref={inputRef}
+            />
+            <ScheduleRowContainer>
+              {internalTuduData.dueDate ? (
+                <ScheduledBadgeContainer>
+                  <ScheduledBadgeButton onPress={handleOpenScheduleModal}>
+                    <CalendarIcon size={14} autoPlay={false} />
+                    <ScheduledBadgeText>
+                      {formatScheduledDateTime(
+                        internalTuduData.dueDate,
+                        internalTuduData.hasTime,
+                        t,
+                      )}
+                    </ScheduledBadgeText>
+                  </ScheduledBadgeButton>
+                  <ClearScheduleButton onPress={handleClearSchedule}>
+                    <ClearScheduleText>×</ClearScheduleText>
+                  </ClearScheduleButton>
+                </ScheduledBadgeContainer>
+              ) : (
+                <ScheduleAddButton onPress={handleOpenScheduleModal}>
+                  <CalendarIcon size={14} autoPlay={false} />
+                  <ScheduleAddButtonText style={{ marginLeft: 5 }}>
+                    {t('scheduleOptions.addSchedule', {
+                      defaultValue: '+ Agendar data/hora',
+                    })}
+                  </ScheduleAddButtonText>
+                </ScheduleAddButton>
+              )}
+            </ScheduleRowContainer>
+          </ContentContainer>
+        </PopupModal>
+        <ScheduleModal
+          isVisible={isScheduleModalVisible}
+          onModalClose={handleCloseScheduleModal}
+          onSchedule={handleScheduleConfirm}
+          currentDate={internalTuduData.dueDate}
+          hasTimeInitial={internalTuduData.hasTime}
+        />
+      </>
     );
   },
 );

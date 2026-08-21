@@ -174,7 +174,10 @@
     "today": "Hoy",
     "tomorrow": "Mañana",
     "nextDays": "Próximos días...",
-    "date": "Fecha..."
+    "date": "Fecha...",
+    "schedule": "Programar",
+    "addSchedule": "+ Programar fecha/hora",
+    "clearSchedule": "Quitar programación"
   },
   "settings": {
     "title": "Configuración",
