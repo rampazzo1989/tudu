@@ -208,6 +208,39 @@
         "openai": "OpenAI",
         "claude": "Anthropic Claude"
       }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "Manage task reminders and daily digest",
+      "statusActive": "Active",
+      "statusDisabled": "Disabled",
+      "statusDigestTime": "Digest at {{time}}",
+      "timedTitle": "Timed reminders",
+      "timedDescription": "Notify at exact time when a task has a scheduled hour",
+      "dailyDigestTitle": "Daily Digest",
+      "dailyDigestDescription": "Receive a consolidated morning summary of today's tasks",
+      "dailyDigestTimeTitle": "Daily Digest Time",
+      "selectTime": "Choose time",
+      "testButton": "Test Notification",
+      "testSuccess": "Test notification dispatched!",
+      "permissionNotice": "Make sure notifications are enabled in system settings to receive timely alerts."
+    }
+  },
+  "notifications": {
+    "timedTudu": {
+      "defaultTitle": "Scheduled Tudú"
+    },
+    "dailyDigest": {
+      "title": "Today's Tasks",
+      "multipleUntimed": "You have {{totalCount}} tasks scheduled for today",
+      "singleUntimedOnly": "1 task for today: {{text}}",
+      "singleUntimedWithOthers": "{{text}} (+ {{remainingCount}} others scheduled for today)",
+      "allTimed": "You have {{totalCount}} tasks scheduled for today throughout the day"
+    },
+    "test": {
+      "title": "🔔 Notification Test",
+      "body": "Tudu notifications are working properly!"
     }
   }
 }
+

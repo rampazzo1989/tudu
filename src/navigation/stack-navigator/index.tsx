@@ -14,6 +14,7 @@ import {StarredTudusPage} from '../../scenes/starred-tudus';
 import {SearchPage} from '../../scenes/search';
 import {SettingsPage} from '../../scenes/settings';
 import {AISettingsPage} from '../../scenes/settings/ai-settings';
+import {NotificationSettingsPage} from '../../scenes/settings/notification-settings';
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 
@@ -140,6 +141,17 @@ const StackNavigator = () => {
       <Stack.Screen
         name="AISettings"
         component={AISettingsPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: configSlow,
+            close: configSlow,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="NotificationSettings"
+        component={NotificationSettingsPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {

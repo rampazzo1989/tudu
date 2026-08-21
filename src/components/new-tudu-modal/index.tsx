@@ -15,6 +15,7 @@ import {
   PARAMETERS_REGEX,
   TIME_PARAMETERS_REGEX,
 } from '../../constants';
+import { trimEmoji } from '../../utils/emoji-utils';
 
 const getNewEmptyTudu = () =>
   new TuduViewModel(

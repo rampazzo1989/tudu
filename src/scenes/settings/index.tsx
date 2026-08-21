@@ -1,13 +1,12 @@
 import React, {useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Text} from 'react-native';
-import {FadeIn} from 'react-native-reanimated';
 import {useRecoilValue} from 'recoil';
 import {AdjustIcon} from '../../components/animated-icons/adjust-icon';
 import {DefaultHeader} from '../../components/default-header';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
-import {aiSettingsState} from '../../state/atoms';
+import {aiSettingsState, notificationSettingsState} from '../../state/atoms';
 import {
   Container,
   SectionContainer,
@@ -27,6 +26,7 @@ import {SettingsPageProps} from './types';
 const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const {t} = useTranslation();
   const aiSettings = useRecoilValue(aiSettingsState);
+  const notificationSettings = useRecoilValue(notificationSettingsState);
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -36,6 +36,10 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
     navigation.navigate('AISettings');
   }, [navigation]);
 
+  const handleNotificationSettingsPress = useCallback(() => {
+    navigation.navigate('NotificationSettings');
+  }, [navigation]);
+
   const getProviderName = (providerKey: string) => {
     return t(`settings.ai.providers.${providerKey}`, {
       defaultValue: providerKey,
@@ -43,6 +47,27 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   };
 
   const isAIActive = aiSettings.hasApiKey;
+  const isNotificationActive =
+    notificationSettings.timedNotificationsEnabled ||
+    notificationSettings.dailyDigestEnabled;
+
+  const formattedDigestTime = `${String(
+    notificationSettings.dailyDigestHour,
+  ).padStart(2, '0')}:${String(
+    notificationSettings.dailyDigestMinute,
+  ).padStart(2, '0')}`;
+
+  const getNotificationStatusText = () => {
+    if (notificationSettings.dailyDigestEnabled) {
+      return t('settings.notifications.statusDigestTime', {
+        time: formattedDigestTime,
+      });
+    }
+    if (notificationSettings.timedNotificationsEnabled) {
+      return t('settings.notifications.statusActive');
+    }
+    return t('settings.notifications.statusDisabled');
+  };
 
   return (
     <Page>
@@ -53,6 +78,32 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
       />
       <PageContent contentContainerStyle={styles.scrollContentContainer}>
         <Container>
+          {/* Notifications Section */}
+          <SectionContainer>
+            <SectionTitleText>
+              {t('settings.notifications.title')}
+            </SectionTitleText>
+            <SettingsCard onPress={handleNotificationSettingsPress}>
+              <CardLeftContent>
+                <IconContainer>
+                  <Text style={{fontSize: 22}}>🔔</Text>
+                </IconContainer>
+                <CardTextContainer>
+                  <CardTitle>{t('settings.notifications.title')}</CardTitle>
+                  <CardSubtitle numberOfLines={2}>
+                    {t('settings.notifications.subtitle')}
+                  </CardSubtitle>
+                </CardTextContainer>
+              </CardLeftContent>
+              <StatusBadge active={isNotificationActive}>
+                <StatusText active={isNotificationActive}>
+                  {getNotificationStatusText()}
+                </StatusText>
+              </StatusBadge>
+            </SettingsCard>
+          </SectionContainer>
+
+          {/* AI Section */}
           <SectionContainer>
             <SectionTitleText>{t('settings.sections.ai')}</SectionTitleText>
             <SettingsCard onPress={handleAISettingsPress}>
@@ -85,3 +136,4 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
 };
 
 export {SettingsPage};
+

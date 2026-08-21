@@ -1,4 +1,4 @@
-import {SetterOrUpdater, useRecoilState, useSetRecoilState} from 'recoil';
+import {SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
 import {
   ListViewModel,
   TuduViewModel,
@@ -18,11 +18,12 @@ import {
   archivedTudus as archivedTudusState,
 } from '../../scenes/home/state';
 import {ItemNotFoundError} from '../errors/item-not-found-error';
-import {useCallback, useEffect} from 'react';
+import {useCallback} from 'react';
 import {groupBy} from '../../utils/array-utils';
 import {getListFromViewModel} from '../../utils/list-and-group-utils';
-import { getDateOnlyTimeStamp, isOutdated } from '../../utils/date-utils';
-import { recalculateRecurrence } from '../../state/atoms';
+import { isOutdated } from '../../utils/date-utils';
+import { recalculateRecurrence, notificationSettingsState } from '../../state/atoms';
+import { notificationService } from '../notification';
 
 class SingletonBackup {
   private static instance: SingletonBackup;
@@ -47,6 +48,7 @@ const useListService = () => {
   const [archivedTudus, setArchivedTudus] = useRecoilState(archivedTudusState);
   const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusState);
   const setRecurrentTuduToRecalculate = useSetRecoilState(recalculateRecurrence);
+  const notificationSettings = useRecoilValue(notificationSettingsState);
   
   const getListState = useCallback(
     (stateOrigin: ListOrigin) =>
@@ -191,12 +193,17 @@ const useListService = () => {
 
         tudus.forEach(tudu => {
           newTuduMap.set(tudu.id, tudu.mapBack());
+          if (tudu.dueDate && tudu.hasTime && !tudu.done) {
+            notificationService.scheduleTimedTudu(tudu, notificationSettings.timedNotificationsEnabled);
+          } else {
+            notificationService.cancelTimedTudu(tudu.id);
+          }
         });
 
         return newTuduMap;
       });
     },
-    [setUnlistedTudus],
+    [setUnlistedTudus, notificationSettings.timedNotificationsEnabled],
   );
 
   const saveTudu = useCallback(
@@ -218,13 +225,19 @@ const useListService = () => {
         return newState;
       });
 
+      if (tudu.dueDate && tudu.hasTime && !tudu.done) {
+        notificationService.scheduleTimedTudu(tudu, notificationSettings.timedNotificationsEnabled);
+      } else {
+        notificationService.cancelTimedTudu(tudu.id);
+      }
+
       // If the tudu is recurrent, marked as done and is outdated, recalculate the recurrence
       if (tudu.dueDate && tudu.recurrence && tudu.done && isOutdated(tudu.dueDate)) {
         setTimeout(() => setRecurrentTuduToRecalculate(tudu), 1000);
       }
       
     },
-    [getTudusStateSetter, saveUnlistedTudus, setRecurrentTuduToRecalculate],
+    [getTudusStateSetter, saveUnlistedTudus, setRecurrentTuduToRecalculate, notificationSettings.timedNotificationsEnabled],
   );
 
   const saveAllTudus = useCallback(
@@ -254,6 +267,11 @@ const useListService = () => {
 
           savingTudus.forEach(tudu => {
             newTuduMap.set(tudu.id, tudu.mapBack());
+            if (tudu.dueDate && tudu.hasTime && !tudu.done) {
+              notificationService.scheduleTimedTudu(tudu, notificationSettings.timedNotificationsEnabled);
+            } else {
+              notificationService.cancelTimedTudu(tudu.id);
+            }
           });
 
           newState.set(listId, newTuduMap);
@@ -262,7 +280,7 @@ const useListService = () => {
         return newState;
       });
     },
-    [getTudusStateSetter, saveUnlistedTudus],
+    [getTudusStateSetter, saveUnlistedTudus, notificationSettings.timedNotificationsEnabled],
   );
 
   const getAllTudus = useCallback(
@@ -464,6 +482,8 @@ const useListService = () => {
       const origin = tuduData.origin;
       const tudusStateSetter = getTudusStateSetter(origin);
 
+      notificationService.cancelTimedTudu(tuduData.id);
+
       if (saveBackup) {
         doStateBackup(origin);
       }
@@ -484,6 +504,10 @@ const useListService = () => {
     (tuduList: TuduViewModel[], saveBackup = true) => {
       const origin = tuduList[0].origin;
       const tudusStateSetter = getTudusStateSetter(origin);
+
+      tuduList.forEach(tudu => {
+        notificationService.cancelTimedTudu(tudu.id);
+      });
 
       if (saveBackup) {
         doStateBackup(origin);
@@ -513,13 +537,20 @@ const useListService = () => {
       tuduList.forEach(tudu => {
         const tudus = newState.get(tudu.listId);
         var currentTudu = tudus?.get(tudu.id);
-        if (currentTudu) 
+        if (currentTudu) {
           currentTudu.done = false;
+          if (currentTudu.dueDate && currentTudu.hasTime) {
+            notificationService.scheduleTimedTudu(
+              new TuduViewModel(currentTudu, tudu.listId, origin),
+              notificationSettings.timedNotificationsEnabled,
+            );
+          }
+        }
       });
 
       return newState;
     });
-  }, []);
+  }, [notificationSettings.timedNotificationsEnabled]);
 
   const deleteGroup = useCallback(
     (groupName: string) => {

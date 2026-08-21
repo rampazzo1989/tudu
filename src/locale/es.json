@@ -208,6 +208,39 @@
         "openai": "OpenAI",
         "claude": "Anthropic Claude"
       }
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "subtitle": "Gestiona recordatorios de tareas y resumen diario",
+      "statusActive": "Activo",
+      "statusDisabled": "Desactivado",
+      "statusDigestTime": "Resumen a las {{time}}",
+      "timedTitle": "Recordatorios con hora",
+      "timedDescription": "Notificar a la hora exacta para tareas con hora programada",
+      "dailyDigestTitle": "Resumen diario (Daily Digest)",
+      "dailyDigestDescription": "Recibe un resumen matutino con las tareas del día",
+      "dailyDigestTimeTitle": "Hora del Resumen Diario",
+      "selectTime": "Elegir hora",
+      "testButton": "Probar Notificación",
+      "testSuccess": "¡Notificación de prueba enviada!",
+      "permissionNotice": "Asegúrate de permitir notificaciones en los ajustes del sistema."
+    }
+  },
+  "notifications": {
+    "timedTudu": {
+      "defaultTitle": "Tudú Programado"
+    },
+    "dailyDigest": {
+      "title": "Tareas de Hoy",
+      "multipleUntimed": "Tienes {{totalCount}} tareas programadas para hoy",
+      "singleUntimedOnly": "1 tarea para hoy: {{text}}",
+      "singleUntimedWithOthers": "{{text}} (+ {{remainingCount}} otras programadas para hoy)",
+      "allTimed": "Tienes {{totalCount}} tareas programadas para hoy a lo largo del día"
+    },
+    "test": {
+      "title": "🔔 Prueba de Notificación",
+      "body": "¡Las notificaciones de Tudu están funcionando correctamente!"
     }
   }
 }
+

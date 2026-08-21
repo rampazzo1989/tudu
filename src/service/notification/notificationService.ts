@@ -1,0 +1,353 @@
+import notifee, {
+  AndroidImportance,
+  AndroidVisibility,
+  AuthorizationStatus,
+  TimestampTrigger,
+  TriggerType,
+} from '@notifee/react-native';
+import {Platform} from 'react-native';
+import {TuduViewModel} from '../../scenes/home/types';
+import {NotificationSettingsState} from '../../state/atoms';
+import {NOTIFICATION_CHANNELS, NOTIFICATION_PREFIX} from './types';
+import i18next from '../../i18n';
+
+class NotificationService {
+  private static instance: NotificationService;
+  private isInitialized = false;
+
+  private constructor() {}
+
+  public static getInstance(): NotificationService {
+    if (!NotificationService.instance) {
+      NotificationService.instance = new NotificationService();
+    }
+    return NotificationService.instance;
+  }
+
+  /**
+   * Initializes notification channels for Android
+   */
+  public async init(): Promise<void> {
+    if (this.isInitialized) {
+      return;
+    }
+
+    if (Platform.OS === 'android') {
+      await notifee.createChannel({
+        id: NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
+        name: NOTIFICATION_CHANNELS.TIMED_TUDUS.name,
+        description: NOTIFICATION_CHANNELS.TIMED_TUDUS.description,
+        importance: AndroidImportance.HIGH,
+        vibration: true,
+        visibility: AndroidVisibility.PUBLIC,
+      });
+
+      await notifee.createChannel({
+        id: NOTIFICATION_CHANNELS.DAILY_DIGEST.id,
+        name: NOTIFICATION_CHANNELS.DAILY_DIGEST.name,
+        description: NOTIFICATION_CHANNELS.DAILY_DIGEST.description,
+        importance: AndroidImportance.DEFAULT,
+        vibration: true,
+        visibility: AndroidVisibility.PUBLIC,
+      });
+    }
+
+    this.isInitialized = true;
+  }
+
+  /**
+   * Requests notification permissions from user
+   */
+  public async requestPermissions(): Promise<boolean> {
+    await this.init();
+    const settings = await notifee.requestPermission();
+    return (
+      settings.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
+      settings.authorizationStatus === AuthorizationStatus.PROVISIONAL
+    );
+  }
+
+  /**
+   * Checks if notification permissions are granted
+   */
+  public async checkPermissions(): Promise<boolean> {
+    const settings = await notifee.getNotificationSettings();
+    return (
+      settings.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
+      settings.authorizationStatus === AuthorizationStatus.PROVISIONAL
+    );
+  }
+
+  /**
+   * Schedules an exact alarm notification for a Tudu with time
+   */
+  public async scheduleTimedTudu(
+    tudu: TuduViewModel,
+    enabled: boolean = true,
+  ): Promise<void> {
+    const notificationId = `${NOTIFICATION_PREFIX.TIMED_TUDU}${tudu.id}`;
+
+    // Cancel existing notification for this tudu first
+    await notifee.cancelNotification(notificationId);
+
+    // If notifications disabled, no dueDate, no hasTime, or tudu is done, don't schedule
+    if (!enabled || !tudu.dueDate || !tudu.hasTime || tudu.done) {
+      return;
+    }
+
+    const timestamp = new Date(tudu.dueDate).getTime();
+    const now = Date.now();
+
+    // If the due time is in the past, skip
+    if (timestamp <= now) {
+      return;
+    }
+
+    await this.init();
+
+    const title =
+      tudu.listName && tudu.listName !== 'Unlisted'
+        ? tudu.listName
+        : i18next.t('notifications.timedTudu.defaultTitle', {
+            defaultValue: 'Tudú Agendado',
+          });
+
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp,
+      alarmManager: {
+        allowWhileIdle: true,
+      },
+    };
+
+    await notifee.createTriggerNotification(
+      {
+        id: notificationId,
+        title,
+        body: tudu.label,
+        data: {
+          type: 'timed_tudu',
+          tuduId: tudu.id,
+          listId: tudu.listId,
+          dateTimestamp: timestamp,
+        },
+        android: {
+          channelId: NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
+          importance: AndroidImportance.HIGH,
+          pressAction: {
+            id: 'default',
+          },
+          smallIcon: 'ic_launcher',
+        },
+        ios: {
+          sound: 'default',
+        },
+      },
+      trigger,
+    );
+  }
+
+  /**
+   * Cancels notification for a specific tudu
+   */
+  public async cancelTimedTudu(tuduId: string): Promise<void> {
+    const notificationId = `${NOTIFICATION_PREFIX.TIMED_TUDU}${tuduId}`;
+    await notifee.cancelNotification(notificationId);
+  }
+
+  /**
+   * Formats the Daily Digest notification text based on user requirements:
+   * 1. untimedCount > 1: Shows aggregate count (including timed ones)
+   * 2. untimedCount === 1: Shows text of the untimed tudu (and count of remaining if any)
+   * 3. untimedCount === 0 && totalCount > 0: Shows count of timed tudus
+   * 4. totalCount === 0: returns null
+   */
+  public formatDailyDigestContent(tudusForDay: TuduViewModel[]): {
+    title: string;
+    body: string;
+  } | null {
+    const activeTudus = tudusForDay.filter(t => !t.done);
+    const totalCount = activeTudus.length;
+
+    if (totalCount === 0) {
+      return null;
+    }
+
+    const untimedTudus = activeTudus.filter(t => !t.hasTime);
+    const untimedCount = untimedTudus.length;
+
+    const title = i18next.t('notifications.dailyDigest.title', {
+      defaultValue: 'Tarefas de Hoje',
+    });
+
+    let body = '';
+
+    if (untimedCount > 1) {
+      body = i18next.t('notifications.dailyDigest.multipleUntimed', {
+        totalCount,
+        defaultValue: `Você tem ${totalCount} tarefas agendadas para hoje`,
+      });
+    } else if (untimedCount === 1) {
+      const untimedTudu = untimedTudus[0];
+      if (totalCount === 1) {
+        body = i18next.t('notifications.dailyDigest.singleUntimedOnly', {
+          text: untimedTudu.label,
+          defaultValue: `1 tarefa para hoje: ${untimedTudu.label}`,
+        });
+      } else {
+        const remainingCount = totalCount - 1;
+        body = i18next.t('notifications.dailyDigest.singleUntimedWithOthers', {
+          text: untimedTudu.label,
+          remainingCount,
+          defaultValue: `${untimedTudu.label} (+ ${remainingCount} ${
+            remainingCount === 1 ? 'outra agendada' : 'outras agendadas'
+          } para hoje)`,
+        });
+      }
+    } else {
+      // untimedCount === 0 && totalCount > 0 (all tasks have specific times)
+      body = i18next.t('notifications.dailyDigest.allTimed', {
+        totalCount,
+        defaultValue: `Você tem ${totalCount} tarefas agendadas para hoje ao longo do dia`,
+      });
+    }
+
+    return {title, body};
+  }
+
+  /**
+   * Schedules or updates the Daily Digest notification
+   */
+  public async scheduleDailyDigest(
+    tudusForToday: TuduViewModel[],
+    hour: number,
+    minute: number,
+    enabled: boolean = true,
+  ): Promise<void> {
+    const notificationId = NOTIFICATION_PREFIX.DAILY_DIGEST;
+
+    await notifee.cancelNotification(notificationId);
+
+    if (!enabled) {
+      return;
+    }
+
+    const content = this.formatDailyDigestContent(tudusForToday);
+    if (!content) {
+      return;
+    }
+
+    await this.init();
+
+    // Determine target trigger time
+    const targetDate = new Date();
+    targetDate.setHours(hour, minute, 0, 0);
+
+    // If today's time has already passed, schedule for tomorrow
+    if (targetDate.getTime() <= Date.now()) {
+      targetDate.setDate(targetDate.getDate() + 1);
+    }
+
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: targetDate.getTime(),
+      alarmManager: {
+        allowWhileIdle: true,
+      },
+    };
+
+    await notifee.createTriggerNotification(
+      {
+        id: notificationId,
+        title: content.title,
+        body: content.body,
+        data: {
+          type: 'daily_digest',
+          dateTimestamp: targetDate.getTime(),
+        },
+        android: {
+          channelId: NOTIFICATION_CHANNELS.DAILY_DIGEST.id,
+          importance: AndroidImportance.DEFAULT,
+          pressAction: {
+            id: 'default',
+          },
+          smallIcon: 'ic_launcher',
+        },
+        ios: {
+          sound: 'default',
+        },
+      },
+      trigger,
+    );
+  }
+
+  /**
+   * Sends an immediate test notification to verify sounds and permissions
+   */
+  public async sendTestNotification(): Promise<void> {
+    await this.init();
+    await this.requestPermissions();
+
+    await notifee.displayNotification({
+      id: NOTIFICATION_PREFIX.TEST,
+      title: i18next.t('notifications.test.title', {
+        defaultValue: '🔔 Teste de Notificação',
+      }),
+      body: i18next.t('notifications.test.body', {
+        defaultValue: 'As notificações do Tudu estão funcionando perfeitamente!',
+      }),
+      data: {
+        type: 'test',
+      },
+      android: {
+        channelId: NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
+        importance: AndroidImportance.HIGH,
+        pressAction: {
+          id: 'default',
+        },
+        smallIcon: 'ic_launcher',
+      },
+      ios: {
+        sound: 'default',
+      },
+    });
+  }
+
+  /**
+   * Full sync of all timed notifications and daily digest
+   */
+  public async syncAll(
+    allTudus: TuduViewModel[],
+    tudusForToday: TuduViewModel[],
+    settings: NotificationSettingsState,
+  ): Promise<void> {
+    // 1. Sync Timed Notifications
+    if (!settings.timedNotificationsEnabled) {
+      // Cancel all timed triggers
+      const scheduledNotifications =
+        await notifee.getTriggerNotificationIds();
+      for (const id of scheduledNotifications) {
+        if (id.startsWith(NOTIFICATION_PREFIX.TIMED_TUDU)) {
+          await notifee.cancelNotification(id);
+        }
+      }
+    } else {
+      const timedTudus = allTudus.filter(
+        t => t.dueDate && t.hasTime && !t.done,
+      );
+      for (const tudu of timedTudus) {
+        await this.scheduleTimedTudu(tudu, true);
+      }
+    }
+
+    // 2. Sync Daily Digest
+    await this.scheduleDailyDigest(
+      tudusForToday,
+      settings.dailyDigestHour,
+      settings.dailyDigestMinute,
+      settings.dailyDigestEnabled,
+    );
+  }
+}
+
+export const notificationService = NotificationService.getInstance();

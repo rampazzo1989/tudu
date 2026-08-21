@@ -21,6 +21,7 @@ type StackNavigatorParamList = {
   Search: undefined;
   Settings: undefined;
   AISettings: undefined;
+  NotificationSettings: undefined;
 };
 
 export type {StackNavigatorParamList};

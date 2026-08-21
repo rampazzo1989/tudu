@@ -208,6 +208,39 @@
         "openai": "OpenAI",
         "claude": "Anthropic Claude"
       }
+    },
+    "notifications": {
+      "title": "Notifiche",
+      "subtitle": "Gestisci promemoria delle attività e riepilogo giornaliero",
+      "statusActive": "Attivo",
+      "statusDisabled": "Disattivato",
+      "statusDigestTime": "Riepilogo alle {{time}}",
+      "timedTitle": "Promemoria con orario",
+      "timedDescription": "Notifica all'orario esatto per le attività programmate",
+      "dailyDigestTitle": "Riepilogo giornaliero (Daily Digest)",
+      "dailyDigestDescription": "Ricevi un promemoria mattutino con le attività della giornata",
+      "dailyDigestTimeTitle": "Orario del Riepilogo Giornaliero",
+      "selectTime": "Scegli orario",
+      "testButton": "Testa Notifica",
+      "testSuccess": "Notifica di test inviata!",
+      "permissionNotice": "Assicurati di abilitare le notifiche nelle impostazioni di sistema."
+    }
+  },
+  "notifications": {
+    "timedTudu": {
+      "defaultTitle": "Tudú Programmato"
+    },
+    "dailyDigest": {
+      "title": "Attività di Oggi",
+      "multipleUntimed": "Hai {{totalCount}} attività programmate per oggi",
+      "singleUntimedOnly": "1 attività per oggi: {{text}}",
+      "singleUntimedWithOthers": "{{text}} (+ {{remainingCount}} altre programmate per oggi)",
+      "allTimed": "Hai {{totalCount}} attività programmate per oggi nel corso della giornata"
+    },
+    "test": {
+      "title": "🔔 Test Notifica",
+      "body": "Le notifiche di Tudu funzionano correttamente!"
     }
   }
 }
+

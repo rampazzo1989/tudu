@@ -52,3 +52,22 @@ export const aiSettingsState = atom<AISettingsState>({
   },
   effects: [mmkvPersistAtom('aiSettingsState')],
 });
+
+export interface NotificationSettingsState {
+  timedNotificationsEnabled: boolean;
+  dailyDigestEnabled: boolean;
+  dailyDigestHour: number;
+  dailyDigestMinute: number;
+}
+
+export const notificationSettingsState = atom<NotificationSettingsState>({
+  key: 'notificationSettingsState',
+  default: {
+    timedNotificationsEnabled: true,
+    dailyDigestEnabled: true,
+    dailyDigestHour: 8,
+    dailyDigestMinute: 30,
+  },
+  effects: [mmkvPersistAtom('notificationSettingsState')],
+});
+

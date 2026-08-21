@@ -17,10 +17,14 @@ const SplashScreen = React.memo(
     useEffect(() => {
       if (navigation) {
         iconRef.current?.play({
-          onAnimationFinish: () => navigation.replace('Home'),
+          onAnimationFinish: () => {
+            if (navigation.isFocused()) {
+              navigation.replace('Home');
+            }
+          },
         });
       }
-    });
+    }, [navigation]);
 
     return (
       <>
