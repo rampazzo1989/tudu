@@ -13,6 +13,7 @@ export type TuduItem = {
   label: string;
   done: boolean;
   dueDate?: Date;
+  hasTime?: boolean;
   scheduledOrder?: number;
   starred?: boolean;
   recurrence?: RecurrenceType;
@@ -29,6 +30,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
   label: string;
   done: boolean;
   dueDate?: Date;
+  hasTime?: boolean;
   scheduledOrder?: number;
   listName?: string;
   starred?: boolean;
@@ -40,6 +42,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
       done: this.done,
       label: this.label,
       dueDate: this.dueDate,
+      hasTime: this.hasTime,
       scheduledOrder: this.scheduledOrder,
       starred: this.starred,
       recurrence: this.recurrence,
@@ -70,6 +73,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
     this.done = data.done;
     this.listId = listId;
     this.dueDate = data.dueDate ? new Date(data.dueDate) : undefined;
+    this.hasTime = data.hasTime;
     this.scheduledOrder = data.scheduledOrder;
     this.origin = origin;
     this.listName = listName;

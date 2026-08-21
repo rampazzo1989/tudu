@@ -61,6 +61,18 @@ const useScheduledTuduService = () => {
         if (dateComparison !== 0) {
           return dateComparison;
         }
+
+        // If on the same date: items with specific time come first, ordered by time
+        if (a.hasTime && b.hasTime) {
+          const timeA = a.dueDate ? a.dueDate.getTime() : 0;
+          const timeB = b.dueDate ? b.dueDate.getTime() : 0;
+          if (timeA !== timeB) return timeA - timeB;
+        } else if (a.hasTime && !b.hasTime) {
+          return -1;
+        } else if (!a.hasTime && b.hasTime) {
+          return 1;
+        }
+
         return (a.scheduledOrder || 0) - (b.scheduledOrder || 0);
       });
 
@@ -70,8 +82,9 @@ const useScheduledTuduService = () => {
   );
 
   const scheduleTudu = useCallback(
-    (tudu: TuduViewModel, date: Date) => {
+    (tudu: TuduViewModel, date: Date, hasTime?: boolean) => {
       tudu.dueDate = date;
+      tudu.hasTime = hasTime;
 
       saveTudu(tudu);
     },
@@ -81,6 +94,7 @@ const useScheduledTuduService = () => {
   const unscheduleTudu = useCallback(
     (tudu: TuduViewModel) => {
       tudu.dueDate = undefined;
+      tudu.hasTime = undefined;
 
       saveTudu(tudu);
     },

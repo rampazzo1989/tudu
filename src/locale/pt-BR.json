@@ -12,7 +12,12 @@
   },
   "labels": {
     "today": "Hoje",
-    "in": "em"
+    "in": "em",
+    "at": "às"
+  },
+  "scheduleMode": {
+    "allDay": "Dia inteiro",
+    "withTime": "Com horário"
   },
   "listPageTitles": {
     "archived": "Listas Arquivadas",
@@ -64,7 +69,8 @@
     "yes": "Sim",
     "no": "Não",
     "other": "outro",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "confirmAt": "Confirmar às {{time}}"
   },
   "popupTitles": {
     "renameGroup": "Renomear Grupo",
@@ -73,6 +79,7 @@
     "newCounter": "Criar novo contador",
     "editCounter": "Editar contador",
     "schedule": "Agendar tudú",
+    "scheduleTime": "Definir horário",
     "newGroup": "Criar novo grupo",
     "newTudu": "Criar novo tudú",
     "editTudu": "Editar tudú",

@@ -27,7 +27,13 @@ import { ListPageCoreProps } from './types';
 import { ListViewModel, TuduViewModel } from '../../scenes/home/types';
 import { ListHeader } from '../list-header';
 import { TuduAdditionalInformation } from '../tudu-card/types';
-import { formatToLocaleDate, isToday, isOutdated } from '../../utils/date-utils';
+import {
+  formatToLocaleDate,
+  formatToLocaleTime,
+  formatScheduledDateTime,
+  isToday,
+  isOutdated,
+} from '../../utils/date-utils';
 import { UNLISTED_LIST_ID } from '../../scenes/home/state';
 import { SkeletonTuduList } from '../skeleton-tudu-list';
 import { showItemDeletedToast } from '../../utils/toast-utils';
@@ -178,8 +184,14 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           const outdated = tudu.dueDate && isOutdated(tudu.dueDate);
           if (outdated) {
             return {
-              label: formatToLocaleDate(tudu.dueDate!),
+              label: formatScheduledDateTime(tudu.dueDate!, tudu.hasTime, t),
               originType: 'scheduled',
+            };
+          }
+          if (tudu.hasTime && tudu.dueDate) {
+            return {
+              label: `${tudu.listName} • ${formatToLocaleTime(tudu.dueDate)}`,
+              originType: 'list',
             };
           }
           return {
@@ -191,14 +203,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         if (tudu.dueDate) {
           const isScheduledForToday = isToday(tudu.dueDate);
           return {
-            label: isScheduledForToday
-              ? t('labels.today')
-              : formatToLocaleDate(tudu.dueDate),
+            label: formatScheduledDateTime(tudu.dueDate, tudu.hasTime, t),
             originType: isScheduledForToday ? 'today' : 'scheduled',
           };
         }
       },
-      [isSmartList],
+      [isSmartList, t],
     );
 
     const handleInsertOrUpdate = useCallback(
@@ -256,9 +266,10 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       setScheduleModalVisible(true);
     }, []);
 
-    const handleSchedule = useCallback((date: Date) => {
+    const handleSchedule = useCallback((date: Date, hasTime?: boolean) => {
       if (editingTudu) {
         editingTudu.dueDate = date;
+        editingTudu.hasTime = hasTime;
         handleInsertOrUpdate(editingTudu);
       }
     }, [editingTudu, handleInsertOrUpdate]);
@@ -330,6 +341,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           }}
           onSchedule={handleSchedule}
           currentDate={editingTudu?.dueDate}
+          hasTimeInitial={editingTudu?.hasTime}
         />
       </Page>
     );

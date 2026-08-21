@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SimpleTuduList } from "../../../../components/simple-tudu-list";
 import { TuduViewModel } from "../../../home/types";
 import { TuduAdditionalInformation } from "../../../../components/tudu-card/types";
-import { formatToLocaleDate, isOutdated } from "../../../../utils/date-utils";
+import {
+  formatScheduledDateTime,
+  isOutdated,
+} from "../../../../utils/date-utils";
 import React from "react";
 import { useListService } from "../../../../service/list-service-hook/useListService";
 import { NewTuduModal } from "../../../../components/new-tudu-modal";
@@ -32,12 +35,12 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
         (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
             if (tudu.dueDate) {
                 return {
-                    label: formatToLocaleDate(tudu.dueDate),
+                    label: formatScheduledDateTime(tudu.dueDate, tudu.hasTime, t),
                     originType: "scheduled",
                 };
             }
         },
-        []
+        [t]
     );
 
     useEffect(() => {
@@ -63,16 +66,16 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
         setNewTuduPopupVisible(true);
     }, []);
 
-
     const handleTuduSchedulePress = useCallback((tudu: TuduViewModel) => {
         setEditingTudu(tudu);
         setScheduleModalVisible(true);
     }, []);
 
-    const handleSchedule = useCallback((date: Date) => {
+    const handleSchedule = useCallback((date: Date, hasTime?: boolean) => {
         if (editingTudu) {
-        editingTudu.dueDate = date;
-        handleSaveTudu(editingTudu);
+            editingTudu.dueDate = date;
+            editingTudu.hasTime = hasTime;
+            handleSaveTudu(editingTudu);
         }
     }, [editingTudu, handleSaveTudu]);
 
@@ -137,6 +140,7 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
                 }}
                 onSchedule={handleSchedule}
                 currentDate={editingTudu?.dueDate}
+                hasTimeInitial={editingTudu?.hasTime}
             />
         </Animated.View>
     );

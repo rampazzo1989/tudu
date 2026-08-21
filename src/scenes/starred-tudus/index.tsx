@@ -10,7 +10,12 @@ import { SkeletonTuduList } from '../../components/skeleton-tudu-list';
 import { TuduAdditionalInformation } from '../../components/tudu-card/types';
 import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
 import { useListService } from '../../service/list-service-hook/useListService';
-import { formatToLocaleDate, isToday } from '../../utils/date-utils';
+import {
+  formatToLocaleDate,
+  formatToLocaleTime,
+  formatScheduledDateTime,
+  isToday,
+} from '../../utils/date-utils';
 import { UNLISTED_LIST_ID } from '../home/state';
 import { ListViewModel, TuduViewModel } from '../home/types';
 import { PaddedContainer, styles } from './styles';
@@ -47,6 +52,12 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
   const getAdditionalInformation = useCallback(
     (tudu: TuduViewModel): TuduAdditionalInformation | undefined => {
       if (tudu.listName && tudu.listId !== UNLISTED_LIST_ID) {
+        if (tudu.hasTime && tudu.dueDate) {
+          return {
+            label: `${tudu.listName} • ${formatToLocaleTime(tudu.dueDate)}`,
+            originType: 'list',
+          };
+        }
         return {
           label: tudu.listName,
           originType: 'list',
@@ -55,14 +66,12 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
       if (tudu.dueDate) {
         const isScheduledForToday = isToday(tudu.dueDate);
         return {
-          label: isScheduledForToday
-            ? t('labels.today')
-            : formatToLocaleDate(tudu.dueDate),
+          label: formatScheduledDateTime(tudu.dueDate, tudu.hasTime, t),
           originType: isScheduledForToday ? 'today' : 'scheduled',
         };
       }
     },
-    [],
+    [t],
   );
 
   const handleEditPress = useCallback((tudu: TuduViewModel) => {
@@ -75,9 +84,10 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
     setScheduleModalVisible(true);
   }, []);
 
-  const handleSchedule = useCallback((date: Date) => {
+  const handleSchedule = useCallback((date: Date, hasTime?: boolean) => {
     if (editingTudu) {
       editingTudu.dueDate = date;
+      editingTudu.hasTime = hasTime;
       saveTudu(editingTudu);
     }
   }, [editingTudu, saveTudu]);
@@ -88,7 +98,7 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
       label: t('listTitles.starredPageTitle'),
     });
     return list;
-  }, []);
+  }, [t]);
 
   return (
     <Page>
@@ -134,6 +144,7 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
         }}
         onSchedule={handleSchedule}
         currentDate={editingTudu?.dueDate}
+        hasTimeInitial={editingTudu?.hasTime}
       />
     </Page>
   );

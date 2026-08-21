@@ -10,8 +10,11 @@ import { ContentContainer, Input } from './styles';
 import { NewTuduModalProps } from './types';
 import { useEmojiSearch } from '../../hooks/useEmojiSearch';
 import SuggestedEmojiList from '../suggested-emoji-list';
-import { trimEmoji } from '../../utils/emoji-utils';
-import { DATE_PARAMETERS_REGEX, PARAMETERS_REGEX } from '../../constants';
+import {
+  DATE_PARAMETERS_REGEX,
+  PARAMETERS_REGEX,
+  TIME_PARAMETERS_REGEX,
+} from '../../constants';
 
 const getNewEmptyTudu = () =>
   new TuduViewModel(
@@ -112,11 +115,14 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const handleInsertOrUpdateTudu = useCallback(
       (tudu: TuduViewModel) => {
         const parseParameters = (text: string) => {
-          const params: { [key: string]: boolean | Date | null } = {
+          const params: { [key: string]: boolean | Date | number | null } = {
             starred: false,
             today: false,
             tomorrow: false,
             dueDate: null,
+            hasTime: false,
+            timeHours: 0,
+            timeMinutes: 0,
             daily: false,
             weekly: false,
             monthly: false,
@@ -132,7 +138,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
 
           let match;
           while ((match = PARAMETERS_REGEX.exec(text)) !== null) {
-            switch (match[1]) {
+            switch (match[1]?.toLowerCase()) {
               case '-s':
               case '--starred':
                 params.starred = true;
@@ -142,8 +148,11 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                 params.today = true;
                 break;
               case '-T':
+              case '-t':
               case '--tomorrow':
-                params.tomorrow = true;
+                if (match[1] === '-T' || match[1] === '--tomorrow') {
+                  params.tomorrow = true;
+                }
                 break;
               case '-d':
               case '--daily':
@@ -207,7 +216,24 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
             }
           }
 
-          const cleanedText = text.replace(DATE_PARAMETERS_REGEX, '').replace(PARAMETERS_REGEX, '').trim();
+          // Parse optional time (e.g., @14:30, @14h30, @14h, --time 14:30, -h 14:30)
+          const timeRegex = /(?:^|\s)(?:@|--time\s+|-h\s+)(\d{1,2})(?::|h)?(\d{2})?(?=\s|$)/i;
+          const timeMatch = timeRegex.exec(text);
+          if (timeMatch) {
+            const hour = parseInt(timeMatch[1], 10);
+            const minute = timeMatch[2] ? parseInt(timeMatch[2], 10) : 0;
+            if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+              params.hasTime = true;
+              params.timeHours = hour;
+              params.timeMinutes = minute;
+            }
+          }
+
+          const cleanedText = text
+            .replace(DATE_PARAMETERS_REGEX, '')
+            .replace(TIME_PARAMETERS_REGEX, '')
+            .replace(PARAMETERS_REGEX, '')
+            .trim();
 
           return { params, cleanedText };
         };
@@ -255,6 +281,18 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         } else {
           const dueDate = params.dueDate ? params.dueDate as Date : updatedTudu.dueDate;
           updatedTudu.dueDate = dueDate;
+        }
+
+        if (params.hasTime) {
+          updatedTudu.dueDate ||= new Date();
+          updatedTudu.dueDate = new Date(updatedTudu.dueDate);
+          updatedTudu.dueDate.setHours(
+            Number(params.timeHours),
+            Number(params.timeMinutes),
+            0,
+            0,
+          );
+          updatedTudu.hasTime = true;
         }
 
         if (params.daily) {
