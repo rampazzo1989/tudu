@@ -156,10 +156,16 @@
     }
   },
   "recurrence": {
+    "none": "Non ripetere",
     "daily": "tutti i giorni",
     "weekly": "ogni settimana",
     "monthly": "ogni mese",
-    "yearly": "ogni anno"
+    "yearly": "ogni anno",
+    "repeatTitle": "Ripeti",
+    "dailyShort": "Giornalmente",
+    "weeklyShort": "Settimanalmente",
+    "monthlyShort": "Mensilmente",
+    "yearlyShort": "Annualmente"
   },
   "scheduleDays": {
     "sunday": "Domenica",

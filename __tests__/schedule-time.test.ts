@@ -175,6 +175,55 @@ describe('Schedule with Time feature', () => {
       const formattedWithoutTime = formatScheduledDateTime(tomorrow, false, mockT);
       expect(formattedWithoutTime).toBe('Amanhã');
     });
+
+    it('should preserve scheduled dueDate and hasTime when creating tudu in Today/Scheduled list', () => {
+      const todayDate = new Date(2026, 7, 21, 10, 0, 0); // 10:00 AM
+      const customScheduledDate = new Date(2026, 7, 21, 15, 30, 0); // 15:30 PM
+
+      // Case 1: Tudu created with explicit schedule time in Today
+      const scheduledTudu = new TuduViewModel(
+        {
+          id: 'test-scheduled',
+          label: 'Reunião',
+          done: false,
+          dueDate: customScheduledDate,
+          hasTime: true,
+        },
+        '', // empty listId for new unlisted tudu
+      );
+
+      // Case 2: Tudu created without explicit schedule in Today
+      const unscheduledTudu = new TuduViewModel(
+        {
+          id: 'test-unscheduled',
+          label: 'Comprar pão',
+          done: false,
+        },
+        '', // empty listId for new unlisted tudu
+      );
+
+      const tudus = [scheduledTudu, unscheduledTudu];
+
+      // Simulate ScheduledListPage setTudus logic
+      tudus.forEach(tudu => {
+        if (!tudu.listId) {
+          if (!tudu.dueDate) {
+            tudu.dueDate = todayDate;
+          }
+          tudu.listId = 'unlisted';
+        }
+      });
+
+      expect(scheduledTudu.dueDate).toEqual(customScheduledDate);
+      expect(scheduledTudu.dueDate?.getHours()).toBe(15);
+      expect(scheduledTudu.dueDate?.getMinutes()).toBe(30);
+      expect(scheduledTudu.hasTime).toBe(true);
+      expect(scheduledTudu.listId).toBe('unlisted');
+
+      expect(unscheduledTudu.dueDate).toEqual(todayDate);
+      expect(unscheduledTudu.listId).toBe('unlisted');
+    });
   });
 });
+
 

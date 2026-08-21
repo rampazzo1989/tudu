@@ -16,7 +16,7 @@ import {
   isToday,
 } from '../../utils/date-utils';
 import { UNLISTED_LIST_ID } from '../home/state';
-import { ListViewModel, TuduViewModel } from '../home/types';
+import { ListViewModel, TuduViewModel, RecurrenceType } from '../home/types';
 import { SearchHeader } from './components/search-header';
 import { PaddedContainer, styles } from './styles';
 import { SearchPageProps } from './types';
@@ -93,10 +93,11 @@ const SearchPage: React.FC<SearchPageProps> = ({ navigation, route }) => {
     setScheduleModalVisible(true);
   }, []);
 
-  const handleSchedule = useCallback((date: Date, hasTime?: boolean) => {
+  const handleSchedule = useCallback((date: Date, hasTime?: boolean, recurrence?: RecurrenceType) => {
     if (editingTudu) {
       editingTudu.dueDate = date;
       editingTudu.hasTime = hasTime;
+      editingTudu.recurrence = recurrence;
       saveTudu(editingTudu);
     }
   }, [editingTudu, saveTudu]);
@@ -146,6 +147,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ navigation, route }) => {
         onSchedule={handleSchedule}
         currentDate={editingTudu?.dueDate}
         hasTimeInitial={editingTudu?.hasTime}
+        currentRecurrence={editingTudu?.recurrence}
       />
     </Page>
   );

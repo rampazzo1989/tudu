@@ -72,7 +72,9 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
 
         tudus.forEach(tudu => {
           if (!tudu.listId) {
-            tudu.dueDate = date;
+            if (!tudu.dueDate) {
+              tudu.dueDate = date;
+            }
             tudu.listId = UNLISTED_LIST_ID;
           }
         });

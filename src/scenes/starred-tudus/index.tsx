@@ -17,7 +17,7 @@ import {
   isToday,
 } from '../../utils/date-utils';
 import { UNLISTED_LIST_ID } from '../home/state';
-import { ListViewModel, TuduViewModel } from '../home/types';
+import { ListViewModel, TuduViewModel, RecurrenceType } from '../home/types';
 import { PaddedContainer, styles } from './styles';
 import { StarredTudusPageProps } from './types';
 import { ScheduleModal } from '../../components/schedule-modal';
@@ -84,10 +84,11 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
     setScheduleModalVisible(true);
   }, []);
 
-  const handleSchedule = useCallback((date: Date, hasTime?: boolean) => {
+  const handleSchedule = useCallback((date: Date, hasTime?: boolean, recurrence?: RecurrenceType) => {
     if (editingTudu) {
       editingTudu.dueDate = date;
       editingTudu.hasTime = hasTime;
+      editingTudu.recurrence = recurrence;
       saveTudu(editingTudu);
     }
   }, [editingTudu, saveTudu]);
@@ -145,6 +146,7 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
         onSchedule={handleSchedule}
         currentDate={editingTudu?.dueDate}
         hasTimeInitial={editingTudu?.hasTime}
+        currentRecurrence={editingTudu?.recurrence}
       />
     </Page>
   );

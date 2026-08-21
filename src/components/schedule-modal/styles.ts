@@ -87,3 +87,77 @@ export const TimeChipText = styled.Text<{ selected?: boolean }>`
   color: ${({ selected }) => (selected ? '#FFFFFF' : '#A0AAB8')};
   font-weight: 600;
 `;
+
+export const RecurrenceSectionContainer = styled.View`
+  width: 252px;
+  margin-bottom: 14px;
+`;
+
+export const RecurrenceToggleButton = styled(ShrinkableView)<{ active?: boolean }>`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: ${({ theme, active }) =>
+    active ? 'rgba(255, 255, 255, 0.12)' : theme.colors.counterIconBackground};
+  border-radius: 10px;
+  padding-horizontal: 12px;
+  padding-vertical: 7px;
+  border-width: 1px;
+  border-color: ${({ theme, active }) =>
+    active ? theme.colors.primary : 'rgba(255, 255, 255, 0.08)'};
+`;
+
+export const RecurrenceToggleLeft = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+`;
+
+export const RecurrenceToggleText = styled.Text<{ active?: boolean }>`
+  font-family: ${({ theme }) => theme.fonts.sectionTitle};
+  font-size: 12px;
+  color: ${({ theme, active }) =>
+    active ? theme.colors.text : theme.colors.iconOverlay};
+  font-weight: ${({ active }) => (active ? '700' : '500')};
+`;
+
+export const RecurrenceToggleValue = styled.Text<{ active?: boolean }>`
+  font-family: ${({ theme }) => theme.fonts.default};
+  font-size: 11px;
+  color: ${({ theme, active }) => (active ? '#FFFFFF' : '#A0AAB8')};
+  font-weight: ${({ active }) => (active ? '700' : '500')};
+`;
+
+export const RecurrenceToggleChevron = styled.Text`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.iconOverlay};
+  margin-left: 6px;
+`;
+
+export const RecurrenceChipsContainer = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-start;
+  margin-top: 8px;
+`;
+
+export const RecurrenceChip = styled(ShrinkableView)<{ selected?: boolean }>`
+  padding-horizontal: 9px;
+  padding-vertical: 5px;
+  border-radius: 8px;
+  background-color: ${({ selected, theme }) =>
+    selected ? theme.colors.primary : theme.colors.counterIconBackground};
+  border-width: 1px;
+  border-color: ${({ selected }) =>
+    selected ? 'transparent' : 'rgba(255, 255, 255, 0.08)'};
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const RecurrenceChipText = styled.Text<{ selected?: boolean }>`
+  font-family: ${({ theme }) => theme.fonts.default};
+  font-size: 11px;
+  color: ${({ selected }) => (selected ? '#FFFFFF' : '#A0AAB8')};
+  font-weight: ${({ selected }) => (selected ? '700' : '500')};
+`;

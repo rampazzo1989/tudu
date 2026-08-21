@@ -24,7 +24,7 @@ import { NewTuduModal } from '../new-tudu-modal';
 import { ListActionButton } from '../list-action-button';
 import { TudusList } from '../tudus-list';
 import { ListPageCoreProps } from './types';
-import { ListViewModel, TuduViewModel } from '../../scenes/home/types';
+import { ListViewModel, TuduViewModel, RecurrenceType } from '../../scenes/home/types';
 import { ListHeader } from '../list-header';
 import { TuduAdditionalInformation } from '../tudu-card/types';
 import {
@@ -266,10 +266,11 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       setScheduleModalVisible(true);
     }, []);
 
-    const handleSchedule = useCallback((date: Date, hasTime?: boolean) => {
+    const handleSchedule = useCallback((date: Date, hasTime?: boolean, recurrence?: RecurrenceType) => {
       if (editingTudu) {
         editingTudu.dueDate = date;
         editingTudu.hasTime = hasTime;
+        editingTudu.recurrence = recurrence;
         handleInsertOrUpdate(editingTudu);
       }
     }, [editingTudu, handleInsertOrUpdate]);
@@ -342,6 +343,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           onSchedule={handleSchedule}
           currentDate={editingTudu?.dueDate}
           hasTimeInitial={editingTudu?.hasTime}
+          currentRecurrence={editingTudu?.recurrence}
         />
       </Page>
     );

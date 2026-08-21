@@ -3,11 +3,22 @@ import { PopupModal } from '../popup-modal';
 import { getDaytimeIcon } from '../../utils/general-utils';
 import { CalendarIcon, OpenCalendarIcon } from '../animated-icons/calendar';
 import { ScheduleModalProps, ScheduleOptionsProps } from './types';
+import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
+import { RecurrenceType } from '../../scenes/home/types';
 import {
   ModeButton,
   ModeButtonText,
   ModeSelectorContainer,
   OptionsContainer,
+  RecurrenceChip,
+  RecurrenceChipsContainer,
+  RecurrenceSectionContainer,
+  RecurrenceToggleButton,
+  RecurrenceToggleLeft,
+  RecurrenceToggleText,
+  RecurrenceToggleValue,
+  RecurrenceToggleChevron,
+  RecurrenceChipText,
   SelectedDateBadge,
   SelectedDateText,
   TimeChip,
@@ -115,11 +126,15 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(
   ({
     hasTime,
     onToggleHasTime,
+    recurrence,
+    onSelectRecurrence,
     onSchedule,
     onPressDate,
     onPressNextDays,
+    currentDate,
   }) => {
     const { t } = useTranslation();
+    const [isRecurrenceExpanded, setIsRecurrenceExpanded] = useState(false);
 
     const handleScheduleToday = useCallback(() => {
       onSchedule(new Date());
@@ -130,6 +145,52 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(
       tomorrow.setDate(tomorrow.getDate() + 1);
       onSchedule(tomorrow);
     }, [onSchedule]);
+
+    const recurrenceOptions = useMemo(
+      () => [
+        {
+          key: 'none',
+          value: undefined as RecurrenceType | undefined,
+          label: `✕ ${t('recurrence.none')}`,
+        },
+        {
+          key: 'daily',
+          value: 'daily' as RecurrenceType,
+          label: `🔁 ${t('recurrence.dailyShort', { defaultValue: 'Diariamente' })}`,
+        },
+        {
+          key: 'weekly',
+          value: 'weekly' as RecurrenceType,
+          label: `📅 ${t('recurrence.weeklyShort', { defaultValue: 'Semanalmente' })}`,
+        },
+        {
+          key: 'monthly',
+          value: 'monthly' as RecurrenceType,
+          label: `🗓️ ${t('recurrence.monthlyShort', { defaultValue: 'Mensalmente' })}`,
+        },
+        {
+          key: 'yearly',
+          value: 'yearly' as RecurrenceType,
+          label: `📆 ${t('recurrence.yearlyShort', { defaultValue: 'Anualmente' })}`,
+        },
+      ],
+      [t],
+    );
+
+    const currentRecurrenceLabel = useMemo(() => {
+      if (!recurrence) return t('recurrence.none');
+      return t(`recurrence.${recurrence}Short`, { defaultValue: recurrence });
+    }, [recurrence, t]);
+
+    const handleSelectRecurrence = useCallback(
+      (val?: RecurrenceType) => {
+        onSelectRecurrence(val);
+        if (!val) {
+          setIsRecurrenceExpanded(false);
+        }
+      },
+      [onSelectRecurrence],
+    );
 
     return (
       <Animated.View entering={EnteringAnimation} style={{ alignItems: 'center' }}>
@@ -150,6 +211,46 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(
             </ModeButtonText>
           </ModeButton>
         </ModeSelectorContainer>
+
+        {/* Collapsible Recurrence Selector */}
+        <RecurrenceSectionContainer>
+          <RecurrenceToggleButton
+            active={!!recurrence}
+            onPress={() => setIsRecurrenceExpanded(prev => !prev)}>
+            <RecurrenceToggleLeft>
+              <RecurrenceIcon size={13} autoPlay={false} />
+              <RecurrenceToggleText active={!!recurrence}>
+                {t('recurrence.repeatTitle', { defaultValue: 'Repetir' })}:
+              </RecurrenceToggleText>
+              <RecurrenceToggleValue active={!!recurrence}>
+                {currentRecurrenceLabel}
+              </RecurrenceToggleValue>
+            </RecurrenceToggleLeft>
+            <RecurrenceToggleChevron>
+              {isRecurrenceExpanded ? '▲' : '▼'}
+            </RecurrenceToggleChevron>
+          </RecurrenceToggleButton>
+
+          {isRecurrenceExpanded && (
+            <Animated.View entering={FadeIn.duration(200)}>
+              <RecurrenceChipsContainer>
+                {recurrenceOptions.map(opt => {
+                  const isSelected = recurrence === opt.value;
+                  return (
+                    <RecurrenceChip
+                      key={opt.key}
+                      selected={isSelected}
+                      onPress={() => handleSelectRecurrence(opt.value)}>
+                      <RecurrenceChipText selected={isSelected}>
+                        {opt.label}
+                      </RecurrenceChipText>
+                    </RecurrenceChip>
+                  );
+                })}
+              </RecurrenceChipsContainer>
+            </Animated.View>
+          )}
+        </RecurrenceSectionContainer>
 
         <View
           style={{
@@ -292,11 +393,21 @@ enum PopupStageEnum {
 }
 
 const ScheduleModal: React.FC<ScheduleModalProps> = memo(
-  ({ isVisible, currentDate, hasTimeInitial, onModalClose, onSchedule }) => {
+  ({
+    isVisible,
+    currentDate,
+    hasTimeInitial,
+    currentRecurrence,
+    onModalClose,
+    onSchedule,
+  }) => {
     const { t } = useTranslation();
     const [popupStage, setPopupStage] = useState(PopupStageEnum.INITIAL);
     const [previousStage, setPreviousStage] = useState(PopupStageEnum.INITIAL);
     const [hasTime, setHasTime] = useState(hasTimeInitial ?? false);
+    const [recurrence, setRecurrence] = useState<RecurrenceType | undefined>(
+      currentRecurrence,
+    );
     const [internalDate, setInternalDate] = useState(currentDate || new Date());
     const [targetDateForTime, setTargetDateForTime] = useState(
       currentDate || new Date(),
@@ -314,10 +425,11 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
     useEffect(() => {
       setInternalDate(currentDate ?? new Date());
       setHasTime(hasTimeInitial ?? false);
+      setRecurrence(currentRecurrence);
       if (currentDate && hasTimeInitial) {
         setInternalTime(new Date(currentDate));
       }
-    }, [currentDate, hasTimeInitial]);
+    }, [currentDate, hasTimeInitial, currentRecurrence]);
 
     const handleModalClose = useCallback(() => {
       setPopupStage(PopupStageEnum.INITIAL);
@@ -326,10 +438,10 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
 
     const handleScheduleToDate = useCallback(
       (date: Date, withTime: boolean = false) => {
-        onSchedule(date, withTime);
+        onSchedule(date, withTime, recurrence);
         handleModalClose();
       },
-      [onSchedule, handleModalClose],
+      [onSchedule, recurrence, handleModalClose],
     );
 
     const handleInitialDateChoice = useCallback(
@@ -381,10 +493,28 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
       handleScheduleToDate(finalDateTime, true);
     }, [targetDateForTime, internalTime, handleScheduleToDate]);
 
+    const handleConfirmExistingDate = useCallback(() => {
+      if (currentDate) {
+        handleScheduleToDate(currentDate, hasTime);
+      }
+    }, [currentDate, hasTime, handleScheduleToDate]);
+
     const cancelButton: PopupButton = useMemo(
       () => ({ label: t('buttons.cancel'), onPress: handleModalClose }),
       [handleModalClose, t],
     );
+
+    const initialButtons = useMemo(() => {
+      const buttons: PopupButton[] = [];
+      if (currentDate) {
+        buttons.push({
+          label: t('buttons.confirm'),
+          onPress: handleConfirmExistingDate,
+        });
+      }
+      buttons.push(cancelButton);
+      return buttons;
+    }, [currentDate, handleConfirmExistingDate, cancelButton, t]);
 
     const popupStages: Record<PopupStageEnum, PopupStage> = useMemo(
       () => ({
@@ -395,13 +525,16 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
             <ScheduleOptions
               hasTime={hasTime}
               onToggleHasTime={setHasTime}
+              recurrence={recurrence}
+              onSelectRecurrence={setRecurrence}
               onSchedule={handleInitialDateChoice}
               onPressNextDays={onPressNextDays}
               onPressDate={onPressDate}
+              currentDate={currentDate}
             />
           ),
           ActionButton: undefined,
-          buttons: [cancelButton],
+          buttons: initialButtons,
           onRequestClose: handleModalClose,
         },
         [PopupStageEnum.NEXT_DAYS]: {
@@ -465,9 +598,12 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
       }),
       [
         hasTime,
+        recurrence,
         handleInitialDateChoice,
         onPressNextDays,
         onPressDate,
+        currentDate,
+        initialButtons,
         handleNextDaysChoice,
         internalDate,
         handleDatePickerConfirm,

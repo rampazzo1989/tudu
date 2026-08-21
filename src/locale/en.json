@@ -156,10 +156,16 @@
     }
   },
   "recurrence": {
+    "none": "Don't repeat",
     "daily": "every day",
     "weekly": "every week",
     "monthly": "every month",
-    "yearly": "every year"
+    "yearly": "every year",
+    "repeatTitle": "Repeat",
+    "dailyShort": "Daily",
+    "weeklyShort": "Weekly",
+    "monthlyShort": "Monthly",
+    "yearlyShort": "Yearly"
   },
   "scheduleDays": {
     "sunday": "Sunday",

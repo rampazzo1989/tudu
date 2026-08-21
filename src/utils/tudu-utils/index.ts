@@ -11,7 +11,7 @@ export const updateRecurrenceFromDate = (tudu: TuduViewModel, baseDate: Date): T
   while (getDateOnlyTimeStamp(nextDueDate) < getDateOnlyTimeStamp(baseDate)) {
   switch (tudu.recurrence) {
       case 'daily':
-        nextDueDate.setDate(baseDate.getDate());
+        nextDueDate.setDate(nextDueDate.getDate() + 1);
         break;
       case 'weekly':
         nextDueDate.setDate(nextDueDate.getDate() + 7);

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SimpleTuduList } from "../../../../components/simple-tudu-list";
-import { TuduViewModel } from "../../../home/types";
+import { TuduViewModel, RecurrenceType } from "../../../home/types";
 import { TuduAdditionalInformation } from "../../../../components/tudu-card/types";
 import {
   formatScheduledDateTime,
@@ -71,10 +71,11 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
         setScheduleModalVisible(true);
     }, []);
 
-    const handleSchedule = useCallback((date: Date, hasTime?: boolean) => {
+    const handleSchedule = useCallback((date: Date, hasTime?: boolean, recurrence?: RecurrenceType) => {
         if (editingTudu) {
             editingTudu.dueDate = date;
             editingTudu.hasTime = hasTime;
+            editingTudu.recurrence = recurrence;
             handleSaveTudu(editingTudu);
         }
     }, [editingTudu, handleSaveTudu]);
@@ -141,6 +142,7 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
                 onSchedule={handleSchedule}
                 currentDate={editingTudu?.dueDate}
                 hasTimeInitial={editingTudu?.hasTime}
+                currentRecurrence={editingTudu?.recurrence}
             />
         </Animated.View>
     );

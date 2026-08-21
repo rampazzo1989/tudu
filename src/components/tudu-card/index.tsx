@@ -97,22 +97,25 @@ const TuduCard = memo<TuduCardProps>(
         <CheckAndTextContainer done={data.done}>
           <LabelAndAdditionalInfoContainer>
             <Label done={internalDone}>{data.label}</Label>
-            {additionalInfo && (
+            {(additionalInfo || data.recurrence) && (
               <AdditionalInfoContainer>
-                {AdditionalInfoIcon(additionalInfo.originType)}
-                <AdditionalInfoLabel>
-                  {getAdditionalInformationLabel(
-                    additionalInfo.originType,
-                    additionalInfo.label,
-                  )}
-                </AdditionalInfoLabel>
-                {data.recurrence && 
-                <RecurrenceInfoContainer>
-                  <RecurrenceIcon size={10} autoPlay />
-                  <RecurrenceInfoLabel>
-                    {getRecurrenceInfoLabel(data.recurrence)}
-                  </RecurrenceInfoLabel>
-                </RecurrenceInfoContainer>}
+                {additionalInfo && AdditionalInfoIcon(additionalInfo.originType)}
+                {additionalInfo && (
+                  <AdditionalInfoLabel>
+                    {getAdditionalInformationLabel(
+                      additionalInfo.originType,
+                      additionalInfo.label,
+                    )}
+                  </AdditionalInfoLabel>
+                )}
+                {data.recurrence && (
+                  <RecurrenceInfoContainer>
+                    <RecurrenceIcon size={10} autoPlay />
+                    <RecurrenceInfoLabel>
+                      {getRecurrenceInfoLabel(data.recurrence)}
+                    </RecurrenceInfoLabel>
+                  </RecurrenceInfoContainer>
+                )}
               </AdditionalInfoContainer>
             )}
           </LabelAndAdditionalInfoContainer>

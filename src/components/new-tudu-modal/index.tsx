@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { TextInput } from 'react-native';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
-import { TuduViewModel } from '../../scenes/home/types';
+import { TuduViewModel, RecurrenceType } from '../../scenes/home/types';
 import { CheckMarkIcon } from '../animated-icons/check-mark';
 import { CalendarIcon } from '../animated-icons/calendar';
+import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
 import { PopupModal } from '../popup-modal';
 import { PopupButton } from '../popup-modal/types';
 import { ScheduleModal } from '../schedule-modal';
@@ -157,11 +158,12 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     }, []);
 
     const handleScheduleConfirm = useCallback(
-      (date: Date, withTime?: boolean) => {
+      (date: Date, withTime?: boolean, recurrence?: RecurrenceType) => {
         setInternalTuduData(prev => {
           const updated = prev.clone();
           updated.dueDate = date;
           updated.hasTime = withTime ?? false;
+          updated.recurrence = recurrence;
           return updated;
         });
         setIsScheduleModalVisible(false);
@@ -175,6 +177,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         const updated = prev.clone();
         updated.dueDate = undefined;
         updated.hasTime = undefined;
+        updated.recurrence = undefined;
         return updated;
       });
     }, []);
@@ -498,13 +501,20 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
               {internalTuduData.dueDate ? (
                 <ScheduledBadgeContainer>
                   <ScheduledBadgeButton onPress={handleOpenScheduleModal}>
-                    <CalendarIcon size={14} autoPlay={false} />
+                    {internalTuduData.recurrence ? (
+                      <RecurrenceIcon size={14} autoPlay={false} />
+                    ) : (
+                      <CalendarIcon size={14} autoPlay={false} />
+                    )}
                     <ScheduledBadgeText>
                       {formatScheduledDateTime(
                         internalTuduData.dueDate,
                         internalTuduData.hasTime,
                         t,
                       )}
+                      {internalTuduData.recurrence
+                        ? ` • ${t(`recurrence.${internalTuduData.recurrence}`)}`
+                        : ''}
                     </ScheduledBadgeText>
                   </ScheduledBadgeButton>
                   <ClearScheduleButton onPress={handleClearSchedule}>
@@ -530,6 +540,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           onSchedule={handleScheduleConfirm}
           currentDate={internalTuduData.dueDate}
           hasTimeInitial={internalTuduData.hasTime}
+          currentRecurrence={internalTuduData.recurrence}
         />
       </>
     );
