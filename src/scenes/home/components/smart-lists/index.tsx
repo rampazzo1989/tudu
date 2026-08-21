@@ -16,6 +16,8 @@ const SmartLists: React.FC<DefaultListsProps> = memo(({lists, onListPress}) => {
           return smartListsUndoneCounter.allTudus;
         case 'today':
           return smartListsUndoneCounter.todayCount;
+        case 'upcoming':
+          return smartListsUndoneCounter.upcomingCount;
         case 'starred':
           return smartListsUndoneCounter.starredCount;
         default:
@@ -26,6 +28,7 @@ const SmartLists: React.FC<DefaultListsProps> = memo(({lists, onListPress}) => {
       smartListsUndoneCounter.allTudus,
       smartListsUndoneCounter.starredCount,
       smartListsUndoneCounter.todayCount,
+      smartListsUndoneCounter.upcomingCount,
     ],
   );
 

@@ -1,6 +1,8 @@
 {
   "listTitles": {
     "today": "Oggi",
+    "upcoming": "Programmati",
+    "upcomingPageTitle": "Tudù Programmati",
     "allTasks": "Tutti i tudú",
     "allTasksPageTitle": "Tutti i tudú",
     "starred": "Preferiti",
@@ -9,6 +11,14 @@
     "search": "Cerca tudú",
     "sampleList": "💎 Lista di esempio",
     "swipeToArchive": "➡️ Scorri per archiviare"
+  },
+  "upcomingSections": {
+    "tomorrow": "Domani",
+    "thisWeek": "Questa settimana",
+    "nextWeek": "La prossima settimana",
+    "thisMonth": "Questo mese",
+    "thisYear": "Quest'anno",
+    "empty": "Nessun tudù programmato per il futuro"
   },
   "labels": {
     "today": "Oggi",

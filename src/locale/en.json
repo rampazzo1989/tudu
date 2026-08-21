@@ -1,6 +1,8 @@
 {
   "listTitles": {
     "today": "Today",
+    "upcoming": "Upcoming",
+    "upcomingPageTitle": "Upcoming tudús",
     "allTasks": "All tudús",
     "allTasksPageTitle": "All undone tudús",
     "starred": "Starred",
@@ -9,6 +11,14 @@
     "search": "Search tudús",
     "sampleList": "💎 Sample list",
     "swipeToArchive": "➡️ Swipe to archive"
+  },
+  "upcomingSections": {
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This week",
+    "nextWeek": "Next week",
+    "thisMonth": "This month",
+    "thisYear": "This year",
+    "empty": "No upcoming tudús scheduled"
   },
   "labels": {
     "today": "Today",

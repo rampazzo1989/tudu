@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import {atom, selector} from 'recoil';
-import {isToday} from '../../utils/date-utils';
+import {isToday, isFutureDate} from '../../utils/date-utils';
 import {mmkvPersistAtom} from '../../utils/state-utils/mmkv-persist-atom';
 import {
   Counter,
@@ -22,6 +22,13 @@ export const homeDefaultLists = atom<SmartList[]>({
       label: i18next.t('listTitles.today'),
       isHighlighted: true,
       navigateToPage: 'ScheduledList',
+    },
+    {
+      id: 'upcoming',
+      icon: 'calendar',
+      label: i18next.t('listTitles.upcoming'),
+      isHighlighted: false,
+      navigateToPage: 'UpcomingTudus',
     },
     {
       id: 'all',
@@ -128,6 +135,7 @@ export const smartListsTuduCount = selector({
     const unlisted = get(unlistedTudus);
 
     let todayCount = 0;
+    let upcomingCount = 0;
     let starredCount = 0;
     let allTudus = 0;
 
@@ -142,6 +150,10 @@ export const smartListsTuduCount = selector({
         tudu => tudu.dueDate && isToday(tudu.dueDate),
       ).length;
 
+      upcomingCount += undoneTudus.filter(
+        tudu => tudu.dueDate && isFutureDate(tudu.dueDate),
+      ).length;
+
       starredCount += undoneTudus.filter(tudu => !!tudu.starred).length;
     }, []);
 
@@ -154,8 +166,13 @@ export const smartListsTuduCount = selector({
       tudu => tudu.dueDate && isToday(tudu.dueDate),
     ).length;
 
+    upcomingCount += undoneUnlistedTudus.filter(
+      tudu => tudu.dueDate && isFutureDate(tudu.dueDate),
+    ).length;
+
     starredCount += undoneUnlistedTudus.filter(tudu => !!tudu.starred).length;
 
-    return {todayCount, starredCount, allTudus};
+    return {todayCount, upcomingCount, starredCount, allTudus};
   },
 });
+

@@ -14,6 +14,7 @@ type StackNavigatorParamList = {
   ScheduledList: {
     date: Date;
   } & ListCommonProps;
+  UpcomingTudus: ListCommonProps;
   SplashScreen: undefined;
   Archived: undefined;
   AllTudus: ListCommonProps;

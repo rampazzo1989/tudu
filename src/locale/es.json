@@ -1,14 +1,24 @@
 {
   "listTitles": {
     "today": "Hoy",
+    "upcoming": "Programados",
+    "upcomingPageTitle": "Tudús Programados",
     "allTasks": "Todos los tudús",
-    "allTasksPageTitle": "Todos los tudús",
+    "allTasksPageTitle": "Todos os tudús",
     "starred": "Favoritos",
     "starredPageTitle": "Favoritos",
     "archived": "Listas Archivadas",
     "search": "Buscar tudús",
     "sampleList": "💎 Lista de ejemplo",
     "swipeToArchive": "➡️ Desliza para archivar"
+  },
+  "upcomingSections": {
+    "tomorrow": "Mañana",
+    "thisWeek": "Esta semana",
+    "nextWeek": "Próxima semana",
+    "thisMonth": "Este mes",
+    "thisYear": "Este año",
+    "empty": "No hay tudús programados para el futuro"
   },
   "labels": {
     "today": "Hoy",

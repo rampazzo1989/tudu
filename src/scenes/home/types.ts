@@ -162,7 +162,7 @@ export type ListDataViewModel = List & {
   origin: ListOrigin;
 };
 
-type BuiltInListType = 'today' | 'all' | 'starred' | 'archived';
+type BuiltInListType = 'today' | 'upcoming' | 'all' | 'starred' | 'archived';
 
 export type SmartList = {
   id: BuiltInListType;
