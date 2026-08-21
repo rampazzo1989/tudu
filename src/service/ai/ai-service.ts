@@ -1,12 +1,15 @@
-import {AIProvider, EmojiSuggestionRequest} from './types';
+import {AIProvider, EmojiSuggestionRequest, TaskSuggestionRequest} from './types';
 import {getSecureApiKey} from './secure-storage';
-import {requestOpenAIEmojis} from './adapters/openai';
-import {requestGeminiEmojis} from './adapters/gemini';
-import {requestClaudeEmojis} from './adapters/claude';
+import {requestOpenAIEmojis, requestOpenAITasks} from './adapters/openai';
+import {requestGeminiEmojis, requestGeminiTasks} from './adapters/gemini';
+import {requestClaudeEmojis, requestClaudeTasks} from './adapters/claude';
 
 // In-memory cache for emoji suggestions: key -> string[]
 const emojiCache = new Map<string, string[]>();
+// In-memory cache for task suggestions: key -> string[]
+const taskCache = new Map<string, string[]>();
 const MAX_CACHE_SIZE = 50;
+
 
 /**
  * Extracts emoji characters from raw LLM responses.
@@ -153,6 +156,168 @@ export const suggestEmojisWithAI = async (
 };
 
 /**
+ * Parses task items from raw LLM responses.
+ * Tries JSON array parsing first, falls back to line-by-line extraction.
+ */
+export const parseTasksFromResponse = (raw: string): string[] => {
+  if (!raw || typeof raw !== 'string') return [];
+
+  // Try JSON parsing
+  try {
+    const cleaned = raw
+      .replace(/```json/gi, '')
+      .replace(/```/g, '')
+      .trim();
+    const parsed = JSON.parse(cleaned);
+    if (Array.isArray(parsed)) {
+      const results = parsed
+        .map(t => (typeof t === 'string' ? t.trim() : ''))
+        .filter(t => t.length > 0);
+      if (results.length > 0) {
+        return Array.from(new Set(results)).slice(0, 10);
+      }
+    }
+  } catch {
+    // Continue to line-by-line fallback
+  }
+
+  // Fallback: Line-by-line extraction (stripping bullet points / numbers)
+  const lines = raw
+    .split('\n')
+    .map(line =>
+      line
+        .replace(/^[\s*•\-–—\d.)\]}>]+/, '')
+        .replace(/^["']|["']$/g, '')
+        .trim(),
+    )
+    .filter(line => line.length > 0 && !line.startsWith('{') && !line.startsWith('}'));
+
+  const unique = Array.from(new Set(lines));
+  return unique.slice(0, 10);
+};
+
+const buildTaskPrompt = (request: TaskSuggestionRequest): string => {
+  const cleanListName = request.listName.replace(/\s+/g, ' ').trim();
+  const count = request.count || 6;
+
+  let prompt = `Lista: "${cleanListName}"\n`;
+
+  if (request.currentInput && request.currentInput.trim().length > 0) {
+    prompt += `Contexto / Ideia inicial: "${request.currentInput.trim()}"\n`;
+  }
+
+  if (request.existingTasks && request.existingTasks.length > 0) {
+    const existingList = request.existingTasks
+      .slice(0, 15)
+      .map(t => `- ${t}`)
+      .join('\n');
+    prompt += `Tarefas já presentes na lista (NÃO repita e NÃO sugira itens muito parecidos com estes):\n${existingList}\n`;
+  }
+
+  prompt += `\nSugira entre 5 e ${count} próximos itens/tarefas práticos, objetivos e altamente relevantes para esta lista.\n`;
+  prompt += `Cada item DEVE começar com um emoji adequado, seguido de um espaço e o nome do item no mesmo idioma da lista (ex: "🍞 Comprar pão", "🧳 Fazer as malas").\n`;
+  prompt += `Retorne estritamente um array JSON de strings no formato ["emoji texto", "emoji texto"].`;
+
+  return prompt;
+};
+
+const getTaskCacheKey = (
+  provider: AIProvider,
+  request: TaskSuggestionRequest,
+): string => {
+  const listName = request.listName.replace(/\s+/g, ' ').trim().toLowerCase();
+  const input = request.currentInput
+    ? request.currentInput.replace(/\s+/g, ' ').trim().toLowerCase()
+    : '';
+  const existingHash = request.existingTasks
+    ? request.existingTasks
+        .slice(0, 10)
+        .map(t => t.trim().toLowerCase())
+        .sort()
+        .join('|')
+    : '';
+  return `${provider}:tasks:${listName}:${input}:${existingHash}`;
+};
+
+/**
+ * Main method to suggest list items/tasks using the configured AI provider.
+ */
+export const suggestTasksWithAI = async (
+  provider: AIProvider,
+  request: TaskSuggestionRequest,
+  timeoutMs: number = 8500,
+  forceRefresh: boolean = false,
+): Promise<string[]> => {
+  const cleanListName = request.listName.replace(/\s+/g, ' ').trim();
+  if (!cleanListName) {
+    return [];
+  }
+
+  const cacheKey = getTaskCacheKey(provider, request);
+  if (!forceRefresh) {
+    const cached = taskCache.get(cacheKey);
+    if (cached && cached.length > 0) {
+      console.log(`⚡ [Tudú AI Task Cache] Hit para "${cacheKey}": ${cached.join(' | ')}`);
+      return cached;
+    }
+  }
+
+  const apiKey = getSecureApiKey(provider);
+  if (!apiKey) {
+    console.warn(`⚠️ [Tudú AI] Nenhuma chave de API configurada para o provedor: ${provider}`);
+    throw new Error('API Key not found');
+  }
+
+  const prompt = buildTaskPrompt(request);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`🤖 [Tudú AI] 🚀 Enviando prompt de tarefas para ${provider.toUpperCase()}`);
+  console.log(`📌 Lista: "${cleanListName}" | Seed: "${request.currentInput || 'N/A'}"`);
+  console.log(`💬 Prompt:\n${prompt}`);
+  console.log('─────────────────────────────────────────────────────');
+
+  try {
+    let rawResponse = '';
+    const startTime = Date.now();
+
+    if (provider === 'openai') {
+      rawResponse = await requestOpenAITasks(apiKey, prompt, controller.signal);
+    } else if (provider === 'gemini') {
+      rawResponse = await requestGeminiTasks(apiKey, prompt, controller.signal);
+    } else if (provider === 'claude') {
+      rawResponse = await requestClaudeTasks(apiKey, prompt, controller.signal);
+    }
+
+    clearTimeout(timeoutId);
+    const duration = Date.now() - startTime;
+
+    const tasks = parseTasksFromResponse(rawResponse);
+
+    console.log(`📥 [Tudú AI] Resposta de tarefas recebida (${duration}ms) de ${provider.toUpperCase()}:`);
+    console.log(`📄 Bruto: ${rawResponse.trim()}`);
+    console.log(`✨ Tarefas Extraídas (${tasks.length}):\n${tasks.map(t => `  • ${t}`).join('\n')}`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    if (tasks.length > 0) {
+      if (taskCache.size >= MAX_CACHE_SIZE) {
+        const firstKey = taskCache.keys().next().value;
+        if (firstKey) taskCache.delete(firstKey);
+      }
+      taskCache.set(cacheKey, tasks);
+    }
+
+    return tasks;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    console.error(`❌ [Tudú AI] Erro na requisição de tarefas (${provider.toUpperCase()}):`, error?.message || error);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    throw error;
+  }
+};
+
+/**
  * Tests connection with the given provider and API key.
  */
 export const testAIConnection = async (
@@ -196,3 +361,4 @@ export const testAIConnection = async (
     throw error;
   }
 };
+

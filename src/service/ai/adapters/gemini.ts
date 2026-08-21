@@ -83,6 +83,40 @@ export const requestGeminiEmojis = async (
   prompt: string,
   signal?: AbortSignal,
 ): Promise<string> => {
+  const emojiSystemInstruction =
+    'You are an assistant that suggests relevant emojis for tasks and lists in a todo app. Return ONLY a raw JSON array containing 5 to 10 emoji characters, like ["🛒", "🍎", "🥛"]. No markdown code formatting, no backticks, no explanations.';
+  return sendGeminiWithAutoConfig(
+    apiKey,
+    prompt,
+    emojiSystemInstruction,
+    100,
+    signal,
+  );
+};
+
+export const requestGeminiTasks = async (
+  apiKey: string,
+  prompt: string,
+  signal?: AbortSignal,
+): Promise<string> => {
+  const tasksSystemInstruction =
+    'You are an assistant for a todo list app. Suggest concise, highly relevant next tasks for the user list. Every item MUST start with an appropriate emoji character followed by a space and the task title in the language of the prompt (e.g. ["🥖 Comprar pão de forma", "🧀 Queijo prato"]). Return ONLY a raw JSON array of strings. Do not include markdown code formatting, no backticks, no explanations.';
+  return sendGeminiWithAutoConfig(
+    apiKey,
+    prompt,
+    tasksSystemInstruction,
+    350,
+    signal,
+  );
+};
+
+const sendGeminiWithAutoConfig = async (
+  apiKey: string,
+  prompt: string,
+  systemInstruction: string,
+  maxOutputTokens: number,
+  signal?: AbortSignal,
+): Promise<string> => {
   const cleanKey = apiKey.trim();
 
   // 1. If we have a cached working configuration, try it first
@@ -93,6 +127,8 @@ export const requestGeminiEmojis = async (
         cachedGeminiConfig.apiVersion,
         cachedGeminiConfig.model,
         prompt,
+        systemInstruction,
+        maxOutputTokens,
         signal,
       );
     } catch (err: any) {
@@ -130,6 +166,8 @@ export const requestGeminiEmojis = async (
         config.apiVersion,
         config.model,
         prompt,
+        systemInstruction,
+        maxOutputTokens,
         signal,
       );
 
@@ -180,6 +218,8 @@ const executeGeminiRequest = async (
   apiVersion: 'v1beta' | 'v1',
   model: string,
   prompt: string,
+  systemInstruction: string,
+  maxOutputTokens: number,
   signal?: AbortSignal,
 ): Promise<string> => {
   const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
@@ -195,14 +235,14 @@ const executeGeminiRequest = async (
         {
           parts: [
             {
-              text: `You are an assistant that suggests relevant emojis for tasks and lists in a todo app. Return ONLY a raw JSON array containing 5 to 10 emoji characters, like ["🛒", "🍎", "🥛"]. No markdown code formatting, no backticks, no explanations.\n\nContext:\n${prompt}`,
+              text: `${systemInstruction}\n\nContext:\n${prompt}`,
             },
           ],
         },
       ],
       generationConfig: {
         temperature: 0.5,
-        maxOutputTokens: 100,
+        maxOutputTokens,
       },
     }),
     signal,
@@ -221,3 +261,4 @@ const executeGeminiRequest = async (
   const data = await response.json();
   return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
 };
+

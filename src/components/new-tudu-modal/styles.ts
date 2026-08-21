@@ -83,3 +83,22 @@ export const HeaderCalendarButton = styled(TouchableOpacity)`
   align-items: center;
   justify-content: center;
 `;
+
+export const AISuggestionButton = styled(TouchableOpacity)`
+  flex-direction: row;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 14px;
+  background-color: rgba(121, 86, 191, 0.2);
+  border-width: 1px;
+  border-color: rgba(161, 136, 210, 0.5);
+  margin-left: 8px;
+`;
+
+export const AISuggestionButtonText = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.default};
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 4px;
+`;

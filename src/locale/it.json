@@ -260,6 +260,22 @@
       "title": "🔔 Test Notifica",
       "body": "Le notifiche di Tudu funzionano correttamente!"
     }
+  },
+  "aiSuggestions": {
+    "title": "Suggerimenti Elementi",
+    "subtitle": "Per \"{{listName}}\"",
+    "buttonSuggest": "✨ Suggerisci elementi con IA",
+    "buttonSuggestShort": "✨ Suggerisci elementi",
+    "selectAll": "Seleziona tutti",
+    "deselectAll": "Deseleziona tutti",
+    "regenerate": "🔄 Suggerisci altri",
+    "addSelected": "Aggiungi ({{count}})",
+    "addSelectedNone": "Nessuno selezionato",
+    "loading": "✨ Generazione suggerimenti intelligenti...",
+    "noApiKey": "Configura la tua chiave API nelle impostazioni IA per generare suggerimenti.",
+    "configureAI": "⚙️ Configura IA",
+    "error": "Impossibile caricare suggerimenti al momento."
   }
 }
+
 

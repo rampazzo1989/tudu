@@ -68,6 +68,7 @@ export const InputWrapper = styled.View`
   padding-horizontal: 12px;
   border-width: 1px;
   border-color: rgba(255, 255, 255, 0.08);
+  height: 48px;
 `;
 
 export const StyledTextInput = styled.TextInput`
@@ -75,7 +76,9 @@ export const StyledTextInput = styled.TextInput`
   font-family: ${({theme}) => theme.fonts.default};
   font-size: 14px;
   color: ${({theme}) => theme.colors.text};
-  padding-vertical: 12px;
+  height: 100%;
+  padding-vertical: 0;
+  padding-right: 8px;
 `;
 
 export const IconButton = styled.TouchableOpacity`

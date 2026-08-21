@@ -244,6 +244,8 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
                   secureTextEntry={!showKey}
                   autoCapitalize="none"
                   autoCorrect={false}
+                  multiline={false}
+                  numberOfLines={1}
                 />
                 <IconButton onPress={() => setShowKey(!showKey)}>
                   <Text style={{fontSize: 16}}>

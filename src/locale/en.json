@@ -260,6 +260,22 @@
       "title": "🔔 Notification Test",
       "body": "Tudu notifications are working properly!"
     }
+  },
+  "aiSuggestions": {
+    "title": "Item Suggestions",
+    "subtitle": "For \"{{listName}}\"",
+    "buttonSuggest": "✨ Suggest items with AI",
+    "buttonSuggestShort": "✨ Suggest items",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "regenerate": "🔄 Suggest more",
+    "addSelected": "Add ({{count}})",
+    "addSelectedNone": "None selected",
+    "loading": "✨ Generating smart suggestions...",
+    "noApiKey": "Configure your API key in AI Settings to generate smart suggestions.",
+    "configureAI": "⚙️ Configure AI",
+    "error": "Could not load suggestions at this moment."
   }
 }
+
 

@@ -42,6 +42,8 @@ import { UNLOADED_ID } from '../../constants';
 import { trimEmoji } from '../../utils/emoji-utils';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import { ScheduleModal } from '../schedule-modal';
+import { AISuggestionsModal } from '../ai-suggestions-modal';
+import { generateRandomHash } from '../../hooks/useHashGenerator';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -58,9 +60,11 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
     const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
+    const [aiSuggestionsModalVisible, setAiSuggestionsModalVisible] = useState(false);
 
     const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
     const hookContent = useCloseCurrentlyOpenSwipeable();
+
 
     const { saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup } = useListService();
 
@@ -275,11 +279,52 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       }
     }, [editingTudu, handleInsertOrUpdate]);
 
+    const existingTasks = useMemo(() => {
+      return tudus.map(t => t.label);
+    }, [tudus]);
+
+    const handleBatchInsertTudus = useCallback(
+      (taskLabels: string[]) => {
+        if (!taskLabels.length) return;
+        const newTudus = taskLabels.map(label => {
+          const tudu = new TuduViewModel(
+            {
+              label,
+              done: false,
+              id: generateRandomHash('Tudu'),
+            },
+            internalList?.id || '',
+            internalList?.origin || 'default',
+          );
+          return tudu;
+        });
+
+        const updatedList = [...newTudus, ...tudus];
+        handleSetTudus(updatedList);
+        RNReactNativeHapticFeedback.trigger('notificationSuccess');
+      },
+      [handleSetTudus, internalList, tudus],
+    );
+
+    const handleAISuggestionsPress = useCallback(() => {
+      RNReactNativeHapticFeedback.trigger('impactLight');
+      setAiSuggestionsModalVisible(true);
+    }, []);
+
+    const handleCloseAISuggestionsModal = useCallback(() => {
+      setAiSuggestionsModalVisible(false);
+    }, []);
+
     return (
       <Page>
         <ListHeader
           listData={list}
           onBackButtonPress={handleBackButtonPress}
+          onAISuggestionsPress={
+            allowAdding && !isSmartList && list?.label
+              ? handleAISuggestionsPress
+              : undefined
+          }
           Icon={Icon}
         />
         <CheersAnimationContainer pointerEvents="none">
@@ -330,8 +375,10 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             closeCurrentlyOpenSwipeable();
           }}
           onInsertOrUpdate={handleInsertOrUpdate}
+          onBatchInsert={handleBatchInsertTudus}
           editingTudu={editingTudu}
           listName={list?.label}
+          existingTasks={existingTasks}
         />
         <ScheduleModal
           isVisible={scheduleModalVisible}
@@ -345,9 +392,17 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           hasTimeInitial={editingTudu?.hasTime}
           currentRecurrence={editingTudu?.recurrence}
         />
+        <AISuggestionsModal
+          isVisible={aiSuggestionsModalVisible}
+          onClose={handleCloseAISuggestionsModal}
+          listName={list?.label}
+          existingTasks={existingTasks}
+          onConfirm={handleBatchInsertTudus}
+        />
       </Page>
     );
   },
 );
 
 export { ListPageCore };
+

@@ -28,7 +28,7 @@ const FloatingActionButton = memo(
   forwardRef<FloatingActionButtonRef, FloatingActionButtonProps>(
     ({DefaultIcon, animationMode = 'toggle', menuOptions, animateOnPress, onPress}, ref) => {
       const iconRef = useRef<AnimatedIconRef>(null);
-      const animateNextIcon = useRef(true);
+      const animateNextIcon = useRef(false);
       const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
       const [CurrentIcon, setCurrentIcon] =
         useState<ForwardedRefAnimatedIcon | ForwardedRefAnimatedEmojiIcon>(DefaultIcon);
@@ -38,7 +38,6 @@ const FloatingActionButton = memo(
 
       const toastBottomSpan = useRecoilValue(toastSpan);
 
-      
       const insets = useSafeAreaInsets();
 
       // Animates the current icon when option is set
@@ -53,10 +52,16 @@ const FloatingActionButton = memo(
             }
           });
           animateNextIcon.current = false;
-        } else {
-          iconRef.current?.pause();
         }
-      }, [CurrentIcon]);
+      }, [CurrentIcon, DefaultIcon]);
+
+      useEffect(() => {
+        return () => {
+          if (reactionTimeoutRef.current) {
+            clearTimeout(reactionTimeoutRef.current);
+          }
+        };
+      }, []);
 
       const handlePress = useCallback(() => {
         if (menuOptions) {
@@ -86,7 +91,8 @@ const FloatingActionButton = memo(
       useImperativeHandle(ref, () => ({
         animateThisIcon(Icon) {
           if (reactionTimeoutRef.current) {
-            return;
+            clearTimeout(reactionTimeoutRef.current);
+            reactionTimeoutRef.current = undefined;
           } 
 
           animateNextIcon.current = true;
@@ -102,21 +108,16 @@ const FloatingActionButton = memo(
         closeMenu: handlePopoverMenuRequestClose,
       }));
 
-      const OptionsComponent = useCallback(
-        () => {
-          return (
-            <FloatingButtonContainer entering={animateOnceOnly(ZoomIn.delay(100))} extraBottomMargin={toastBottomSpan}>
-              <FloatingButton
-                onPress={handlePress}
-                scaleFactor={0.05}>
-              <IconContainer>
-                <CurrentIcon emoji={emoji ?? ''} ref={iconRef} speed={1.5} size={40} />
-              </IconContainer>
-            </FloatingButton>
-          </FloatingButtonContainer>
-          )
-        },
-        [CurrentIcon, handlePress, toastBottomSpan],
+      const buttonContent = (
+        <FloatingButtonContainer entering={animateOnceOnly(ZoomIn.delay(100))} extraBottomMargin={toastBottomSpan}>
+          <FloatingButton
+            onPress={handlePress}
+            scaleFactor={0.05}>
+            <IconContainer>
+              <CurrentIcon emoji={emoji ?? ''} ref={iconRef} speed={1.5} size={40} />
+            </IconContainer>
+          </FloatingButton>
+        </FloatingButtonContainer>
       );
 
       return menuOptions ? (
@@ -126,11 +127,11 @@ const FloatingActionButton = memo(
           popoverShift={{y: 50}}
           onRequestClose={handlePopoverMenuRequestClose}
           offset={-10}
-          from={OptionsComponent}>
+          from={buttonContent}>
           <MenuOptions options={menuOptions} />
         </PopoverMenu>
       ) : (
-        <OptionsComponent />
+        buttonContent
       );
     },
   ),

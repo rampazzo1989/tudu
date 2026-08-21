@@ -10,8 +10,11 @@ import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
 import { PopupModal } from '../popup-modal';
 import { PopupButton } from '../popup-modal/types';
 import { ScheduleModal } from '../schedule-modal';
+import { AISuggestionsModal } from '../ai-suggestions-modal';
 import { formatScheduledDateTime } from '../../utils/date-utils';
 import {
+  AISuggestionButton,
+  AISuggestionButtonText,
   ClearScheduleButton,
   ClearScheduleText,
   ContentContainer,
@@ -48,7 +51,16 @@ const getNewEmptyTudu = () =>
 const MAX_TUDU_LENGTH = 100;
 
 const NewTuduModal: React.FC<NewTuduModalProps> = memo(
-  ({ visible, editingTudu, listName, onRequestClose, onInsertOrUpdate }) => {
+  ({
+    visible,
+    editingTudu,
+    listName,
+    existingTasks,
+    onRequestClose,
+    onInsertOrUpdate,
+    onBatchInsert,
+    onOpenAISettings,
+  }) => {
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
       editingTudu ? editingTudu.clone() : getNewEmptyTudu(),
     );
@@ -58,6 +70,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const [isLoading, setIsLoading] = useState(false);
     const [isAIGenerated, setIsAIGenerated] = useState(false);
     const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
+    const [isAISuggestionsModalVisible, setIsAISuggestionsModalVisible] = useState(false);
+
 
     const { t } = useTranslation();
 
@@ -83,8 +97,35 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       setIsLoading(false);
       setIsAIGenerated(false);
       setIsScheduleModalVisible(false);
+      setIsAISuggestionsModalVisible(false);
       onRequestClose();
     }, [onRequestClose]);
+
+    const handleOpenAISuggestions = useCallback(() => {
+      RNReactNativeHapticFeedback.trigger('impactLight');
+      setIsAISuggestionsModalVisible(true);
+    }, []);
+
+    const handleAISuggestionsConfirm = useCallback(
+      (selectedTasks: string[]) => {
+        if (selectedTasks.length === 0) return;
+        if (onBatchInsert) {
+          onBatchInsert(selectedTasks);
+          handleRequestClose();
+        } else {
+          selectedTasks.forEach(taskLabel => {
+            const newTudu = getNewEmptyTudu();
+            newTudu.label = taskLabel;
+            newTudu.origin = editingTudu?.origin || 'default';
+            newTudu.listId = editingTudu?.listId || '';
+            onInsertOrUpdate(newTudu);
+          });
+          handleRequestClose();
+        }
+      },
+      [onBatchInsert, handleRequestClose, editingTudu, onInsertOrUpdate],
+    );
+
 
     const searchEmojisForListName = useCallback(() => {
       var resultsForListName: string[] = [];
@@ -531,6 +572,14 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                   </ScheduleAddButtonText>
                 </ScheduleAddButton>
               )}
+              <AISuggestionButton onPress={handleOpenAISuggestions}>
+                <CalendarIcon size={14} autoPlay={false} overrideColor="transparent" />
+                <AISuggestionButtonText>
+                  {t('aiSuggestions.buttonSuggestShort', {
+                    defaultValue: '✨ Sugerir itens',
+                  })}
+                </AISuggestionButtonText>
+              </AISuggestionButton>
             </ScheduleRowContainer>
           </ContentContainer>
         </PopupModal>
@@ -542,8 +591,18 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           hasTimeInitial={internalTuduData.hasTime}
           currentRecurrence={internalTuduData.recurrence}
         />
+        <AISuggestionsModal
+          isVisible={isAISuggestionsModalVisible}
+          onClose={() => setIsAISuggestionsModalVisible(false)}
+          listName={editingTudu?.listName || listName}
+          existingTasks={existingTasks}
+          seedInput={internalTuduData.label}
+          onConfirm={handleAISuggestionsConfirm}
+          onOpenAISettings={onOpenAISettings}
+        />
       </>
     );
+
   },
 );
 

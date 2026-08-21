@@ -260,6 +260,22 @@
       "title": "🔔 Teste de Notificação",
       "body": "As notificações do Tudu estão funcionando perfeitamente!"
     }
+  },
+  "aiSuggestions": {
+    "title": "Sugestões de Itens",
+    "subtitle": "Para \"{{listName}}\"",
+    "buttonSuggest": "✨ Sugerir itens com IA",
+    "buttonSuggestShort": "✨ Sugerir itens",
+    "selectAll": "Selecionar todos",
+    "deselectAll": "Desmarcar todos",
+    "regenerate": "🔄 Sugerir outros",
+    "addSelected": "Adicionar ({{count}})",
+    "addSelectedNone": "Nenhum selecionado",
+    "loading": "✨ Gerando sugestões com IA...",
+    "noApiKey": "Configure sua chave de API nas configurações de IA para gerar sugestões inteligentes.",
+    "configureAI": "⚙️ Configurar IA",
+    "error": "Não foi possível carregar sugestões no momento."
   }
 }
+
 

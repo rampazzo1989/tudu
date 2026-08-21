@@ -28,7 +28,9 @@ const useIdlyAnimatedComponent = ({
 
   // Starts the animation from static state frame (to show the image static on a specific frame).
   useEffect(() => {
-    componentRef.current?.play(staticStateFrame, staticStateFrame);
+    if (staticStateFrame !== 0) {
+      componentRef.current?.play(staticStateFrame, staticStateFrame);
+    }
 
     if (!shouldAnimate) {
       return;
