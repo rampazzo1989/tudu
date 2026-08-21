@@ -6,7 +6,7 @@ import {SettingsIcon} from '../../components/animated-icons/settings-icon';
 import {DefaultHeader} from '../../components/default-header';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
-import {aiSettingsState, notificationSettingsState} from '../../state/atoms';
+import {aiSettingsState, backupSettingsState, notificationSettingsState} from '../../state/atoms';
 import {
   Container,
   SectionContainer,
@@ -27,6 +27,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const {t} = useTranslation();
   const aiSettings = useRecoilValue(aiSettingsState);
   const notificationSettings = useRecoilValue(notificationSettingsState);
+  const backupSettings = useRecoilValue(backupSettingsState);
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -40,6 +41,10 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
     navigation.navigate('NotificationSettings');
   }, [navigation]);
 
+  const handleBackupSettingsPress = useCallback(() => {
+    navigation.navigate('BackupSettings');
+  }, [navigation]);
+
   const getProviderName = (providerKey: string) => {
     return t(`settings.ai.providers.${providerKey}`, {
       defaultValue: providerKey,
@@ -50,6 +55,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const isNotificationActive =
     notificationSettings.timedNotificationsEnabled ||
     notificationSettings.dailyDigestEnabled;
+  const isBackupActive = !!backupSettings.googleUser || !!backupSettings.lastLocalBackupDate;
 
   const formattedDigestTime = `${String(
     notificationSettings.dailyDigestHour,
@@ -69,6 +75,19 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
     return t('settings.notifications.statusDisabled');
   };
 
+  const getBackupStatusText = () => {
+    if (backupSettings.googleUser) {
+      if (backupSettings.autoBackupEnabled) {
+        return t('settings.backup.statusAutoActive', { defaultValue: 'Nuvem (Auto)' });
+      }
+      return t('settings.backup.statusConnected', { defaultValue: 'Google Drive' });
+    }
+    if (backupSettings.lastLocalBackupDate) {
+      return t('settings.backup.statusLocal', { defaultValue: 'Arquivo Local' });
+    }
+    return t('settings.backup.statusNotConfigured', { defaultValue: 'Não configurado' });
+  };
+
   return (
     <Page>
       <DefaultHeader
@@ -78,6 +97,33 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
       />
       <PageContent contentContainerStyle={styles.scrollContentContainer}>
         <Container>
+          {/* Backup & Restore Section */}
+          <SectionContainer>
+            <SectionTitleText>
+              {t('settings.backup.sectionTitle', { defaultValue: 'Backup e Restauração' })}
+            </SectionTitleText>
+            <SettingsCard onPress={handleBackupSettingsPress}>
+              <CardLeftContent>
+                <IconContainer>
+                  <Text style={{fontSize: 22}}>☁️</Text>
+                </IconContainer>
+                <CardTextContainer>
+                  <CardTitle>{t('settings.backup.title', { defaultValue: 'Backup & Restauração' })}</CardTitle>
+                  <CardSubtitle numberOfLines={2}>
+                    {t('settings.backup.subtitle', {
+                      defaultValue: 'Backup automático e manual no Google Drive ou arquivo local',
+                    })}
+                  </CardSubtitle>
+                </CardTextContainer>
+              </CardLeftContent>
+              <StatusBadge active={isBackupActive}>
+                <StatusText active={isBackupActive}>
+                  {getBackupStatusText()}
+                </StatusText>
+              </StatusBadge>
+            </SettingsCard>
+          </SectionContainer>
+
           {/* Notifications Section */}
           <SectionContainer>
             <SectionTitleText>
@@ -134,6 +180,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
     </Page>
   );
 };
+
 
 export {SettingsPage};
 

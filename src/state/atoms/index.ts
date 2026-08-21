@@ -71,3 +71,37 @@ export const notificationSettingsState = atom<NotificationSettingsState>({
   effects: [mmkvPersistAtom('notificationSettingsState')],
 });
 
+export interface BackupGoogleUser {
+  id: string;
+  email: string;
+  name: string;
+  photo?: string;
+}
+
+export type AutoBackupFrequency = 'daily' | 'weekly' | 'on_change';
+
+export interface BackupSettingsState {
+  googleUser: BackupGoogleUser | null;
+  lastCloudBackupDate: string | null;
+  lastLocalBackupDate: string | null;
+  autoBackupEnabled: boolean;
+  autoBackupFrequency: AutoBackupFrequency;
+  reminderEnabled: boolean;
+  reminderIntervalDays: number;
+  lastReminderDismissedDate: string | null;
+}
+
+export const backupSettingsState = atom<BackupSettingsState>({
+  key: 'backupSettingsState',
+  default: {
+    googleUser: null,
+    lastCloudBackupDate: null,
+    lastLocalBackupDate: null,
+    autoBackupEnabled: false,
+    autoBackupFrequency: 'daily',
+    reminderEnabled: true,
+    reminderIntervalDays: 7,
+    lastReminderDismissedDate: null,
+  },
+  effects: [mmkvPersistAtom('backupSettingsState')],
+});

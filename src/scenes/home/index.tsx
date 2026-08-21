@@ -33,6 +33,7 @@ import { ForwardedRefAnimatedIcon } from '../../components/animated-icons/animat
 import { useListService } from '../../service/list-service-hook/useListService';
 import { useCounterService } from '../../service/counter-service-hook/useCounterService';
 import { OnboardingModal } from './components/onboarding-modal';
+import { BackupReminderBanner } from '../../components/backup-reminder-banner';
 import { getDateOnlyTimeStamp } from '../../utils/date-utils';
 import { updateRecurrentTudu } from '../../utils/tudu-utils';
 import { recalculateRecurrence } from '../../state/atoms';
@@ -171,6 +172,10 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
     navigation.navigate('Settings');
   }, [navigation]);
 
+  const handleNavigateToBackupSettings = useCallback(() => {
+    navigation.navigate('BackupSettings');
+  }, [navigation]);
+
   const countersList = useMemo(() => getAllCounters(), [getAllCounters]);
 
   return (
@@ -195,6 +200,7 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
                 lists={smartLists}
                 onListPress={handleDefaultListPress}
               />
+              <BackupReminderBanner onNavigateToBackupSettings={handleNavigateToBackupSettings} />
               {countersList.length ? (
                 <>
                   <SectionTitle title={t('sectionTitles.counters')} />
