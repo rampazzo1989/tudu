@@ -22,6 +22,7 @@ import {
   maskApiKey,
   testAIConnection,
   useAISettings,
+  useAITokenUsage,
 } from '../../../service/ai';
 import {
   ButtonRow,
@@ -52,8 +53,16 @@ import {
   ToggleDescription,
   ToggleTextContainer,
   ToggleTitle,
+  UsageCard,
+  UsageCardLeftContent,
+  UsageChevron,
+  UsageIconContainer,
+  UsageSubtitle,
+  UsageTextContainer,
+  UsageTitle,
 } from './styles';
 import {AISettingsPageProps} from './types';
+
 
 const PROVIDERS: {
   id: AIProvider;
@@ -92,6 +101,8 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
     toggleEmojiSuggestions,
   } = useAISettings();
 
+  const {monthlyStats} = useAITokenUsage();
+
   const [selectedProvider, setSelectedProvider] = useState<AIProvider>(
     settings.provider,
   );
@@ -117,6 +128,11 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
+
+  const handleUsagePress = useCallback(() => {
+    navigation.navigate('AIUsage');
+  }, [navigation]);
+
 
   const handleSelectProvider = useCallback(
     (provider: AIProvider) => {
@@ -337,6 +353,29 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
               />
             </ToggleCard>
           </Section>
+
+          {/* AI Token Usage Summary Card */}
+          <Section>
+            <SectionTitle>{t('settings.ai.usage.title')}</SectionTitle>
+            <UsageCard onPress={handleUsagePress}>
+              <UsageCardLeftContent>
+                <UsageIconContainer>
+                  <Text style={{fontSize: 20}}>📊</Text>
+                </UsageIconContainer>
+                <UsageTextContainer>
+                  <UsageTitle>{t('settings.ai.usage.cardTitle')}</UsageTitle>
+                  <UsageSubtitle>
+                    {monthlyStats.totalTokens > 0
+                      ? t('settings.ai.usage.cardSubtitle', {
+                          tokens: monthlyStats.totalTokens.toLocaleString(),
+                        })
+                      : t('settings.ai.usage.cardSubtitleEmpty')}
+                  </UsageSubtitle>
+                </UsageTextContainer>
+              </UsageCardLeftContent>
+              <UsageChevron>›</UsageChevron>
+            </UsageCard>
+          </Section>
         </Container>
       </PageContent>
     </Page>
@@ -344,3 +383,4 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
 };
 
 export {AISettingsPage};
+

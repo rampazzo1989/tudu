@@ -1,8 +1,10 @@
+import {AIResponseWithUsage} from '../types';
+
 export const requestOpenAIEmojis = async (
   apiKey: string,
   prompt: string,
   signal?: AbortSignal,
-): Promise<string> => {
+): Promise<AIResponseWithUsage> => {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -36,14 +38,23 @@ export const requestOpenAIEmojis = async (
   }
 
   const data = await response.json();
-  return data?.choices?.[0]?.message?.content || '';
+  const content = data?.choices?.[0]?.message?.content || '';
+  const usage = data?.usage
+    ? {
+        promptTokens: Number(data.usage.prompt_tokens) || 0,
+        completionTokens: Number(data.usage.completion_tokens) || 0,
+        totalTokens: Number(data.usage.total_tokens) || 0,
+      }
+    : undefined;
+
+  return {content, usage};
 };
 
 export const requestOpenAITasks = async (
   apiKey: string,
   prompt: string,
   signal?: AbortSignal,
-): Promise<string> => {
+): Promise<AIResponseWithUsage> => {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -77,6 +88,16 @@ export const requestOpenAITasks = async (
   }
 
   const data = await response.json();
-  return data?.choices?.[0]?.message?.content || '';
+  const content = data?.choices?.[0]?.message?.content || '';
+  const usage = data?.usage
+    ? {
+        promptTokens: Number(data.usage.prompt_tokens) || 0,
+        completionTokens: Number(data.usage.completion_tokens) || 0,
+        totalTokens: Number(data.usage.total_tokens) || 0,
+      }
+    : undefined;
+
+  return {content, usage};
 };
+
 

@@ -1,8 +1,10 @@
+import {AIResponseWithUsage} from '../types';
+
 export const requestClaudeEmojis = async (
   apiKey: string,
   prompt: string,
   signal?: AbortSignal,
-): Promise<string> => {
+): Promise<AIResponseWithUsage> => {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -33,14 +35,25 @@ export const requestClaudeEmojis = async (
   }
 
   const data = await response.json();
-  return data?.content?.[0]?.text || '';
+  const content = data?.content?.[0]?.text || '';
+  const usage = data?.usage
+    ? {
+        promptTokens: Number(data.usage.input_tokens) || 0,
+        completionTokens: Number(data.usage.output_tokens) || 0,
+        totalTokens:
+          (Number(data.usage.input_tokens) || 0) +
+          (Number(data.usage.output_tokens) || 0),
+      }
+    : undefined;
+
+  return {content, usage};
 };
 
 export const requestClaudeTasks = async (
   apiKey: string,
   prompt: string,
   signal?: AbortSignal,
-): Promise<string> => {
+): Promise<AIResponseWithUsage> => {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -71,6 +84,18 @@ export const requestClaudeTasks = async (
   }
 
   const data = await response.json();
-  return data?.content?.[0]?.text || '';
+  const content = data?.content?.[0]?.text || '';
+  const usage = data?.usage
+    ? {
+        promptTokens: Number(data.usage.input_tokens) || 0,
+        completionTokens: Number(data.usage.output_tokens) || 0,
+        totalTokens:
+          (Number(data.usage.input_tokens) || 0) +
+          (Number(data.usage.output_tokens) || 0),
+      }
+    : undefined;
+
+  return {content, usage};
 };
+
 

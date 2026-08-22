@@ -222,6 +222,40 @@
       "keyRemoved": "Chiave API rimossa.",
       "emojiSuggestions": "Suggerimento emoji con IA",
       "emojiSuggestionsDescription": "Suggerisce emoji pertinenti in base al contesto dell'elenco e dei tudús",
+      "usage": {
+        "title": "Consumo di Token",
+        "cardTitle": "Consumo di Token",
+        "cardSubtitle": "{{tokens}} token utilizzati questo mese",
+        "cardSubtitleEmpty": "Nessun consumo registrato questo mese",
+        "periods": {
+          "week": "Questa Settimana",
+          "month": "Questo Mese",
+          "total": "Totale"
+        },
+        "heroTokens": "Token Consumati",
+        "heroRequests_one": "{{count}} richiesta effettuata",
+        "heroRequests_other": "{{count}} richieste effettuate",
+        "promptTokens": "Token di Input",
+        "completionTokens": "Token di Output",
+        "promptDescription": "Testo inviato nei prompt",
+        "completionDescription": "Risposte generate dall'IA",
+        "breakdownByProvider": "Consumo per Provider",
+        "breakdownByFeature": "Consumo per Funzionalità",
+        "features": {
+          "emoji": "Suggerimento Emoji",
+          "task_suggestions": "Suggerimento Attività",
+          "test": "Test di Connessione"
+        },
+        "resetTitle": "Azzera Contatore Consumo",
+        "resetDescription": "Cancella tutta la cronologia dei token registrata su questo dispositivo.",
+        "resetButton": "Azzera Contatore",
+        "confirmResetTitle": "Azzerare il consumo di token?",
+        "confirmResetMessage": "Questa azione cancellerà tutta la cronologia dei token registrata finora. Vuoi continuare?",
+        "resetSuccess": "Contatore di consumo azzerato con successo.",
+        "lastResetAt": "Ultimo azzeramento: {{date}}",
+        "neverReset": "Nessun azzeramento effettuato",
+        "noData": "Nessun consumo registrato in questo periodo."
+      },
       "providers": {
         "gemini": "Google Gemini",
         "openai": "OpenAI",

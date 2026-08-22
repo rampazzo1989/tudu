@@ -1,3 +1,5 @@
+import {AIResponseWithUsage} from '../types';
+
 interface GeminiResolvedConfig {
   apiVersion: 'v1beta' | 'v1';
   model: string;
@@ -82,7 +84,7 @@ export const requestGeminiEmojis = async (
   apiKey: string,
   prompt: string,
   signal?: AbortSignal,
-): Promise<string> => {
+): Promise<AIResponseWithUsage> => {
   const emojiSystemInstruction =
     'You are an assistant that suggests relevant emojis for tasks and lists in a todo app. Return ONLY a raw JSON array containing 5 to 10 emoji characters, like ["🛒", "🍎", "🥛"]. No markdown code formatting, no backticks, no explanations.';
   return sendGeminiWithAutoConfig(
@@ -98,7 +100,7 @@ export const requestGeminiTasks = async (
   apiKey: string,
   prompt: string,
   signal?: AbortSignal,
-): Promise<string> => {
+): Promise<AIResponseWithUsage> => {
   const tasksSystemInstruction =
     'You are an assistant for a todo list app. Suggest concise, highly relevant next tasks for the user list. Every item MUST start with an appropriate emoji character followed by a space and the task title in the language of the prompt (e.g. ["🥖 Comprar pão de forma", "🧀 Queijo prato"]). Return ONLY a raw JSON array of strings. Do not include markdown code formatting, no backticks, no explanations.';
   return sendGeminiWithAutoConfig(
@@ -116,7 +118,7 @@ const sendGeminiWithAutoConfig = async (
   systemInstruction: string,
   maxOutputTokens: number,
   signal?: AbortSignal,
-): Promise<string> => {
+): Promise<AIResponseWithUsage> => {
   const cleanKey = apiKey.trim();
 
   // 1. If we have a cached working configuration, try it first
@@ -221,7 +223,7 @@ const executeGeminiRequest = async (
   systemInstruction: string,
   maxOutputTokens: number,
   signal?: AbortSignal,
-): Promise<string> => {
+): Promise<AIResponseWithUsage> => {
   const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   const response = await fetch(url, {
@@ -259,6 +261,19 @@ const executeGeminiRequest = async (
   }
 
   const data = await response.json();
-  return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const content = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const usage = data?.usageMetadata
+    ? {
+        promptTokens: Number(data.usageMetadata.promptTokenCount) || 0,
+        completionTokens: Number(data.usageMetadata.candidatesTokenCount) || 0,
+        totalTokens:
+          Number(data.usageMetadata.totalTokenCount) ||
+          (Number(data.usageMetadata.promptTokenCount) || 0) +
+            (Number(data.usageMetadata.candidatesTokenCount) || 0),
+      }
+    : undefined;
+
+  return {content, usage};
 };
+
 

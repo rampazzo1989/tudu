@@ -1,8 +1,18 @@
-import {AIProvider, EmojiSuggestionRequest, TaskSuggestionRequest} from './types';
+import {
+  AIFeature,
+  AIProvider,
+  AIResponseWithUsage,
+  AITokenUsage,
+  AITokenUsageRecord,
+  EmojiSuggestionRequest,
+  TaskSuggestionRequest,
+} from './types';
 import {getSecureApiKey} from './secure-storage';
 import {requestOpenAIEmojis, requestOpenAITasks} from './adapters/openai';
 import {requestGeminiEmojis, requestGeminiTasks} from './adapters/gemini';
 import {requestClaudeEmojis, requestClaudeTasks} from './adapters/claude';
+import {setRecoil} from 'recoil-nexus';
+import {aiTokenUsageState} from '../../state/atoms';
 
 // In-memory cache for emoji suggestions: key -> string[]
 const emojiCache = new Map<string, string[]>();
@@ -10,6 +20,41 @@ const emojiCache = new Map<string, string[]>();
 const taskCache = new Map<string, string[]>();
 const MAX_CACHE_SIZE = 50;
 
+/**
+ * Records token consumption for an AI request in persistent Recoil state.
+ */
+export const recordAITokenUsage = (
+  provider: AIProvider,
+  feature: AIFeature,
+  usage?: AITokenUsage,
+) => {
+  if (!usage || usage.totalTokens <= 0) return;
+
+  const newRecord: AITokenUsageRecord = {
+    id: `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+    timestamp: Date.now(),
+    provider,
+    feature,
+    promptTokens: usage.promptTokens,
+    completionTokens: usage.completionTokens,
+    totalTokens: usage.totalTokens,
+  };
+
+  try {
+    setRecoil(aiTokenUsageState, prev => {
+      const records = prev?.records ? [newRecord, ...prev.records] : [newRecord];
+      return {
+        records: records.slice(0, 1000),
+        lastResetAt: prev?.lastResetAt || null,
+      };
+    });
+    console.log(
+      `📊 [Tudú AI Usage] Gravado: ${usage.totalTokens} tokens (${usage.promptTokens} in / ${usage.completionTokens} out) | ${provider.toUpperCase()} | ${feature}`,
+    );
+  } catch (err) {
+    console.warn('⚠️ [Tudú AI Usage] Falha ao persistir uso de tokens:', err);
+  }
+};
 
 /**
  * Extracts emoji characters from raw LLM responses.
@@ -117,25 +162,35 @@ export const suggestEmojisWithAI = async (
   console.log('─────────────────────────────────────────────────────');
 
   try {
-    let rawResponse = '';
+    let responseResult: AIResponseWithUsage = {content: ''};
     const startTime = Date.now();
 
     if (provider === 'openai') {
-      rawResponse = await requestOpenAIEmojis(apiKey, prompt, controller.signal);
+      responseResult = await requestOpenAIEmojis(apiKey, prompt, controller.signal);
     } else if (provider === 'gemini') {
-      rawResponse = await requestGeminiEmojis(apiKey, prompt, controller.signal);
+      responseResult = await requestGeminiEmojis(apiKey, prompt, controller.signal);
     } else if (provider === 'claude') {
-      rawResponse = await requestClaudeEmojis(apiKey, prompt, controller.signal);
+      responseResult = await requestClaudeEmojis(apiKey, prompt, controller.signal);
     }
 
     clearTimeout(timeoutId);
     const duration = Date.now() - startTime;
+    const rawResponse = responseResult.content;
+
+    if (responseResult.usage) {
+      recordAITokenUsage(provider, 'emoji', responseResult.usage);
+    }
 
     const emojis = parseEmojisFromResponse(rawResponse);
 
     console.log(`📥 [Tudú AI] Resposta recebida (${duration}ms) de ${provider.toUpperCase()}:`);
     console.log(`📄 Bruto: ${rawResponse.trim()}`);
     console.log(`✨ Emojis Extraídos (${emojis.length}): ${emojis.join(' ')}`);
+    if (responseResult.usage) {
+      console.log(
+        `📊 Tokens: ${responseResult.usage.totalTokens} (In: ${responseResult.usage.promptTokens}, Out: ${responseResult.usage.completionTokens})`,
+      );
+    }
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     if (emojis.length > 0) {
@@ -279,25 +334,35 @@ export const suggestTasksWithAI = async (
   console.log('─────────────────────────────────────────────────────');
 
   try {
-    let rawResponse = '';
+    let responseResult: AIResponseWithUsage = {content: ''};
     const startTime = Date.now();
 
     if (provider === 'openai') {
-      rawResponse = await requestOpenAITasks(apiKey, prompt, controller.signal);
+      responseResult = await requestOpenAITasks(apiKey, prompt, controller.signal);
     } else if (provider === 'gemini') {
-      rawResponse = await requestGeminiTasks(apiKey, prompt, controller.signal);
+      responseResult = await requestGeminiTasks(apiKey, prompt, controller.signal);
     } else if (provider === 'claude') {
-      rawResponse = await requestClaudeTasks(apiKey, prompt, controller.signal);
+      responseResult = await requestClaudeTasks(apiKey, prompt, controller.signal);
     }
 
     clearTimeout(timeoutId);
     const duration = Date.now() - startTime;
+    const rawResponse = responseResult.content;
+
+    if (responseResult.usage) {
+      recordAITokenUsage(provider, 'task_suggestions', responseResult.usage);
+    }
 
     const tasks = parseTasksFromResponse(rawResponse);
 
     console.log(`📥 [Tudú AI] Resposta de tarefas recebida (${duration}ms) de ${provider.toUpperCase()}:`);
     console.log(`📄 Bruto: ${rawResponse.trim()}`);
     console.log(`✨ Tarefas Extraídas (${tasks.length}):\n${tasks.map(t => `  • ${t}`).join('\n')}`);
+    if (responseResult.usage) {
+      console.log(
+        `📊 Tokens: ${responseResult.usage.totalTokens} (In: ${responseResult.usage.promptTokens}, Out: ${responseResult.usage.completionTokens})`,
+      );
+    }
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     if (tasks.length > 0) {
@@ -334,23 +399,34 @@ export const testAIConnection = async (
   console.log(`💬 Prompt de Teste: "${testPrompt}"`);
 
   try {
-    let rawResponse = '';
+    let responseResult: AIResponseWithUsage = {content: ''};
     const startTime = Date.now();
 
     if (provider === 'openai') {
-      rawResponse = await requestOpenAIEmojis(apiKey, testPrompt, controller.signal);
+      responseResult = await requestOpenAIEmojis(apiKey, testPrompt, controller.signal);
     } else if (provider === 'gemini') {
-      rawResponse = await requestGeminiEmojis(apiKey, testPrompt, controller.signal);
+      responseResult = await requestGeminiEmojis(apiKey, testPrompt, controller.signal);
     } else if (provider === 'claude') {
-      rawResponse = await requestClaudeEmojis(apiKey, testPrompt, controller.signal);
+      responseResult = await requestClaudeEmojis(apiKey, testPrompt, controller.signal);
     }
 
     clearTimeout(timeoutId);
     const duration = Date.now() - startTime;
+    const rawResponse = responseResult.content;
+
+    if (responseResult.usage) {
+      recordAITokenUsage(provider, 'test', responseResult.usage);
+    }
+
     const emojis = parseEmojisFromResponse(rawResponse);
 
     console.log(`✅ [Tudú AI Test] Conexão com ${provider.toUpperCase()} bem sucedida (${duration}ms)!`);
     console.log(`✨ Emojis retornados: ${emojis.join(' ')}`);
+    if (responseResult.usage) {
+      console.log(
+        `📊 Tokens: ${responseResult.usage.totalTokens} (In: ${responseResult.usage.promptTokens}, Out: ${responseResult.usage.completionTokens})`,
+      );
+    }
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     return emojis.length > 0;
@@ -361,4 +437,5 @@ export const testAIConnection = async (
     throw error;
   }
 };
+
 

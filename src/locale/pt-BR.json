@@ -222,6 +222,40 @@
       "keyRemoved": "Chave de API removida.",
       "emojiSuggestions": "Sugestão de emojis por IA",
       "emojiSuggestionsDescription": "Sugere emojis relevantes com base no contexto da lista e tudús",
+      "usage": {
+        "title": "Consumo de Tokens",
+        "cardTitle": "Consumo de Tokens",
+        "cardSubtitle": "{{tokens}} tokens consumidos este mês",
+        "cardSubtitleEmpty": "Nenhum consumo registrado este mês",
+        "periods": {
+          "week": "Esta Semana",
+          "month": "Este Mês",
+          "total": "Total"
+        },
+        "heroTokens": "Tokens Consumidos",
+        "heroRequests_one": "{{count}} requisição realizada",
+        "heroRequests_other": "{{count}} requisições realizadas",
+        "promptTokens": "Tokens de Entrada",
+        "completionTokens": "Tokens de Saída",
+        "promptDescription": "Texto enviado nos prompts",
+        "completionDescription": "Respostas geradas pela IA",
+        "breakdownByProvider": "Consumo por Provedor",
+        "breakdownByFeature": "Consumo por Recurso",
+        "features": {
+          "emoji": "Sugestão de Emojis",
+          "task_suggestions": "Sugestão de Tarefas",
+          "test": "Testes de Conexão"
+        },
+        "resetTitle": "Zerar Contador de Consumo",
+        "resetDescription": "Limpa todo o histórico de tokens registrado no Tudú neste dispositivo.",
+        "resetButton": "Zerar Contador",
+        "confirmResetTitle": "Zerar consumo de tokens?",
+        "confirmResetMessage": "Esta ação apagará todo o histórico de consumo registrado até o momento. Deseja continuar?",
+        "resetSuccess": "Contador de consumo zerado com sucesso.",
+        "lastResetAt": "Último reset: {{date}}",
+        "neverReset": "Nenhum reset efetuado",
+        "noData": "Nenhum consumo registrado neste período."
+      },
       "providers": {
         "gemini": "Google Gemini",
         "openai": "OpenAI",

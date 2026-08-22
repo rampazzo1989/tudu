@@ -1,3 +1,9 @@
+jest.mock('react-dom', () => ({}), { virtual: true });
+jest.mock('recoil-nexus', () => ({
+  setRecoil: jest.fn(),
+  getRecoil: jest.fn(),
+}));
+
 import {parseEmojisFromResponse} from '../src/service/ai/ai-service';
 import {maskApiKey} from '../src/service/ai/secure-storage';
 
@@ -64,12 +70,22 @@ describe('AI Service & Utilities', () => {
         ok: true,
         json: async () => ({
           choices: [{message: {content: '["🛒", "🥖", "🧀"]'}}],
+          usage: {
+            prompt_tokens: 25,
+            completion_tokens: 10,
+            total_tokens: 35,
+          },
         }),
       } as any);
 
-      const raw = await requestOpenAIEmojis('mock-key', 'compras');
-      const emojis = parseEmojisFromResponse(raw);
+      const res = await requestOpenAIEmojis('mock-key', 'compras');
+      const emojis = parseEmojisFromResponse(res.content);
       expect(emojis).toEqual(['🛒', '🥖', '🧀']);
+      expect(res.usage).toEqual({
+        promptTokens: 25,
+        completionTokens: 10,
+        totalTokens: 35,
+      });
     });
 
     it('should handle Gemini successful response with dynamic model resolution', async () => {
@@ -98,13 +114,23 @@ describe('AI Service & Utilities', () => {
                 },
               },
             ],
+            usageMetadata: {
+              promptTokenCount: 30,
+              candidatesTokenCount: 8,
+              totalTokenCount: 38,
+            },
           }),
         });
       });
 
-      const raw = await requestGeminiEmojis('mock-key', 'viagem praia');
-      const emojis = parseEmojisFromResponse(raw);
+      const res = await requestGeminiEmojis('mock-key', 'viagem praia');
+      const emojis = parseEmojisFromResponse(res.content);
       expect(emojis).toEqual(['✈️', '🌴', '🏖️']);
+      expect(res.usage).toEqual({
+        promptTokens: 30,
+        completionTokens: 8,
+        totalTokens: 38,
+      });
     });
 
     it('should handle Claude successful response', async () => {
@@ -113,12 +139,21 @@ describe('AI Service & Utilities', () => {
         ok: true,
         json: async () => ({
           content: [{text: '["🏋️", "💪", "🏃"]'}],
+          usage: {
+            input_tokens: 40,
+            output_tokens: 12,
+          },
         }),
       } as any);
 
-      const raw = await requestClaudeEmojis('mock-key', 'academia treino');
-      const emojis = parseEmojisFromResponse(raw);
+      const res = await requestClaudeEmojis('mock-key', 'academia treino');
+      const emojis = parseEmojisFromResponse(res.content);
       expect(emojis).toEqual(['🏋️', '💪', '🏃']);
+      expect(res.usage).toEqual({
+        promptTokens: 40,
+        completionTokens: 12,
+        totalTokens: 52,
+      });
     });
 
     it('should throw descriptive error when API returns HTTP error', async () => {
@@ -137,3 +172,4 @@ describe('AI Service & Utilities', () => {
     });
   });
 });
+

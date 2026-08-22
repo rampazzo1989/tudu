@@ -221,7 +221,41 @@
       "keySaved": "¡Clave de API guardada con éxito!",
       "keyRemoved": "Clave de API eliminada.",
       "emojiSuggestions": "Sugerencia de emojis por IA",
-      "emojiSuggestionsDescription": "Sugiere emojis relevantes según el contexto de la lista y tudús",
+      "emojiSuggestionsDescription": "Sugiere emojis relevantes según el contexto de la lista e tudús",
+      "usage": {
+        "title": "Consumo de Tokens",
+        "cardTitle": "Consumo de Tokens",
+        "cardSubtitle": "{{tokens}} tokens consumidos este mes",
+        "cardSubtitleEmpty": "Ningún consumo registrado este mes",
+        "periods": {
+          "week": "Esta Semana",
+          "month": "Este Mes",
+          "total": "Total"
+        },
+        "heroTokens": "Tokens Consumidos",
+        "heroRequests_one": "{{count}} solicitud realizada",
+        "heroRequests_other": "{{count}} solicitudes realizadas",
+        "promptTokens": "Tokens de Entrada",
+        "completionTokens": "Tokens de Salida",
+        "promptDescription": "Texto enviado en los prompts",
+        "completionDescription": "Respuestas generadas por la IA",
+        "breakdownByProvider": "Consumo por Proveedor",
+        "breakdownByFeature": "Consumo por Función",
+        "features": {
+          "emoji": "Sugerencia de Emojis",
+          "task_suggestions": "Sugerencia de Tareas",
+          "test": "Pruebas de Conexión"
+        },
+        "resetTitle": "Restablecer Contador de Consumo",
+        "resetDescription": "Borra todo el historial de tokens registrado en este dispositivo.",
+        "resetButton": "Restablecer Contador",
+        "confirmResetTitle": "¿Restablecer consumo de tokens?",
+        "confirmResetMessage": "Esta acción borrará todo el historial de consumo registrado hasta el momento. ¿Deseas continuar?",
+        "resetSuccess": "Contador de consumo restablecido con éxito.",
+        "lastResetAt": "Último restablecimiento: {{date}}",
+        "neverReset": "Ningún restablecimiento efectuado",
+        "noData": "Ningún consumo registrado en este período."
+      },
       "providers": {
         "gemini": "Google Gemini",
         "openai": "OpenAI",

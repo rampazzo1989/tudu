@@ -105,3 +105,28 @@ export const backupSettingsState = atom<BackupSettingsState>({
   },
   effects: [mmkvPersistAtom('backupSettingsState')],
 });
+
+export interface AITokenUsageRecord {
+  id: string;
+  timestamp: number;
+  provider: 'openai' | 'gemini' | 'claude';
+  feature: 'emoji' | 'task_suggestions' | 'test';
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
+export interface AITokenUsageState {
+  records: AITokenUsageRecord[];
+  lastResetAt: string | null;
+}
+
+export const aiTokenUsageState = atom<AITokenUsageState>({
+  key: 'aiTokenUsageState',
+  default: {
+    records: [],
+    lastResetAt: null,
+  },
+  effects: [mmkvPersistAtom('aiTokenUsageState')],
+});
+

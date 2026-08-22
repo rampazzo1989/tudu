@@ -1,9 +1,36 @@
 export type AIProvider = 'openai' | 'gemini' | 'claude';
+export type AIFeature = 'emoji' | 'task_suggestions' | 'test';
 
 export interface AISettings {
   provider: AIProvider;
   aiEmojiSuggestionsEnabled: boolean;
   hasApiKey: boolean;
+}
+
+export interface AITokenUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
+export interface AIResponseWithUsage {
+  content: string;
+  usage?: AITokenUsage;
+}
+
+export interface AITokenUsageRecord {
+  id: string;
+  timestamp: number;
+  provider: AIProvider;
+  feature: AIFeature;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
+export interface AITokenUsageState {
+  records: AITokenUsageRecord[];
+  lastResetAt: string | null;
 }
 
 export interface EmojiSuggestionRequest {
@@ -32,4 +59,5 @@ export interface AIProviderInfo {
   placeholder: string;
   helpUrl: string;
 }
+
 

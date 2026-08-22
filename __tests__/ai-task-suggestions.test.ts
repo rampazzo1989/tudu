@@ -1,3 +1,9 @@
+jest.mock('react-dom', () => ({}), { virtual: true });
+jest.mock('recoil-nexus', () => ({
+  setRecoil: jest.fn(),
+  getRecoil: jest.fn(),
+}));
+
 import {parseTasksFromResponse} from '../src/service/ai/ai-service';
 import {requestOpenAITasks} from '../src/service/ai/adapters/openai';
 import {requestGeminiTasks} from '../src/service/ai/adapters/gemini';
@@ -89,16 +95,26 @@ describe('AI Task Suggestions Feature', () => {
               },
             },
           ],
+          usage: {
+            prompt_tokens: 50,
+            completion_tokens: 20,
+            total_tokens: 70,
+          },
         }),
       } as any);
 
-      const raw = await requestOpenAITasks('mock-key', 'Lista: Mercado');
-      const tasks = parseTasksFromResponse(raw);
+      const res = await requestOpenAITasks('mock-key', 'Lista: Mercado');
+      const tasks = parseTasksFromResponse(res.content);
       expect(tasks).toEqual([
         '🛒 Ir ao supermercado',
         '🍞 Comprar pão francês',
         '🧀 Comprar queijo',
       ]);
+      expect(res.usage).toEqual({
+        promptTokens: 50,
+        completionTokens: 20,
+        totalTokens: 70,
+      });
     });
 
     it('should handle Gemini task suggestion response', async () => {
@@ -130,17 +146,27 @@ describe('AI Task Suggestions Feature', () => {
                 },
               },
             ],
+            usageMetadata: {
+              promptTokenCount: 60,
+              candidatesTokenCount: 25,
+              totalTokenCount: 85,
+            },
           }),
         });
       });
 
-      const raw = await requestGeminiTasks('mock-key', 'Lista: Viagem para a praia');
-      const tasks = parseTasksFromResponse(raw);
+      const res = await requestGeminiTasks('mock-key', 'Lista: Viagem para a praia');
+      const tasks = parseTasksFromResponse(res.content);
       expect(tasks).toEqual([
         '🏖️ Reservar hotel',
         '🧳 Fazer as malas',
         '✈️ Comprar passagens',
       ]);
+      expect(res.usage).toEqual({
+        promptTokens: 60,
+        completionTokens: 25,
+        totalTokens: 85,
+      });
     });
 
     it('should handle Claude task suggestion response', async () => {
@@ -152,16 +178,25 @@ describe('AI Task Suggestions Feature', () => {
               text: '["🏋️ Treino de peito", "🏃 30 min cardio", "💧 Beber 3L de água"]',
             },
           ],
+          usage: {
+            input_tokens: 45,
+            output_tokens: 22,
+          },
         }),
       } as any);
 
-      const raw = await requestClaudeTasks('mock-key', 'Lista: Academia e Saúde');
-      const tasks = parseTasksFromResponse(raw);
+      const res = await requestClaudeTasks('mock-key', 'Lista: Academia e Saúde');
+      const tasks = parseTasksFromResponse(res.content);
       expect(tasks).toEqual([
         '🏋️ Treino de peito',
         '🏃 30 min cardio',
         '💧 Beber 3L de água',
       ]);
+      expect(res.usage).toEqual({
+        promptTokens: 45,
+        completionTokens: 22,
+        totalTokens: 67,
+      });
     });
 
     it('should throw error when API call fails', async () => {
@@ -179,3 +214,4 @@ describe('AI Task Suggestions Feature', () => {
     });
   });
 });
+

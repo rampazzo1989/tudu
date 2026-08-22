@@ -219,3 +219,54 @@ export const StatusFeedbackText = styled.Text<{isSuccess?: boolean}>`
   color: ${({isSuccess}) => (isSuccess ? '#81C784' : '#E57373')};
   text-align: center;
 `;
+
+export const UsageCard = styled(ShrinkableView)`
+  background-color: ${({theme}) => theme.colors.listCard};
+  border-radius: 14px;
+  padding: 16px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+export const UsageCardLeftContent = styled.View`
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  margin-right: 12px;
+`;
+
+export const UsageIconContainer = styled.View`
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background-color: ${({theme}) => theme.colors.counterIconBackground};
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+`;
+
+export const UsageTextContainer = styled.View`
+  flex: 1;
+`;
+
+export const UsageTitle = styled.Text`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 15px;
+  color: ${({theme}) => theme.colors.text};
+  margin-bottom: 3px;
+`;
+
+export const UsageSubtitle = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  font-size: 12px;
+  color: ${({theme}) => theme.colors.iconOverlay};
+  line-height: 16px;
+`;
+
+export const UsageChevron = styled.Text`
+  font-size: 20px;
+  color: ${({theme}) => theme.colors.iconOverlay};
+`;
+
