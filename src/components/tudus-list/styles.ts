@@ -12,11 +12,11 @@ export const Container = styled.View`
 `;
 
 export const SectionTitle = styled(Title)<{marginTop: number}>`
-  justify-content: flex-start;
-  align-items: center;
-  padding-left: 16px;
   margin-top: ${({marginTop}) => marginTop}px;
+  margin-bottom: 8px;
+  padding-left: 2px;
 `;
+
 
 export const TuduAnimatedWrapper = styled(Animated.View)`
 `;

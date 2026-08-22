@@ -1,24 +1,28 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   BaseToast,
   BaseToastProps,
   ToastShowParams,
 } from 'react-native-toast-message';
-import {CurrentTheme} from '../../themes';
-import {t} from 'i18next';
+import { CurrentTheme } from '../../themes';
+import { t } from 'i18next';
 
 const styles = StyleSheet.create({
   toastStyle: {
     borderLeftColor: CurrentTheme.colors.defaultToast.borderLeft,
     backgroundColor: CurrentTheme.colors.defaultToast.background,
   },
-  contentContainerStyle: {paddingHorizontal: 15},
+  contentContainerStyle: { paddingHorizontal: 15 },
   text1Style: {
     fontSize: 15,
     fontWeight: '400',
     color: CurrentTheme.colors.defaultToast.text,
+  },
+  text2Style: {
+    fontSize: 13,
+    color: CurrentTheme.colors.iconOverlay,
   },
   actionSuccessStyle: {
     width: '90%',
@@ -34,6 +38,42 @@ const styles = StyleSheet.create({
 });
 
 const toastConfig = {
+  success: (props: BaseToastProps) => (
+    <BaseToast
+      {...props}
+      style={[styles.toastStyle, { borderLeftColor: '#4CAF50' }]}
+      contentContainerStyle={styles.contentContainerStyle}
+      text1Style={styles.text1Style}
+      text2Style={styles.text2Style}
+    />
+  ),
+  error: (props: BaseToastProps) => (
+    <BaseToast
+      {...props}
+      style={[styles.toastStyle, { borderLeftColor: '#F44336' }]}
+      contentContainerStyle={styles.contentContainerStyle}
+      text1Style={styles.text1Style}
+      text2Style={styles.text2Style}
+    />
+  ),
+  info: (props: BaseToastProps) => (
+    <BaseToast
+      {...props}
+      style={styles.toastStyle}
+      contentContainerStyle={styles.contentContainerStyle}
+      text1Style={styles.text1Style}
+      text2Style={styles.text2Style}
+    />
+  ),
+  defaultToast: (props: BaseToastProps) => (
+    <BaseToast
+      {...props}
+      style={styles.toastStyle}
+      contentContainerStyle={styles.contentContainerStyle}
+      text1Style={styles.text1Style}
+      text2Style={styles.text2Style}
+    />
+  ),
   tuduWarning: (props: BaseToastProps) => (
     <BaseToast
       {...props}
@@ -42,7 +82,7 @@ const toastConfig = {
       text1Style={styles.text1Style}
     />
   ),
-  actionSuccessWithUndo: ({props}: ToastShowParams) => (
+  actionSuccessWithUndo: ({ props }: ToastShowParams) => (
     <View style={styles.actionSuccessStyle}>
       <Text style={styles.text1Style}>{props.message}</Text>
       <TouchableOpacity onPress={props.onPress} hitSlop={20}>
@@ -52,4 +92,4 @@ const toastConfig = {
   ),
 };
 
-export {toastConfig};
+export { toastConfig };

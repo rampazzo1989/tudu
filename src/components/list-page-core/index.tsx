@@ -19,7 +19,13 @@ import { FloatingActionButtonRef } from '../../components/floating-action-button
 import { CheckMarkIconActionAnimation } from '../../components/animated-icons/check-mark';
 import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
 import { useListService } from '../../service/list-service-hook/useListService';
-import { CheersAnimationContainer, styles } from './styles';
+import {
+  CheersAnimationContainer,
+  FloatingAIButton,
+  FloatingAIButtonContainer,
+  FloatingAIEmoji,
+  styles,
+} from './styles';
 import { NewTuduModal } from '../new-tudu-modal';
 import { ListActionButton } from '../list-action-button';
 import { TudusList } from '../tudus-list';
@@ -40,7 +46,10 @@ import { showItemDeletedToast } from '../../utils/toast-utils';
 import { useTranslation } from 'react-i18next';
 import { UNLOADED_ID } from '../../constants';
 import { trimEmoji } from '../../utils/emoji-utils';
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
+import { useRecoilValue } from 'recoil';
+import { toastSpan } from '../../state/atoms';
+
 import { ScheduleModal } from '../schedule-modal';
 import { AISuggestionsModal } from '../ai-suggestions-modal';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
@@ -56,7 +65,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     allowAdding = true,
     TopComponent,
   }) => {
+    const toastBottomSpan = useRecoilValue(toastSpan);
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
+
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
     const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
@@ -320,11 +331,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         <ListHeader
           listData={list}
           onBackButtonPress={handleBackButtonPress}
-          onAISuggestionsPress={
-            allowAdding && !isSmartList && list?.label
-              ? handleAISuggestionsPress
-              : undefined
-          }
           Icon={Icon}
         />
         <CheersAnimationContainer pointerEvents="none">
@@ -361,12 +367,29 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             </Animated.View>
           )}
           {allowAdding && !loading && (
-            <ListActionButton
-              ref={actionButtonRef}
-              onInsertTuduPress={handleInsertTudu}
-            />
+            <>
+              {!isSmartList && !!list?.label && (
+                <FloatingAIButtonContainer
+                  entering={FadeIn.delay(900).duration(300)}
+                  extraBottomMargin={toastBottomSpan}
+                  pointerEvents="box-none">
+                  <FloatingAIButton
+                    onPress={handleAISuggestionsPress}
+                    scaleFactor={0.08}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <FloatingAIEmoji>✨</FloatingAIEmoji>
+                  </FloatingAIButton>
+                </FloatingAIButtonContainer>
+              )}
+
+              <ListActionButton
+                ref={actionButtonRef}
+                onInsertTuduPress={handleInsertTudu}
+              />
+            </>
           )}
         </DraggablePageContent>
+
         <NewTuduModal
           visible={newTuduPopupVisible}
           onRequestClose={() => {

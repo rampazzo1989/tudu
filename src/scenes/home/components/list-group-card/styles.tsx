@@ -4,43 +4,52 @@ import {ShrinkableView} from '../../../../components/shrinkable-view';
 import {EditableListCard} from '../../../../components/list-card/editable-list-card';
 
 export const ListGroupContainer = styled.View`
-  border-radius: 10px;
+  border-radius: 16px;
   background-color: ${({theme}) => theme.colors.listCardGroup};
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.08);
   padding-right: 12px;
   padding-left: 12px;
-  padding-top: 8px;
-  padding-bottom: 4px;
+  padding-top: 12px;
+  padding-bottom: 6px;
   width: 100%;
+  margin-bottom: 8px;
 `;
 
 export const Title = styled(Animated.Text)`
-  font-family: ${({theme}) => theme.fonts.listCardGroupTitle};
-  font-size: 16px;
-  line-height: 24px;
-  color: ${({theme}) => theme.colors.text};
-  margin-bottom: 8px;
-  /* border: 1px; */
-  width: 90%;
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 13px;
+  line-height: 18px;
+  color: ${({theme}) => theme.colors.iconOverlay};
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+  margin-left: 4px;
+  flex: 1;
 `;
 
 export const SubListCard = styled(EditableListCard)`
-  // margin-bottom: 8px;
   background-color: ${({theme}) => theme.colors.listCardGroupItem};
+  border-radius: 12px;
+  border-color: rgba(255, 255, 255, 0.04);
 `;
 
 export const TitleContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 2px;
 `;
 
 export const OptionsTouchable = styled(ShrinkableView)`
   width: 28px;
   height: 28px;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const OptionsIconContainer = styled.View`
   height: 20px;
   width: 20px;
 `;
+

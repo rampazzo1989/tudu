@@ -5,6 +5,7 @@ import {
   ControlComponentContainer,
   Emoji,
   IconLabelContainer,
+  IconWrapper,
   Label,
   ListCardContainer,
   Number,
@@ -71,6 +72,7 @@ const ListCard: React.FC<ListCardProps> = memo(
             {emojiInfo?.formattedText ?? label}
           </Label>
         </IconLabelContainer>
+
         {showNumberOfActiveItems && (
           <NumberOfActiveItems
             numberOfActiveItems={numberOfActiveItems}
@@ -83,3 +85,4 @@ const ListCard: React.FC<ListCardProps> = memo(
 );
 
 export {ListCard, NumberOfActiveItems};
+

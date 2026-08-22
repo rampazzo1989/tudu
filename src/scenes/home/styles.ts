@@ -5,8 +5,11 @@ import {DEFAULT_PAGE_HORIZONTAL_PADDING} from '../../components/draggable-page-c
 import {SectionTitle as Title} from '../../components/section-title';
 
 export const SectionTitle = styled(Title)`
-  margin-top: 18px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  margin-left: 2px;
 `;
+
 
 export const styles = StyleSheet.create({
   scrollContentContainer: {

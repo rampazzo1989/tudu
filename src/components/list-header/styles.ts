@@ -11,13 +11,15 @@ export const ContentRow = styled(Animated.View)`
 export const TitleContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  max-width: 70%;
+  max-width: 72%;
 `;
 
 export const Title = styled.Text`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
   color: ${({theme}) => theme.colors.headerText};
-  font-size: 24px;
-  margin-left: 10px;
+  font-size: 22px;
+  font-weight: 700;
+  margin-left: 12px;
 `;
 
 export const Emoji = styled(Animated.Text)`
@@ -26,19 +28,9 @@ export const Emoji = styled(Animated.Text)`
   opacity: 0.4;
 `;
 
-export const AISuggestionsHeaderButton = styled.TouchableOpacity`
-  width: 32px;
-  height: 32px;
-  border-radius: 16px;
-  background-color: rgba(121, 86, 191, 0.22);
-  border-width: 1px;
-  border-color: rgba(161, 136, 210, 0.4);
-  align-items: center;
-  justify-content: center;
-  margin-left: 8px;
-`;
-
 export const styles = StyleSheet.create({
   pageIcon: {marginRight: -15, marginTop: 0},
 });
+
+
 

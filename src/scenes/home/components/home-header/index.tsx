@@ -9,10 +9,8 @@ import {
   LogoIcon,
   LogoTitle,
   SearchAndProfile,
-  StyledProfileIcon,
 } from './styles';
 import {HomeHeaderProps} from './types';
-
 import {SettingsIcon} from '../../../../components/animated-icons/settings-icon';
 
 const HomeHeader: React.FC<HomeHeaderProps> = memo(
@@ -43,3 +41,5 @@ const HomeHeader: React.FC<HomeHeaderProps> = memo(
 );
 
 export {HomeHeader};
+
+

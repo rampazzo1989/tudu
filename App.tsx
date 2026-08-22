@@ -20,6 +20,7 @@ import { I18nextProvider } from 'react-i18next';
 import i18next from './src/i18n';
 import { NotificationBootSync } from './src/service/notification';
 import { navigationRef } from './src/navigation/navigation-ref';
+import { AppLockGate } from './src/components/app-lock-gate';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -35,11 +36,13 @@ function App(): React.JSX.Element {
                 onInit={() => RNBootSplash.hide()}
                 store={ReactNativeRecoilPersist}>
                 <IdleProvider>
-                  <NotificationBootSync />
-                  <NavigationContainer ref={navigationRef}>
-                    <StackNavigator />
-                    <Toast config={toastConfig} />
-                  </NavigationContainer>
+                  <AppLockGate>
+                    <NotificationBootSync />
+                    <NavigationContainer ref={navigationRef}>
+                      <StackNavigator />
+                      <Toast config={toastConfig} />
+                    </NavigationContainer>
+                  </AppLockGate>
                 </IdleProvider>
               </ReactNativeRecoilPersistGate>
             </RecoilRoot>

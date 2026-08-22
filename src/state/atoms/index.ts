@@ -130,3 +130,43 @@ export const aiTokenUsageState = atom<AITokenUsageState>({
   effects: [mmkvPersistAtom('aiTokenUsageState')],
 });
 
+export type LockTimeoutOption = 'immediate' | '1m' | '5m' | '15m';
+
+export interface SecuritySettingsState {
+  isLockEnabled: boolean;
+  pinHash: string | null;
+  pinSalt: string | null;
+  isBiometricsEnabled: boolean;
+  lockTimeout: LockTimeoutOption;
+  failedAttempts: number;
+  lockoutUntil: number | null;
+}
+
+export const securitySettingsState = atom<SecuritySettingsState>({
+  key: 'securitySettingsState',
+  default: {
+    isLockEnabled: false,
+    pinHash: null,
+    pinSalt: null,
+    isBiometricsEnabled: false,
+    lockTimeout: 'immediate',
+    failedAttempts: 0,
+    lockoutUntil: null,
+  },
+  effects: [mmkvPersistAtom('securitySettingsState')],
+});
+
+export interface AppLockSessionState {
+  isAppLocked: boolean;
+  lastBackgroundAt: number | null;
+}
+
+export const appLockSessionState = atom<AppLockSessionState>({
+  key: 'appLockSessionState',
+  default: {
+    isAppLocked: false,
+    lastBackgroundAt: null,
+  },
+});
+
+

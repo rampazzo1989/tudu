@@ -17,9 +17,11 @@ import {
 } from '../../utils/date-utils';
 import { UNLISTED_LIST_ID } from '../home/state';
 import { ListViewModel, TuduViewModel, RecurrenceType } from '../home/types';
-import { PaddedContainer, styles } from './styles';
+import { EmptyStateContainer, EmptyStateText, PaddedContainer, styles } from './styles';
 import { AllTudusPageProps } from './types';
 import { ScheduleModal } from '../../components/schedule-modal';
+
+
 
 const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
   const { t } = useTranslation();
@@ -106,6 +108,10 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
       <PageContent contentContainerStyle={styles.pageContent}>
         {!tudus ? (
           <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
+        ) : tudus.length === 0 ? (
+          <EmptyStateContainer>
+            <EmptyStateText>🎉 {t('emptyStates.allDone', {defaultValue: 'Todos os seus tudús estão em dia!'})}</EmptyStateText>
+          </EmptyStateContainer>
         ) : (
           <PaddedContainer>
             <SimpleTuduList
@@ -120,6 +126,7 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
           </PaddedContainer>
         )}
       </PageContent>
+
 
       <NewTuduModal
         visible={newTuduPopupVisible}

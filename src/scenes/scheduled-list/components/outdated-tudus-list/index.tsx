@@ -13,7 +13,17 @@ import { useCloseCurrentlyOpenSwipeable } from "../../../../hooks/useCloseAllSwi
 import { OutdatedTudusListProps } from "./types";
 import { View } from "react-native";
 import Animated, { LinearTransition } from "react-native-reanimated";
-import { TitleContainer, Title, ControlContainer, ButtonText } from "./styles";
+import {
+  BannerButton,
+  BannerButtonText,
+  BannerLeft,
+  BannerTitle,
+  OutdatedBanner,
+  SectionHeaderRow,
+  SectionHeaderTitle,
+  ToggleButton,
+  ToggleButtonText,
+} from "./styles";
 import { useRecoilState } from "recoil";
 import { showOutdatedTudus } from "../../../../state/atoms";
 import { useTranslation } from "react-i18next";
@@ -82,26 +92,37 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
 
     return (
         <Animated.View layout={LinearTransition}>
-            <TitleContainer isShowingTudus={showTudus}>
-                {!showTudus && <WarningIcon ref={warningIconRef} size={20} style={{ marginRight: 8 }} />}
-                <Title>
-                    {showTudus
-                        ? t("outdatedTudusList.title.outdated")
-                        : tudus.length === 1
-                            ? t("outdatedTudusList.title.countOne")
-                            : t("outdatedTudusList.title.countMany", { count: tudus.length })}
-                </Title>
-                <ControlContainer
-                    onPress={() => setShowTudus((current) => !current)}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                    <ButtonText>
-                        {showTudus
-                            ? t("outdatedTudusList.button.hide")
-                            : t("outdatedTudusList.button.show")}
-                    </ButtonText>
-                </ControlContainer>
-            </TitleContainer>
+            {showTudus ? (
+                <SectionHeaderRow>
+                    <SectionHeaderTitle>
+                        {t("outdatedTudusList.title.outdated")}
+                    </SectionHeaderTitle>
+                    <ToggleButton
+                        onPress={() => setShowTudus(false)}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <ToggleButtonText>
+                            {t("outdatedTudusList.button.hide")}
+                        </ToggleButtonText>
+                    </ToggleButton>
+                </SectionHeaderRow>
+            ) : (
+                <OutdatedBanner onPress={() => setShowTudus(true)}>
+                    <BannerLeft>
+                        <WarningIcon ref={warningIconRef} size={18} style={{ marginRight: 8 }} />
+                        <BannerTitle numberOfLines={1}>
+                            {tudus.length === 1
+                                ? t("outdatedTudusList.title.countOne")
+                                : t("outdatedTudusList.title.countMany", { count: tudus.length })}
+                        </BannerTitle>
+                    </BannerLeft>
+                    <BannerButton>
+                        <BannerButtonText>
+                            {t("outdatedTudusList.button.show")}
+                        </BannerButtonText>
+                    </BannerButton>
+                </OutdatedBanner>
+            )}
             {showTudus ? (
                 <Animated.View layout={LinearTransition}>
                     <View style={{ marginBottom: 16 }}>
@@ -116,12 +137,13 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
                         />
                     </View>
                     {showUpToDateHeader && (
-                        <TitleContainer isShowingTudus={showTudus}>
-                            <Title>{t("outdatedTudusList.title.upToDate")}</Title>
-                        </TitleContainer>
+                        <SectionHeaderRow style={{ marginTop: 12 }}>
+                            <SectionHeaderTitle>{t("outdatedTudusList.title.upToDate")}</SectionHeaderTitle>
+                        </SectionHeaderRow>
                     )}
                 </Animated.View>
             ) : null}
+
             <NewTuduModal
                 visible={newTuduPopupVisible}
                 onRequestClose={() => {

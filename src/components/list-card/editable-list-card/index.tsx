@@ -4,7 +4,7 @@ import {trimEmoji} from '../../../utils/emoji-utils';
 import {ControlComponentContainer, IconLabelContainer, Label} from '../styles';
 import {SwipeableListCard} from '../swipeable-list-card';
 import {EditableListCardProps} from '../types';
-import {Emoji, ListCardContainer} from './styles';
+import {Emoji, IconWrapper, ListCardContainer} from './styles';
 
 const EditableListCard: React.FC<EditableListCardProps> = memo(
   ({
@@ -23,12 +23,12 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
     const emojiInfo = useMemo(() => trimEmoji(label.trim()), [label]);
 
     return (
-    <SwipeableListCard
-      enabled={swipeEnabled}
-      isHighlighted={isHighlighted}
-      onArchive={onArchive}
-      onDelete={onDelete}
-      onEdit={onEdit}>
+      <SwipeableListCard
+        enabled={swipeEnabled}
+        isHighlighted={isHighlighted}
+        onArchive={onArchive}
+        onDelete={onDelete}
+        onEdit={onEdit}>
         <ListCardContainer
           isHighlighted={isHighlighted}
           activeOpacity={1}
@@ -37,29 +37,31 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
           scaleFactor={0.02}
           style={style}
           onPress={onPress}>
-              <IconLabelContainer>
-                {ControlComponent && (
-                  <ControlComponentContainer>
-                    {ControlComponent}
-                  </ControlComponentContainer>
-                )}
-                {emojiInfo?.emoji ? (
-                  <Emoji adjustsFontSizeToFit>{emojiInfo.emoji}</Emoji>
-                ) : (
-                  <Icon animateWhenIdle size={20} />
-                )}
-                <Label isHighlighted={isHighlighted} numberOfLines={1}>
-                  {emojiInfo?.formattedText ?? label.trim()}
-                </Label>
-              </IconLabelContainer>
-              <NumberOfActiveItems
-                numberOfActiveItems={numberOfActiveItems}
-                isHighlighted={isHighlighted}
-              />
-      </ListCardContainer>
-    </SwipeableListCard>
+          <IconLabelContainer>
+            {ControlComponent && (
+              <ControlComponentContainer>
+                {ControlComponent}
+              </ControlComponentContainer>
+            )}
+            {emojiInfo?.emoji ? (
+              <Emoji adjustsFontSizeToFit>{emojiInfo.emoji}</Emoji>
+            ) : (
+              <Icon animateWhenIdle size={20} />
+            )}
+            <Label isHighlighted={isHighlighted} numberOfLines={1}>
+              {emojiInfo?.formattedText ?? label.trim()}
+            </Label>
+          </IconLabelContainer>
+
+          <NumberOfActiveItems
+            numberOfActiveItems={numberOfActiveItems}
+            isHighlighted={isHighlighted}
+          />
+        </ListCardContainer>
+      </SwipeableListCard>
     );
   },
 );
 
 export {EditableListCard};
+

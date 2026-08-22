@@ -4,11 +4,13 @@ import {FadingView} from '../fading-view';
 import {ShrinkableView} from '../shrinkable-view';
 
 export const Tile = styled.View`
-  height: 100px;
-  width: 114px;
-  border-radius: 10px;
+  height: 104px;
+  width: 118px;
+  border-radius: 14px;
   background-color: ${({theme}) => theme.colors.counterTile};
-  padding: 8px;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.06);
+  padding: 10px;
   align-items: center;
   justify-content: space-between;
 `;
@@ -20,19 +22,19 @@ export const TileTitleContainer = styled.View`
 `;
 
 export const IconContainer = styled.View`
-  height: 26px;
-  width: 26px;
-  border-radius: 13px;
+  height: 24px;
+  width: 24px;
+  border-radius: 7px;
   background-color: ${({theme}) => theme.colors.counterIconBackground};
   align-items: center;
   justify-content: center;
 `;
 
 export const Title = styled.Text`
-  font-family: ${({theme}) => theme.fonts.counterTitle};
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
   color: ${({theme}) => theme.colors.text};
   font-size: 11px;
-  line-height: 13px;
+  line-height: 14px;
   margin-left: 6px;
   flex: 1;
   flex-wrap: wrap;
@@ -40,14 +42,16 @@ export const Title = styled.Text`
 
 export const CounterText = styled.Text`
   font-family: ${({theme}) => theme.fonts.counterValue};
-  font-size: 32px;
+  font-size: 30px;
   color: ${({theme}) => theme.colors.text};
+  font-weight: 700;
 `;
 
 export const EditingCounterText = styled.Text`
   font-family: ${({theme}) => theme.fonts.counterValue};
-  font-size: 24px;
+  font-size: 22px;
   color: ${({theme}) => theme.colors.text};
+  font-weight: 700;
 `;
 
 export const ButtonContainer = styled(Animated.View)`
@@ -58,12 +62,14 @@ export const ButtonContainer = styled(Animated.View)`
 `;
 
 export const Button = styled.View`
-  height: 14px;
-  width: 26px;
-  background-color: ${({theme}) => theme.colors.primary};
-  border-radius: 12px;
+  height: 12px;
+  width: 24px;
+  background-color: rgba(121, 86, 191, 0.25);
+  border-radius: 6px;
   align-items: center;
   justify-content: center;
+  border-width: 1px;
+  border-color: rgba(121, 86, 191, 0.4);
 `;
 
 export const ReplacebleContainer = styled(FadingView)`
@@ -90,10 +96,10 @@ export const EditingContainer = styled(FadingView)`
 export const ActionButtonContainer = styled(ShrinkableView).attrs({
   scaleFactor: 0.08,
 })`
-  height: 34px;
-  width: 34px;
+  height: 30px;
+  width: 30px;
   background-color: ${({theme}) => theme.colors.primary};
-  border-radius: 20px;
+  border-radius: 9px;
   justify-content: center;
   align-items: center;
 `;
@@ -117,3 +123,4 @@ export const OptionsIconContainer = styled.View`
 `;
 
 export const EditingTextContainer = styled(ShrinkableView)``;
+

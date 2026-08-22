@@ -25,6 +25,7 @@ type StackNavigatorParamList = {
   AIUsage: undefined;
   NotificationSettings: undefined;
   BackupSettings: undefined;
+  SecuritySettings: undefined;
 };
 
 

@@ -1,38 +1,36 @@
 import styled from 'styled-components/native';
-import { ShrinkableView } from '../shrinkable-view';
 
 export const TitleContainer = styled.View`
-  border-width: 1px;
-  border-radius: 8px;
-  border-color: ${({theme}) => theme.colors.sectionTitleBorder};
-  justify-content: center;
-  align-items: center;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 24px;
 `;
 
 export const Title = styled.Text`
   font-family: ${({theme}) => theme.fonts.sectionTitle};
-  font-size: 16px;
-  color: ${({theme}) => theme.colors.text};
-  font-weight: 800;
-  margin-top: 4px;
-  margin-bottom: 4px;
+  font-size: 13px;
+  color: ${({theme}) => theme.colors.iconOverlay};
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex: 1;
+`;
+
+export const RightActionsContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 export const ControlContainer = styled.View`
-  position: absolute;
-  right: 10px;
-  height: 100%;
-  width: 28px;
   align-items: center;
   justify-content: center;
+  margin-left: 8px;
 `;
 
 export const ReactionContainer = styled.View`
-  position: absolute;
-  right: 10px;
-  height: 100%;
-  width: 28px;
   align-items: center;
   justify-content: center;
+  margin-left: 8px;
 `;

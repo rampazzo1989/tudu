@@ -9,18 +9,21 @@ type HighlightableComponentProps = {
 export const ListCardContainer = styled(
   ShrinkableView,
 )<HighlightableComponentProps>`
-  height: 54px;
+  min-height: 52px;
   width: 100%;
-  // flex-grow: 1;
   align-items: center;
   background-color: ${({theme, isHighlighted}) =>
     isHighlighted ? theme.colors.listCardHighlighted : theme.colors.listCard};
-  border-radius: 10px;
+  border-radius: 14px;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.06);
   flex-direction: row;
-  padding-horizontal: 16px;
+  padding-horizontal: 14px;
 `;
+
 
 export const Emoji = styled(Animated.Text)`
   color: ${({theme}) => theme.colors.headerText};
   font-size: 18px;
 `;
+

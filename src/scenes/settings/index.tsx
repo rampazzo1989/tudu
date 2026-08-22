@@ -6,7 +6,8 @@ import {SettingsIcon} from '../../components/animated-icons/settings-icon';
 import {DefaultHeader} from '../../components/default-header';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
-import {aiSettingsState, backupSettingsState, notificationSettingsState} from '../../state/atoms';
+import {aiSettingsState, backupSettingsState, notificationSettingsState, securitySettingsState} from '../../state/atoms';
+import {useAITokenUsage} from '../../service/ai';
 import {
   Container,
   SectionContainer,
@@ -28,13 +29,23 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const aiSettings = useRecoilValue(aiSettingsState);
   const notificationSettings = useRecoilValue(notificationSettingsState);
   const backupSettings = useRecoilValue(backupSettingsState);
+  const securitySettings = useRecoilValue(securitySettingsState);
+  const {monthlyStats} = useAITokenUsage();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
+  const handleSecuritySettingsPress = useCallback(() => {
+    navigation.navigate('SecuritySettings');
+  }, [navigation]);
+
   const handleAISettingsPress = useCallback(() => {
     navigation.navigate('AISettings');
+  }, [navigation]);
+
+  const handleAIUsagePress = useCallback(() => {
+    navigation.navigate('AIUsage');
   }, [navigation]);
 
   const handleNotificationSettingsPress = useCallback(() => {
@@ -44,6 +55,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const handleBackupSettingsPress = useCallback(() => {
     navigation.navigate('BackupSettings');
   }, [navigation]);
+
 
   const getProviderName = (providerKey: string) => {
     return t(`settings.ai.providers.${providerKey}`, {
@@ -88,6 +100,24 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
     return t('settings.backup.statusNotConfigured', { defaultValue: 'Não configurado' });
   };
 
+  const isSecurityActive = securitySettings.isLockEnabled;
+
+  const getSecurityStatusText = () => {
+    if (securitySettings.isLockEnabled) {
+      if (securitySettings.isBiometricsEnabled) {
+        return t('settings.security.statusPinBiometrics', {
+          defaultValue: 'PIN + Biometria',
+        });
+      }
+      return t('settings.security.statusPinOnly', {
+        defaultValue: 'PIN Ativo',
+      });
+    }
+    return t('settings.security.statusDisabled', {
+      defaultValue: 'Desativado',
+    });
+  };
+
   return (
     <Page>
       <DefaultHeader
@@ -97,6 +127,40 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
       />
       <PageContent contentContainerStyle={styles.scrollContentContainer}>
         <Container>
+          {/* Security & Lock Section */}
+          <SectionContainer>
+            <SectionTitleText>
+              {t('settings.security.sectionTitle', {
+                defaultValue: 'Segurança & Privacidade',
+              })}
+            </SectionTitleText>
+            <SettingsCard onPress={handleSecuritySettingsPress}>
+              <CardLeftContent>
+                <IconContainer>
+                  <Text style={{fontSize: 22}}>🔒</Text>
+                </IconContainer>
+                <CardTextContainer>
+                  <CardTitle>
+                    {t('settings.security.title', {
+                      defaultValue: 'Segurança e Bloqueio',
+                    })}
+                  </CardTitle>
+                  <CardSubtitle numberOfLines={2}>
+                    {t('settings.security.subtitle', {
+                      defaultValue:
+                        'Bloquear aplicativo com senha (PIN) e biometria',
+                    })}
+                  </CardSubtitle>
+                </CardTextContainer>
+              </CardLeftContent>
+              <StatusBadge active={isSecurityActive}>
+                <StatusText active={isSecurityActive}>
+                  {getSecurityStatusText()}
+                </StatusText>
+              </StatusBadge>
+            </SettingsCard>
+          </SectionContainer>
+
           {/* Backup & Restore Section */}
           <SectionContainer>
             <SectionTitleText>
@@ -174,7 +238,36 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
                 </StatusText>
               </StatusBadge>
             </SettingsCard>
+
+            <SettingsCard onPress={handleAIUsagePress} style={{marginTop: 8}}>
+              <CardLeftContent>
+                <IconContainer>
+                  <Text style={{fontSize: 22}}>📊</Text>
+                </IconContainer>
+                <CardTextContainer>
+                  <CardTitle>{t('settings.ai.usage.title', {defaultValue: 'Consumo de Tokens'})}</CardTitle>
+                  <CardSubtitle numberOfLines={2}>
+                    {monthlyStats.totalTokens > 0
+                      ? t('settings.ai.usage.cardSubtitle', {
+                          tokens: monthlyStats.totalTokens.toLocaleString(),
+                          defaultValue: `${monthlyStats.totalTokens.toLocaleString()} tokens consumidos este mês`,
+                        })
+                      : t('settings.ai.usage.cardSubtitleEmpty', {
+                          defaultValue: 'Veja o relatório detalhado de tokens',
+                        })}
+                  </CardSubtitle>
+                </CardTextContainer>
+              </CardLeftContent>
+              <StatusBadge active={monthlyStats.totalTokens > 0}>
+                <StatusText active={monthlyStats.totalTokens > 0}>
+                  {monthlyStats.totalTokens > 0
+                    ? `${monthlyStats.totalTokens.toLocaleString()} tokens`
+                    : t('settings.ai.usage.periods.month', {defaultValue: 'Este mês'})}
+                </StatusText>
+              </StatusBadge>
+            </SettingsCard>
           </SectionContainer>
+
         </Container>
       </PageContent>
     </Page>

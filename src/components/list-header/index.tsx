@@ -1,7 +1,7 @@
 import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
 import {FadeIn, ZoomInRotate} from 'react-native-reanimated';
 
-import {AISuggestionsHeaderButton, ContentRow, Emoji, styles, Title, TitleContainer} from './styles';
+import {ContentRow, Emoji, styles, Title, TitleContainer} from './styles';
 import {ListHeaderProps} from './types';
 
 import {useTheme} from 'styled-components/native';
@@ -12,7 +12,8 @@ import {BackButton} from '../back-button';
 import {ListDefaultIcon} from '../animated-icons/list-default-icon';
 
 const ListHeader: React.FC<ListHeaderProps> = memo(
-  ({listData, onBackButtonPress, onAISuggestionsPress, Icon}) => {
+  ({listData, onBackButtonPress, Icon}) => {
+
     const [titleWidth, setTitleWidth] = useState(0);
     const iconRef = useRef<AnimatedIconRef>(null);
     const theme = useTheme();
@@ -40,12 +41,8 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
               minimumFontScale={0.6}>
               {emojiInfo?.formattedText ?? listData?.label?.trim()}
             </Title>
-            {onAISuggestionsPress && (
-              <AISuggestionsHeaderButton onPress={onAISuggestionsPress} hitSlop={10}>
-                <Emoji style={{fontSize: 15, opacity: 1}}>✨</Emoji>
-              </AISuggestionsHeaderButton>
-            )}
           </TitleContainer>
+
 
           {Icon ? (
             <Icon

@@ -18,6 +18,7 @@ import {AISettingsPage} from '../../scenes/settings/ai-settings';
 import {AIUsagePage} from '../../scenes/settings/ai-usage';
 import {NotificationSettingsPage} from '../../scenes/settings/notification-settings';
 import {BackupSettingsPage} from '../../scenes/settings/backup-settings';
+import {SecuritySettingsPage} from '../../scenes/settings/security-settings';
 
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
@@ -190,6 +191,17 @@ const StackNavigator = () => {
       <Stack.Screen
         name="BackupSettings"
         component={BackupSettingsPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: configSlow,
+            close: configSlow,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="SecuritySettings"
+        component={SecuritySettingsPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {

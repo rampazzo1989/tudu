@@ -1,8 +1,8 @@
 import styled from 'styled-components/native';
-import {AppIcon} from '../../../../assets/static/app_icon';
 import {LogoText} from '../../../../assets/static/logo_text';
 import {ProfileIcon} from '../../../../components/animated-icons/profile-icon';
 import {TuduIcon} from '../../../../components/animated-icons/tudu-icon';
+import {ShrinkableView} from '../../../../components/shrinkable-view';
 
 export const LogoAndTitle = styled.View`
   flex-direction: row;
@@ -10,8 +10,8 @@ export const LogoAndTitle = styled.View`
 `;
 
 export const LogoIcon = styled(TuduIcon)`
-  height: 30px;
-  width: 30px;
+  height: 32px;
+  width: 32px;
 `;
 
 export const LogoTitle = styled(LogoText).attrs(() => ({}))`
@@ -22,6 +22,7 @@ export const ContentRow = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 `;
 
 export const SearchAndProfile = styled.View`
@@ -30,6 +31,7 @@ export const SearchAndProfile = styled.View`
   justify-content: flex-end;
   height: 100%;
 `;
+
 
 export const HeaderActions = styled.View`
   flex-direction: row;
@@ -41,3 +43,4 @@ export const HeaderActions = styled.View`
 export const StyledProfileIcon = styled(ProfileIcon)`
   margin-left: 6px;
 `;
+
