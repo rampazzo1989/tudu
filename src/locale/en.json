@@ -42,6 +42,7 @@
   "actions": {
     "delete": "Delete",
     "newList": "New list",
+    "newListFromText": "List from text",
     "newGroup": "New group",
     "newCounter": "New counter",
     "sendToToday": "Send to Today",
@@ -464,6 +465,25 @@
     "errorTitle": "Error opening file",
     "errorMsg": "Could not read the selected file.",
     "importErrorMsg": "Failed to save the imported list."
+  },
+  "pasteListModal": {
+    "title": "List from Text",
+    "subtitle": "Paste any text to organize with AI",
+    "placeholder": "Paste your shopping list, tasks, ingredients or WhatsApp messages here...\n\nExample:\n• Sliced bread\n• 8 french rolls\n• Papaya\n• 2 cartons of eggs",
+    "buttonProcess": "✨ Organize with AI",
+    "loading": "✨ Analyzing and organizing items with AI...",
+    "listTitleLabel": "List Name",
+    "itemsFound": "{{count}} items found",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "buttonCreate": "Create List ({{count}})",
+    "buttonCreateNone": "None selected",
+    "buttonBack": "Back to text",
+    "noApiKey": "Configure your API key in AI settings to convert text into lists.",
+    "configureAI": "⚙️ Configure AI",
+    "emptyError": "No items found in pasted text. Try pasting a list with items or tasks.",
+    "genericError": "Could not process text with AI at this time.",
+    "successToast": "List '{{name}}' created successfully!"
   }
 }
 

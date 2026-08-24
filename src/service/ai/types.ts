@@ -1,5 +1,5 @@
 export type AIProvider = 'openai' | 'gemini' | 'claude';
-export type AIFeature = 'emoji' | 'task_suggestions' | 'test';
+export type AIFeature = 'emoji' | 'task_suggestions' | 'parse_list' | 'test';
 
 export interface AISettings {
   provider: AIProvider;
@@ -52,6 +52,21 @@ export interface TaskSuggestionItem {
   selected: boolean;
 }
 
+export interface ParseListRequest {
+  rawText: string;
+}
+
+export interface ParsedListResult {
+  title: string;
+  items: string[];
+}
+
+export interface ParsedListItem {
+  id: string;
+  label: string;
+  selected: boolean;
+}
+
 export interface AIProviderInfo {
   id: AIProvider;
   name: string;
@@ -59,5 +74,6 @@ export interface AIProviderInfo {
   placeholder: string;
   helpUrl: string;
 }
+
 
 

@@ -42,6 +42,7 @@
   "actions": {
     "delete": "Excluir",
     "newList": "Nova lista",
+    "newListFromText": "Lista a partir de texto",
     "newGroup": "Novo grupo",
     "newCounter": "Novo contador",
     "sendToToday": "Enviar para Hoje",
@@ -464,6 +465,25 @@
     "errorTitle": "Erro ao abrir arquivo",
     "errorMsg": "Não foi possível ler o arquivo selecionado.",
     "importErrorMsg": "Falha ao salvar a lista importada."
+  },
+  "pasteListModal": {
+    "title": "Lista a partir de Texto",
+    "subtitle": "Cole qualquer texto para organizar com IA",
+    "placeholder": "Cole aqui sua lista de compras, tarefas, ingredientes ou mensagens do WhatsApp...\n\nExemplo:\n• Pão de forma\n• 8 pão francês\n• Mamão\n• 2 bandejas de ovos",
+    "buttonProcess": "✨ Organizar com IA",
+    "loading": "✨ Analisando e organizando itens com IA...",
+    "listTitleLabel": "Nome da Lista",
+    "itemsFound": "{{count}} itens encontrados",
+    "selectAll": "Selecionar todos",
+    "deselectAll": "Desmarcar todos",
+    "buttonCreate": "Criar Lista ({{count}})",
+    "buttonCreateNone": "Nenhum selecionado",
+    "buttonBack": "Voltar ao texto",
+    "noApiKey": "Configure sua chave de API nas configurações de IA para converter textos em listas.",
+    "configureAI": "⚙️ Configurar IA",
+    "emptyError": "Nenhum item identificado no texto colado. Tente colar uma lista com itens ou tarefas.",
+    "genericError": "Não foi possível processar o texto com IA no momento.",
+    "successToast": "Lista '{{name}}' criada com sucesso!"
   }
 }
 

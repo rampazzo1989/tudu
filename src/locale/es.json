@@ -42,6 +42,7 @@
   "actions": {
     "delete": "Eliminar",
     "newList": "Nueva lista",
+    "newListFromText": "Lista desde texto",
     "newGroup": "Nuevo grupo",
     "newCounter": "Nuevo contador",
     "sendToToday": "Enviar a Hoy",
@@ -464,6 +465,25 @@
     "errorTitle": "Error al abrir archivo",
     "errorMsg": "No se pudo leer el archivo seleccionado.",
     "importErrorMsg": "Error al guardar la lista importada."
+  },
+  "pasteListModal": {
+    "title": "Lista desde Texto",
+    "subtitle": "Pega cualquier texto para organizar con IA",
+    "placeholder": "Pega aquí tu lista de compras, tareas, ingredientes o mensajes de WhatsApp...\n\nEjemplo:\n• Pan de molde\n• 8 panes\n• Papaya\n• 2 cartones de huevos",
+    "buttonProcess": "✨ Organizar con IA",
+    "loading": "✨ Analizando y organizando elementos con IA...",
+    "listTitleLabel": "Nombre de la Lista",
+    "itemsFound": "{{count}} elementos encontrados",
+    "selectAll": "Seleccionar todos",
+    "deselectAll": "Deseleccionar todos",
+    "buttonCreate": "Crear Lista ({{count}})",
+    "buttonCreateNone": "Ninguno seleccionado",
+    "buttonBack": "Volver al texto",
+    "noApiKey": "Configura tu clave de API en los ajustes de IA para convertir texto en listas.",
+    "configureAI": "⚙️ Configurar IA",
+    "emptyError": "No se encontraron elementos en el texto pegado. Intenta pegar una lista con tareas o elementos.",
+    "genericError": "No se pudo procesar el texto con IA en este momento.",
+    "successToast": "¡Lista '{{name}}' creada con éxito!"
   }
 }
 
