@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { appLockSessionState, LockTimeoutOption, securitySettingsState } from '../../state/atoms';
+import { isAppLockSuppressed } from './appLockControl';
 
 const TIMEOUT_MS_MAP: Record<LockTimeoutOption, number> = {
   immediate: 500, // small threshold to ignore quick orientation or permission flashes
@@ -15,6 +16,7 @@ export function useAppLockLifecycle() {
   const [session, setSession] = useRecoilState(appLockSessionState);
   const appState = useRef<AppStateStatus>(AppState.currentState);
   const backgroundTimestampRef = useRef<number | null>(null);
+  const wasSuppressedDuringBackgroundRef = useRef<boolean>(false);
 
   // Initial cold start check: lock app if lock is enabled
   useEffect(() => {
@@ -41,6 +43,7 @@ export function useAppLockLifecycle() {
           prevAppState === 'active' &&
           (nextAppState === 'background' || nextAppState === 'inactive')
         ) {
+          wasSuppressedDuringBackgroundRef.current = isAppLockSuppressed();
           backgroundTimestampRef.current = Date.now();
           setSession(prev => ({
             ...prev,
@@ -51,7 +54,10 @@ export function useAppLockLifecycle() {
           nextAppState === 'active'
         ) {
           const bgTime = backgroundTimestampRef.current;
-          if (bgTime) {
+          const isSuppressed =
+            wasSuppressedDuringBackgroundRef.current || isAppLockSuppressed();
+
+          if (bgTime && !isSuppressed) {
             const elapsed = Date.now() - bgTime;
             const threshold = TIMEOUT_MS_MAP[securitySettings.lockTimeout] || 0;
 
@@ -63,6 +69,7 @@ export function useAppLockLifecycle() {
             }
           }
           backgroundTimestampRef.current = null;
+          wasSuppressedDuringBackgroundRef.current = false;
         }
       },
     );

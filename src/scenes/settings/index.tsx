@@ -8,6 +8,8 @@ import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
 import {aiSettingsState, backupSettingsState, notificationSettingsState, securitySettingsState} from '../../state/atoms';
 import {useAITokenUsage} from '../../service/ai';
+import {useImportListService} from '../../service/list-sharing';
+import {ImportListModal} from '../../components/import-list-modal';
 import {
   Container,
   SectionContainer,
@@ -31,6 +33,13 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const backupSettings = useRecoilValue(backupSettingsState);
   const securitySettings = useRecoilValue(securitySettingsState);
   const {monthlyStats} = useAITokenUsage();
+  const {
+    previewData,
+    isImporting,
+    pickAndPreviewTuduFile,
+    confirmImport,
+    cancelImport,
+  } = useImportListService();
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -186,6 +195,29 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
                 </StatusText>
               </StatusBadge>
             </SettingsCard>
+
+            <SettingsCard onPress={pickAndPreviewTuduFile} style={{marginTop: 8}}>
+              <CardLeftContent>
+                <IconContainer>
+                  <Text style={{fontSize: 22}}>📥</Text>
+                </IconContainer>
+                <CardTextContainer>
+                  <CardTitle>
+                    {t('settings.importList.title', { defaultValue: 'Importar Lista' })}
+                  </CardTitle>
+                  <CardSubtitle numberOfLines={2}>
+                    {t('settings.importList.subtitle', {
+                      defaultValue: 'Importar lista a partir de um arquivo .tudu compartilhado',
+                    })}
+                  </CardSubtitle>
+                </CardTextContainer>
+              </CardLeftContent>
+              <StatusBadge active={false}>
+                <StatusText active={false}>
+                  .tudu
+                </StatusText>
+              </StatusBadge>
+            </SettingsCard>
           </SectionContainer>
 
           {/* Notifications Section */}
@@ -270,6 +302,13 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
 
         </Container>
       </PageContent>
+      <ImportListModal
+        visible={!!previewData}
+        preview={previewData}
+        onConfirmImport={confirmImport}
+        onCancel={cancelImport}
+        isLoading={isImporting}
+      />
     </Page>
   );
 };

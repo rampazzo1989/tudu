@@ -53,6 +53,9 @@ import { toastSpan } from '../../state/atoms';
 import { ScheduleModal } from '../schedule-modal';
 import { AISuggestionsModal } from '../ai-suggestions-modal';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
+import { ListOptionsButton } from '../list-options-button';
+import { exportAndShareListFile, shareListAsText } from '../../service/list-sharing';
+import Toast from 'react-native-toast-message';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -326,6 +329,32 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       setAiSuggestionsModalVisible(false);
     }, []);
 
+    const handleShareFile = useCallback(async () => {
+      if (!internalList) return;
+      try {
+        await exportAndShareListFile(internalList, tudus);
+      } catch (error: any) {
+        Toast.show({
+          type: 'error',
+          text1: t('messages.shareErrorTitle', { defaultValue: 'Erro ao compartilhar' }),
+          text2: error.message || t('messages.shareErrorMsg', { defaultValue: 'Não foi possível gerar o arquivo da lista.' }),
+        });
+      }
+    }, [internalList, tudus, t]);
+
+    const handleShareText = useCallback(async () => {
+      if (!internalList) return;
+      try {
+        await shareListAsText(internalList, tudus);
+      } catch (error: any) {
+        Toast.show({
+          type: 'error',
+          text1: t('messages.shareErrorTitle', { defaultValue: 'Erro ao compartilhar' }),
+          text2: error.message || t('messages.shareErrorMsg', { defaultValue: 'Não foi possível gerar o texto da lista.' }),
+        });
+      }
+    }, [internalList, tudus, t]);
+
     return (
       <Page>
         <ListHeader
@@ -365,6 +394,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 TopComponent={TopComponent}
               />
             </Animated.View>
+          )}
+          {!isSmartList && !loading && !!list?.label && list?.id !== UNLISTED_LIST_ID && (
+            <ListOptionsButton
+              onShareTextPress={handleShareText}
+              onShareFilePress={handleShareFile}
+            />
           )}
           {allowAdding && !loading && (
             <>

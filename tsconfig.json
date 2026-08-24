@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "react",
     "types": [
-      "@types/styled-components-react-native"
+      "@types/styled-components-react-native",
+      "jest"
     ],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true

@@ -21,6 +21,7 @@ import i18next from './src/i18n';
 import { NotificationBootSync } from './src/service/notification';
 import { navigationRef } from './src/navigation/navigation-ref';
 import { AppLockGate } from './src/components/app-lock-gate';
+import { IncomingTuduFileHandler } from './src/components/incoming-tudu-file-handler';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -38,6 +39,7 @@ function App(): React.JSX.Element {
                 <IdleProvider>
                   <AppLockGate>
                     <NotificationBootSync />
+                    <IncomingTuduFileHandler />
                     <NavigationContainer ref={navigationRef}>
                       <StackNavigator />
                       <Toast config={toastConfig} />

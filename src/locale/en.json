@@ -61,7 +61,9 @@
       "group": "group"
     }, 
     "confirmCounterDelete": "Confirm deletion of counter '{{counterTitle}}'?",
-    "confirmSendRecurrentToToday": "Rescheduling affects all subsequent occurrences. You can:"
+    "confirmSendRecurrentToToday": "Rescheduling affects all subsequent occurrences. You can:",
+    "shareErrorTitle": "Share Error",
+    "shareErrorMsg": "Could not generate the list file."
   },
   "toast": {
     "tuduDeleted": "Tudú deleted",
@@ -128,7 +130,10 @@
     "clearAll": "Clear all",
     "rename": "Rename",
     "deleteGroup": "Delete group",
-    "ungroupAll": "Ungroup all"
+    "ungroupAll": "Ungroup all",
+    "share": "Share",
+    "shareText": "Share as text",
+    "shareFile": "Share file (.tudu)"
   },
   "tuduSamples": {
     "checkThis": "Touch here to finish this tudú 👆",
@@ -351,6 +356,10 @@
       "backupNow": "Backup Now",
       "connectAndBackup": "Connect & Backup"
     },
+    "importList": {
+      "title": "Import List",
+      "subtitle": "Import a list from a shared .tudu file"
+    },
     "security": {
       "sectionTitle": "Security & Privacy",
       "title": "Security and Lock",
@@ -440,6 +449,21 @@
     "noApiKey": "Configure your API key in AI Settings to generate smart suggestions.",
     "configureAI": "⚙️ Configure AI",
     "error": "Could not load suggestions at this moment."
+  },
+  "importModal": {
+    "title": "Import List",
+    "subtitle": "Shared .tudu file",
+    "statTotal": "Total items",
+    "statPending": "Pending",
+    "statStarred": "Starred",
+    "statScheduled": "Scheduled",
+    "infoText": "A new list will be created with all tasks and due dates preserved.",
+    "confirmButton": "Import List",
+    "successTitle": "List imported!",
+    "successMsg": "The list was imported successfully.",
+    "errorTitle": "Error opening file",
+    "errorMsg": "Could not read the selected file.",
+    "importErrorMsg": "Failed to save the imported list."
   }
 }
 

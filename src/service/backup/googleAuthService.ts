@@ -4,6 +4,7 @@ import {
   User,
 } from '@react-native-google-signin/google-signin';
 import { BackupGoogleUser } from '../../state/atoms';
+import { withAppLockSuppressed } from '../security';
 
 export const GOOGLE_DRIVE_APPDATA_SCOPE =
   'https://www.googleapis.com/auth/drive.appdata';
@@ -43,7 +44,9 @@ export const signInWithGoogle = async (): Promise<BackupGoogleUser> => {
 
   try {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    const response = await GoogleSignin.signIn();
+    const response = await withAppLockSuppressed(async () => {
+      return await GoogleSignin.signIn();
+    });
     
     // In newer versions response.data is the User object, in older response is User
     const userObj = (response as any).data || response;

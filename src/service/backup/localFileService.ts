@@ -1,6 +1,7 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import DocumentPicker from 'react-native-document-picker';
 import Share from 'react-native-share';
+import { withAppLockSuppressed } from '../security';
 
 export const exportLocalBackupFile = async (
   jsonContent: string,
@@ -15,17 +16,23 @@ export const exportLocalBackupFile = async (
 
   // 2. Open native share sheet so user can save to Files / Downloads or send via email/chat
   try {
-    await Share.open({
-      url: `file://${filePath}`,
-      type: 'application/json',
-      filename: filename.replace('.json', ''),
-      saveToFiles: true,
-      title: 'Exportar Backup Tudu',
-      subject: 'Backup Tudu',
+    await withAppLockSuppressed(async () => {
+      await Share.open({
+        url: `file://${filePath}`,
+        type: 'application/json',
+        filename: filename.replace('.json', ''),
+        saveToFiles: true,
+        title: 'Exportar Backup Tudu',
+        subject: 'Backup Tudu',
+      });
     });
   } catch (error: any) {
     // User dismissing the share sheet is not an error
-    if (error?.message && !error.message.includes('User did not share') && !error.message.includes('dismissed')) {
+    if (
+      error?.message &&
+      !error.message.includes('User did not share') &&
+      !error.message.includes('dismissed')
+    ) {
       throw error;
     }
   }
@@ -36,9 +43,11 @@ export const pickAndReadLocalBackupFile = async (): Promise<{
   filename: string;
 }> => {
   try {
-    const res = await DocumentPicker.pickSingle({
-      type: [DocumentPicker.types.allFiles, 'application/json', 'text/plain'],
-      copyTo: 'cachesDirectory',
+    const res = await withAppLockSuppressed(async () => {
+      return await DocumentPicker.pickSingle({
+        type: [DocumentPicker.types.allFiles, 'application/json', 'text/plain'],
+        copyTo: 'cachesDirectory',
+      });
     });
 
     const fileUri = res.fileCopyUri || res.uri;

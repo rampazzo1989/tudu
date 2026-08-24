@@ -61,7 +61,9 @@
       "group": "grupo"
     },
     "confirmCounterDelete": "Confirmar exclusão do contador '{{counterTitle}}'?",
-    "confirmSendRecurrentToToday": "Reprogramar afeta todas as próximas ocorrências. Você pode:"
+    "confirmSendRecurrentToToday": "Reprogramar afeta todas as próximas ocorrências. Você pode:",
+    "shareErrorTitle": "Erro ao compartilhar",
+    "shareErrorMsg": "Não foi possível gerar o arquivo da lista."
   },
   "toast": {
     "tuduDeleted": "Tudú excluído",
@@ -128,7 +130,10 @@
     "clearAll": "Limpar todos",
     "rename": "Renomear",
     "deleteGroup": "Excluir grupo",
-    "ungroupAll": "Desagrupar todos"
+    "ungroupAll": "Desagrupar todos",
+    "share": "Compartilhar",
+    "shareText": "Compartilhar texto",
+    "shareFile": "Compartilhar arquivo (.tudu)"
   },
   "tuduSamples": {
     "checkThis": "Toque aqui para concluir este tudú 👆",
@@ -351,6 +356,10 @@
       "backupNow": "Fazer Backup",
       "connectAndBackup": "Conectar & Salvar"
     },
+    "importList": {
+      "title": "Importar Lista",
+      "subtitle": "Importar lista a partir de um arquivo .tudu compartilhado"
+    },
     "security": {
       "sectionTitle": "Segurança & Privacidade",
       "title": "Segurança e Bloqueio",
@@ -440,6 +449,21 @@
     "noApiKey": "Configure sua chave de API nas configurações de IA para gerar sugestões inteligentes.",
     "configureAI": "⚙️ Configurar IA",
     "error": "Não foi possível carregar sugestões no momento."
+  },
+  "importModal": {
+    "title": "Importar Lista",
+    "subtitle": "Arquivo .tudu compartilhado",
+    "statTotal": "Total de itens",
+    "statPending": "Pendentes",
+    "statStarred": "Favoritos",
+    "statScheduled": "Agendados",
+    "infoText": "Uma nova lista será criada com todos os itens e prazos preservados.",
+    "confirmButton": "Importar Lista",
+    "successTitle": "Lista importada!",
+    "successMsg": "A lista foi importada com sucesso.",
+    "errorTitle": "Erro ao abrir arquivo",
+    "errorMsg": "Não foi possível ler o arquivo selecionado.",
+    "importErrorMsg": "Falha ao salvar a lista importada."
   }
 }
 

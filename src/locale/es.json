@@ -61,7 +61,9 @@
       "group": "grupo"
     },
     "confirmCounterDelete": "¿Confirmar eliminación del contador '{{counterTitle}}'?",
-    "confirmSendRecurrentToToday": "Reprogramar afecta a todas las ocurrencias posteriores. Puedes:"
+    "confirmSendRecurrentToToday": "Reprogramar afecta a todas las ocurrencias posteriores. Puedes:",
+    "shareErrorTitle": "Error al compartir",
+    "shareErrorMsg": "No se pudo generar el archivo de la lista."
   },
   "toast": {
     "tuduDeleted": "Tudú eliminado",
@@ -128,7 +130,10 @@
     "clearAll": "Limpiar todos",
     "rename": "Renombrar",
     "deleteGroup": "Eliminar grupo",
-    "ungroupAll": "Desagrupar todos"
+    "ungroupAll": "Desagrupar todos",
+    "share": "Compartir",
+    "shareText": "Compartir texto",
+    "shareFile": "Compartir archivo (.tudu)"
   },
   "tuduSamples": {
     "checkThis": "Toca aquí para completar este tudú 👆",
@@ -351,6 +356,10 @@
       "backupNow": "Hacer Copia Ahora",
       "connectAndBackup": "Conectar y Guardar"
     },
+    "importList": {
+      "title": "Importar Lista",
+      "subtitle": "Importar lista desde un archivo .tudu compartido"
+    },
     "security": {
       "sectionTitle": "Seguridad y Privacidad",
       "title": "Seguridad y Bloqueo",
@@ -440,6 +449,21 @@
     "noApiKey": "Configura tu clave de API en Ajustes de IA para generar sugerencias.",
     "configureAI": "⚙️ Configurar IA",
     "error": "No se pudieron cargar sugerencias en este momento."
+  },
+  "importModal": {
+    "title": "Importar Lista",
+    "subtitle": "Archivo .tudu compartido",
+    "statTotal": "Total de tareas",
+    "statPending": "Pendientes",
+    "statStarred": "Favoritos",
+    "statScheduled": "Programadas",
+    "infoText": "Se creará una nueva lista conservando todas las tareas y fechas.",
+    "confirmButton": "Importar Lista",
+    "successTitle": "¡Lista importada!",
+    "successMsg": "La lista se importó correctamente.",
+    "errorTitle": "Error al abrir archivo",
+    "errorMsg": "No se pudo leer el archivo seleccionado.",
+    "importErrorMsg": "Error al guardar la lista importada."
   }
 }
 
