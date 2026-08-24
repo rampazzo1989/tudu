@@ -114,7 +114,7 @@ export const ItemRow = styled.TouchableOpacity<{ isSelected?: boolean }>`
   flex-direction: row;
   align-items: center;
   padding-vertical: 10px;
-  padding-horizontal: 10px;
+  padding-horizontal: 12px;
   border-radius: 10px;
   margin-bottom: 6px;
   background-color: ${({ isSelected }) =>
@@ -126,18 +126,23 @@ export const ItemRow = styled.TouchableOpacity<{ isSelected?: boolean }>`
 
 export const ItemTextContainer = styled.View`
   flex: 1;
-  margin-horizontal: 10px;
+  margin-left: 10px;
+  margin-right: 6px;
+  justify-content: center;
 `;
 
 export const ItemLabel = styled.Text<{ isSelected?: boolean }>`
   font-family: ${({ theme }) => theme.fonts.itemLabel};
   font-size: 14px;
+  line-height: 19px;
   color: ${({ isSelected, theme }) =>
     isSelected ? theme.colors.contrastColor : '#A0AAB8'};
 `;
 
 export const ItemDismissButton = styled(ShrinkableView)`
   padding: 4px 6px;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const ItemDismissText = styled.Text`

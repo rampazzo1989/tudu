@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
+    "reinstall": "rm -rf node_modules && yarn",
     "postinstall": "patch-package"
   },
   "dependencies": {

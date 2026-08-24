@@ -4,18 +4,20 @@ import { Dimensions } from 'react-native';
 const { width } = Dimensions.get('window');
 const BUTTON_SIZE = Math.min(Math.max(width * 0.18, 58), 70);
 
-export const LockContainer = styled.SafeAreaView`
+export const LockContainer = styled.View<{ insetsTop: number; insetsBottom: number }>`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.pageBackground};
   align-items: center;
-  justify-content: space-between;
-  padding-vertical: 24px;
+  justify-content: center;
+  padding-top: ${({ insetsTop }) => Math.max(insetsTop, 16)}px;
+  padding-bottom: ${({ insetsBottom }) => Math.max(insetsBottom, 16) + 32}px;
+  padding-horizontal: 20px;
 `;
 
 export const HeaderSection = styled.View`
   align-items: center;
   justify-content: center;
-  margin-top: 24px;
+  margin-bottom: 24px;
   padding-horizontal: 32px;
 `;
 
@@ -52,7 +54,7 @@ export const DotsContainer = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-vertical: 16px;
+  margin-vertical: 8px;
   height: 28px;
 `;
 
@@ -81,7 +83,7 @@ export const KeypadContainer = styled.View`
   max-width: 270px;
   align-items: center;
   justify-content: center;
-  margin-vertical: 6px;
+  margin-top: 16px;
 `;
 
 export const KeypadRow = styled.View`

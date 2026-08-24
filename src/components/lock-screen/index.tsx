@@ -8,6 +8,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'styled-components/native';
 import { Logo } from '../../scenes/splash-screen/styles';
 import { useSecurityService } from '../../service/security';
@@ -29,6 +30,7 @@ const PIN_LENGTH = 4;
 export const LockScreen: React.FC<LockScreenProps> = ({ onUnlockSuccess }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const {
     settings,
     sensorInfo,
@@ -173,7 +175,7 @@ export const LockScreen: React.FC<LockScreenProps> = ({ onUnlockSuccess }) => {
     settings.isBiometricsEnabled && sensorInfo.available && lockoutSecs === 0;
 
   return (
-    <LockContainer>
+    <LockContainer insetsTop={insets.top} insetsBottom={insets.bottom}>
       <StatusBar
         backgroundColor={theme.colors.pageBackground}
         barStyle="light-content"

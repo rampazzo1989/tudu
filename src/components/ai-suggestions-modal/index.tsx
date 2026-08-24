@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, TouchableWithoutFeedback, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeOutDown, LinearTransition } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
@@ -16,7 +16,6 @@ import {
   ActionsBar,
   CloseIconButton,
   CloseIconText,
-  EmptyContainer,
   FooterButtonsRow,
   HeaderContainer,
   HeaderTopRow,
@@ -131,8 +130,9 @@ const AISuggestionsModal: React.FC<AISuggestionsModalProps> = memo(
           entering={FadeInDown.duration(300)}
           exiting={FadeOutDown.duration(200)}
           style={{ width: '100%', alignItems: 'center' }}>
-          <ModalContainer>
-            {/* Header */}
+          <TouchableWithoutFeedback>
+            <ModalContainer>
+              {/* Header */}
             <HeaderContainer>
               <HeaderTopRow>
                 <TitleContainer>
@@ -329,8 +329,9 @@ const AISuggestionsModal: React.FC<AISuggestionsModalProps> = memo(
               )}
             </FooterButtonsRow>
           </ModalContainer>
-        </Animated.View>
-      </BlurredModal>
+        </TouchableWithoutFeedback>
+      </Animated.View>
+    </BlurredModal>
     );
   },
 );
