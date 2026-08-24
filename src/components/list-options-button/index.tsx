@@ -27,27 +27,28 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
     const toastBottomSpan = useRecoilValue(toastSpan);
 
     const handlePress = useCallback(() => {
+      iconRef.current?.toggle();
       setPopoverMenuVisible(true);
-      iconRef.current?.play();
     }, []);
 
     const handlePopoverRequestClose = useCallback(() => {
+      iconRef.current?.toggle();
       setPopoverMenuVisible(false);
     }, []);
 
     const handleShareText = useCallback(() => {
-      setPopoverMenuVisible(false);
+      handlePopoverRequestClose();
       onShareTextPress?.();
-    }, [onShareTextPress]);
+    }, [handlePopoverRequestClose, onShareTextPress]);
 
     const handleShareFile = useCallback(() => {
-      setPopoverMenuVisible(false);
+      handlePopoverRequestClose();
       if (onShareFilePress) {
         onShareFilePress();
       } else if (onSharePress) {
         onSharePress();
       }
-    }, [onShareFilePress, onSharePress]);
+    }, [handlePopoverRequestClose, onShareFilePress, onSharePress]);
 
     const options: MenuOption[] = useMemo(
       () => [
@@ -71,7 +72,7 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
         extraBottomMargin={toastBottomSpan}>
         <OptionsButton onPress={handlePress} scaleFactor={0.08}>
           <IconWrapper>
-            <OptionsThreeDotsIcon ref={iconRef} size={28} />
+            <OptionsThreeDotsIcon ref={iconRef} size={28} speed={2} />
           </IconWrapper>
         </OptionsButton>
       </OptionsButtonContainer>
