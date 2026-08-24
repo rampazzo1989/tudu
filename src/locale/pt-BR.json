@@ -484,6 +484,20 @@
     "emptyError": "Nenhum item identificado no texto colado. Tente colar uma lista com itens ou tarefas.",
     "genericError": "Não foi possível processar o texto com IA no momento.",
     "successToast": "Lista '{{name}}' criada com sucesso!"
+  },
+  "emptyStates": {
+    "myLists": {
+      "title": "Nenhuma lista criada ainda",
+      "subtitle": "Crie listas personalizadas para organizar suas tarefas ou importe textos usando IA.",
+      "button": "+ Criar nova lista"
+    },
+    "emptyList": {
+      "title": "Sua lista está vazia",
+      "subtitle": "Adicione o primeiro tudú para começar ou use a IA para sugerir tarefas.",
+      "button": "+ Adicionar tudú",
+      "buttonAI": "✨ Sugerir com IA"
+    },
+    "allDone": "Todos os seus tudús estão em dia!"
   }
 }
 

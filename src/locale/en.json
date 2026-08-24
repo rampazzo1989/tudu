@@ -484,6 +484,20 @@
     "emptyError": "No items found in pasted text. Try pasting a list with items or tasks.",
     "genericError": "Could not process text with AI at this time.",
     "successToast": "List '{{name}}' created successfully!"
+  },
+  "emptyStates": {
+    "myLists": {
+      "title": "No lists created yet",
+      "subtitle": "Create custom lists to organize your tasks or import text using AI.",
+      "button": "+ Create new list"
+    },
+    "emptyList": {
+      "title": "Your list is empty",
+      "subtitle": "Add your first tudú to get started or use AI to suggest tasks.",
+      "button": "+ Add tudú",
+      "buttonAI": "✨ Suggest with AI"
+    },
+    "allDone": "All your tudús are completed!"
   }
 }
 

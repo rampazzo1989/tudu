@@ -392,6 +392,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 list={internalList}
                 setTudus={handleSetTudus}
                 TopComponent={TopComponent}
+                onInsertTuduPress={allowAdding ? handleInsertTudu : undefined}
+                onAISuggestionsPress={handleAISuggestionsPress}
+                isSmartList={isSmartList}
               />
             </Animated.View>
           )}

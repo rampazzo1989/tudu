@@ -5,6 +5,7 @@ import {ListGroupCard} from '../list-group-card';
 import {CustomListsProps} from './types';
 import {Container} from './styles';
 import {EditableListCard} from '../../../../components/list-card/editable-list-card';
+import {EmptyListsCard} from '../../../../components/empty-lists-card';
 import {
   DraggableContextType,
   DraggableItem,
@@ -122,7 +123,29 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       [],
     );
 
+    const handleCreateNewList = useCallback(() => {
+      setEditingList(undefined);
+      setEditModalVisible(true);
+    }, []);
+
     const memoizedItems = useMemo(() => {
+      if (!draggableContext.data || draggableContext.data.length === 0) {
+        return (
+          <>
+            <EmptyListsCard onCreateList={handleCreateNewList} />
+            <NewListModal
+              visible={editModalVisible}
+              editingList={editingList}
+              onRequestClose={() => {
+                setEditModalVisible(false);
+                setEditingList(undefined);
+                closeCurrentlyOpenSwipeable();
+              }}
+            />
+          </>
+        );
+      }
+
       return (
         <>
           {draggableContext.data.map((item, index) => {
@@ -181,6 +204,7 @@ const CustomLists: React.FC<CustomListsProps> = memo(
       editModalVisible,
       editingList,
       handleArchiveGenerator,
+      handleCreateNewList,
       handleDeleteGenerator,
       handleEditListGenerator,
       listPressHandlerGenerator,

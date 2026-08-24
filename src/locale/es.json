@@ -484,6 +484,20 @@
     "emptyError": "No se encontraron elementos en el texto pegado. Intenta pegar una lista con tareas o elementos.",
     "genericError": "No se pudo procesar el texto con IA en este momento.",
     "successToast": "¡Lista '{{name}}' creada con éxito!"
+  },
+  "emptyStates": {
+    "myLists": {
+      "title": "Aún no hay listas creadas",
+      "subtitle": "Crea listas personalizadas para organizar tus tareas o importa texto con IA.",
+      "button": "+ Crear nueva lista"
+    },
+    "emptyList": {
+      "title": "Tu lista está vacía",
+      "subtitle": "Añade tu primer tudú para comenzar o usa la IA para sugerir tareas.",
+      "button": "+ Añadir tudú",
+      "buttonAI": "✨ Sugerir con IA"
+    },
+    "allDone": "¡Todos tus tudús están al día!"
   }
 }
 

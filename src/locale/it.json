@@ -484,6 +484,20 @@
     "emptyError": "Nessun elemento trovato nel testo incollato. Prova a incollare una lista con elementi o attività.",
     "genericError": "Impossibile elaborare il testo con l'IA al momento.",
     "successToast": "Lista '{{name}}' creata con successo!"
+  },
+  "emptyStates": {
+    "myLists": {
+      "title": "Nessuna lista creata",
+      "subtitle": "Crea liste personalizzate per organizzare le tue attività o importa testo con l'IA.",
+      "button": "+ Crea nuova lista"
+    },
+    "emptyList": {
+      "title": "La tua lista è vuota",
+      "subtitle": "Aggiungi il tuo primo tudú per iniziare o usa l'IA per suggerire attività.",
+      "button": "+ Aggiungi tudú",
+      "buttonAI": "✨ Suggerisci con IA"
+    },
+    "allDone": "Tutti i tuoi tudú sono completati!"
   }
 }
 
