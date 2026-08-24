@@ -11,6 +11,7 @@ import { OptionsThreeDotsIcon } from '../animated-icons/options-arrow-down-icon'
 import { AnimatedIconRef } from '../animated-icons/animated-icon/types';
 import { ShareIcon } from '../animated-icons/share-icon';
 import { CopyIcon } from '../animated-icons/copy-icon';
+import { RefreshIcon } from '../animated-icons/refresh-icon';
 import {
   IconWrapper,
   OptionsButton,
@@ -19,7 +20,7 @@ import {
 import { ListOptionsButtonProps } from './types';
 
 const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
-  ({ onShareTextPress, onShareFilePress, onSharePress }) => {
+  ({ onShareTextPress, onShareFilePress, onSharePress, onInvertOrderPress }) => {
     const { t } = useTranslation();
     const iconRef = useRef<AnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
@@ -35,6 +36,11 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
       iconRef.current?.toggle();
       setPopoverMenuVisible(false);
     }, []);
+
+    const handleInvertOrder = useCallback(() => {
+      handlePopoverRequestClose();
+      onInvertOrderPress?.();
+    }, [handlePopoverRequestClose, onInvertOrderPress]);
 
     const handleShareText = useCallback(() => {
       handlePopoverRequestClose();
@@ -53,6 +59,11 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
     const options: MenuOption[] = useMemo(
       () => [
         {
+          Icon: RefreshIcon,
+          label: t('menuLabels.reverseOrder', { defaultValue: 'Inverter ordem' }),
+          onPress: handleInvertOrder,
+        },
+        {
           Icon: CopyIcon,
           label: t('menuLabels.shareText', { defaultValue: 'Compartilhar texto' }),
           onPress: handleShareText,
@@ -63,7 +74,7 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
           onPress: handleShareFile,
         },
       ],
-      [handleShareFile, handleShareText, t],
+      [handleInvertOrder, handleShareFile, handleShareText, t],
     );
 
     const buttonContent = (

@@ -134,7 +134,8 @@
     "ungroupAll": "Separa tutto",
     "share": "Condividi",
     "shareText": "Condividi testo",
-    "shareFile": "Condividi file (.tudu)"
+    "shareFile": "Condividi file (.tudu)",
+    "reverseOrder": "Inverti ordine"
   },
   "tuduSamples": {
     "checkThis": "Tocca qui per completare questo tudú 👆",

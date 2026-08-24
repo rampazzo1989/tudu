@@ -355,6 +355,23 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       }
     }, [internalList, tudus, t]);
 
+    const handleInvertOrder = useCallback(() => {
+      if (!internalList || !tudus.length) return;
+
+      const undoneTudus = tudus.filter(x => !x.done);
+      if (undoneTudus.length <= 1) {
+        RNReactNativeHapticFeedback.trigger('impactLight');
+        return;
+      }
+
+      const reversedUndone = [...undoneTudus].reverse();
+      const doneTudus = tudus.filter(x => x.done);
+      const newTudus = [...reversedUndone, ...doneTudus];
+
+      handleSetTudus(newTudus);
+      RNReactNativeHapticFeedback.trigger('impactLight');
+    }, [internalList, tudus, handleSetTudus]);
+
     return (
       <Page>
         <ListHeader
@@ -400,6 +417,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           )}
           {!isSmartList && !loading && !!list?.label && list?.id !== UNLISTED_LIST_ID && (
             <ListOptionsButton
+              onInvertOrderPress={handleInvertOrder}
               onShareTextPress={handleShareText}
               onShareFilePress={handleShareFile}
             />

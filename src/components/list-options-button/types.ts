@@ -1,5 +1,6 @@
 export interface ListOptionsButtonProps {
-  onShareTextPress: () => void;
-  onShareFilePress: () => void;
+  onShareTextPress?: () => void;
+  onShareFilePress?: () => void;
   onSharePress?: () => void;
+  onInvertOrderPress?: () => void;
 }
