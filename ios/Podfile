@@ -17,6 +17,13 @@ end
 target 'Tudu' do
   config = use_native_modules!
 
+  # AppCheckCore (pulled in by @react-native-google-signin/google-signin) depends on
+  # GoogleUtilities and RecaptchaInterop, neither of which define modules, so they
+  # can't be integrated as static libraries without modular headers.
+  pod 'AppCheckCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'RecaptchaInterop', :modular_headers => true
+
   use_react_native!(
     :path => config[:reactNativePath],
 
@@ -34,5 +41,26 @@ target 'Tudu' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Newer Clang toolchains enforce consteval format-string checks that
+    # fmt 11's bundled headers trip over, breaking the build with "call to
+    # consteval function ... is not a constant expression". fmt's base.h
+    # (re)defines FMT_USE_CONSTEVAL itself with no `#ifndef` guard, so a
+    # command-line -D override is silently discarded — the only way to win
+    # is to patch the header directly to force the value off.
+    fmt_header = File.join(__dir__, 'Pods/fmt/include/fmt/base.h')
+    if File.exist?(fmt_header)
+      contents = File.read(fmt_header)
+      unless contents.include?('#undef FMT_USE_CONSTEVAL')
+        patched = contents.sub(
+          "#if FMT_USE_CONSTEVAL\n#  define FMT_CONSTEVAL consteval",
+          "#undef FMT_USE_CONSTEVAL\n#define FMT_USE_CONSTEVAL 0\n#if FMT_USE_CONSTEVAL\n#  define FMT_CONSTEVAL consteval"
+        )
+        if patched != contents
+          File.chmod(0644, fmt_header)
+          File.write(fmt_header, patched)
+        end
+      end
+    end
   end
 end
