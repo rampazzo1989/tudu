@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Switch, Text } from 'react-native';
+import { Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'styled-components/native';
 import DatePicker from 'react-native-date-picker';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { SettingsIcon } from '../../../components/animated-icons/settings-icon';
 import { DefaultHeader } from '../../../components/default-header';
 import { Page } from '../../../components/page';
@@ -12,8 +13,15 @@ import { useNotificationSettings } from '../../../service/notification';
 import { useScheduledTuduService } from '../../../service/list-service-hook/useScheduledTuduService';
 import { notificationService } from '../../../service/notification';
 import {
+  DEFAULT_NOTIFICATION_SOUND,
+  NOTIFICATION_SOUND_OPTIONS,
+  NotificationSound,
+} from '../../../service/notification/types';
+import {
   Card,
   Container,
+  DefaultBadge,
+  DefaultBadgeText,
   EmojiIcon,
   InfoBadge,
   InfoText,
@@ -21,6 +29,16 @@ import {
   SecondaryButtonText,
   Section,
   SectionTitle,
+  SoundCard,
+  SoundCardContent,
+  SoundDescription,
+  SoundIconContainer,
+  SoundInfoColumn,
+  SoundOptionsContainer,
+  SoundRadioInner,
+  SoundRadioOuter,
+  SoundTitle,
+  SoundTitleRow,
   StatusFeedback,
   StatusFeedbackText,
   TimeChip,
@@ -53,6 +71,7 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
     toggleTimedNotifications,
     toggleDailyDigest,
     setDailyDigestTime,
+    setNotificationSound,
     sendTestNotification,
   } = useNotificationSettings();
   const { getTudusForDate } = useScheduledTuduService();
@@ -61,6 +80,9 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
     success: boolean;
     message: string;
   } | null>(null);
+
+  const activeSound =
+    settings.notificationSound || DEFAULT_NOTIFICATION_SOUND;
 
   const selectedTimeDate = useMemo(() => {
     const d = new Date();
@@ -83,9 +105,10 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
         h,
         m,
         settings.dailyDigestEnabled,
+        activeSound,
       );
     },
-    [getTudusForDate, setDailyDigestTime, settings.dailyDigestEnabled],
+    [activeSound, getTudusForDate, setDailyDigestTime, settings.dailyDigestEnabled],
   );
 
   const handleShortcutPress = useCallback(
@@ -97,9 +120,10 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
         hour,
         minute,
         settings.dailyDigestEnabled,
+        activeSound,
       );
     },
-    [getTudusForDate, setDailyDigestTime, settings.dailyDigestEnabled],
+    [activeSound, getTudusForDate, setDailyDigestTime, settings.dailyDigestEnabled],
   );
 
   const handleToggleDailyDigest = useCallback(
@@ -111,9 +135,11 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
         settings.dailyDigestHour,
         settings.dailyDigestMinute,
         value,
+        activeSound,
       );
     },
     [
+      activeSound,
       getTudusForDate,
       settings.dailyDigestHour,
       settings.dailyDigestMinute,
@@ -121,9 +147,22 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
     ],
   );
 
+  const handleSelectSound = useCallback(
+    async (soundId: NotificationSound) => {
+      RNReactNativeHapticFeedback.trigger('impactLight');
+      await setNotificationSound(soundId);
+      try {
+        await sendTestNotification(soundId);
+      } catch {
+        // Ignore test error on quick select
+      }
+    },
+    [sendTestNotification, setNotificationSound],
+  );
+
   const handleTestPress = useCallback(async () => {
     try {
-      await sendTestNotification();
+      await sendTestNotification(activeSound);
       setTestResult({
         success: true,
         message: t('settings.notifications.testSuccess'),
@@ -135,7 +174,7 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
         message: err?.message || 'Erro ao enviar notificação de teste',
       });
     }
-  }, [sendTestNotification, t]);
+  }, [activeSound, sendTestNotification, t]);
 
   return (
     <Page>
@@ -146,6 +185,54 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
       />
       <PageContent contentContainerStyle={styles.scrollContentContainer}>
         <Container>
+          {/* Som da Notificação */}
+          <Section>
+            <SectionTitle>
+              {t('settings.notifications.soundSectionTitle')}
+            </SectionTitle>
+            <SoundOptionsContainer>
+              {NOTIFICATION_SOUND_OPTIONS.map(soundOpt => {
+                const isSelected = activeSound === soundOpt.id;
+                const isDefaultAppSound =
+                  soundOpt.id === DEFAULT_NOTIFICATION_SOUND;
+
+                return (
+                  <SoundCard
+                    key={soundOpt.id}
+                    selected={isSelected}
+                    activeOpacity={0.7}
+                    onPress={() => handleSelectSound(soundOpt.id)}>
+                    <SoundCardContent>
+                      <SoundIconContainer selected={isSelected}>
+                        <EmojiIcon>{soundOpt.icon}</EmojiIcon>
+                      </SoundIconContainer>
+                      <SoundInfoColumn>
+                        <SoundTitleRow>
+                          <SoundTitle selected={isSelected}>
+                            {t(soundOpt.nameKey)}
+                          </SoundTitle>
+                          {isDefaultAppSound && (
+                            <DefaultBadge>
+                              <DefaultBadgeText>
+                                {t('settings.notifications.sounds.defaultBadge')}
+                              </DefaultBadgeText>
+                            </DefaultBadge>
+                          )}
+                        </SoundTitleRow>
+                        <SoundDescription>
+                          {t(soundOpt.descriptionKey)}
+                        </SoundDescription>
+                      </SoundInfoColumn>
+                    </SoundCardContent>
+                    <SoundRadioOuter selected={isSelected}>
+                      {isSelected && <SoundRadioInner />}
+                    </SoundRadioOuter>
+                  </SoundCard>
+                );
+              })}
+            </SoundOptionsContainer>
+          </Section>
+
           {/* Lembretes com Horário */}
           <Section>
             <SectionTitle>
@@ -267,3 +354,4 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
 };
 
 export { NotificationSettingsPage };
+

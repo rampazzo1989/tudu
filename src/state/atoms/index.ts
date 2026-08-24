@@ -4,6 +4,7 @@ import React from 'react';
 import {Swipeable} from 'react-native-gesture-handler';
 import { mmkvPersistAtom } from '../../utils/state-utils/mmkv-persist-atom';
 import { TuduViewModel } from '../../scenes/home/types';
+import { NotificationSound, DEFAULT_NOTIFICATION_SOUND } from '../../service/notification/types';
 
 export const idlyAnimatedComponents = atom<IdlyAnimatedComponent[]>({
   key: 'idlyAnimatedComponents',
@@ -58,6 +59,7 @@ export interface NotificationSettingsState {
   dailyDigestEnabled: boolean;
   dailyDigestHour: number;
   dailyDigestMinute: number;
+  notificationSound?: NotificationSound;
 }
 
 export const notificationSettingsState = atom<NotificationSettingsState>({
@@ -67,6 +69,7 @@ export const notificationSettingsState = atom<NotificationSettingsState>({
     dailyDigestEnabled: true,
     dailyDigestHour: 8,
     dailyDigestMinute: 30,
+    notificationSound: DEFAULT_NOTIFICATION_SOUND,
   },
   effects: [mmkvPersistAtom('notificationSettingsState')],
 });

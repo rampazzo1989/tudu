@@ -2,6 +2,7 @@ import {useCallback} from 'react';
 import {useRecoilState} from 'recoil';
 import {notificationSettingsState, NotificationSettingsState} from '../../../state/atoms';
 import {notificationService} from '../notificationService';
+import {DEFAULT_NOTIFICATION_SOUND, NotificationSound} from '../types';
 
 export const useNotificationSettings = () => {
   const [settings, setSettings] = useRecoilState(notificationSettingsState);
@@ -47,6 +48,17 @@ export const useNotificationSettings = () => {
     [setSettings],
   );
 
+  const setNotificationSound = useCallback(
+    async (sound: NotificationSound) => {
+      notificationService.setSound(sound);
+      setSettings(prev => ({
+        ...prev,
+        notificationSound: sound,
+      }));
+    },
+    [setSettings],
+  );
+
   const updateSettings = useCallback(
     (newSettings: Partial<NotificationSettingsState>) => {
       setSettings(prev => ({
@@ -57,16 +69,23 @@ export const useNotificationSettings = () => {
     [setSettings],
   );
 
-  const sendTestNotification = useCallback(async () => {
-    await notificationService.sendTestNotification();
-  }, []);
+  const sendTestNotification = useCallback(
+    async (sound?: NotificationSound) => {
+      await notificationService.sendTestNotification(
+        sound || settings.notificationSound || DEFAULT_NOTIFICATION_SOUND,
+      );
+    },
+    [settings.notificationSound],
+  );
 
   return {
     settings,
     toggleTimedNotifications,
     toggleDailyDigest,
     setDailyDigestTime,
+    setNotificationSound,
     updateSettings,
     sendTestNotification,
   };
 };
+

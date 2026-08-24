@@ -11,6 +11,10 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		TD0200012C00000000000001 /* tudu_marimba.wav in Resources */ = {isa = PBXBuildFile; fileRef = TD0100012C00000000000001 /* tudu_marimba.wav */; };
+		TD0200022C00000000000002 /* tudu_pop.wav in Resources */ = {isa = PBXBuildFile; fileRef = TD0100022C00000000000002 /* tudu_pop.wav */; };
+		TD0200032C00000000000003 /* tudu_chime.wav in Resources */ = {isa = PBXBuildFile; fileRef = TD0100032C00000000000003 /* tudu_chime.wav */; };
+		TD0200042C00000000000004 /* tudu_kalimba.wav in Resources */ = {isa = PBXBuildFile; fileRef = TD0100042C00000000000004 /* tudu_kalimba.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +40,10 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Tudu/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Tudu/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		TD0100012C00000000000001 /* tudu_marimba.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tudu_marimba.wav; path = Tudu/tudu_marimba.wav; sourceTree = "<group>"; };
+		TD0100022C00000000000002 /* tudu_pop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tudu_pop.wav; path = Tudu/tudu_pop.wav; sourceTree = "<group>"; };
+		TD0100032C00000000000003 /* tudu_chime.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tudu_chime.wav; path = Tudu/tudu_chime.wav; sourceTree = "<group>"; };
+		TD0100042C00000000000004 /* tudu_kalimba.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tudu_kalimba.wav; path = Tudu/tudu_kalimba.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +74,10 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+				TD0100012C00000000000001 /* tudu_marimba.wav */,
+				TD0100022C00000000000002 /* tudu_pop.wav */,
+				TD0100032C00000000000003 /* tudu_chime.wav */,
+				TD0100042C00000000000004 /* tudu_kalimba.wav */,
 			);
 			name = Tudu;
 			sourceTree = "<group>";
@@ -186,6 +198,10 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				TD0200012C00000000000001 /* tudu_marimba.wav in Resources */,
+				TD0200022C00000000000002 /* tudu_pop.wav in Resources */,
+				TD0200032C00000000000003 /* tudu_chime.wav in Resources */,
+				TD0200042C00000000000004 /* tudu_kalimba.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
