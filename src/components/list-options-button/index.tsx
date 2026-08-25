@@ -11,6 +11,7 @@ import { OptionsThreeDotsIcon } from '../animated-icons/options-arrow-down-icon'
 import { AnimatedIconRef } from '../animated-icons/animated-icon/types';
 import { ShareIcon } from '../animated-icons/share-icon';
 import { CopyIcon } from '../animated-icons/copy-icon';
+import { RefreshIcon } from '../animated-icons/refresh-icon';
 import {
   IconWrapper,
   OptionsButton,
@@ -19,7 +20,7 @@ import {
 import { ListOptionsButtonProps } from './types';
 
 const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
-  ({ onShareTextPress, onShareFilePress, onSharePress }) => {
+  ({ onShareTextPress, onShareFilePress, onSharePress, onInvertOrderPress }) => {
     const { t } = useTranslation();
     const iconRef = useRef<AnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
@@ -27,30 +28,41 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
     const toastBottomSpan = useRecoilValue(toastSpan);
 
     const handlePress = useCallback(() => {
+      iconRef.current?.toggle();
       setPopoverMenuVisible(true);
-      iconRef.current?.play();
     }, []);
 
     const handlePopoverRequestClose = useCallback(() => {
+      iconRef.current?.toggle();
       setPopoverMenuVisible(false);
     }, []);
 
+    const handleInvertOrder = useCallback(() => {
+      handlePopoverRequestClose();
+      onInvertOrderPress?.();
+    }, [handlePopoverRequestClose, onInvertOrderPress]);
+
     const handleShareText = useCallback(() => {
-      setPopoverMenuVisible(false);
+      handlePopoverRequestClose();
       onShareTextPress?.();
-    }, [onShareTextPress]);
+    }, [handlePopoverRequestClose, onShareTextPress]);
 
     const handleShareFile = useCallback(() => {
-      setPopoverMenuVisible(false);
+      handlePopoverRequestClose();
       if (onShareFilePress) {
         onShareFilePress();
       } else if (onSharePress) {
         onSharePress();
       }
-    }, [onShareFilePress, onSharePress]);
+    }, [handlePopoverRequestClose, onShareFilePress, onSharePress]);
 
     const options: MenuOption[] = useMemo(
       () => [
+        {
+          Icon: RefreshIcon,
+          label: t('menuLabels.reverseOrder', { defaultValue: 'Inverter ordem' }),
+          onPress: handleInvertOrder,
+        },
         {
           Icon: CopyIcon,
           label: t('menuLabels.shareText', { defaultValue: 'Compartilhar texto' }),
@@ -62,7 +74,7 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
           onPress: handleShareFile,
         },
       ],
-      [handleShareFile, handleShareText, t],
+      [handleInvertOrder, handleShareFile, handleShareText, t],
     );
 
     const buttonContent = (
@@ -71,7 +83,7 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
         extraBottomMargin={toastBottomSpan}>
         <OptionsButton onPress={handlePress} scaleFactor={0.08}>
           <IconWrapper>
-            <OptionsThreeDotsIcon ref={iconRef} size={28} />
+            <OptionsThreeDotsIcon ref={iconRef} size={28} speed={2} />
           </IconWrapper>
         </OptionsButton>
       </OptionsButtonContainer>

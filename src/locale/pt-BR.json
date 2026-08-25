@@ -42,6 +42,7 @@
   "actions": {
     "delete": "Excluir",
     "newList": "Nova lista",
+    "newListFromText": "Lista a partir de texto",
     "newGroup": "Novo grupo",
     "newCounter": "Novo contador",
     "sendToToday": "Enviar para Hoje",
@@ -133,7 +134,8 @@
     "ungroupAll": "Desagrupar todos",
     "share": "Compartilhar",
     "shareText": "Compartilhar texto",
-    "shareFile": "Compartilhar arquivo (.tudu)"
+    "shareFile": "Compartilhar arquivo (.tudu)",
+    "reverseOrder": "Inverter ordem"
   },
   "tuduSamples": {
     "checkThis": "Toque aqui para concluir este tudú 👆",
@@ -273,6 +275,20 @@
       "statusActive": "Ativo",
       "statusDisabled": "Desativado",
       "statusDigestTime": "Resumo às {{time}}",
+      "soundSectionTitle": "Som da Notificação",
+      "sounds": {
+        "defaultBadge": "Padrão",
+        "marimba": "Tu-Dú (Marimba)",
+        "marimbaDesc": "Dois toques harmônicos e suaves no ritmo 'tu-dú'",
+        "pop": "Bubble Pop",
+        "popDesc": "Dois pops rápidos, modernos e sutis",
+        "chime": "Chime Cristalino",
+        "chimeDesc": "Toque duplo brilhante e elegante",
+        "kalimba": "Kalimba Orgânica",
+        "kalimbaDesc": "Duas notas quentes e amadeiradas",
+        "systemDefault": "Padrão do Sistema",
+        "systemDefaultDesc": "Som de notificação configurado no aparelho"
+      },
       "timedTitle": "Lembretes com horário",
       "timedDescription": "Notificar no momento exato de tarefas com hora marcada",
       "dailyDigestTitle": "Resumo diário (Daily Digest)",
@@ -464,6 +480,39 @@
     "errorTitle": "Erro ao abrir arquivo",
     "errorMsg": "Não foi possível ler o arquivo selecionado.",
     "importErrorMsg": "Falha ao salvar a lista importada."
+  },
+  "pasteListModal": {
+    "title": "Lista a partir de Texto",
+    "subtitle": "Cole qualquer texto para organizar com IA",
+    "placeholder": "Cole aqui sua lista de compras, tarefas, ingredientes ou mensagens do WhatsApp...\n\nExemplo:\n• Pão de forma\n• 8 pão francês\n• Mamão\n• 2 bandejas de ovos",
+    "buttonProcess": "✨ Organizar com IA",
+    "loading": "✨ Analisando e organizando itens com IA...",
+    "listTitleLabel": "Nome da Lista",
+    "itemsFound": "{{count}} itens encontrados",
+    "selectAll": "Selecionar todos",
+    "deselectAll": "Desmarcar todos",
+    "buttonCreate": "Criar Lista ({{count}})",
+    "buttonCreateNone": "Nenhum selecionado",
+    "buttonBack": "Voltar ao texto",
+    "noApiKey": "Configure sua chave de API nas configurações de IA para converter textos em listas.",
+    "configureAI": "⚙️ Configurar IA",
+    "emptyError": "Nenhum item identificado no texto colado. Tente colar uma lista com itens ou tarefas.",
+    "genericError": "Não foi possível processar o texto com IA no momento.",
+    "successToast": "Lista '{{name}}' criada com sucesso!"
+  },
+  "emptyStates": {
+    "myLists": {
+      "title": "Nenhuma lista criada ainda",
+      "subtitle": "Crie listas personalizadas para organizar suas tarefas ou importe textos usando IA.",
+      "button": "+ Criar nova lista"
+    },
+    "emptyList": {
+      "title": "Sua lista está vazia",
+      "subtitle": "Adicione o primeiro tudú para começar ou use a IA para sugerir tarefas.",
+      "button": "+ Adicionar tudú",
+      "buttonAI": "✨ Sugerir com IA"
+    },
+    "allDone": "Todos os seus tudús estão em dia!"
   }
 }
 

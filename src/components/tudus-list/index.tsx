@@ -36,6 +36,7 @@ import { useTranslation } from 'react-i18next';
 import { SendToTodayModal } from '../send-to-today-modal';
 import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
 import { updateRecurrenceFromDate } from '../../utils/tudu-utils';
+import { EmptyTudusState } from '../empty-tudus-state';
 
 const TudusList: React.FC<TudusListProps> = memo(
   ({
@@ -51,6 +52,9 @@ const TudusList: React.FC<TudusListProps> = memo(
     animateIcon,
     list,
     TopComponent,
+    onInsertTuduPress,
+    onAISuggestionsPress,
+    isSmartList,
   }) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
@@ -309,6 +313,13 @@ const TudusList: React.FC<TudusListProps> = memo(
       <Container>
          <NestableScrollContainer style={{flexGrow: 1,  overflow:'visible'}}>
           {TopComponent}
+          {undoneIndexedTudus.length === 0 && doneTudus.length === 0 && (
+            <EmptyTudusState
+              onAddPress={onInsertTuduPress}
+              onAISuggestionsPress={onAISuggestionsPress}
+              isSmartList={isSmartList}
+            />
+          )}
           {undoneIndexedTudus.length 
           ? <NestableDraggableFlatList
               data={undoneIndexedTudus}

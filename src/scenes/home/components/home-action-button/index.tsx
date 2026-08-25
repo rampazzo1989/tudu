@@ -18,7 +18,9 @@ import {
   HashIcon,
   HashIconActionAnimation,
 } from '../../../../components/animated-icons/hash-icon';
+import {CopyIcon} from '../../../../components/animated-icons/copy-icon';
 import {NewListModal} from '../../../group/components/new-list-modal';
+import {PasteListModal} from '../../../../components/paste-list-modal';
 import {NewCounterModal} from '../../../counter/components/new-counter-modal';
 import {useTranslation} from 'react-i18next';
 import {NewGroupIcon} from '../../../../components/animated-icons/new-group-icon';
@@ -28,10 +30,14 @@ import Toast from 'react-native-toast-message';
 import {getUngroupedItems} from '../../../../modules/draggable/draggable-utils';
 import {ListViewModel} from '../../types';
 import {DraggableContext} from '../../../../modules/draggable/draggable-context';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {StackNavigatorParamList} from '../../../../navigation/stack-navigator/types';
 
 const HomeActionButton = memo(
   forwardRef<FloatingActionButtonRef, HomeActionButtonProps>((props, ref) => {
     const [newListPopupVisible, setNewListPopupVisible] = useState(false);
+    const [pasteListPopupVisible, setPasteListPopupVisible] = useState(false);
     const [visible, setVisible] = useState(false);
     const [newCounterPopupVisible, setNewCounterPopupVisible] = useState(false);
     const [newGroupPopupVisible, setNewGroupPopupVisible] = useState(false);
@@ -39,9 +45,16 @@ const HomeActionButton = memo(
     const draggableContext =
       useContext<DraggableContextType<ListViewModel>>(DraggableContext);
     const {t} = useTranslation();
+    const navigation =
+      useNavigation<NativeStackNavigationProp<StackNavigatorParamList>>();
 
     const handleCreateNewList = useCallback(() => {
       setNewListPopupVisible(true);
+      parentRef.current?.closeMenu();
+    }, []);
+
+    const handleCreateNewListFromText = useCallback(() => {
+      setPasteListPopupVisible(true);
       parentRef.current?.closeMenu();
     }, []);
 
@@ -74,6 +87,11 @@ const HomeActionButton = memo(
         Icon: ListDefaultIcon,
         label: t('actions.newList'),
         onPress: handleCreateNewList,
+      },
+      {
+        Icon: CopyIcon,
+        label: t('actions.newListFromText'),
+        onPress: handleCreateNewListFromText,
       },
       {
         Icon: NewGroupIcon,
@@ -112,6 +130,11 @@ const HomeActionButton = memo(
         <NewListModal
           visible={newListPopupVisible}
           onRequestClose={() => setNewListPopupVisible(false)}
+        />
+        <PasteListModal
+          visible={pasteListPopupVisible}
+          onRequestClose={() => setPasteListPopupVisible(false)}
+          onOpenAISettings={() => navigation.navigate('AISettings')}
         />
         <NewCounterModal
           visible={newCounterPopupVisible}

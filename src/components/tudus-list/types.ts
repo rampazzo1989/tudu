@@ -17,4 +17,8 @@ export type TudusListProps = {
   list?: ListViewModel;
   animateIcon?: (Icon: ForwardedRefAnimatedIcon | string) => void;
   TopComponent?: React.ReactNode;
+  onInsertTuduPress?: () => void;
+  onAISuggestionsPress?: () => void;
+  isSmartList?: boolean;
 };
+

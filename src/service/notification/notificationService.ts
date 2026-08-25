@@ -8,12 +8,20 @@ import notifee, {
 import {Platform} from 'react-native';
 import {TuduViewModel} from '../../scenes/home/types';
 import {NotificationSettingsState} from '../../state/atoms';
-import {NOTIFICATION_CHANNELS, NOTIFICATION_PREFIX} from './types';
+import {
+  DEFAULT_NOTIFICATION_SOUND,
+  NOTIFICATION_CHANNELS,
+  NOTIFICATION_PREFIX,
+  NOTIFICATION_SOUND_OPTIONS,
+  NotificationSound,
+  getSoundChannelId,
+} from './types';
 import i18next from '../../i18n';
 
 class NotificationService {
   private static instance: NotificationService;
   private isInitialized = false;
+  private currentSound: NotificationSound = DEFAULT_NOTIFICATION_SOUND;
 
   private constructor() {}
 
@@ -25,14 +33,52 @@ class NotificationService {
   }
 
   /**
+   * Sets the active sound for notifications
+   */
+  public setSound(sound: NotificationSound): void {
+    this.currentSound = sound;
+  }
+
+  /**
    * Initializes notification channels for Android
    */
-  public async init(): Promise<void> {
+  public async init(sound?: NotificationSound): Promise<void> {
+    if (sound) {
+      this.currentSound = sound;
+    }
+
     if (this.isInitialized) {
       return;
     }
 
     if (Platform.OS === 'android') {
+      // Create channels for each sound variation
+      for (const soundOpt of NOTIFICATION_SOUND_OPTIONS) {
+        const soundParam =
+          soundOpt.id === 'default' ? 'default' : soundOpt.id;
+
+        await notifee.createChannel({
+          id: getSoundChannelId(NOTIFICATION_CHANNELS.TIMED_TUDUS.id, soundOpt.id),
+          name: NOTIFICATION_CHANNELS.TIMED_TUDUS.name,
+          description: NOTIFICATION_CHANNELS.TIMED_TUDUS.description,
+          importance: AndroidImportance.HIGH,
+          vibration: true,
+          visibility: AndroidVisibility.PUBLIC,
+          sound: soundParam,
+        });
+
+        await notifee.createChannel({
+          id: getSoundChannelId(NOTIFICATION_CHANNELS.DAILY_DIGEST.id, soundOpt.id),
+          name: NOTIFICATION_CHANNELS.DAILY_DIGEST.name,
+          description: NOTIFICATION_CHANNELS.DAILY_DIGEST.description,
+          importance: AndroidImportance.DEFAULT,
+          vibration: true,
+          visibility: AndroidVisibility.PUBLIC,
+          sound: soundParam,
+        });
+      }
+
+      // Legacy fallback channels
       await notifee.createChannel({
         id: NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
         name: NOTIFICATION_CHANNELS.TIMED_TUDUS.name,
@@ -40,6 +86,7 @@ class NotificationService {
         importance: AndroidImportance.HIGH,
         vibration: true,
         visibility: AndroidVisibility.PUBLIC,
+        sound: DEFAULT_NOTIFICATION_SOUND,
       });
 
       await notifee.createChannel({
@@ -49,6 +96,7 @@ class NotificationService {
         importance: AndroidImportance.DEFAULT,
         vibration: true,
         visibility: AndroidVisibility.PUBLIC,
+        sound: DEFAULT_NOTIFICATION_SOUND,
       });
     }
 
@@ -84,6 +132,7 @@ class NotificationService {
   public async scheduleTimedTudu(
     tudu: TuduViewModel,
     enabled: boolean = true,
+    sound?: NotificationSound,
   ): Promise<void> {
     const notificationId = `${NOTIFICATION_PREFIX.TIMED_TUDU}${tudu.id}`;
 
@@ -103,7 +152,8 @@ class NotificationService {
       return;
     }
 
-    await this.init();
+    const soundToUse = sound || this.currentSound || DEFAULT_NOTIFICATION_SOUND;
+    await this.init(soundToUse);
 
     const title =
       tudu.listName && tudu.listName !== 'Unlisted'
@@ -120,6 +170,9 @@ class NotificationService {
       },
     };
 
+    const iosSound =
+      soundToUse === 'default' ? 'default' : `${soundToUse}.wav`;
+
     await notifee.createTriggerNotification(
       {
         id: notificationId,
@@ -130,17 +183,22 @@ class NotificationService {
           tuduId: tudu.id,
           listId: tudu.listId,
           dateTimestamp: timestamp,
+          sound: soundToUse,
         },
         android: {
-          channelId: NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
+          channelId: getSoundChannelId(
+            NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
+            soundToUse,
+          ),
           importance: AndroidImportance.HIGH,
+          sound: soundToUse === 'default' ? 'default' : soundToUse,
           pressAction: {
             id: 'default',
           },
           smallIcon: 'ic_launcher',
         },
         ios: {
-          sound: 'default',
+          sound: iosSound,
         },
       },
       trigger,
@@ -223,6 +281,7 @@ class NotificationService {
     hour: number,
     minute: number,
     enabled: boolean = true,
+    sound?: NotificationSound,
   ): Promise<void> {
     const notificationId = NOTIFICATION_PREFIX.DAILY_DIGEST;
 
@@ -237,7 +296,8 @@ class NotificationService {
       return;
     }
 
-    await this.init();
+    const soundToUse = sound || this.currentSound || DEFAULT_NOTIFICATION_SOUND;
+    await this.init(soundToUse);
 
     // Determine target trigger time
     const targetDate = new Date();
@@ -256,6 +316,9 @@ class NotificationService {
       },
     };
 
+    const iosSound =
+      soundToUse === 'default' ? 'default' : `${soundToUse}.wav`;
+
     await notifee.createTriggerNotification(
       {
         id: notificationId,
@@ -264,17 +327,22 @@ class NotificationService {
         data: {
           type: 'daily_digest',
           dateTimestamp: targetDate.getTime(),
+          sound: soundToUse,
         },
         android: {
-          channelId: NOTIFICATION_CHANNELS.DAILY_DIGEST.id,
+          channelId: getSoundChannelId(
+            NOTIFICATION_CHANNELS.DAILY_DIGEST.id,
+            soundToUse,
+          ),
           importance: AndroidImportance.DEFAULT,
+          sound: soundToUse === 'default' ? 'default' : soundToUse,
           pressAction: {
             id: 'default',
           },
           smallIcon: 'ic_launcher',
         },
         ios: {
-          sound: 'default',
+          sound: iosSound,
         },
       },
       trigger,
@@ -284,9 +352,13 @@ class NotificationService {
   /**
    * Sends an immediate test notification to verify sounds and permissions
    */
-  public async sendTestNotification(): Promise<void> {
-    await this.init();
+  public async sendTestNotification(sound?: NotificationSound): Promise<void> {
+    const soundToUse = sound || this.currentSound || DEFAULT_NOTIFICATION_SOUND;
+    await this.init(soundToUse);
     await this.requestPermissions();
+
+    const iosSound =
+      soundToUse === 'default' ? 'default' : `${soundToUse}.wav`;
 
     await notifee.displayNotification({
       id: NOTIFICATION_PREFIX.TEST,
@@ -298,17 +370,22 @@ class NotificationService {
       }),
       data: {
         type: 'test',
+        sound: soundToUse,
       },
       android: {
-        channelId: NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
+        channelId: getSoundChannelId(
+          NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
+          soundToUse,
+        ),
         importance: AndroidImportance.HIGH,
+        sound: soundToUse === 'default' ? 'default' : soundToUse,
         pressAction: {
           id: 'default',
         },
         smallIcon: 'ic_launcher',
       },
       ios: {
-        sound: 'default',
+        sound: iosSound,
       },
     });
   }
@@ -321,6 +398,11 @@ class NotificationService {
     tudusForToday: TuduViewModel[],
     settings: NotificationSettingsState,
   ): Promise<void> {
+    const soundToUse =
+      settings.notificationSound || DEFAULT_NOTIFICATION_SOUND;
+    this.currentSound = soundToUse;
+    await this.init(soundToUse);
+
     // 1. Sync Timed Notifications
     if (!settings.timedNotificationsEnabled) {
       // Cancel all timed triggers
@@ -336,7 +418,7 @@ class NotificationService {
         t => t.dueDate && t.hasTime && !t.done,
       );
       for (const tudu of timedTudus) {
-        await this.scheduleTimedTudu(tudu, true);
+        await this.scheduleTimedTudu(tudu, true, soundToUse);
       }
     }
 
@@ -346,8 +428,10 @@ class NotificationService {
       settings.dailyDigestHour,
       settings.dailyDigestMinute,
       settings.dailyDigestEnabled,
+      soundToUse,
     );
   }
 }
 
 export const notificationService = NotificationService.getInstance();
+

@@ -5,12 +5,25 @@ import {
   AITokenUsage,
   AITokenUsageRecord,
   EmojiSuggestionRequest,
+  ParsedListResult,
   TaskSuggestionRequest,
 } from './types';
 import {getSecureApiKey} from './secure-storage';
-import {requestOpenAIEmojis, requestOpenAITasks} from './adapters/openai';
-import {requestGeminiEmojis, requestGeminiTasks} from './adapters/gemini';
-import {requestClaudeEmojis, requestClaudeTasks} from './adapters/claude';
+import {
+  requestOpenAIEmojis,
+  requestOpenAIParseList,
+  requestOpenAITasks,
+} from './adapters/openai';
+import {
+  requestGeminiEmojis,
+  requestGeminiParseList,
+  requestGeminiTasks,
+} from './adapters/gemini';
+import {
+  requestClaudeEmojis,
+  requestClaudeParseList,
+  requestClaudeTasks,
+} from './adapters/claude';
 import {setRecoil} from 'recoil-nexus';
 import {aiTokenUsageState} from '../../state/atoms';
 
@@ -437,5 +450,172 @@ export const testAIConnection = async (
     throw error;
   }
 };
+
+/**
+ * Parses title and items from raw LLM response.
+ * Tries JSON parsing first, then falls back to resilient line-by-line extraction.
+ */
+export const parseListResultFromResponse = (raw: string): ParsedListResult => {
+  const fallbackResult: ParsedListResult = {
+    title: '📝 Lista',
+    items: [],
+  };
+
+  if (!raw || typeof raw !== 'string') {
+    return fallbackResult;
+  }
+
+  // 1. Try parsing JSON directly or wrapped in markdown code blocks
+  try {
+    const cleaned = raw
+      .replace(/```json/gi, '')
+      .replace(/```/g, '')
+      .trim();
+    const parsed = JSON.parse(cleaned);
+
+    if (parsed && typeof parsed === 'object') {
+      if (Array.isArray(parsed)) {
+        // Model returned just an array of items
+        const items = parsed
+          .map(t => (typeof t === 'string' ? t.trim() : ''))
+          .filter(t => t.length > 0);
+        return {
+          title: '📝 Lista',
+          items: Array.from(new Set(items)),
+        };
+      }
+
+      const rawTitle = typeof parsed.title === 'string' ? parsed.title.trim() : '';
+      const title = rawTitle.length > 0 ? rawTitle : '📝 Lista';
+
+      const rawItems = Array.isArray(parsed.items) ? parsed.items : [];
+      const items = rawItems
+        .map((t: any) => (typeof t === 'string' ? t.trim() : ''))
+        .filter((t: string) => t.length > 0);
+
+      return {
+        title,
+        items: Array.from(new Set(items)),
+      };
+    }
+  } catch {
+    // Continue to fallback parsing
+  }
+
+  // 2. Fallback: line-by-line regex extraction
+  const lines = raw
+    .split('\n')
+    .map(line =>
+      line
+        .replace(/^[\s*•\-–—\d.)\]}>]+/, '')
+        .replace(/^["']|["']$/g, '')
+        .trim(),
+    )
+    .filter(
+      line =>
+        line.length > 0 &&
+        !line.startsWith('{') &&
+        !line.startsWith('}') &&
+        !line.startsWith('[') &&
+        !line.startsWith(']') &&
+        !line.toLowerCase().startsWith('items:') &&
+        !line.toLowerCase().startsWith('title:'),
+    );
+
+  const uniqueItems = Array.from(new Set(lines));
+
+  return {
+    title: '📝 Lista',
+    items: uniqueItems,
+  };
+};
+
+export const buildParseListPrompt = (rawText: string): string => {
+  const clean = rawText.trim();
+  return (
+    `Texto colado pelo usuário:\n` +
+    `"""\n${clean}\n"""\n\n` +
+    `Analise o texto acima e organize-o em uma lista de tudús/tarefas estruturada.\n` +
+    `Diretrizes:\n` +
+    `1. Extraia somente tarefas/itens reais. Ignore carimbos de data/hora, nomes de pessoas, cabeçalhos de mensagens (ex: "[15/08/2026, 14:46:44] Day ❤:") e conversas informais.\n` +
+    `2. Se mensagens posteriores complementarem ou retificarem um item anterior (ex: "ovos" e depois "Pega logo 2 bandejas de ovo"), consolide na intenção final ("2 bandejas de ovos").\n` +
+    `3. Mantenha quantidades, unidades e observações (ex: "8 pão francês", "2 leite condensado moça", "pera (se tiver macia)").\n` +
+    `4. Adicione um emoji relevante e claro no início de CADA item da lista (ex: "🥚 2 bandejas de ovos", "🍞 Pão de forma", "🍌 Banana", "🍅 4 tomates").\n` +
+    `5. Gere um título conciso para a lista com um emoji adequado no mesmo idioma do texto (ex: "🛒 Compras de Mercado", "📝 Lista de Tarefas", "💊 Farmácia").\n` +
+    `6. Se o texto NÃO contiver tarefas ou itens acionáveis, retorne "items": [].\n` +
+    `7. Retorne estritamente um JSON no formato: {"title": "Título com emoji", "items": ["emoji item 1", "emoji item 2"]}. Não inclua blocos de markdown nem explicações adicionais.`
+  );
+};
+
+/**
+ * Main method to parse a raw text into a structured list with items using AI.
+ */
+export const parseListFromTextWithAI = async (
+  provider: AIProvider,
+  rawText: string,
+  timeoutMs: number = 10000,
+): Promise<ParsedListResult> => {
+  const cleanText = rawText.trim();
+  if (!cleanText || cleanText.length < 2) {
+    return { title: '📝 Lista', items: [] };
+  }
+
+  const apiKey = getSecureApiKey(provider);
+  if (!apiKey) {
+    console.warn(`⚠️ [Tudú AI] Nenhuma chave de API configurada para o provedor: ${provider}`);
+    throw new Error('API Key not found');
+  }
+
+  const prompt = buildParseListPrompt(cleanText);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`🤖 [Tudú AI] 🚀 Enviando texto para conversão em lista com ${provider.toUpperCase()}`);
+  console.log(`📌 Tamanho do texto: ${cleanText.length} caracteres`);
+  console.log(`💬 Prompt:\n${prompt}`);
+  console.log('─────────────────────────────────────────────────────');
+
+  try {
+    let responseResult: AIResponseWithUsage = { content: '' };
+    const startTime = Date.now();
+
+    if (provider === 'openai') {
+      responseResult = await requestOpenAIParseList(apiKey, prompt, controller.signal);
+    } else if (provider === 'gemini') {
+      responseResult = await requestGeminiParseList(apiKey, prompt, controller.signal);
+    } else if (provider === 'claude') {
+      responseResult = await requestClaudeParseList(apiKey, prompt, controller.signal);
+    }
+
+    clearTimeout(timeoutId);
+    const duration = Date.now() - startTime;
+    const rawResponse = responseResult.content;
+
+    if (responseResult.usage) {
+      recordAITokenUsage(provider, 'parse_list', responseResult.usage);
+    }
+
+    const result = parseListResultFromResponse(rawResponse);
+
+    console.log(`📥 [Tudú AI] Resposta de conversão recebida (${duration}ms) de ${provider.toUpperCase()}:`);
+    console.log(`🏷️ Título: "${result.title}"`);
+    console.log(`✨ Itens Extraídos (${result.items.length}):\n${result.items.map(t => `  • ${t}`).join('\n')}`);
+    if (responseResult.usage) {
+      console.log(
+        `📊 Tokens: ${responseResult.usage.totalTokens} (In: ${responseResult.usage.promptTokens}, Out: ${responseResult.usage.completionTokens})`,
+      );
+    }
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    return result;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    console.error(`❌ [Tudú AI] Erro na conversão de texto (${provider.toUpperCase()}):`, error?.message || error);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    throw error;
+  }
+};
+
 
 

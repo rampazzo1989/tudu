@@ -157,3 +157,96 @@ export const EmojiIcon = styled.Text`
   font-size: 16px;
 `;
 
+export const SoundOptionsContainer = styled.View`
+  width: 100%;
+  gap: 8px;
+`;
+
+export const SoundCard = styled.TouchableOpacity<{selected?: boolean}>`
+  background-color: ${({selected, theme}) =>
+    selected ? 'rgba(121, 86, 191, 0.15)' : theme.colors.listCard};
+  border-radius: 14px;
+  padding: 14px 16px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-width: 1px;
+  border-color: ${({selected, theme}) =>
+    selected ? theme.colors.primary : 'rgba(255, 255, 255, 0.05)'};
+`;
+
+export const SoundCardContent = styled.View`
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  margin-right: 12px;
+`;
+
+export const SoundIconContainer = styled.View<{selected?: boolean}>`
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: ${({selected, theme}) =>
+    selected ? theme.colors.primary : theme.colors.counterIconBackground};
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+`;
+
+export const SoundInfoColumn = styled.View`
+  flex: 1;
+`;
+
+export const SoundTitleRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const SoundTitle = styled.Text<{selected?: boolean}>`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 14px;
+  color: ${({selected, theme}) => (selected ? '#FFFFFF' : theme.colors.text)};
+`;
+
+export const SoundDescription = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  font-size: 12px;
+  color: ${({theme}) => theme.colors.iconOverlay};
+  margin-top: 2px;
+`;
+
+export const DefaultBadge = styled.View`
+  background-color: rgba(121, 86, 191, 0.35);
+  border-radius: 6px;
+  padding: 2px 6px;
+`;
+
+export const DefaultBadgeText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 10px;
+  color: #D1C4E9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+export const SoundRadioOuter = styled.View<{selected?: boolean}>`
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  border-width: 2px;
+  border-color: ${({selected, theme}) =>
+    selected ? theme.colors.primary : theme.colors.iconOverlay};
+  align-items: center;
+  justify-content: center;
+`;
+
+export const SoundRadioInner = styled.View`
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: ${({theme}) => theme.colors.primary};
+`;
+
+

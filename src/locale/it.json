@@ -42,6 +42,7 @@
   "actions": {
     "delete": "Elimina",
     "newList": "Nuova lista",
+    "newListFromText": "Lista da testo",
     "newGroup": "Nuovo gruppo",
     "newCounter": "Nuovo contatore",
     "sendToToday": "Invia a Oggi",
@@ -133,7 +134,8 @@
     "ungroupAll": "Separa tutto",
     "share": "Condividi",
     "shareText": "Condividi testo",
-    "shareFile": "Condividi file (.tudu)"
+    "shareFile": "Condividi file (.tudu)",
+    "reverseOrder": "Inverti ordine"
   },
   "tuduSamples": {
     "checkThis": "Tocca qui per completare questo tudú 👆",
@@ -273,6 +275,20 @@
       "statusActive": "Attivo",
       "statusDisabled": "Disattivato",
       "statusDigestTime": "Riepilogo alle {{time}}",
+      "soundSectionTitle": "Suono di Notifica",
+      "sounds": {
+        "defaultBadge": "Predefinito",
+        "marimba": "Tu-Dú (Marimba)",
+        "marimbaDesc": "Due note armoniche e morbide al ritmo di 'tu-dú'",
+        "pop": "Bubble Pop",
+        "popDesc": "Due pop veloci, moderni e discreti",
+        "chime": "Campanella Cristallina",
+        "chimeDesc": "Doppio tocco brillante ed elegante",
+        "kalimba": "Kalimba Calda",
+        "kalimbaDesc": "Due note calde e legnose",
+        "systemDefault": "Predefinito di Sistema",
+        "systemDefaultDesc": "Suono di notifica predefinito del dispositivo"
+      },
       "timedTitle": "Promemoria con orario",
       "timedDescription": "Notifica all'orario esatto per le attività programmate",
       "dailyDigestTitle": "Riepilogo giornaliero (Daily Digest)",
@@ -464,6 +480,39 @@
     "errorTitle": "Errore apertura file",
     "errorMsg": "Impossibile leggere il file selezionato.",
     "importErrorMsg": "Salvataggio della lista importata non riuscito."
+  },
+  "pasteListModal": {
+    "title": "Lista da Testo",
+    "subtitle": "Incolla qualsiasi testo per organizzarlo con l'IA",
+    "placeholder": "Incolla qui la tua lista della spesa, attività, ingredienti o messaggi WhatsApp...\n\nEsempio:\n• Pane in cassetta\n• 8 panini\n• Papaya\n• 2 confezioni di uova",
+    "buttonProcess": "✨ Organizza con IA",
+    "loading": "✨ Analisi e organizzazione degli elementi con l'IA...",
+    "listTitleLabel": "Nome della Lista",
+    "itemsFound": "{{count}} elementi trovati",
+    "selectAll": "Seleziona tutti",
+    "deselectAll": "Deseleziona tutti",
+    "buttonCreate": "Crea Lista ({{count}})",
+    "buttonCreateNone": "Nessuno selezionato",
+    "buttonBack": "Torna al testo",
+    "noApiKey": "Configura la tua chiave API nelle impostazioni IA per convertire il testo in liste.",
+    "configureAI": "⚙️ Configura IA",
+    "emptyError": "Nessun elemento trovato nel testo incollato. Prova a incollare una lista con elementi o attività.",
+    "genericError": "Impossibile elaborare il testo con l'IA al momento.",
+    "successToast": "Lista '{{name}}' creata con successo!"
+  },
+  "emptyStates": {
+    "myLists": {
+      "title": "Nessuna lista creata",
+      "subtitle": "Crea liste personalizzate per organizzare le tue attività o importa testo con l'IA.",
+      "button": "+ Crea nuova lista"
+    },
+    "emptyList": {
+      "title": "La tua lista è vuota",
+      "subtitle": "Aggiungi il tuo primo tudú per iniziare o usa l'IA per suggerire attività.",
+      "button": "+ Aggiungi tudú",
+      "buttonAI": "✨ Suggerisci con IA"
+    },
+    "allDone": "Tutti i tuoi tudú sono completati!"
   }
 }
 

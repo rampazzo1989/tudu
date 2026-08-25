@@ -42,6 +42,7 @@
   "actions": {
     "delete": "Delete",
     "newList": "New list",
+    "newListFromText": "List from text",
     "newGroup": "New group",
     "newCounter": "New counter",
     "sendToToday": "Send to Today",
@@ -133,7 +134,8 @@
     "ungroupAll": "Ungroup all",
     "share": "Share",
     "shareText": "Share as text",
-    "shareFile": "Share file (.tudu)"
+    "shareFile": "Share file (.tudu)",
+    "reverseOrder": "Reverse order"
   },
   "tuduSamples": {
     "checkThis": "Touch here to finish this tudú 👆",
@@ -273,6 +275,20 @@
       "statusActive": "Active",
       "statusDisabled": "Disabled",
       "statusDigestTime": "Digest at {{time}}",
+      "soundSectionTitle": "Notification Sound",
+      "sounds": {
+        "defaultBadge": "Default",
+        "marimba": "Tu-Dú (Marimba)",
+        "marimbaDesc": "Two soft harmonic notes in the 'tu-du' rhythm",
+        "pop": "Bubble Pop",
+        "popDesc": "Two modern, subtle and fast pops",
+        "chime": "Crystal Chime",
+        "chimeDesc": "Bright and elegant double chime",
+        "kalimba": "Warm Kalimba",
+        "kalimbaDesc": "Two warm, woody notes",
+        "systemDefault": "System Default",
+        "systemDefaultDesc": "Device system notification sound"
+      },
       "timedTitle": "Timed reminders",
       "timedDescription": "Notify at exact time when a task has a scheduled hour",
       "dailyDigestTitle": "Daily Digest",
@@ -464,6 +480,39 @@
     "errorTitle": "Error opening file",
     "errorMsg": "Could not read the selected file.",
     "importErrorMsg": "Failed to save the imported list."
+  },
+  "pasteListModal": {
+    "title": "List from Text",
+    "subtitle": "Paste any text to organize with AI",
+    "placeholder": "Paste your shopping list, tasks, ingredients or WhatsApp messages here...\n\nExample:\n• Sliced bread\n• 8 french rolls\n• Papaya\n• 2 cartons of eggs",
+    "buttonProcess": "✨ Organize with AI",
+    "loading": "✨ Analyzing and organizing items with AI...",
+    "listTitleLabel": "List Name",
+    "itemsFound": "{{count}} items found",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "buttonCreate": "Create List ({{count}})",
+    "buttonCreateNone": "None selected",
+    "buttonBack": "Back to text",
+    "noApiKey": "Configure your API key in AI settings to convert text into lists.",
+    "configureAI": "⚙️ Configure AI",
+    "emptyError": "No items found in pasted text. Try pasting a list with items or tasks.",
+    "genericError": "Could not process text with AI at this time.",
+    "successToast": "List '{{name}}' created successfully!"
+  },
+  "emptyStates": {
+    "myLists": {
+      "title": "No lists created yet",
+      "subtitle": "Create custom lists to organize your tasks or import text using AI.",
+      "button": "+ Create new list"
+    },
+    "emptyList": {
+      "title": "Your list is empty",
+      "subtitle": "Add your first tudú to get started or use AI to suggest tasks.",
+      "button": "+ Add tudú",
+      "buttonAI": "✨ Suggest with AI"
+    },
+    "allDone": "All your tudús are completed!"
   }
 }
 

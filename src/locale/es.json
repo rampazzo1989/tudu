@@ -42,6 +42,7 @@
   "actions": {
     "delete": "Eliminar",
     "newList": "Nueva lista",
+    "newListFromText": "Lista desde texto",
     "newGroup": "Nuevo grupo",
     "newCounter": "Nuevo contador",
     "sendToToday": "Enviar a Hoy",
@@ -133,7 +134,8 @@
     "ungroupAll": "Desagrupar todos",
     "share": "Compartir",
     "shareText": "Compartir texto",
-    "shareFile": "Compartir archivo (.tudu)"
+    "shareFile": "Compartir archivo (.tudu)",
+    "reverseOrder": "Invertir orden"
   },
   "tuduSamples": {
     "checkThis": "Toca aquí para completar este tudú 👆",
@@ -273,6 +275,20 @@
       "statusActive": "Activo",
       "statusDisabled": "Desactivado",
       "statusDigestTime": "Resumen a las {{time}}",
+      "soundSectionTitle": "Sonido de Notificación",
+      "sounds": {
+        "defaultBadge": "Predeterminado",
+        "marimba": "Tu-Dú (Marimba)",
+        "marimbaDesc": "Dos notas armónicas suaves al ritmo de 'tu-dú'",
+        "pop": "Bubble Pop",
+        "popDesc": "Dos toques rápidos, modernos y sutiles",
+        "chime": "Campanilla Cristalina",
+        "chimeDesc": "Doble toque brillante y elegante",
+        "kalimba": "Kalimba Cálida",
+        "kalimbaDesc": "Dos notas cálidas y amaderadas",
+        "systemDefault": "Predeterminado del Sistema",
+        "systemDefaultDesc": "Sonido de notificación predeterminado del dispositivo"
+      },
       "timedTitle": "Recordatorios con hora",
       "timedDescription": "Notificar a la hora exacta para tareas con hora programada",
       "dailyDigestTitle": "Resumen diario (Daily Digest)",
@@ -464,6 +480,39 @@
     "errorTitle": "Error al abrir archivo",
     "errorMsg": "No se pudo leer el archivo seleccionado.",
     "importErrorMsg": "Error al guardar la lista importada."
+  },
+  "pasteListModal": {
+    "title": "Lista desde Texto",
+    "subtitle": "Pega cualquier texto para organizar con IA",
+    "placeholder": "Pega aquí tu lista de compras, tareas, ingredientes o mensajes de WhatsApp...\n\nEjemplo:\n• Pan de molde\n• 8 panes\n• Papaya\n• 2 cartones de huevos",
+    "buttonProcess": "✨ Organizar con IA",
+    "loading": "✨ Analizando y organizando elementos con IA...",
+    "listTitleLabel": "Nombre de la Lista",
+    "itemsFound": "{{count}} elementos encontrados",
+    "selectAll": "Seleccionar todos",
+    "deselectAll": "Deseleccionar todos",
+    "buttonCreate": "Crear Lista ({{count}})",
+    "buttonCreateNone": "Ninguno seleccionado",
+    "buttonBack": "Volver al texto",
+    "noApiKey": "Configura tu clave de API en los ajustes de IA para convertir texto en listas.",
+    "configureAI": "⚙️ Configurar IA",
+    "emptyError": "No se encontraron elementos en el texto pegado. Intenta pegar una lista con tareas o elementos.",
+    "genericError": "No se pudo procesar el texto con IA en este momento.",
+    "successToast": "¡Lista '{{name}}' creada con éxito!"
+  },
+  "emptyStates": {
+    "myLists": {
+      "title": "Aún no hay listas creadas",
+      "subtitle": "Crea listas personalizadas para organizar tus tareas o importa texto con IA.",
+      "button": "+ Crear nueva lista"
+    },
+    "emptyList": {
+      "title": "Tu lista está vacía",
+      "subtitle": "Añade tu primer tudú para comenzar o usa la IA para sugerir tareas.",
+      "button": "+ Añadir tudú",
+      "buttonAI": "✨ Sugerir con IA"
+    },
+    "allDone": "¡Todos tus tudús están al día!"
   }
 }
 

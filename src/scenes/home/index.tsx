@@ -212,17 +212,11 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
               ) : (
                 <></>
               )}
-              {groupedCustomLists.length ? (
-                <>
-                  <SectionTitle title={t('sectionTitles.myLists')} />
-                  <CustomLists
-                    onListPress={handleListPress}
-                    animateIcon={animateThisIcon}
-                  />
-                </>
-              ) : (
-                <></>
-              )}
+              <SectionTitle title={t('sectionTitles.myLists')} />
+              <CustomLists
+                onListPress={handleListPress}
+                animateIcon={animateThisIcon}
+              />
 
               <LeftFadingGradient
                 start={{ x: 1, y: 0 }}
