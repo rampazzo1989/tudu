@@ -2,12 +2,11 @@ import styled from 'styled-components/native';
 import { ShrinkableView } from '../shrinkable-view';
 
 export const ModalContainer = styled.View`
-  width: 92%;
+  width: 90%;
   max-width: 380px;
-  max-height: 88%;
   background-color: ${({ theme }) => theme.colors.popupBackground};
   border-radius: 20px;
-  padding: 18px;
+  padding: 20px 18px 18px 18px;
   border-width: 1px;
   border-color: rgba(255, 255, 255, 0.1);
   shadow-color: #000;
@@ -80,7 +79,7 @@ export const CloseIconText = styled.Text`
 
 /* Input Step Styles */
 export const TextAreaContainer = styled.View`
-  margin-top: 12px;
+  margin-top: 14px;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.04);
   border-width: 1px;
@@ -93,8 +92,8 @@ export const TextAreaInput = styled.TextInput`
   font-size: 14px;
   line-height: 20px;
   color: ${({ theme }) => theme.colors.contrastColor};
-  min-height: 140px;
-  max-height: 220px;
+  min-height: 110px;
+  max-height: 160px;
   text-align-vertical: top;
 `;
 
@@ -102,7 +101,10 @@ export const InputFooterRow = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: 6px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top-width: 1px;
+  border-top-color: rgba(255, 255, 255, 0.05);
 `;
 
 export const TextCharCount = styled.Text`
@@ -124,7 +126,7 @@ export const ClearTextButtonText = styled.Text`
 
 /* Preview Step Styles */
 export const ListTitleContainer = styled.View`
-  margin-top: 10px;
+  margin-top: 12px;
   margin-bottom: 4px;
 `;
 
@@ -193,8 +195,8 @@ export const ActionPillText = styled.Text`
 `;
 
 export const ItemsScrollView = styled.ScrollView`
-  max-height: 240px;
-  margin-vertical: 4px;
+  max-height: 220px;
+  margin-vertical: 6px;
 `;
 
 export const ItemRow = styled.TouchableOpacity<{ isSelected?: boolean }>`
@@ -253,17 +255,18 @@ export const LoadingText = styled.Text`
 `;
 
 export const NoticeCard = styled.View`
-  padding: 16px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px 16px;
+  border-radius: 14px;
+  background-color: rgba(255, 255, 255, 0.04);
   border-width: 1px;
   border-color: rgba(255, 255, 255, 0.08);
-  margin-vertical: 14px;
+  margin-top: 14px;
+  margin-bottom: 4px;
   align-items: center;
 `;
 
 export const NoticeIcon = styled.Text`
-  font-size: 26px;
+  font-size: 30px;
   margin-bottom: 8px;
 `;
 
@@ -272,20 +275,23 @@ export const NoticeText = styled.Text`
   font-size: 13px;
   color: ${({ theme }) => theme.colors.iconOverlay};
   text-align: center;
-  line-height: 18px;
-  margin-bottom: 12px;
+  line-height: 19px;
+  margin-bottom: 16px;
+  padding-horizontal: 6px;
 `;
 
 export const NoticeButton = styled(ShrinkableView)`
-  padding-vertical: 8px;
-  padding-horizontal: 16px;
-  border-radius: 8px;
+  padding-vertical: 10px;
+  padding-horizontal: 20px;
+  border-radius: 10px;
   background-color: ${({ theme }) => theme.colors.primary};
+  align-items: center;
+  justify-content: center;
 `;
 
 export const NoticeButtonText = styled.Text`
   font-family: ${({ theme }) => theme.fonts.sectionTitle};
-  font-size: 13px;
+  font-size: 14px;
   color: #FFFFFF;
   font-weight: 600;
 `;
@@ -318,8 +324,8 @@ export const FooterButtonsRow = styled.View`
 
 export const PrimaryConfirmButton = styled(ShrinkableView)<{ disabled?: boolean }>`
   flex: 1;
-  padding-vertical: 12px;
-  border-radius: 10px;
+  padding-vertical: 13px;
+  border-radius: 12px;
   background-color: ${({ disabled, theme }) =>
     disabled ? '#585f69' : theme.colors.primary};
   align-items: center;
@@ -334,9 +340,9 @@ export const PrimaryConfirmButtonText = styled.Text<{ disabled?: boolean }>`
 `;
 
 export const SecondaryCancelButton = styled(ShrinkableView)`
-  padding-vertical: 12px;
-  padding-horizontal: 16px;
-  border-radius: 10px;
+  padding-vertical: 13px;
+  padding-horizontal: 18px;
+  border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.08);
   align-items: center;
   justify-content: center;

@@ -1,5 +1,7 @@
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   TextInput,
   TouchableWithoutFeedback,
   View,
@@ -215,12 +217,15 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
         transparent
         onTouchBackground={handleRequestClose}
         onRequestClose={handleRequestClose}>
-        <Animated.View
-          entering={FadeInDown.duration(300)}
-          exiting={FadeOutDown.duration(200)}
-          style={{ width: '100%', alignItems: 'center' }}>
-          <TouchableWithoutFeedback>
-            <ModalContainer>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
+          <Animated.View
+            entering={FadeInDown.duration(300)}
+            exiting={FadeOutDown.duration(200)}
+            style={{ width: '100%', alignItems: 'center' }}>
+            <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
+              <ModalContainer>
               {/* Header */}
               <HeaderContainer>
                 <HeaderTopRow>
@@ -490,6 +495,7 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
             </ModalContainer>
           </TouchableWithoutFeedback>
         </Animated.View>
+        </KeyboardAvoidingView>
       </BlurredModal>
     );
   },

@@ -23,9 +23,9 @@ import {
   CheersAnimationContainer,
   FloatingAIButton,
   FloatingAIButtonContainer,
-  FloatingAIEmoji,
   styles,
 } from './styles';
+import { AIIcon } from '../animated-icons/ai-icon';
 import { NewTuduModal } from '../new-tudu-modal';
 import { ListActionButton } from '../list-action-button';
 import { TudusList } from '../tudus-list';
@@ -75,6 +75,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
     const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
     const [aiSuggestionsModalVisible, setAiSuggestionsModalVisible] = useState(false);
+    const aiIconRef = useRef<AnimatedIconRef>(null);
 
     const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
     const hookContent = useCloseCurrentlyOpenSwipeable();
@@ -322,6 +323,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleAISuggestionsPress = useCallback(() => {
       RNReactNativeHapticFeedback.trigger('impactLight');
+      aiIconRef.current?.play();
       setAiSuggestionsModalVisible(true);
     }, []);
 
@@ -433,7 +435,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                     onPress={handleAISuggestionsPress}
                     scaleFactor={0.08}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <FloatingAIEmoji>✨</FloatingAIEmoji>
+                    <AIIcon ref={aiIconRef} size={60} animateWhenIdle={true} autoPlay />
                   </FloatingAIButton>
                 </FloatingAIButtonContainer>
               )}

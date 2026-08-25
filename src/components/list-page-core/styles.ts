@@ -50,8 +50,3 @@ export const FloatingAIButton = styled(ShrinkableView)`
   justify-content: center;
 `;
 
-export const FloatingAIEmoji = styled.Text`
-  opacity: 0.85;
-  font-size: 26px;
-`;
-
