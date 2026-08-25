@@ -2,6 +2,7 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import RNBootSplash
 
 @main
 class AppDelegate: RCTAppDelegate {
@@ -13,7 +14,13 @@ class AppDelegate: RCTAppDelegate {
     // They will be passed down to the ViewController used by React Native.
     self.initialProps = [:]
 
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    let didFinishLaunching = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+    // Initialize the splash screen. RN 0.77 does not expose `customizeRootView` to Swift, so we
+    // reach the root view through the window once `super` has installed it.
+    RNBootSplash.initWithStoryboard("BootSplash", rootView: self.window.rootViewController?.view)
+
+    return didFinishLaunching
   }
 
   override func sourceURL(for bridge: RCTBridge) -> URL? {

@@ -14,7 +14,7 @@ import android.view.Window
 class MainActivity : ReactActivity() {
 
 override fun onCreate(savedInstanceState: Bundle?) {
-    RNBootSplash.init(this) // ⬅️ initialize the splash screen
+    RNBootSplash.init(this, R.style.BootTheme) // ⬅️ initialize the splash screen
     val w = window
     w.statusBarColor = Color.TRANSPARENT
     w.navigationBarColor = Color.TRANSPARENT
