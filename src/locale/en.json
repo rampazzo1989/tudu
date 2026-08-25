@@ -513,6 +513,15 @@
       "buttonAI": "✨ Suggest with AI"
     },
     "allDone": "All your tudús are completed!"
+  },
+  "voice": {
+    "listening": "Listening...",
+    "tapToSpeak": "Dictate by voice",
+    "permissionTitle": "Microphone Permission",
+    "permissionDenied": "Microphone permission required to dictate tudús. Would you like to open settings?",
+    "openSettings": "Open Settings",
+    "errorTitle": "Voice Recognition",
+    "error": "Could not recognize voice. Please try again."
   }
 }
 

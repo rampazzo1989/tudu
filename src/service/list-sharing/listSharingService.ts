@@ -108,19 +108,43 @@ export const readTuduFileFromUri = async (
   uri: string,
 ): Promise<ImportListPreviewInfo> => {
   try {
-    let path = uri;
-    if (path.startsWith('file://')) {
-      path = path.replace('file://', '');
-    }
+    let content = '';
 
-    let content: string;
     if (uri.startsWith('content://')) {
-      content = await ReactNativeBlobUtil.fs.readFile(uri, 'utf8');
+      try {
+        content = await ReactNativeBlobUtil.fs.readFile(uri, 'utf8');
+      } catch (firstErr) {
+        try {
+          content = await ReactNativeBlobUtil.fs.readFile(
+            decodeURIComponent(uri),
+            'utf8',
+          );
+        } catch {
+          // Fallback: copy content URI to a temporary cache file and read it
+          const tempPath = `${ReactNativeBlobUtil.fs.dirs.CacheDir}/temp_incoming_${Date.now()}.tudu`;
+          try {
+            await ReactNativeBlobUtil.fs.cp(uri, tempPath);
+            content = await ReactNativeBlobUtil.fs.readFile(tempPath, 'utf8');
+            await ReactNativeBlobUtil.fs.unlink(tempPath).catch(() => {});
+          } catch {
+            throw firstErr;
+          }
+        }
+      }
     } else {
-      content = await ReactNativeBlobUtil.fs.readFile(
-        decodeURIComponent(path),
-        'utf8',
-      );
+      let path = uri;
+      if (path.startsWith('file://')) {
+        path = path.replace('file://', '');
+      }
+
+      try {
+        content = await ReactNativeBlobUtil.fs.readFile(
+          decodeURIComponent(path),
+          'utf8',
+        );
+      } catch {
+        content = await ReactNativeBlobUtil.fs.readFile(path, 'utf8');
+      }
     }
 
     const payload = parseAndValidateTuduPayload(content);

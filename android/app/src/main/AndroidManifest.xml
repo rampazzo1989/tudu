@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -7,6 +8,13 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
 
     <application
       android:name=".MainApplication"
@@ -15,7 +23,9 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/BootTheme"
-      android:supportsRtl="true">
+      android:supportsRtl="true"
+      android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+      tools:replace="android:appComponentFactory">
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -27,15 +37,154 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        <!-- 1. Open .tudu files via file:// URI without MIME type -->
         <intent-filter>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="file" />
-            <data android:scheme="content" />
+            <data android:pathPattern=".*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathSuffix=".tudu" />
+            <data android:pathAdvancedPattern=".*\\.tudu" />
+        </intent-filter>
+
+        <!-- 2. Open .tudu files via file:// URI with wildcard or octet MIME type -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="file" />
             <data android:mimeType="*/*" />
             <data android:pathPattern=".*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathSuffix=".tudu" />
+            <data android:pathAdvancedPattern=".*\\.tudu" />
+        </intent-filter>
+
+        <!-- 3. Open .tudu files via content:// URI without MIME type -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <category android:name="android.intent.category.OPENABLE" />
+            <data android:scheme="content" />
             <data android:host="*" />
+            <data android:pathPattern=".*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathSuffix=".tudu" />
+            <data android:pathAdvancedPattern=".*\\.tudu" />
+        </intent-filter>
+
+        <!-- 4. Open .tudu files via content:// URI with wildcard MIME type -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <category android:name="android.intent.category.OPENABLE" />
+            <data android:scheme="content" />
+            <data android:host="*" />
+            <data android:mimeType="*/*" />
+            <data android:pathPattern=".*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathSuffix=".tudu" />
+            <data android:pathAdvancedPattern=".*\\.tudu" />
+        </intent-filter>
+
+        <!-- 5. Open .tudu files via content:// URI with specific MIME types -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <category android:name="android.intent.category.OPENABLE" />
+            <data android:scheme="content" />
+            <data android:host="*" />
+            <data android:mimeType="application/octet-stream" />
+            <data android:pathPattern=".*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathSuffix=".tudu" />
+            <data android:pathAdvancedPattern=".*\\.tudu" />
+        </intent-filter>
+
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <category android:name="android.intent.category.OPENABLE" />
+            <data android:scheme="content" />
+            <data android:host="*" />
+            <data android:mimeType="application/json" />
+            <data android:pathPattern=".*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.tudu" />
+            <data android:pathSuffix=".tudu" />
+            <data android:pathAdvancedPattern=".*\\.tudu" />
+        </intent-filter>
+
+        <!-- 6. Generic application/octet-stream for content providers (Downloads, WhatsApp, Gmail, etc.) -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <category android:name="android.intent.category.OPENABLE" />
+            <data android:scheme="content" />
+            <data android:mimeType="application/octet-stream" />
+        </intent-filter>
+
+        <!-- 7. Custom Tudú MIME types -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <category android:name="android.intent.category.OPENABLE" />
+            <data android:scheme="content" />
+            <data android:mimeType="application/x-tudu" />
+            <data android:mimeType="application/tudu" />
+        </intent-filter>
+
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="file" />
+            <data android:mimeType="application/x-tudu" />
+            <data android:mimeType="application/tudu" />
+        </intent-filter>
+
+        <!-- 7. Custom tudu:// scheme -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="tudu" />
+        </intent-filter>
+
+        <!-- 8. Accept file sharing via ACTION_SEND (Share sheet) -->
+        <intent-filter>
+            <action android:name="android.intent.action.SEND" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="application/octet-stream" />
+            <data android:mimeType="application/x-tudu" />
+            <data android:mimeType="application/tudu" />
+            <data android:mimeType="application/json" />
+            <data android:mimeType="*/*" />
         </intent-filter>
       </activity>
     </application>

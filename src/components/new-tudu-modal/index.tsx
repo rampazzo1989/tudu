@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TextInput } from 'react-native';
+import { Alert, Linking, TextInput } from 'react-native';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
 import { TuduViewModel, RecurrenceType } from '../../scenes/home/types';
@@ -20,6 +20,8 @@ import {
   ContentContainer,
   HeaderCalendarButton,
   Input,
+  InputContainer,
+  MicButton,
   ScheduleAddButton,
   ScheduleAddButtonText,
   ScheduledBadgeButton,
@@ -29,6 +31,10 @@ import {
 } from './styles';
 import { NewTuduModalProps } from './types';
 import { useEmojiSearch } from '../../hooks/useEmojiSearch';
+import { useVoiceRecognition, isBenignVoiceError } from '../../hooks/useVoiceRecognition';
+import { MicIcon } from '../animated-icons/mic-icon';
+import { parseVoiceInput } from '../../utils/voice-parser';
+import Toast from 'react-native-toast-message';
 import SuggestedEmojiList from '../suggested-emoji-list';
 import {
   DATE_PARAMETERS_REGEX,
@@ -73,9 +79,10 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const [isAISuggestionsModalVisible, setIsAISuggestionsModalVisible] = useState(false);
 
 
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const inputRef = useRef<TextInput>(null);
+    const preVoiceLabelRef = useRef<string>('');
 
     const {
       debounceSearchEmojis,
@@ -91,7 +98,122 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       }
     }, [visible, editingTudu]);
 
+    const handleVoiceFinal = useCallback(
+      (spokenText: string) => {
+        if (!spokenText) return;
+
+        const baseText = preVoiceLabelRef.current.trim();
+        const fullSpoken = baseText ? `${baseText} ${spokenText}` : spokenText;
+        const parsed = parseVoiceInput(fullSpoken);
+
+        setInternalTuduData(prev => {
+          const updated = prev.clone();
+          updated.label = parsed.cleanedText;
+          if (parsed.dueDate) {
+            updated.dueDate = parsed.dueDate;
+            updated.hasTime = parsed.hasTime ?? false;
+          }
+          if (parsed.recurrence) {
+            updated.recurrence = parsed.recurrence;
+          }
+          if (parsed.starred) {
+            updated.starred = true;
+          }
+          return updated;
+        });
+
+        handleTextChange(parsed.cleanedText);
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [],
+    );
+
+    const handleVoicePartial = useCallback((partialText: string) => {
+      if (!partialText) return;
+      const baseText = preVoiceLabelRef.current.trim();
+      const combined = baseText ? `${baseText} ${partialText}` : partialText;
+      setInternalTuduData(prev => {
+        const updated = prev.clone();
+        updated.label = combined;
+        return updated;
+      });
+    }, []);
+
+    const handleVoiceError = useCallback(
+      (err: string) => {
+        if (!err || isBenignVoiceError(err)) {
+          return;
+        }
+
+        const normalized = String(err).trim();
+        const code = normalized.split('/')[0].trim();
+
+        if (code === 'permission_denied' || code === '9') {
+          Alert.alert(
+            t('voice.permissionTitle', { defaultValue: 'Permissão de Microfone' }),
+            t('voice.permissionDenied', {
+              defaultValue:
+                'Permissão de microfone necessária para ditar tudús. Deseja abrir as configurações?',
+            }),
+            [
+              {
+                text: t('buttons.cancel', { defaultValue: 'Cancelar' }),
+                style: 'cancel',
+              },
+              {
+                text: t('voice.openSettings', { defaultValue: 'Abrir Configurações' }),
+                onPress: () => Linking.openSettings(),
+              },
+            ],
+          );
+          return;
+        }
+
+        let errorMessage = t('voice.error', {
+          defaultValue: 'Não foi possível reconhecer a voz. Tente novamente.',
+        });
+
+        if (code === '1' || code === '2' || code === '4') {
+          errorMessage = `${errorMessage}\n\nVerifique a conexão com a internet ou o serviço de voz do Google (Código: ${code}).`;
+        } else if (code === '3') {
+          errorMessage = 'Erro ao capturar o microfone. Verifique se outro app está usando o áudio.';
+        } else if (code === 'service_unavailable' || code === 'no_service') {
+          errorMessage = 'Serviço de voz do Google não encontrado ou desativado no celular.';
+        } else if (code && code !== 'voice_error') {
+          errorMessage = `${errorMessage} (${code})`;
+        }
+
+        Alert.alert(
+          t('voice.errorTitle', { defaultValue: 'Reconhecimento de Voz' }),
+          errorMessage,
+        );
+      },
+      [t],
+    );
+
+    const {
+      isListening,
+      startListening,
+      stopListening,
+      cancelListening,
+    } = useVoiceRecognition({
+      onSpeechFinal: handleVoiceFinal,
+      onSpeechPartial: handleVoicePartial,
+      onError: handleVoiceError,
+    });
+
+    const handleMicPress = useCallback(async () => {
+      if (isListening) {
+        await stopListening();
+      } else {
+        preVoiceLabelRef.current = internalTuduData.label || '';
+        const currentLang = i18n.language || 'pt-BR';
+        await startListening(currentLang);
+      }
+    }, [isListening, internalTuduData.label, i18n.language, startListening, stopListening]);
+
     const handleRequestClose = useCallback(() => {
+      cancelListening();
       setIsTopContainerVisible(false);
       setSuggestedEmojis([]);
       setIsLoading(false);
@@ -99,7 +221,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       setIsScheduleModalVisible(false);
       setIsAISuggestionsModalVisible(false);
       onRequestClose();
-    }, [onRequestClose]);
+    }, [cancelListening, onRequestClose]);
 
     const handleOpenAISuggestions = useCallback(() => {
       RNReactNativeHapticFeedback.trigger('impactLight');
@@ -532,12 +654,28 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           ActionButton={ActionButtonComponent}
           Icon={CheckMarkIcon}>
           <ContentContainer>
-            <Input
-              value={internalTuduData.label}
-              onChangeText={handleTextChange}
-              maxLength={MAX_TUDU_LENGTH}
-              ref={inputRef}
-            />
+            <InputContainer>
+              <Input
+                value={internalTuduData.label}
+                onChangeText={handleTextChange}
+                maxLength={MAX_TUDU_LENGTH}
+                ref={inputRef}
+                placeholder={
+                  isListening
+                    ? t('voice.listening', { defaultValue: 'Ouvindo...' })
+                    : undefined
+                }
+                placeholderTextColor={isListening ? '#EF4444' : '#9CA3AF'}
+              />
+              <MicButton
+                onPress={handleMicPress}
+                activeOpacity={0.7}
+                accessibilityLabel={t('voice.tapToSpeak', {
+                  defaultValue: 'Ditar por voz',
+                })}>
+                <MicIcon isListening={isListening} size={18} />
+              </MicButton>
+            </InputContainer>
             <ScheduleRowContainer>
               {internalTuduData.dueDate ? (
                 <ScheduledBadgeContainer>

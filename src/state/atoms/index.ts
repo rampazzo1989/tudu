@@ -113,7 +113,7 @@ export interface AITokenUsageRecord {
   id: string;
   timestamp: number;
   provider: 'openai' | 'gemini' | 'claude';
-  feature: 'emoji' | 'task_suggestions' | 'test';
+  feature: 'emoji' | 'task_suggestions' | 'parse_list' | 'test';
   promptTokens: number;
   completionTokens: number;
   totalTokens: number;

@@ -513,6 +513,15 @@
       "buttonAI": "✨ Suggerisci con IA"
     },
     "allDone": "Tutti i tuoi tudú sono completati!"
+  },
+  "voice": {
+    "listening": "Ascoltando...",
+    "tapToSpeak": "Detta a voce",
+    "permissionTitle": "Permesso Microfono",
+    "permissionDenied": "Permesso microfono necessario per dettare tudú. Vuoi aprire le impostazioni?",
+    "openSettings": "Apri Impostazioni",
+    "errorTitle": "Riconoscimento Vocale",
+    "error": "Impossibile riconoscere la voce. Riprova."
   }
 }
 

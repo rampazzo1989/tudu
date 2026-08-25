@@ -1,13 +1,30 @@
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
+export const InputContainer = styled.View`
+  position: relative;
+  width: 100%;
+  justify-content: center;
+`;
+
 export const Input = styled.TextInput`
   background-color: #fff;
   border-radius: 4px;
   color: #25303d;
   height: 40px;
   padding-left: 10px;
-  padding-right: 10px;
+  padding-right: 38px;
+`;
+
+export const MicButton = styled(TouchableOpacity)`
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 `;
 
 export const ContentContainer = styled.View`

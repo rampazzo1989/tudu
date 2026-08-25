@@ -1,0 +1,34 @@
+diff --git a/node_modules/@react-native-voice/voice/dist/index.js b/node_modules/@react-native-voice/voice/dist/index.js
+index a10af13..4ae8411 100644
+--- a/node_modules/@react-native-voice/voice/dist/index.js
++++ b/node_modules/@react-native-voice/voice/dist/index.js
+@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+ Object.defineProperty(exports, "__esModule", { value: true });
+ const react_native_1 = require("react-native");
+ const invariant_1 = __importDefault(require("invariant"));
+-const Voice = react_native_1.NativeModules.Voice;
++const Voice = react_native_1.NativeModules.Voice || react_native_1.NativeModules.RCTVoice;
+ // NativeEventEmitter is only availabe on React Native platforms, so this conditional is used to avoid import conflicts in the browser/server
+-const voiceEmitter = react_native_1.Platform.OS !== 'web' ? new react_native_1.NativeEventEmitter(Voice) : null;
++const voiceEmitter = react_native_1.Platform.OS !== 'web' && Voice ? new react_native_1.NativeEventEmitter(Voice) : null;
+ class RCTVoice {
+     constructor() {
+         this._loaded = false;
+diff --git a/node_modules/@react-native-voice/voice/src/index.ts b/node_modules/@react-native-voice/voice/src/index.ts
+index 8b51121..c055e7f 100644
+--- a/node_modules/@react-native-voice/voice/src/index.ts
++++ b/node_modules/@react-native-voice/voice/src/index.ts
+@@ -11,11 +11,11 @@ import {
+   SpeechVolumeChangeEvent,
+ } from './VoiceModuleTypes';
+ 
+-const Voice = NativeModules.Voice as VoiceModule;
++const Voice = (NativeModules.Voice || NativeModules.RCTVoice) as VoiceModule;
+ 
+ // NativeEventEmitter is only availabe on React Native platforms, so this conditional is used to avoid import conflicts in the browser/server
+ const voiceEmitter =
+-  Platform.OS !== 'web' ? new NativeEventEmitter(Voice) : null;
++  Platform.OS !== 'web' && Voice ? new NativeEventEmitter(Voice) : null;
+ type SpeechEvent = keyof SpeechEvents;
+ 
+ class RCTVoice {

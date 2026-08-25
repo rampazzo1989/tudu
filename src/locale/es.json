@@ -513,7 +513,14 @@
       "buttonAI": "✨ Sugerir con IA"
     },
     "allDone": "¡Todos tus tudús están al día!"
+  },
+  "voice": {
+    "listening": "Escuchando...",
+    "tapToSpeak": "Dictar por voz",
+    "permissionTitle": "Permiso de Micrófono",
+    "permissionDenied": "Se requiere permiso de micrófono para dictar tudús. ¿Deseas abrir los ajustes?",
+    "openSettings": "Abrir Ajustes",
+    "errorTitle": "Reconocimiento de Voz",
+    "error": "No se pudo reconocer la voz. Inténtalo de nuevo."
   }
 }
-
-

@@ -1,4 +1,23 @@
 jest.mock('react-dom', () => ({}), { virtual: true });
+jest.mock('react-native-blob-util', () => ({
+  fs: {
+    dirs: {
+      CacheDir: '/mock/cache',
+    },
+    writeFile: jest.fn(),
+    readFile: jest.fn(),
+    cp: jest.fn(),
+    unlink: jest.fn(),
+  },
+}));
+jest.mock('react-native-share', () => ({
+  open: jest.fn(),
+}));
+jest.mock('react-native-document-picker', () => ({
+  pickSingle: jest.fn(),
+  types: { allFiles: '*/*' },
+  isCancel: jest.fn(),
+}));
 
 import { ListViewModel, TuduViewModel } from '../src/scenes/home/types';
 import {
@@ -173,5 +192,31 @@ describe('List Sharing Serializer and Validator Tests', () => {
     const text = formatListAsText(emptyList, []);
 
     expect(text).toBe('*Vazia*\n\n(Nenhum item)');
+  });
+
+  describe('readTuduFileFromUri', () => {
+    const validJson = serializeListToTuduJson(sampleList, sampleTudus);
+
+    it('should read from file:// URI correctly', async () => {
+      const ReactNativeBlobUtil = require('react-native-blob-util');
+      ReactNativeBlobUtil.fs.readFile.mockResolvedValueOnce(validJson);
+
+      const { readTuduFileFromUri } = require('../src/service/list-sharing/listSharingService');
+      const preview = await readTuduFileFromUri('file:///storage/emulated/0/Download/lista.tudu');
+
+      expect(preview.list.label).toBe('Compras do Mês 🛒');
+      expect(preview.totalTudus).toBe(3);
+    });
+
+    it('should read from content:// URI correctly', async () => {
+      const ReactNativeBlobUtil = require('react-native-blob-util');
+      ReactNativeBlobUtil.fs.readFile.mockResolvedValueOnce(validJson);
+
+      const { readTuduFileFromUri } = require('../src/service/list-sharing/listSharingService');
+      const preview = await readTuduFileFromUri('content://com.android.providers.downloads.documents/document/123');
+
+      expect(preview.list.label).toBe('Compras do Mês 🛒');
+      expect(preview.totalTudus).toBe(3);
+    });
   });
 });
