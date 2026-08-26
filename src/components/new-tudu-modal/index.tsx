@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Linking, TextInput } from 'react-native';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
-import { TuduViewModel, RecurrenceType } from '../../scenes/home/types';
+import { TuduViewModel, RecurrenceType, ListOrigin } from '../../scenes/home/types';
 import { CheckMarkIcon } from '../animated-icons/check-mark';
 import { CalendarIcon } from '../animated-icons/calendar';
 import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
@@ -43,15 +43,22 @@ import {
 } from '../../constants';
 import { trimEmoji } from '../../utils/emoji-utils';
 
-const getNewEmptyTudu = () =>
+const getNewEmptyTudu = (
+  defaultDueDate?: Date,
+  defaultListId: string = '',
+  defaultOrigin: ListOrigin = 'default',
+  listName?: string,
+) =>
   new TuduViewModel(
     {
       label: '',
       done: false,
       id: generateRandomHash('New Tudu'),
+      dueDate: defaultDueDate ? new Date(defaultDueDate) : undefined,
     },
-    '',
-    'default',
+    defaultListId,
+    defaultOrigin,
+    listName,
   );
 
 const MAX_TUDU_LENGTH = 100;
@@ -66,9 +73,15 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     onInsertOrUpdate,
     onBatchInsert,
     onOpenAISettings,
+    defaultDueDate,
+    defaultListId,
+    defaultOrigin,
+    autoStartVoice,
   }) => {
     const [internalTuduData, setInternalTuduData] = useState<TuduViewModel>(
-      editingTudu ? editingTudu.clone() : getNewEmptyTudu(),
+      editingTudu
+        ? editingTudu.clone()
+        : getNewEmptyTudu(defaultDueDate, defaultListId, defaultOrigin, listName),
     );
     const [suggestedEmojis, setSuggestedEmojis] = useState<string[]>([]);
     const [isTopContainerVisible, setIsTopContainerVisible] = useState(false);
@@ -94,11 +107,15 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
 
     useEffect(() => {
       if (visible) {
-        setInternalTuduData(editingTudu ? editingTudu.clone() : getNewEmptyTudu());
+        setInternalTuduData(
+          editingTudu
+            ? editingTudu.clone()
+            : getNewEmptyTudu(defaultDueDate, defaultListId, defaultOrigin, listName),
+        );
         setIsScheduleModalVisible(false);
         setAddToGoogleCalendar(false);
       }
-    }, [visible, editingTudu]);
+    }, [visible, editingTudu, defaultDueDate, defaultListId, defaultOrigin, listName]);
 
     const handleVoiceFinal = useCallback(
       (spokenText: string) => {
@@ -642,6 +659,13 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           TopContainerComponent={TopContainerComponent}
           onShow={() => {
             setTimeout(() => inputRef.current?.focus(), 200);
+            if (autoStartVoice) {
+              setTimeout(() => {
+                preVoiceLabelRef.current = '';
+                const currentLang = i18n.language || 'pt-BR';
+                startListening(currentLang);
+              }, 300);
+            }
             setTimeout(() => {
               setIsLoading(true);
               setIsTopContainerVisible(true);

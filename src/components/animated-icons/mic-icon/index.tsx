@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import Animated, {
   useAnimatedStyle,
@@ -8,21 +8,29 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { useTheme } from 'styled-components/native';
 
 export interface MicIconProps {
   size?: number;
   isListening?: boolean;
   color?: string;
   activeColor?: string;
+  overrideColor?: string;
+  style?: StyleProp<ViewStyle>;
 }
 
 const MicIcon: React.FC<MicIconProps> = memo(
   ({
-    size = 20,
+    size = 18,
     isListening = false,
-    color = '#8E8E93',
+    color,
     activeColor = '#EF4444',
+    overrideColor,
+    style,
   }) => {
+    const theme = useTheme();
+    const defaultColor =
+      overrideColor || color || theme?.colors?.text || '#8E8E93';
     const scale = useSharedValue(1);
     const pulseOpacity = useSharedValue(0.4);
 
@@ -59,10 +67,10 @@ const MicIcon: React.FC<MicIconProps> = memo(
       transform: [{ scale: scale.value * 1.3 }],
     }));
 
-    const currentColor = isListening ? activeColor : color;
+    const currentColor = isListening ? activeColor : defaultColor;
 
     return (
-      <View style={styles.wrapper}>
+      <View style={[styles.wrapper, style]}>
         {isListening && (
           <Animated.View
             style={[
@@ -119,8 +127,6 @@ const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 28,
-    height: 28,
   },
   pulseRing: {
     position: 'absolute',
@@ -128,3 +134,4 @@ const styles = StyleSheet.create({
 });
 
 export { MicIcon };
+

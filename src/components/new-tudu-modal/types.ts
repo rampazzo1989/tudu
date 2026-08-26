@@ -1,4 +1,4 @@
-import {TuduViewModel} from '../../scenes/home/types';
+import {ListOrigin, TuduViewModel} from '../../scenes/home/types';
 
 export type NewTuduModalProps = {
   visible: boolean;
@@ -9,5 +9,9 @@ export type NewTuduModalProps = {
   listName?: string;
   existingTasks?: string[];
   onOpenAISettings?: () => void;
+  defaultDueDate?: Date;
+  defaultListId?: string;
+  defaultOrigin?: ListOrigin;
+  autoStartVoice?: boolean;
 };
 

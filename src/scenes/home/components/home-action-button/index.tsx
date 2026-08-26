@@ -22,6 +22,7 @@ import {CopyIcon} from '../../../../components/animated-icons/copy-icon';
 import {NewListModal} from '../../../group/components/new-list-modal';
 import {PasteListModal} from '../../../../components/paste-list-modal';
 import {NewCounterModal} from '../../../counter/components/new-counter-modal';
+import {NewTuduModal} from '../../../../components/new-tudu-modal';
 import {useTranslation} from 'react-i18next';
 import {NewGroupIcon} from '../../../../components/animated-icons/new-group-icon';
 import {NewGroupModal} from '../../../group/components/new-group-modal';
@@ -33,6 +34,9 @@ import {DraggableContext} from '../../../../modules/draggable/draggable-context'
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StackNavigatorParamList} from '../../../../navigation/stack-navigator/types';
+import {useListService} from '../../../../service/list-service-hook/useListService';
+import {UNLISTED_LIST_ID} from '../../state';
+import {MicIcon} from '../../../../components/animated-icons/mic-icon';
 
 const HomeActionButton = memo(
   forwardRef<FloatingActionButtonRef, HomeActionButtonProps>((props, ref) => {
@@ -41,12 +45,21 @@ const HomeActionButton = memo(
     const [visible, setVisible] = useState(false);
     const [newCounterPopupVisible, setNewCounterPopupVisible] = useState(false);
     const [newGroupPopupVisible, setNewGroupPopupVisible] = useState(false);
+    const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
+    const [autoStartVoice, setAutoStartVoice] = useState(false);
     const parentRef = useRef<FloatingActionButtonRef>(null);
     const draggableContext =
       useContext<DraggableContextType<ListViewModel>>(DraggableContext);
     const {t} = useTranslation();
     const navigation =
       useNavigation<NativeStackNavigationProp<StackNavigatorParamList>>();
+    const {saveTudu} = useListService();
+
+    const handleCreateTuduForToday = useCallback(() => {
+      setAutoStartVoice(true);
+      setNewTuduPopupVisible(true);
+      parentRef.current?.closeMenu();
+    }, []);
 
     const handleCreateNewList = useCallback(() => {
       setNewListPopupVisible(true);
@@ -83,6 +96,11 @@ const HomeActionButton = memo(
     }, [draggableContext.data]);
 
     const options: MenuOption[] = [
+      {
+        Icon: MicIcon,
+        label: t('actions.newTuduToday'),
+        onPress: handleCreateTuduForToday,
+      },
       {
         Icon: ListDefaultIcon,
         label: t('actions.newList'),
@@ -126,6 +144,20 @@ const HomeActionButton = memo(
           animationMode="play"
           animateOnPress
           menuOptions={options}
+        />
+        <NewTuduModal
+          visible={newTuduPopupVisible}
+          onRequestClose={() => {
+            setNewTuduPopupVisible(false);
+            setAutoStartVoice(false);
+          }}
+          onInsertOrUpdate={saveTudu}
+          defaultDueDate={new Date()}
+          defaultListId={UNLISTED_LIST_ID}
+          defaultOrigin="unlisted"
+          listName={t('listTitles.today')}
+          autoStartVoice={autoStartVoice}
+          onOpenAISettings={() => navigation.navigate('AISettings')}
         />
         <NewListModal
           visible={newListPopupVisible}
