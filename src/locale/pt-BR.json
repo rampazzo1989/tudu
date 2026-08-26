@@ -172,6 +172,49 @@
       }
     }
   },
+  "tour": {
+    "skip": "Pular",
+    "next": "Próximo",
+    "back": "Voltar",
+    "finish": "Concluir",
+    "stepIndicator": "Passo {{current}} de {{total}}",
+    "home": {
+      "createAction": {
+        "title": "Criar Listas e Mais",
+        "description": "Toque no botão + para criar novas listas, importar a partir de texto, organizar em grupos ou criar contadores."
+      },
+      "smartLists": {
+        "title": "Listas Inteligentes",
+        "description": "Veja o que tem para Hoje, próximos agendamentos, tarefas marcadas com estrela e todas as tarefas em um só lugar."
+      },
+      "customLists": {
+        "title": "Minhas Listas",
+        "description": "Suas listas personalizadas ficam aqui. Arraste e solte para reorganizar, agrupar ou deslize para opções rápidas."
+      },
+      "header": {
+        "title": "Busca e Configurações",
+        "description": "Pesquise tudús rapidamente e acesse configurações de backup na nuvem, bloqueio com PIN/biometria e IA."
+      }
+    },
+    "list": {
+      "addTudu": {
+        "title": "Adicionar Novo Tudú",
+        "description": "Toque no botão + para adicionar rapidamente novas tarefas a esta lista, com data, hora e recorrência."
+      },
+      "aiAssistant": {
+        "title": "Assistente de IA ✨",
+        "description": "Use inteligência artificial para gerar sugestões e preencher sua lista automaticamente com um toque."
+      },
+      "tuduInteractions": {
+        "title": "Ações nos Tudús",
+        "description": "Toque para concluir, deslize para agendar/editar/excluir e segure para reorganizar a ordem das tarefas."
+      },
+      "listOptions": {
+        "title": "Opções da Lista",
+        "description": "Compartilhe como texto ou arquivo .tudu e inverta a ordem das tarefas sempre que precisar."
+      }
+    }
+  },
   "recurrence": {
     "none": "Não repete",
     "daily": "todos os dias",
@@ -410,6 +453,14 @@
       "pinSetupSuccess": "Bloqueio por PIN ativado com sucesso!",
       "pinChangeSuccess": "PIN alterado com sucesso!",
       "lockDisabledSuccess": "Bloqueio do app desativado."
+    },
+    "tutorial": {
+      "sectionTitle": "Ajuda e Tutoriais",
+      "title": "Repetir Tutoriais do App",
+      "subtitle": "Veja novamente o passo a passo da tela inicial e das listas",
+      "statusActive": "Reativado",
+      "statusDefault": "Disponível",
+      "toastSuccess": "Tutoriais reativados! Eles serão exibidos na Home e ao abrir uma lista."
     }
   },
   "lockScreen": {

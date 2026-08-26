@@ -1,12 +1,15 @@
 import React, {useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Text} from 'react-native';
-import {useRecoilValue} from 'recoil';
+import {useRecoilValue, useSetRecoilState} from 'recoil';
 import {SettingsIcon} from '../../components/animated-icons/settings-icon';
 import {DefaultHeader} from '../../components/default-header';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
 import {aiSettingsState, backupSettingsState, notificationSettingsState, securitySettingsState} from '../../state/atoms';
+import {hasSeenHomeTour as hasSeenHomeTourState, hasSeenListTour as hasSeenListTourState} from '../../state/onboarding';
+import Toast from 'react-native-toast-message';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {useAITokenUsage} from '../../service/ai';
 import {useImportListService} from '../../service/list-sharing';
 import {ImportListModal} from '../../components/import-list-modal';
@@ -41,6 +44,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
     cancelImport,
   } = useImportListService();
 
+  const setHasSeenHomeTour = useSetRecoilState(hasSeenHomeTourState);
+  const setHasSeenListTour = useSetRecoilState(hasSeenListTourState);
+
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
@@ -64,6 +70,21 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const handleBackupSettingsPress = useCallback(() => {
     navigation.navigate('BackupSettings');
   }, [navigation]);
+
+  const handleResetTourPress = useCallback(() => {
+    setHasSeenHomeTour(false);
+    setHasSeenListTour(false);
+    RNReactNativeHapticFeedback.trigger('notificationSuccess');
+    Toast.show({
+      type: 'tuduSuccess',
+      text1: t('settings.tutorial.title', { defaultValue: 'Repetir Tutoriais do App' }),
+      text2: t('settings.tutorial.toastSuccess', {
+        defaultValue: 'Tutoriais reativados! Eles serão exibidos na Home e ao abrir uma lista.',
+      }),
+      position: 'bottom',
+      bottomOffset: 40,
+    });
+  }, [setHasSeenHomeTour, setHasSeenListTour, t]);
 
 
   const getProviderName = (providerKey: string) => {
@@ -295,6 +316,35 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
                   {monthlyStats.totalTokens > 0
                     ? `${monthlyStats.totalTokens.toLocaleString()} tokens`
                     : t('settings.ai.usage.periods.month', {defaultValue: 'Este mês'})}
+                </StatusText>
+              </StatusBadge>
+            </SettingsCard>
+          </SectionContainer>
+
+          {/* Help & Tutorials Section */}
+          <SectionContainer>
+            <SectionTitleText>
+              {t('settings.tutorial.sectionTitle', { defaultValue: 'Ajuda e Tutoriais' })}
+            </SectionTitleText>
+            <SettingsCard onPress={handleResetTourPress}>
+              <CardLeftContent>
+                <IconContainer>
+                  <Text style={{fontSize: 22}}>💡</Text>
+                </IconContainer>
+                <CardTextContainer>
+                  <CardTitle>
+                    {t('settings.tutorial.title', { defaultValue: 'Repetir Tutoriais do App' })}
+                  </CardTitle>
+                  <CardSubtitle numberOfLines={2}>
+                    {t('settings.tutorial.subtitle', {
+                      defaultValue: 'Veja novamente o passo a passo interativo da tela inicial e das listas',
+                    })}
+                  </CardSubtitle>
+                </CardTextContainer>
+              </CardLeftContent>
+              <StatusBadge active={true}>
+                <StatusText active={true}>
+                  {t('settings.tutorial.statusDefault', { defaultValue: 'Disponível' })}
                 </StatusText>
               </StatusBadge>
             </SettingsCard>

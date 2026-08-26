@@ -6,3 +6,15 @@ export const hasSeenOnboarding = atom<boolean>({
   default: false,
   effects: [mmkvPersistAtom('hasSeenOnboarding')],
 });
+
+export const hasSeenHomeTour = atom<boolean>({
+  key: 'hasSeenHomeTour',
+  default: false,
+  effects: [mmkvPersistAtom('hasSeenHomeTour')],
+});
+
+export const hasSeenListTour = atom<boolean>({
+  key: 'hasSeenListTour',
+  default: false,
+  effects: [mmkvPersistAtom('hasSeenListTour')],
+});

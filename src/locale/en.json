@@ -172,6 +172,49 @@
       }
     }
   },
+  "tour": {
+    "skip": "Skip",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "stepIndicator": "Step {{current}} of {{total}}",
+    "home": {
+      "createAction": {
+        "title": "Create Lists & More",
+        "description": "Tap the + button to create new custom lists, import from text, create groups, or set up counters."
+      },
+      "smartLists": {
+        "title": "Smart Lists",
+        "description": "Quickly check what's due Today, upcoming scheduled tudús, starred items, and all your tasks in one place."
+      },
+      "customLists": {
+        "title": "My Lists",
+        "description": "Your custom lists live here. Drag and drop to reorder or group them, and swipe for quick options."
+      },
+      "header": {
+        "title": "Search & Settings",
+        "description": "Quickly search for any tudú and access cloud backup, PIN/biometrics security, and AI settings."
+      }
+    },
+    "list": {
+      "addTudu": {
+        "title": "Add New Tudú",
+        "description": "Tap the + button to quickly add new tasks to this list with due dates, times, and recurrence."
+      },
+      "aiAssistant": {
+        "title": "AI Assistant ✨",
+        "description": "Use artificial intelligence to automatically suggest and generate tasks for your list in one tap."
+      },
+      "tuduInteractions": {
+        "title": "Tudú Actions",
+        "description": "Tap to complete, swipe to schedule/edit/delete, and hold to drag and reorder tasks."
+      },
+      "listOptions": {
+        "title": "List Options",
+        "description": "Share your list as text or as a .tudu file, and invert task ordering whenever you need."
+      }
+    }
+  },
   "recurrence": {
     "none": "Don't repeat",
     "daily": "every day",
@@ -410,6 +453,14 @@
       "pinSetupSuccess": "PIN lock enabled successfully!",
       "pinChangeSuccess": "PIN changed successfully!",
       "lockDisabledSuccess": "App lock disabled."
+    },
+    "tutorial": {
+      "sectionTitle": "Help & Tutorials",
+      "title": "Replay App Tutorials",
+      "subtitle": "Review the interactive step-by-step tour for the home screen and lists",
+      "statusActive": "Reset",
+      "statusDefault": "Available",
+      "toastSuccess": "Tutorials reset! They will show when returning to Home and opening a list."
     }
   },
   "lockScreen": {

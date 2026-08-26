@@ -172,6 +172,49 @@
       }
     }
   },
+  "tour": {
+    "skip": "Salta",
+    "next": "Avanti",
+    "back": "Indietro",
+    "finish": "Fine",
+    "stepIndicator": "Passo {{current}} di {{total}}",
+    "home": {
+      "createAction": {
+        "title": "Crea Liste e Altro",
+        "description": "Tocca il pulsante + per creare nuove liste, importare da testo, creare gruppi o contatori."
+      },
+      "smartLists": {
+        "title": "Liste Intelligenti",
+        "description": "Visualizza cosa c'è per Oggi, le scadenze future, i tudú preferiti e tutte le attività in un unico posto."
+      },
+      "customLists": {
+        "title": "Le Mie Liste",
+        "description": "Le tue liste personalizzate sono qui. Trascina per riordinare o raggruppare, e scorri per opzioni veloci."
+      },
+      "header": {
+        "title": "Cerca e Impostazioni",
+        "description": "Cerca rapidamente qualsiasi tudú e accedi al backup su cloud, sicurezza con PIN/biometria e IA."
+      }
+    },
+    "list": {
+      "addTudu": {
+        "title": "Aggiungi Nuovo Tudú",
+        "description": "Tocca il pulsante + per aggiungere rapidamente nuove attività con data, ora e ricorrenza."
+      },
+      "aiAssistant": {
+        "title": "Assistente IA ✨",
+        "description": "Usa l'intelligenza artificiale per suggerire e generare automaticamente attività con un tocco."
+      },
+      "tuduInteractions": {
+        "title": "Azioni sui Tudú",
+        "description": "Tocca per completare, scorri per programmare/modificare/eliminare e tieni premuto per riordinare."
+      },
+      "listOptions": {
+        "title": "Opzioni Lista",
+        "description": "Condividi come testo o file .tudu e inverti l'ordine delle attività ogni volta che vuoi."
+      }
+    }
+  },
   "recurrence": {
     "none": "Non ripetere",
     "daily": "tutti i giorni",
@@ -410,6 +453,14 @@
       "pinSetupSuccess": "Blocco PIN attivato con successo!",
       "pinChangeSuccess": "PIN modificato con successo!",
       "lockDisabledSuccess": "Blocco app disattivato."
+    },
+    "tutorial": {
+      "sectionTitle": "Guida e Tutorial",
+      "title": "Ripeti Tutorial dell'App",
+      "subtitle": "Rivedi il tour interattivo passo-passo della schermata principale e delle liste",
+      "statusActive": "Reimpostato",
+      "statusDefault": "Disponibile",
+      "toastSuccess": "Tutorial riattivati! Verranno mostrati tornando alla Home e aprendo una lista."
     }
   },
   "lockScreen": {

@@ -32,23 +32,93 @@ import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ForwardedRefAnimatedIcon } from '../../components/animated-icons/animated-icon/types';
 import { useListService } from '../../service/list-service-hook/useListService';
 import { useCounterService } from '../../service/counter-service-hook/useCounterService';
-import { OnboardingModal } from './components/onboarding-modal';
 import { BackupReminderBanner } from '../../components/backup-reminder-banner';
 import { getDateOnlyTimeStamp } from '../../utils/date-utils';
 import { updateRecurrentTudu } from '../../utils/tudu-utils';
 import { recalculateRecurrence } from '../../state/atoms';
+import { hasSeenHomeTour as hasSeenHomeTourState } from '../../state/onboarding';
+import {
+  SpotlightStep,
+  SpotlightTarget,
+  SpotlightTourProvider,
+  useSpotlightTour,
+} from '../../components/spotlight-tour';
 
-const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
+const HomePageContent: React.FC<HomePageProps> = ({ navigation }) => {
   const smartLists = useRecoilValue(homeDefaultLists);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const actionButtonRef = useRef<FloatingActionButtonRef>(null);
   const { t } = useTranslation();
   const theme = useTheme();
   const [recurrentTuduToRecalculate, setRecurrentTuduToRecalculate] = useRecoilState(recalculateRecurrence);
+  const [hasSeenHomeTour, setHasSeenHomeTour] = useRecoilState(hasSeenHomeTourState);
+  const { startTour } = useSpotlightTour();
 
   const { saveTudu, getAllLists, saveAllLists, deleteList, restoreBackup, getAllRecurrentTudusToUpdate, saveAllTudus } =
     useListService();
   const { getAllCounters } = useCounterService();
+
+  const homeTourSteps = useMemo<SpotlightStep[]>(() => [
+    {
+      name: 'home_action_button',
+      title: t('tour.home.createAction.title', { defaultValue: 'Criar Listas e Mais' }),
+      description: t('tour.home.createAction.description', {
+        defaultValue: 'Toque no botão + para criar novas listas, importar a partir de texto, organizar em grupos ou criar contadores.',
+      }),
+      icon: '➕',
+      shape: 'circle',
+      padding: 8,
+      tooltipPosition: 'top',
+    },
+    {
+      name: 'home_smart_lists',
+      title: t('tour.home.smartLists.title', { defaultValue: 'Listas Inteligentes' }),
+      description: t('tour.home.smartLists.description', {
+        defaultValue: 'Veja o que tem para Hoje, próximos agendamentos, tarefas marcadas com estrela e todas as tarefas em um só lugar.',
+      }),
+      icon: '📅',
+      shape: 'rect',
+      borderRadius: 18,
+      padding: 6,
+      tooltipPosition: 'bottom',
+    },
+    {
+      name: 'home_custom_lists',
+      title: t('tour.home.customLists.title', { defaultValue: 'Minhas Listas' }),
+      description: t('tour.home.customLists.description', {
+        defaultValue: 'Suas listas personalizadas ficam aqui. Arraste e solte para reorganizar, agrupar ou deslize para opções rápidas.',
+      }),
+      icon: '📝',
+      shape: 'rect',
+      borderRadius: 18,
+      padding: 6,
+      tooltipPosition: 'top',
+    },
+    {
+      name: 'home_header',
+      title: t('tour.home.header.title', { defaultValue: 'Busca e Configurações' }),
+      description: t('tour.home.header.description', {
+        defaultValue: 'Pesquise tudús rapidamente e acesse configurações de backup na nuvem, bloqueio com PIN/biometria e IA.',
+      }),
+      icon: '⚙️',
+      shape: 'rect',
+      borderRadius: 16,
+      padding: 6,
+      tooltipPosition: 'bottom',
+    },
+  ], [t]);
+
+  // Start the Home tour if the user has not seen it yet
+  useEffect(() => {
+    if (!hasSeenHomeTour) {
+      const timer = setTimeout(() => {
+        startTour(homeTourSteps, () => {
+          setHasSeenHomeTour(true);
+        });
+      }, 900);
+      return () => clearTimeout(timer);
+    }
+  }, [hasSeenHomeTour, startTour, setHasSeenHomeTour, homeTourSteps]);
 
   const animateThisIcon = useCallback((Icon: ForwardedRefAnimatedIcon) => {
     actionButtonRef.current?.animateThisIcon(Icon);
@@ -180,11 +250,12 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
 
   return (
     <Page>
-      <OnboardingModal />
-      <HomeHeader
-        onSearchPress={handleSearchPress}
-        onSettingsPress={handleSettingsPress}
-      />
+      <SpotlightTarget name="home_header" shape="rect" borderRadius={16} padding={6}>
+        <HomeHeader
+          onSearchPress={handleSearchPress}
+          onSettingsPress={handleSettingsPress}
+        />
+      </SpotlightTarget>
       <DraxProvider>
         <DraggableContextProvider<ListDataViewModel>
           data={groupedCustomLists}
@@ -196,10 +267,12 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
             keyboardShouldPersistTaps="handled"
             scrollEnabled>
             <PageContentContainer>
-              <SmartLists
-                lists={smartLists}
-                onListPress={handleDefaultListPress}
-              />
+              <SpotlightTarget name="home_smart_lists" shape="rect" borderRadius={18} padding={6}>
+                <SmartLists
+                  lists={smartLists}
+                  onListPress={handleDefaultListPress}
+                />
+              </SpotlightTarget>
               <BackupReminderBanner onNavigateToBackupSettings={handleNavigateToBackupSettings} />
               {countersList.length ? (
                 <>
@@ -212,11 +285,13 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
               ) : (
                 <></>
               )}
-              <SectionTitle title={t('sectionTitles.myLists')} />
-              <CustomLists
-                onListPress={handleListPress}
-                animateIcon={animateThisIcon}
-              />
+              <SpotlightTarget name="home_custom_lists" shape="rect" borderRadius={18} padding={6}>
+                <SectionTitle title={t('sectionTitles.myLists')} />
+                <CustomLists
+                  onListPress={handleListPress}
+                  animateIcon={animateThisIcon}
+                />
+              </SpotlightTarget>
 
               <LeftFadingGradient
                 start={{ x: 1, y: 0 }}
@@ -239,11 +314,22 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
             deleteItemsFn={handleDeleteListOrGroup}
             undoDeletionFn={restoreBackup}
           />
-          <HomeActionButton ref={actionButtonRef} />
+          <SpotlightTarget name="home_action_button" shape="circle" padding={6}>
+            <HomeActionButton ref={actionButtonRef} />
+          </SpotlightTarget>
         </DraggableContextProvider>
       </DraxProvider>
     </Page>
   );
 };
 
+const HomePage: React.FC<HomePageProps> = (props) => {
+  return (
+    <SpotlightTourProvider>
+      <HomePageContent {...props} />
+    </SpotlightTourProvider>
+  );
+};
+
 export { HomePage };
+

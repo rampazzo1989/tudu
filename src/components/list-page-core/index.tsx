@@ -46,8 +46,15 @@ import { useTranslation } from 'react-i18next';
 import { UNLOADED_ID } from '../../constants';
 import { trimEmoji } from '../../utils/emoji-utils';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { toastSpan } from '../../state/atoms';
+import { hasSeenListTour as hasSeenListTourState } from '../../state/onboarding';
+import {
+  SpotlightStep,
+  SpotlightTarget,
+  SpotlightTourProvider,
+  useSpotlightTour,
+} from '../spotlight-tour';
 
 import { ScheduleModal } from '../schedule-modal';
 import { AISuggestionsModal } from '../ai-suggestions-modal';
@@ -57,7 +64,7 @@ import { exportAndShareListFile, shareListAsText } from '../../service/list-shar
 import Toast from 'react-native-toast-message';
 import { openGoogleCalendarEvent } from '../../utils/google-calendar-utils';
 
-const ListPageCore: React.FC<ListPageCoreProps> = memo(
+const ListPageCoreContent: React.FC<ListPageCoreProps> = memo(
   ({
     setTudus,
     handleBackButtonPress,
@@ -69,6 +76,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     TopComponent,
   }) => {
     const toastBottomSpan = useRecoilValue(toastSpan);
+    const [hasSeenListTour, setHasSeenListTour] = useRecoilState(hasSeenListTourState);
+    const { startTour } = useSpotlightTour();
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
 
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
@@ -78,7 +87,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const aiIconRef = useRef<AnimatedIconRef>(null);
 
     const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
-
 
     const { saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup } = useListService();
 
@@ -97,6 +105,67 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           ...internalList.tudus
         ];
     }, [internalList]);
+
+    const listTourSteps = useMemo<SpotlightStep[]>(() => [
+      {
+        name: 'list_action_button',
+        title: t('tour.list.addTudu.title', { defaultValue: 'Adicionar Novo Tudú' }),
+        description: t('tour.list.addTudu.description', {
+          defaultValue: 'Toque no botão + para adicionar rapidamente novas tarefas a esta lista, com data, hora e recorrência.',
+        }),
+        icon: '➕',
+        shape: 'circle',
+        padding: 8,
+        tooltipPosition: 'top',
+      },
+      {
+        name: 'list_ai_button',
+        title: t('tour.list.aiAssistant.title', { defaultValue: 'Assistente de IA ✨' }),
+        description: t('tour.list.aiAssistant.description', {
+          defaultValue: 'Use inteligência artificial para gerar sugestões e preencher sua lista automaticamente com um toque.',
+        }),
+        icon: '✨',
+        shape: 'circle',
+        padding: 8,
+        tooltipPosition: 'top',
+      },
+      {
+        name: 'list_tudus',
+        title: t('tour.list.tuduInteractions.title', { defaultValue: 'Ações nos Tudús' }),
+        description: t('tour.list.tuduInteractions.description', {
+          defaultValue: 'Toque para concluir, deslize para agendar/editar/excluir e segure para reorganizar a ordem das tarefas.',
+        }),
+        icon: '👆',
+        shape: 'rect',
+        borderRadius: 18,
+        padding: 6,
+        tooltipPosition: 'top',
+      },
+      {
+        name: 'list_options',
+        title: t('tour.list.listOptions.title', { defaultValue: 'Opções da Lista' }),
+        description: t('tour.list.listOptions.description', {
+          defaultValue: 'Compartilhe como texto ou arquivo .tudu e inverta a ordem das tarefas sempre que precisar.',
+        }),
+        icon: '⚙️',
+        shape: 'circle',
+        padding: 8,
+        tooltipPosition: 'top',
+      },
+    ], [t]);
+
+    // Start the List tour if not seen and screen is loaded
+    useEffect(() => {
+      if (!hasSeenListTour && !loading && !isSmartList && allowAdding && list?.id && list.id !== UNLISTED_LIST_ID) {
+        const timer = setTimeout(() => {
+          startTour(listTourSteps, () => {
+            setHasSeenListTour(true);
+          });
+        }, 900);
+        return () => clearTimeout(timer);
+      }
+    }, [hasSeenListTour, loading, isSmartList, allowAdding, list?.id, startTour, setHasSeenListTour, listTourSteps]);
+
 
     useEffect(() => {
       setInternalList(list);
@@ -415,31 +484,35 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
           ) : (
             <Animated.View style={{ flex: 1 }} layout={LinearTransition}>
-              <TudusList
-                onTuduPress={handleTuduPress}
-                animateIcon={animateThisIcon}
-                getAdditionalInformation={getAdditionalInformation}
-                onStarPress={handleTuduStarPress}
-                onEditPress={handleEditPress}
-                onDeletePress={handleTuduDelete}
-                onClearAllDonePress={handleClearAllDone}
-                onSchedulePress={handleTuduSchedulePress}
-                onUndoAllPress={handleUndoAllPress}
-                list={internalList}
-                setTudus={handleSetTudus}
-                TopComponent={TopComponent}
-                onInsertTuduPress={allowAdding ? handleInsertTudu : undefined}
-                onAISuggestionsPress={handleAISuggestionsPress}
-                isSmartList={isSmartList}
-              />
+              <SpotlightTarget name="list_tudus" shape="rect" borderRadius={18} padding={6}>
+                <TudusList
+                  onTuduPress={handleTuduPress}
+                  animateIcon={animateThisIcon}
+                  getAdditionalInformation={getAdditionalInformation}
+                  onStarPress={handleTuduStarPress}
+                  onEditPress={handleEditPress}
+                  onDeletePress={handleTuduDelete}
+                  onClearAllDonePress={handleClearAllDone}
+                  onSchedulePress={handleTuduSchedulePress}
+                  onUndoAllPress={handleUndoAllPress}
+                  list={internalList}
+                  setTudus={handleSetTudus}
+                  TopComponent={TopComponent}
+                  onInsertTuduPress={allowAdding ? handleInsertTudu : undefined}
+                  onAISuggestionsPress={handleAISuggestionsPress}
+                  isSmartList={isSmartList}
+                />
+              </SpotlightTarget>
             </Animated.View>
           )}
           {!isSmartList && !loading && !!list?.label && list?.id !== UNLISTED_LIST_ID && (
-            <ListOptionsButton
-              onInvertOrderPress={handleInvertOrder}
-              onShareTextPress={handleShareText}
-              onShareFilePress={handleShareFile}
-            />
+            <SpotlightTarget name="list_options" shape="circle" padding={6}>
+              <ListOptionsButton
+                onInvertOrderPress={handleInvertOrder}
+                onShareTextPress={handleShareText}
+                onShareFilePress={handleShareFile}
+              />
+            </SpotlightTarget>
           )}
           {allowAdding && !loading && (
             <>
@@ -448,19 +521,23 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                   entering={FadeIn.delay(900).duration(300)}
                   extraBottomMargin={toastBottomSpan}
                   pointerEvents="box-none">
-                  <FloatingAIButton
-                    onPress={handleAISuggestionsPress}
-                    scaleFactor={0.08}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <AIIcon ref={aiIconRef} size={60} animateWhenIdle={true} autoPlay />
-                  </FloatingAIButton>
+                  <SpotlightTarget name="list_ai_button" shape="circle" padding={6}>
+                    <FloatingAIButton
+                      onPress={handleAISuggestionsPress}
+                      scaleFactor={0.08}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                      <AIIcon ref={aiIconRef} size={60} animateWhenIdle={true} autoPlay />
+                    </FloatingAIButton>
+                  </SpotlightTarget>
                 </FloatingAIButtonContainer>
               )}
 
-              <ListActionButton
-                ref={actionButtonRef}
-                onInsertTuduPress={handleInsertTudu}
-              />
+              <SpotlightTarget name="list_action_button" shape="circle" padding={6}>
+                <ListActionButton
+                  ref={actionButtonRef}
+                  onInsertTuduPress={handleInsertTudu}
+                />
+              </SpotlightTarget>
             </>
           )}
         </DraggablePageContent>
@@ -504,5 +581,14 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
   },
 );
 
+const ListPageCore: React.FC<ListPageCoreProps> = memo((props) => {
+  return (
+    <SpotlightTourProvider>
+      <ListPageCoreContent {...props} />
+    </SpotlightTourProvider>
+  );
+});
+
 export { ListPageCore };
+
 

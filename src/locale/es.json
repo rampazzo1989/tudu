@@ -172,6 +172,49 @@
       }
     }
   },
+  "tour": {
+    "skip": "Saltar",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "finish": "Finalizar",
+    "stepIndicator": "Paso {{current}} de {{total}}",
+    "home": {
+      "createAction": {
+        "title": "Crear Listas y Más",
+        "description": "Toca el botón + para crear listas personalizadas, importar desde texto, crear grupos o contadores."
+      },
+      "smartLists": {
+        "title": "Listas Inteligentes",
+        "description": "Consulta lo que tienes para Hoy, próximos vencimientos, tudús destacados y todas tus tareas."
+      },
+      "customLists": {
+        "title": "Mis Listas",
+        "description": "Tus listas personalizadas están aquí. Arrastra y suelta para reordenar o agrupar, y desliza para opciones."
+      },
+      "header": {
+        "title": "Búsqueda y Ajustes",
+        "description": "Busca cualquier tudú rápidamente y accede a la copia de seguridad, seguridad por PIN/biometría e IA."
+      }
+    },
+    "list": {
+      "addTudu": {
+        "title": "Añadir Nuevo Tudú",
+        "description": "Toca el botón + para agregar rápidamente nuevas tareas con fecha, hora y recurrencia."
+      },
+      "aiAssistant": {
+        "title": "Asistente de IA ✨",
+        "description": "Utiliza inteligencia artificial para generar sugerencias y listas de tareas automáticamente."
+      },
+      "tuduInteractions": {
+        "title": "Acciones en los Tudús",
+        "description": "Toca para completar, desliza para agendar/editar/eliminar y mantén presionado para reordenar."
+      },
+      "listOptions": {
+        "title": "Opciones de Lista",
+        "description": "Comparte como texto o archivo .tudu e invierte el orden de las tareas cuando lo necesites."
+      }
+    }
+  },
   "recurrence": {
     "none": "No repetir",
     "daily": "todos los días",
@@ -410,6 +453,14 @@
       "pinSetupSuccess": "¡Bloqueo por PIN activado con éxito!",
       "pinChangeSuccess": "¡PIN modificado con éxito!",
       "lockDisabledSuccess": "Bloqueo de la app desactivado."
+    },
+    "tutorial": {
+      "sectionTitle": "Ayuda y Tutoriales",
+      "title": "Repetir Tutoriales de la App",
+      "subtitle": "Vuelve a ver el recorrido interactivo de la pantalla principal y de las listas",
+      "statusActive": "Restablecido",
+      "statusDefault": "Disponible",
+      "toastSuccess": "¡Tutoriales reactivados! Se mostrarán al volver a Inicio y al abrir una lista."
     }
   },
   "lockScreen": {
