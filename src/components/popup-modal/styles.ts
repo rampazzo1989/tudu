@@ -67,21 +67,26 @@ export const ButtonsContainer = styled(Animated.View)<{shouldMarginTop: boolean,
 type HighlightableComponent = {highlight?: boolean};
 
 export const PopupButton = styled.TouchableOpacity<HighlightableComponent>`
-  padding: 12px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
   border-width: 1px;
-  border-color: #444b56;
-  background-color: ${({highlight, theme}) =>
-    highlight ? theme.colors.buttonHighlight : theme.colors.button};
-  width: 100px;
+  border-color: ${({ highlight, theme }) =>
+    highlight ? theme.colors.primary : 'rgba(255, 255, 255, 0.12)'};
+  background-color: ${({ highlight, theme }) =>
+    highlight ? theme.colors.primary : 'rgba(255, 255, 255, 0.05)'};
+  min-width: 105px;
   height: 42px;
   align-items: center;
+  justify-content: center;
 `;
 
-export const ButtonLabel = styled.Text`
-  font-family: ${({theme}) => theme.fonts.default};
-  color: ${({theme}) => theme.colors.text};
+export const ButtonLabel = styled.Text<HighlightableComponent>`
+  font-family: ${({ theme, highlight }) =>
+    highlight ? theme.fonts.sectionTitle : theme.fonts.default};
+  color: ${({ highlight }) =>
+    highlight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.70)'};
   font-size: 14px;
+  font-weight: ${({ highlight }) => (highlight ? '700' : '500')};
 `;
 
 export const TopContainerLabel = styled.Text`

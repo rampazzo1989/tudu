@@ -1,6 +1,5 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
-import Animated, {FadeIn, FadeInDown, FadeOutDown, LinearTransition, SlideInDown, SlideInUp, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import Animated, {FadeIn, FadeInDown, FadeOutDown, LinearTransition, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {shake} from '../../utils/animation-utils';
 import {BlurredModal} from '../blurred-modal';
@@ -16,7 +15,6 @@ import {
   ContentContainer,
   KeyboardAvoidingView,
   PopupTopContainer,
-  TopContainerLabel,
 } from './styles';
 import {PopupModalProps} from './types';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -139,7 +137,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                     highlight={button.highlight}
                     disabled={button.disabled}
                     key={button.label}>
-                    <ButtonLabel>{button.label}</ButtonLabel>
+                    <ButtonLabel highlight={button.highlight}>{button.label}</ButtonLabel>
                   </PopupButton>
                 ))}
               </ButtonsContainer>

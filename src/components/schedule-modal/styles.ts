@@ -19,9 +19,9 @@ export const CurrentScheduleBadge = styled(AnimatedView)`
   justify-content: center;
   padding: 8px 12px;
   border-radius: 10px;
-  background-color: rgba(66, 133, 244, 0.12);
+  background-color: rgba(121, 86, 191, 0.14);
   border-width: 1px;
-  border-color: rgba(66, 133, 244, 0.25);
+  border-color: rgba(121, 86, 191, 0.35);
   margin-bottom: 14px;
 `;
 

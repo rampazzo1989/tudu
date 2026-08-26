@@ -555,6 +555,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
         buttons.push({
           label: t('buttons.confirm'),
           onPress: handleConfirmExistingDate,
+          highlight: true,
         });
       }
       buttons.push(cancelButton);
@@ -630,6 +631,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
                 ? t('scheduleOptions.pickTime', { defaultValue: 'Definir horário ➔' })
                 : t('buttons.confirm'),
               onPress: handleDatePickerConfirm,
+              highlight: true,
             },
             cancelButton,
           ],
@@ -662,6 +664,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
                 defaultValue: `Confirmar às ${formatToLocaleTime(internalTime)}`,
               }),
               onPress: handleTimeConfirm,
+              highlight: true,
             },
             cancelButton,
           ],

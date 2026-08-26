@@ -4,12 +4,12 @@ import { FadeIn } from 'react-native-reanimated';
 import { OptionTileContainer, OptionTileText } from './styles';
 
 const OptionTile: React.FC<OptionTileProps> = ({ TopComponent, label, onPress }) => {
-    return (
-        <OptionTileContainer onPress={onPress} entering={FadeIn.duration(1000)}>
-            {TopComponent}
-            <OptionTileText>{label}</OptionTileText>
-        </OptionTileContainer>
-    );
+  return (
+    <OptionTileContainer onPress={onPress} entering={FadeIn.duration(200)}>
+      {TopComponent}
+      <OptionTileText>{label}</OptionTileText>
+    </OptionTileContainer>
+  );
 };
 
 export { OptionTile };
