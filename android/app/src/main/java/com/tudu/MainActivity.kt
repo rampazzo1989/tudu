@@ -24,7 +24,7 @@ class MainActivity : ReactActivity() {
     w.decorView.systemUiVisibility = 
         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
     normalizeIntentData(intent)
-    super.onCreate(savedInstanceState) // ou super.onCreate(null) com react-native-screens
+    super.onCreate(null)
   }
 
   override fun onNewIntent(intent: Intent) {
