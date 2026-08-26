@@ -200,7 +200,10 @@
     "date": "Date...",
     "schedule": "Schedule",
     "addSchedule": "+ Schedule date/time",
-    "clearSchedule": "Clear schedule"
+    "clearSchedule": "Clear schedule",
+    "googleCalendarOption": "Add to Google Calendar",
+    "googleCalendarOptionActive": "Adding to Google Calendar upon save",
+    "scheduledFor": "Scheduled for:"
   },
   "settings": {
     "title": "Settings",
@@ -251,6 +254,7 @@
         "features": {
           "emoji": "Emoji Suggestions",
           "task_suggestions": "Task Suggestions",
+          "parse_list": "List from Text",
           "test": "Connection Tests"
         },
         "resetTitle": "Reset Usage Counter",

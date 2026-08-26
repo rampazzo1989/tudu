@@ -200,7 +200,10 @@
     "date": "Data...",
     "schedule": "Agendar",
     "addSchedule": "+ Agendar data/hora",
-    "clearSchedule": "Remover agendamento"
+    "clearSchedule": "Remover agendamento",
+    "googleCalendarOption": "Adicionar ao Google Agenda",
+    "googleCalendarOptionActive": "Adicionando ao Google Agenda ao salvar",
+    "scheduledFor": "Agendado para:"
   },
   "settings": {
     "title": "Configurações",
@@ -251,6 +254,7 @@
         "features": {
           "emoji": "Sugestão de Emojis",
           "task_suggestions": "Sugestão de Tarefas",
+          "parse_list": "Lista a partir de Texto",
           "test": "Testes de Conexão"
         },
         "resetTitle": "Zerar Contador de Consumo",

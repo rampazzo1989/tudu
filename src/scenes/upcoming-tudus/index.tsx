@@ -19,6 +19,7 @@ import {
 } from '../../utils/date-utils';
 import { UNLISTED_LIST_ID } from '../home/state';
 import { ListViewModel, RecurrenceType, TuduViewModel } from '../home/types';
+import { openGoogleCalendarEvent } from '../../utils/google-calendar-utils';
 import {
   EmptyStateContainer,
   EmptyStateText,
@@ -94,12 +95,27 @@ const UpcomingTudusPage: React.FC<UpcomingTudusPageProps> = ({
   }, []);
 
   const handleSchedule = useCallback(
-    (date: Date, hasTime?: boolean, recurrence?: RecurrenceType) => {
+    (
+      date: Date,
+      hasTime?: boolean,
+      recurrence?: RecurrenceType,
+      addToGoogleCalendar?: boolean,
+    ) => {
       if (editingTudu) {
         editingTudu.dueDate = date;
         editingTudu.hasTime = hasTime;
         editingTudu.recurrence = recurrence;
         saveTudu(editingTudu);
+
+        if (addToGoogleCalendar && date) {
+          openGoogleCalendarEvent({
+            title: editingTudu.label,
+            date,
+            hasTime,
+            recurrence,
+            listName: editingTudu.listName,
+          });
+        }
       }
     },
     [editingTudu, saveTudu],
@@ -177,6 +193,8 @@ const UpcomingTudusPage: React.FC<UpcomingTudusPageProps> = ({
         currentDate={editingTudu?.dueDate}
         hasTimeInitial={editingTudu?.hasTime}
         currentRecurrence={editingTudu?.recurrence}
+        tuduTitle={editingTudu?.label}
+        listName={editingTudu?.listName}
       />
     </Page>
   );

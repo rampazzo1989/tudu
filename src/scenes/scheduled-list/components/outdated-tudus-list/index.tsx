@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import { WarningIcon } from "../../../../components/animated-icons/warning-icon";
 import { AnimatedIconRef } from "../../../../components/animated-icons/animated-icon/types";
 import { ScheduleModal } from "../../../../components/schedule-modal";
+import { openGoogleCalendarEvent } from "../../../../utils/google-calendar-utils";
 
 const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDateHeader = false }) => {
     const { t } = useTranslation();
@@ -81,14 +82,32 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
         setScheduleModalVisible(true);
     }, []);
 
-    const handleSchedule = useCallback((date: Date, hasTime?: boolean, recurrence?: RecurrenceType) => {
+    const handleSchedule = useCallback(
+      (
+        date: Date,
+        hasTime?: boolean,
+        recurrence?: RecurrenceType,
+        addToGoogleCalendar?: boolean,
+      ) => {
         if (editingTudu) {
-            editingTudu.dueDate = date;
-            editingTudu.hasTime = hasTime;
-            editingTudu.recurrence = recurrence;
-            handleSaveTudu(editingTudu);
+          editingTudu.dueDate = date;
+          editingTudu.hasTime = hasTime;
+          editingTudu.recurrence = recurrence;
+          handleSaveTudu(editingTudu);
+
+          if (addToGoogleCalendar && date) {
+            openGoogleCalendarEvent({
+              title: editingTudu.label,
+              date,
+              hasTime,
+              recurrence,
+              listName: editingTudu.listName,
+            });
+          }
         }
-    }, [editingTudu, handleSaveTudu]);
+      },
+      [editingTudu, handleSaveTudu],
+    );
 
     return (
         <Animated.View layout={LinearTransition}>
@@ -165,6 +184,8 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
                 currentDate={editingTudu?.dueDate}
                 hasTimeInitial={editingTudu?.hasTime}
                 currentRecurrence={editingTudu?.recurrence}
+                tuduTitle={editingTudu?.label}
+                listName={editingTudu?.listName}
             />
         </Animated.View>
     );

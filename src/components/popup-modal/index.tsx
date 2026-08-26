@@ -110,7 +110,17 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                   )}
                   <PopupTitle>{`${title}`}</PopupTitle>
                   {ActionButton && (
-                    <Animated.View entering={FadeIn.delay(300)} style={{height: 24, width: 24, alignItems: 'center', justifyContent: 'center', position: 'absolute', right: 0}}>
+                    <Animated.View
+                      entering={FadeIn.delay(300)}
+                      style={{
+                        minHeight: 28,
+                        minWidth: 28,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        position: 'absolute',
+                        right: 0,
+                      }}>
                       {ActionButton}
                     </Animated.View>
                   )}

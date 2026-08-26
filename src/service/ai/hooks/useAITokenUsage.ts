@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react';
 import {useRecoilState} from 'recoil';
 import {aiTokenUsageState, AITokenUsageRecord} from '../../../state/atoms';
-import {AIProvider} from '../types';
+import {AIFeature, AIProvider} from '../types';
 
 export type UsagePeriod = 'week' | 'month' | 'total';
 
@@ -14,7 +14,7 @@ export interface ProviderUsageSummary {
 }
 
 export interface FeatureUsageSummary {
-  feature: 'emoji' | 'task_suggestions' | 'test';
+  feature: AIFeature;
   totalTokens: number;
   requests: number;
 }
@@ -26,11 +26,11 @@ export interface PeriodUsageStats {
   completionTokens: number;
   totalRequests: number;
   byProvider: Record<AIProvider, ProviderUsageSummary>;
-  byFeature: Record<'emoji' | 'task_suggestions' | 'test', FeatureUsageSummary>;
+  byFeature: Record<AIFeature, FeatureUsageSummary>;
   records: AITokenUsageRecord[];
 }
 
-const computeStats = (
+export const computeStats = (
   records: AITokenUsageRecord[],
   period: UsagePeriod,
 ): PeriodUsageStats => {
@@ -58,17 +58,19 @@ const computeStats = (
     },
   };
 
-  const initialByFeature: Record<
-    'emoji' | 'task_suggestions' | 'test',
-    FeatureUsageSummary
-  > = {
-    emoji: {
-      feature: 'emoji',
+  const initialByFeature: Record<AIFeature, FeatureUsageSummary> = {
+    task_suggestions: {
+      feature: 'task_suggestions',
       totalTokens: 0,
       requests: 0,
     },
-    task_suggestions: {
-      feature: 'task_suggestions',
+    parse_list: {
+      feature: 'parse_list',
+      totalTokens: 0,
+      requests: 0,
+    },
+    emoji: {
+      feature: 'emoji',
       totalTokens: 0,
       requests: 0,
     },

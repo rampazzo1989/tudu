@@ -12,6 +12,7 @@ import { PopupButton } from '../popup-modal/types';
 import { ScheduleModal } from '../schedule-modal';
 import { AISuggestionsModal } from '../ai-suggestions-modal';
 import { formatScheduledDateTime } from '../../utils/date-utils';
+import { openGoogleCalendarEvent } from '../../utils/google-calendar-utils';
 import {
   AISuggestionButton,
   AISuggestionButtonText,
@@ -34,7 +35,6 @@ import { useEmojiSearch } from '../../hooks/useEmojiSearch';
 import { useVoiceRecognition, isBenignVoiceError } from '../../hooks/useVoiceRecognition';
 import { MicIcon } from '../animated-icons/mic-icon';
 import { parseVoiceInput } from '../../utils/voice-parser';
-import Toast from 'react-native-toast-message';
 import SuggestedEmojiList from '../suggested-emoji-list';
 import {
   DATE_PARAMETERS_REGEX,
@@ -77,6 +77,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const [isAIGenerated, setIsAIGenerated] = useState(false);
     const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
     const [isAISuggestionsModalVisible, setIsAISuggestionsModalVisible] = useState(false);
+    const [addToGoogleCalendar, setAddToGoogleCalendar] = useState(false);
 
 
     const { t, i18n } = useTranslation();
@@ -95,6 +96,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       if (visible) {
         setInternalTuduData(editingTudu ? editingTudu.clone() : getNewEmptyTudu());
         setIsScheduleModalVisible(false);
+        setAddToGoogleCalendar(false);
       }
     }, [visible, editingTudu]);
 
@@ -321,7 +323,12 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     }, []);
 
     const handleScheduleConfirm = useCallback(
-      (date: Date, withTime?: boolean, recurrence?: RecurrenceType) => {
+      (
+        date: Date,
+        withTime?: boolean,
+        recurrence?: RecurrenceType,
+        shouldAddToGoogleCalendar?: boolean,
+      ) => {
         setInternalTuduData(prev => {
           const updated = prev.clone();
           updated.dueDate = date;
@@ -329,6 +336,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           updated.recurrence = recurrence;
           return updated;
         });
+        setAddToGoogleCalendar(shouldAddToGoogleCalendar ?? false);
         setIsScheduleModalVisible(false);
       },
       [],
@@ -343,6 +351,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         updated.recurrence = undefined;
         return updated;
       });
+      setAddToGoogleCalendar(false);
     }, []);
 
     const handleInsertOrUpdateTudu = useCallback(
@@ -551,8 +560,18 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         }
 
         onInsertOrUpdate(updatedTudu);
+
+        if (addToGoogleCalendar && updatedTudu.dueDate) {
+          openGoogleCalendarEvent({
+            title: updatedTudu.label,
+            date: updatedTudu.dueDate,
+            hasTime: updatedTudu.hasTime,
+            recurrence: updatedTudu.recurrence,
+            listName: editingTudu?.listName || listName,
+          });
+        }
       },
-      [onInsertOrUpdate],
+      [onInsertOrUpdate, addToGoogleCalendar, editingTudu, listName],
     );
 
     const handleConfirmButtonPress = useCallback(() => {
@@ -728,6 +747,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           currentDate={internalTuduData.dueDate}
           hasTimeInitial={internalTuduData.hasTime}
           currentRecurrence={internalTuduData.recurrence}
+          tuduTitle={internalTuduData.label}
+          listName={editingTudu?.listName || listName}
         />
         <AISuggestionsModal
           isVisible={isAISuggestionsModalVisible}

@@ -3,9 +3,12 @@ import { PopupModal } from '../popup-modal';
 import { getDaytimeIcon } from '../../utils/general-utils';
 import { CalendarIcon, OpenCalendarIcon } from '../animated-icons/calendar';
 import { ScheduleModalProps, ScheduleOptionsProps } from './types';
+import { GoogleCalendarOption } from '../google-calendar-option';
 import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
 import { RecurrenceType } from '../../scenes/home/types';
 import {
+  CurrentScheduleBadge,
+  CurrentScheduleText,
   ModeButton,
   ModeButtonText,
   ModeSelectorContainer,
@@ -132,9 +135,37 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(
     onPressDate,
     onPressNextDays,
     currentDate,
+    currentTime,
   }) => {
     const { t } = useTranslation();
     const [isRecurrenceExpanded, setIsRecurrenceExpanded] = useState(false);
+
+    const effectiveDate = useMemo(() => {
+      if (!currentDate) {
+        return null;
+      }
+      if (hasTime && currentTime) {
+        return combineDateAndTime(currentDate, currentTime);
+      }
+      return currentDate;
+    }, [currentDate, hasTime, currentTime]);
+
+    const currentScheduledText = useMemo(() => {
+      if (!effectiveDate) {
+        return null;
+      }
+      const formatted = formatScheduledDateTime(
+        effectiveDate,
+        hasTime,
+        t,
+      );
+      const recurrenceSuffix = recurrence
+        ? ` • ${t(`recurrence.${recurrence}Short`, { defaultValue: recurrence })}`
+        : '';
+      return `${t('scheduleOptions.scheduledFor', {
+        defaultValue: 'Agendado para:',
+      })} ${formatted}${recurrenceSuffix}`;
+    }, [effectiveDate, hasTime, recurrence, t]);
 
     const handleScheduleToday = useCallback(() => {
       onSchedule(new Date());
@@ -194,6 +225,15 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(
 
     return (
       <Animated.View entering={EnteringAnimation} style={{ alignItems: 'center' }}>
+        {/* Current Schedule Badge if already scheduled */}
+        {currentScheduledText && (
+          <CurrentScheduleBadge entering={FadeIn.duration(200)}>
+            <CurrentScheduleText>
+              📅 {currentScheduledText}
+            </CurrentScheduleText>
+          </CurrentScheduleBadge>
+        )}
+
         {/* Mode Selector: All Day vs With Time */}
         <ModeSelectorContainer>
           <ModeButton
@@ -211,6 +251,49 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(
             </ModeButtonText>
           </ModeButton>
         </ModeSelectorContainer>
+
+        {/* 4 Option Tiles (Hoje, Amanhã, Próximos dias, Data) */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: 252,
+          }}>
+          <IconedOptionTile
+            Icon={getDaytimeIcon()}
+            label={t('scheduleOptions.today')}
+            onPress={handleScheduleToday}
+            autoAnimateIcon
+          />
+          <IconedOptionTile
+            Icon={OpenCalendarIcon}
+            label={t('scheduleOptions.tomorrow')}
+            onPress={handleScheduleTomorrow}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: 252,
+            marginTop: 10,
+            marginBottom: 14,
+          }}>
+          <IconedOptionTile
+            Icon={CalendarIcon}
+            label={t('scheduleOptions.nextDays')}
+            onPress={onPressNextDays}
+            autoAnimateIcon
+            iconAnimationDelay={1200}
+          />
+          <IconedOptionTile
+            Icon={CalendarIcon}
+            label={t('scheduleOptions.date')}
+            onPress={onPressDate}
+            autoAnimateIcon
+            iconAnimationDelay={1200}
+          />
+        </View>
 
         {/* Collapsible Recurrence Selector */}
         <RecurrenceSectionContainer>
@@ -251,47 +334,6 @@ const ScheduleOptions: React.FC<ScheduleOptionsProps> = memo(
             </Animated.View>
           )}
         </RecurrenceSectionContainer>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: 252,
-          }}>
-          <IconedOptionTile
-            Icon={getDaytimeIcon()}
-            label={t('scheduleOptions.today')}
-            onPress={handleScheduleToday}
-            autoAnimateIcon
-          />
-          <IconedOptionTile
-            Icon={OpenCalendarIcon}
-            label={t('scheduleOptions.tomorrow')}
-            onPress={handleScheduleTomorrow}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: 252,
-            marginTop: 10,
-          }}>
-          <IconedOptionTile
-            Icon={CalendarIcon}
-            label={t('scheduleOptions.nextDays')}
-            onPress={onPressNextDays}
-            autoAnimateIcon
-            iconAnimationDelay={1200}
-          />
-          <IconedOptionTile
-            Icon={CalendarIcon}
-            label={t('scheduleOptions.date')}
-            onPress={onPressDate}
-            autoAnimateIcon
-            iconAnimationDelay={1200}
-          />
-        </View>
       </Animated.View>
     );
   },
@@ -405,6 +447,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
     const [popupStage, setPopupStage] = useState(PopupStageEnum.INITIAL);
     const [previousStage, setPreviousStage] = useState(PopupStageEnum.INITIAL);
     const [hasTime, setHasTime] = useState(hasTimeInitial ?? false);
+    const [addToGoogleCalendar, setAddToGoogleCalendar] = useState(false);
     const [recurrence, setRecurrence] = useState<RecurrenceType | undefined>(
       currentRecurrence,
     );
@@ -426,6 +469,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
       setInternalDate(currentDate ?? new Date());
       setHasTime(hasTimeInitial ?? false);
       setRecurrence(currentRecurrence);
+      setAddToGoogleCalendar(false);
       if (currentDate && hasTimeInitial) {
         setInternalTime(new Date(currentDate));
       }
@@ -433,15 +477,16 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
 
     const handleModalClose = useCallback(() => {
       setPopupStage(PopupStageEnum.INITIAL);
+      setAddToGoogleCalendar(false);
       onModalClose();
     }, [onModalClose]);
 
     const handleScheduleToDate = useCallback(
       (date: Date, withTime: boolean = false) => {
-        onSchedule(date, withTime, recurrence);
+        onSchedule(date, withTime, recurrence, addToGoogleCalendar);
         handleModalClose();
       },
-      [onSchedule, recurrence, handleModalClose],
+      [onSchedule, recurrence, addToGoogleCalendar, handleModalClose],
     );
 
     const handleInitialDateChoice = useCallback(
@@ -531,9 +576,15 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
               onPressNextDays={onPressNextDays}
               onPressDate={onPressDate}
               currentDate={currentDate}
+              currentTime={internalTime}
             />
           ),
-          ActionButton: undefined,
+          ActionButton: (
+            <GoogleCalendarOption
+              isSelected={addToGoogleCalendar}
+              onToggle={setAddToGoogleCalendar}
+            />
+          ),
           buttons: initialButtons,
           onRequestClose: handleModalClose,
         },
@@ -542,7 +593,14 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
           Icon: OpenCalendarIcon,
           Content: <NextDays onScheduleToDay={handleNextDaysChoice} />,
           ActionButton: (
-            <BackButton onPress={() => setPopupStage(PopupStageEnum.INITIAL)} />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <GoogleCalendarOption
+                isSelected={addToGoogleCalendar}
+                onToggle={setAddToGoogleCalendar}
+                style={{ marginRight: 8 }}
+              />
+              <BackButton onPress={() => setPopupStage(PopupStageEnum.INITIAL)} />
+            </View>
           ),
           buttons: [cancelButton],
           onRequestClose: () => setPopupStage(PopupStageEnum.INITIAL),
@@ -557,7 +615,14 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
             />
           ),
           ActionButton: (
-            <BackButton onPress={() => setPopupStage(PopupStageEnum.INITIAL)} />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <GoogleCalendarOption
+                isSelected={addToGoogleCalendar}
+                onToggle={setAddToGoogleCalendar}
+                style={{ marginRight: 8 }}
+              />
+              <BackButton onPress={() => setPopupStage(PopupStageEnum.INITIAL)} />
+            </View>
           ),
           buttons: [
             {
@@ -581,7 +646,14 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
             />
           ),
           ActionButton: (
-            <BackButton onPress={() => setPopupStage(previousStage)} />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <GoogleCalendarOption
+                isSelected={addToGoogleCalendar}
+                onToggle={setAddToGoogleCalendar}
+                style={{ marginRight: 8 }}
+              />
+              <BackButton onPress={() => setPopupStage(previousStage)} />
+            </View>
           ),
           buttons: [
             {
@@ -599,6 +671,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
       [
         hasTime,
         recurrence,
+        addToGoogleCalendar,
         handleInitialDateChoice,
         onPressNextDays,
         onPressDate,

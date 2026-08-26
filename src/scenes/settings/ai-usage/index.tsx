@@ -285,6 +285,35 @@ const AIUsagePage: React.FC<AIUsagePageProps> = ({navigation}) => {
 
               <BreakdownSeparator />
 
+              {/* List from Text (Parse List) */}
+              <BreakdownItem>
+                <BreakdownItemLeft>
+                  <BreakdownItemIcon>📋</BreakdownItemIcon>
+                  <BreakdownItemTextContainer>
+                    <BreakdownItemName>
+                      {t('settings.ai.usage.features.parse_list')}
+                    </BreakdownItemName>
+                    <BreakdownItemSub>
+                      {stats.byFeature.parse_list.requests === 1
+                        ? t('settings.ai.usage.heroRequests_one', {
+                            count: stats.byFeature.parse_list.requests,
+                          })
+                        : t('settings.ai.usage.heroRequests_other', {
+                            count: stats.byFeature.parse_list.requests,
+                          })}
+                    </BreakdownItemSub>
+                  </BreakdownItemTextContainer>
+                </BreakdownItemLeft>
+                <BreakdownItemRight>
+                  <BreakdownItemTokens>
+                    {formatNumber(stats.byFeature.parse_list.totalTokens)}
+                  </BreakdownItemTokens>
+                  <BreakdownItemRequests>tokens</BreakdownItemRequests>
+                </BreakdownItemRight>
+              </BreakdownItem>
+
+              <BreakdownSeparator />
+
               {/* Emoji Suggestions */}
               <BreakdownItem>
                 <BreakdownItemLeft>

@@ -34,7 +34,6 @@ import { ListViewModel, TuduViewModel, RecurrenceType } from '../../scenes/home/
 import { ListHeader } from '../list-header';
 import { TuduAdditionalInformation } from '../tudu-card/types';
 import {
-  formatToLocaleDate,
   formatToLocaleTime,
   formatScheduledDateTime,
   isToday,
@@ -56,6 +55,7 @@ import { generateRandomHash } from '../../hooks/useHashGenerator';
 import { ListOptionsButton } from '../list-options-button';
 import { exportAndShareListFile, shareListAsText } from '../../service/list-sharing';
 import Toast from 'react-native-toast-message';
+import { openGoogleCalendarEvent } from '../../utils/google-calendar-utils';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -78,7 +78,6 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const aiIconRef = useRef<AnimatedIconRef>(null);
 
     const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
-    const hookContent = useCloseCurrentlyOpenSwipeable();
 
 
     const { saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup } = useListService();
@@ -285,14 +284,32 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       setScheduleModalVisible(true);
     }, []);
 
-    const handleSchedule = useCallback((date: Date, hasTime?: boolean, recurrence?: RecurrenceType) => {
-      if (editingTudu) {
-        editingTudu.dueDate = date;
-        editingTudu.hasTime = hasTime;
-        editingTudu.recurrence = recurrence;
-        handleInsertOrUpdate(editingTudu);
-      }
-    }, [editingTudu, handleInsertOrUpdate]);
+    const handleSchedule = useCallback(
+      (
+        date: Date,
+        hasTime?: boolean,
+        recurrence?: RecurrenceType,
+        addToGoogleCalendar?: boolean,
+      ) => {
+        if (editingTudu) {
+          editingTudu.dueDate = date;
+          editingTudu.hasTime = hasTime;
+          editingTudu.recurrence = recurrence;
+          handleInsertOrUpdate(editingTudu);
+
+          if (addToGoogleCalendar && date) {
+            openGoogleCalendarEvent({
+              title: editingTudu.label,
+              date,
+              hasTime,
+              recurrence,
+              listName: editingTudu.listName || list?.label,
+            });
+          }
+        }
+      },
+      [editingTudu, handleInsertOrUpdate, list?.label],
+    );
 
     const existingTasks = useMemo(() => {
       return tudus.map(t => t.label);
@@ -472,6 +489,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           currentDate={editingTudu?.dueDate}
           hasTimeInitial={editingTudu?.hasTime}
           currentRecurrence={editingTudu?.recurrence}
+          tuduTitle={editingTudu?.label}
+          listName={editingTudu?.listName || list?.label}
         />
         <AISuggestionsModal
           isVisible={aiSuggestionsModalVisible}

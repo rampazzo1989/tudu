@@ -200,7 +200,10 @@
     "date": "Fecha...",
     "schedule": "Programar",
     "addSchedule": "+ Programar fecha/hora",
-    "clearSchedule": "Quitar programación"
+    "clearSchedule": "Quitar programación",
+    "googleCalendarOption": "Añadir a Google Calendar",
+    "googleCalendarOptionActive": "Añadiendo a Google Calendar al guardar",
+    "scheduledFor": "Programado para:"
   },
   "settings": {
     "title": "Configuración",
@@ -251,6 +254,7 @@
         "features": {
           "emoji": "Sugerencia de Emojis",
           "task_suggestions": "Sugerencia de Tareas",
+          "parse_list": "Lista desde Texto",
           "test": "Pruebas de Conexión"
         },
         "resetTitle": "Restablecer Contador de Consumo",

@@ -9,17 +9,12 @@ import { SkeletonTuduList } from '../../components/skeleton-tudu-list';
 import { TuduAdditionalInformation } from '../../components/tudu-card/types';
 import { useCloseCurrentlyOpenSwipeable } from '../../hooks/useCloseAllSwipeables';
 import { useListService } from '../../service/list-service-hook/useListService';
-import {
-  formatToLocaleDate,
-  formatToLocaleTime,
-  formatScheduledDateTime,
-  isToday,
-} from '../../utils/date-utils';
-import { UNLISTED_LIST_ID } from '../home/state';
+import { formatScheduledDateTime } from '../../utils/date-utils';
 import { ListViewModel, TuduViewModel, RecurrenceType } from '../home/types';
 import { EmptyStateContainer, EmptyStateText, PaddedContainer, styles } from './styles';
 import { AllTudusPageProps } from './types';
 import { ScheduleModal } from '../../components/schedule-modal';
+import { openGoogleCalendarEvent } from '../../utils/google-calendar-utils';
 
 
 
@@ -81,14 +76,32 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
     setScheduleModalVisible(true);
   }, []);
 
-  const handleSchedule = useCallback((date: Date, hasTime?: boolean, recurrence?: RecurrenceType) => {
-    if (editingTudu) {
-      editingTudu.dueDate = date;
-      editingTudu.hasTime = hasTime;
-      editingTudu.recurrence = recurrence;
-      saveTudu(editingTudu);
-    }
-  }, [editingTudu, saveTudu]);
+  const handleSchedule = useCallback(
+    (
+      date: Date,
+      hasTime?: boolean,
+      recurrence?: RecurrenceType,
+      addToGoogleCalendar?: boolean,
+    ) => {
+      if (editingTudu) {
+        editingTudu.dueDate = date;
+        editingTudu.hasTime = hasTime;
+        editingTudu.recurrence = recurrence;
+        saveTudu(editingTudu);
+
+        if (addToGoogleCalendar && date) {
+          openGoogleCalendarEvent({
+            title: editingTudu.label,
+            date,
+            hasTime,
+            recurrence,
+            listName: editingTudu.listName,
+          });
+        }
+      }
+    },
+    [editingTudu, saveTudu],
+  );
 
   const virtualList: ListViewModel = useMemo(() => {
     const list = new ListViewModel({
@@ -149,6 +162,8 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
         currentDate={editingTudu?.dueDate}
         hasTimeInitial={editingTudu?.hasTime}
         currentRecurrence={editingTudu?.recurrence}
+        tuduTitle={editingTudu?.label}
+        listName={editingTudu?.listName}
       />
     </Page>
   );

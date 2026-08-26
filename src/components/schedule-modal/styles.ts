@@ -1,12 +1,37 @@
 import styled from 'styled-components/native';
+import Animated from 'react-native-reanimated';
 import { OptionButton } from '../option-button';
 import { ShrinkableView } from '../shrinkable-view';
+
+const AnimatedView = Animated.View as any;
 
 export const OptionsContainer = styled.View`
   flex-shrink: 1;
   justify-content: center;
   align-items: center;
   width: 100%;
+`;
+
+export const CurrentScheduleBadge = styled(AnimatedView)`
+  width: 252px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: rgba(66, 133, 244, 0.12);
+  border-width: 1px;
+  border-color: rgba(66, 133, 244, 0.25);
+  margin-bottom: 14px;
+`;
+
+export const CurrentScheduleText = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.default};
+  font-size: 12px;
+  line-height: 16px;
+  color: ${({ theme }) => theme.colors.text};
+  text-align: center;
+  font-weight: 500;
 `;
 
 export const OptionButtonStyled = styled(OptionButton)`
@@ -90,7 +115,7 @@ export const TimeChipText = styled.Text<{ selected?: boolean }>`
 
 export const RecurrenceSectionContainer = styled.View`
   width: 252px;
-  margin-bottom: 14px;
+  margin-bottom: 4px;
 `;
 
 export const RecurrenceToggleButton = styled(ShrinkableView)<{ active?: boolean }>`
@@ -124,7 +149,7 @@ export const RecurrenceToggleText = styled.Text<{ active?: boolean }>`
 export const RecurrenceToggleValue = styled.Text<{ active?: boolean }>`
   font-family: ${({ theme }) => theme.fonts.default};
   font-size: 11px;
-  color: ${({ theme, active }) => (active ? '#FFFFFF' : '#A0AAB8')};
+  color: ${({ active }) => (active ? '#FFFFFF' : '#A0AAB8')};
   font-weight: ${({ active }) => (active ? '700' : '500')};
 `;
 

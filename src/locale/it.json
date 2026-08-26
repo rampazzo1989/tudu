@@ -200,7 +200,10 @@
     "date": "Data...",
     "schedule": "Pianifica",
     "addSchedule": "+ Pianifica data/ora",
-    "clearSchedule": "Rimuovi pianificazione"
+    "clearSchedule": "Rimuovi pianificazione",
+    "googleCalendarOption": "Aggiungi a Google Calendar",
+    "googleCalendarOptionActive": "Aggiunta a Google Calendar al salvataggio",
+    "scheduledFor": "Pianificato per:"
   },
   "settings": {
     "title": "Impostazioni",
@@ -251,6 +254,7 @@
         "features": {
           "emoji": "Suggerimento Emoji",
           "task_suggestions": "Suggerimento Attività",
+          "parse_list": "Lista da Testo",
           "test": "Test di Connessione"
         },
         "resetTitle": "Azzera Contatore Consumo",
