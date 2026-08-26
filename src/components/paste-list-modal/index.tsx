@@ -289,11 +289,13 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
                         flexDirection: 'row',
                         alignItems: 'center',
                         width: '100%',
-                        paddingVertical: 10,
-                        paddingHorizontal: 8,
-                        marginBottom: 6,
+                        paddingVertical: 9,
+                        paddingHorizontal: 10,
+                        marginBottom: 5,
                         borderRadius: 10,
-                        backgroundColor: 'rgba(255,255,255,0.03)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                        borderWidth: 1,
+                        borderColor: 'rgba(255, 255, 255, 0.05)',
                       }}>
                       <Skeleton
                         style={{
@@ -308,7 +310,7 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
                           flex: 1,
                           height: 16,
                           borderRadius: 4,
-                          marginLeft: 12,
+                          marginLeft: 10,
                           backgroundColor: '#585f69',
                         }}
                       />

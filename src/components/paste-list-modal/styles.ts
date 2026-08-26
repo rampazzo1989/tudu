@@ -241,16 +241,19 @@ export const ItemDismissText = styled.Text`
 
 /* Loading & Notice States */
 export const LoadingContainer = styled.View`
-  padding-vertical: 24px;
+  margin-vertical: 6px;
+  padding-vertical: 4px;
   align-items: center;
   justify-content: center;
+  width: 100%;
 `;
 
 export const LoadingText = styled.Text`
   font-family: ${({ theme }) => theme.fonts.default};
   font-size: 13px;
   color: ${({ theme }) => theme.colors.iconOverlay};
-  margin-top: 14px;
+  margin-top: 10px;
+  margin-bottom: 4px;
   text-align: center;
 `;
 

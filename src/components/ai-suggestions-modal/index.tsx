@@ -196,11 +196,13 @@ const AISuggestionsModal: React.FC<AISuggestionsModalProps> = memo(
                       flexDirection: 'row',
                       alignItems: 'center',
                       width: '100%',
-                      paddingVertical: 10,
-                      paddingHorizontal: 8,
+                      paddingVertical: 9,
+                      paddingHorizontal: 12,
                       marginBottom: 6,
                       borderRadius: 10,
-                      backgroundColor: 'rgba(255,255,255,0.03)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                      borderWidth: 1,
+                      borderColor: 'rgba(255, 255, 255, 0.06)',
                     }}>
                     <Skeleton
                       style={{
@@ -215,7 +217,7 @@ const AISuggestionsModal: React.FC<AISuggestionsModalProps> = memo(
                         flex: 1,
                         height: 16,
                         borderRadius: 4,
-                        marginLeft: 12,
+                        marginLeft: 10,
                         backgroundColor: '#585f69',
                       }}
                     />

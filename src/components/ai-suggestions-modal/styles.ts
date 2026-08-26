@@ -4,7 +4,6 @@ import { ShrinkableView } from '../shrinkable-view';
 export const ModalContainer = styled.View`
   width: 90%;
   max-width: 360px;
-  max-height: 85%;
   background-color: ${({ theme }) => theme.colors.popupBackground};
   border-radius: 18px;
   padding: 18px;
@@ -151,16 +150,19 @@ export const ItemDismissText = styled.Text`
 `;
 
 export const LoadingContainer = styled.View`
-  padding-vertical: 28px;
+  margin-vertical: 6px;
+  padding-vertical: 4px;
   align-items: center;
   justify-content: center;
+  width: 100%;
 `;
 
 export const LoadingText = styled.Text`
   font-family: ${({ theme }) => theme.fonts.default};
   font-size: 13px;
   color: ${({ theme }) => theme.colors.iconOverlay};
-  margin-top: 14px;
+  margin-top: 10px;
+  margin-bottom: 4px;
   text-align: center;
 `;
 
