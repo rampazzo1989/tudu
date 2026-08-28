@@ -17,11 +17,27 @@ export const NotificationBootSync: React.FC = () => {
     const sync = async () => {
       await notificationService.init();
       const allTudus = getAllTudus();
-      const todayTudus = getTudusForDate(new Date());
+
+      // Determine target date for Daily Digest (today if before digest time, tomorrow if after)
+      const now = Date.now();
+      const targetDigestDate = new Date();
+      targetDigestDate.setHours(
+        notificationSettings.dailyDigestHour,
+        notificationSettings.dailyDigestMinute,
+        0,
+        0,
+      );
+
+      if (targetDigestDate.getTime() <= now) {
+        targetDigestDate.setDate(targetDigestDate.getDate() + 1);
+      }
+
+      const tudusForDigest = getTudusForDate(targetDigestDate);
       await notificationService.syncAll(
         allTudus,
-        todayTudus,
+        tudusForDigest,
         notificationSettings,
+        targetDigestDate,
       );
     };
 

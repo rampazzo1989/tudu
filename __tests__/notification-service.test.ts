@@ -83,7 +83,7 @@ describe('Notification Service', () => {
   });
 
   describe('scheduleTimedTudu with sound', () => {
-    const createFutureTudu = (soundOverride?: string): TuduViewModel => {
+    const createFutureTudu = (): TuduViewModel => {
       const futureDate = new Date(Date.now() + 3600000);
       const item: TuduItem = {
         id: 'timed-123',
@@ -246,6 +246,93 @@ describe('Notification Service', () => {
       expect(content).not.toBeNull();
       expect(content?.title).toBe('Tarefas de Hoje');
       expect(content?.body).toContain('2 tarefas agendadas para hoje ao longo do dia');
+    });
+  });
+
+  describe('scheduleDailyDigest and syncAll', () => {
+    const createTudu = (
+      id: string,
+      label: string,
+      dueDate: Date = new Date(),
+      hasTime: boolean = false,
+      done: boolean = false,
+    ): TuduViewModel => {
+      const item: TuduItem = {
+        id,
+        label,
+        done,
+        dueDate,
+        hasTime,
+      };
+      return new TuduViewModel(item, 'list-1', 'default', 'Geral');
+    };
+
+    it('should cancel daily digest notification if there are no active tasks for the target date', async () => {
+      await notificationService.scheduleDailyDigest([], 8, 30, true);
+
+      expect(notifee.cancelNotification).toHaveBeenCalledWith('daily_digest');
+      expect(notifee.createTriggerNotification).not.toHaveBeenCalled();
+    });
+
+    it('should schedule daily digest using targetDateOverride when provided', async () => {
+      const tomorrow = new Date(Date.now() + 86400000);
+      tomorrow.setHours(9, 0, 0, 0);
+
+      const tomorrowTudus = [createTudu('1', 'Tarefa de amanhã', tomorrow)];
+
+      await notificationService.scheduleDailyDigest(
+        tomorrowTudus,
+        9,
+        0,
+        true,
+        'tudu_marimba',
+        tomorrow,
+      );
+
+      expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'daily_digest',
+          body: '1 tarefa para hoje: Tarefa de amanhã',
+        }),
+        expect.objectContaining({
+          timestamp: tomorrow.getTime(),
+        }),
+      );
+    });
+
+    it('should clean up orphaned timed notification triggers during syncAll', async () => {
+      // Mock existing trigger IDs in Notifee (one active, two orphaned/deleted)
+      (notifee.getTriggerNotificationIds as jest.Mock).mockResolvedValueOnce([
+        'tudu_active-1',
+        'tudu_deleted-2',
+        'tudu_done-3',
+        'daily_digest',
+      ]);
+
+      const futureDate = new Date(Date.now() + 3600000);
+      const activeTudus = [
+        createTudu('active-1', 'Ativa', futureDate, true, false),
+      ];
+
+      await notificationService.syncAll(activeTudus, [], {
+        timedNotificationsEnabled: true,
+        dailyDigestEnabled: false,
+        dailyDigestHour: 8,
+        dailyDigestMinute: 30,
+        notificationSound: 'tudu_marimba',
+      });
+
+      // Should cancel orphaned notifications
+      expect(notifee.cancelNotification).toHaveBeenCalledWith('tudu_deleted-2');
+      expect(notifee.cancelNotification).toHaveBeenCalledWith('tudu_done-3');
+
+      // Should schedule active timed tudu
+      expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'tudu_active-1',
+        }),
+        expect.anything(),
+      );
     });
   });
 });

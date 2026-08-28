@@ -16,7 +16,7 @@ import {
 } from '../../state/atoms';
 import { notificationService } from '../notification';
 import { TuduBackupPayload } from './types';
-import { isToday } from '../../utils/date-utils';
+import { getDateOnlyTimeStamp } from '../../utils/date-utils';
 
 export interface RestoreResult {
   success: boolean;
@@ -96,28 +96,6 @@ export const restoreStateFromPayload = async (
   }
 
   // 6. Rebuild TuduViewModels and re-sync Notification Engine
-  const allTudusViewModels: TuduViewModel[] = [];
-  const todayTudusViewModels: TuduViewModel[] = [];
-
-  revivedTudus.forEach((tuduMap, listId) => {
-    const listLabel = revivedMyLists.get(listId)?.label || '';
-    tuduMap.forEach(item => {
-      const vm = new TuduViewModel(item, listId, 'default', listLabel);
-      allTudusViewModels.push(vm);
-      if (item.dueDate && isToday(item.dueDate)) {
-        todayTudusViewModels.push(vm);
-      }
-    });
-  });
-
-  revivedUnlistedTudus.forEach(item => {
-    const vm = new TuduViewModel(item, 'unlisted', 'unlisted', '');
-    allTudusViewModels.push(vm);
-    if (item.dueDate && isToday(item.dueDate)) {
-      todayTudusViewModels.push(vm);
-    }
-  });
-
   const notificationSettingsToUse =
     data.settings?.notificationSettings || {
       timedNotificationsEnabled: true,
@@ -126,11 +104,48 @@ export const restoreStateFromPayload = async (
       dailyDigestMinute: 30,
     };
 
+  const now = Date.now();
+  const targetDigestDate = new Date();
+  targetDigestDate.setHours(
+    notificationSettingsToUse.dailyDigestHour,
+    notificationSettingsToUse.dailyDigestMinute,
+    0,
+    0,
+  );
+  if (targetDigestDate.getTime() <= now) {
+    targetDigestDate.setDate(targetDigestDate.getDate() + 1);
+  }
+
+  const targetDateTimestamp = getDateOnlyTimeStamp(targetDigestDate);
+
+  const allTudusViewModels: TuduViewModel[] = [];
+  const digestTudusViewModels: TuduViewModel[] = [];
+
+  revivedTudus.forEach((tuduMap, listId) => {
+    const listLabel = revivedMyLists.get(listId)?.label || '';
+    tuduMap.forEach(item => {
+      const vm = new TuduViewModel(item, listId, 'default', listLabel);
+      allTudusViewModels.push(vm);
+      if (item.dueDate && getDateOnlyTimeStamp(item.dueDate) === targetDateTimestamp) {
+        digestTudusViewModels.push(vm);
+      }
+    });
+  });
+
+  revivedUnlistedTudus.forEach(item => {
+    const vm = new TuduViewModel(item, 'unlisted', 'unlisted', '');
+    allTudusViewModels.push(vm);
+    if (item.dueDate && getDateOnlyTimeStamp(item.dueDate) === targetDateTimestamp) {
+      digestTudusViewModels.push(vm);
+    }
+  });
+
   try {
     await notificationService.syncAll(
       allTudusViewModels,
-      todayTudusViewModels,
+      digestTudusViewModels,
       notificationSettingsToUse,
+      targetDigestDate,
     );
   } catch (err) {
     console.warn('[RestoreService] Failed to sync notifications after restore:', err);

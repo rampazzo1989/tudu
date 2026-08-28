@@ -277,11 +277,12 @@ class NotificationService {
    * Schedules or updates the Daily Digest notification
    */
   public async scheduleDailyDigest(
-    tudusForToday: TuduViewModel[],
+    tudusForTargetDate: TuduViewModel[],
     hour: number,
     minute: number,
     enabled: boolean = true,
     sound?: NotificationSound,
+    targetDateOverride?: Date,
   ): Promise<void> {
     const notificationId = NOTIFICATION_PREFIX.DAILY_DIGEST;
 
@@ -291,7 +292,7 @@ class NotificationService {
       return;
     }
 
-    const content = this.formatDailyDigestContent(tudusForToday);
+    const content = this.formatDailyDigestContent(tudusForTargetDate);
     if (!content) {
       return;
     }
@@ -300,12 +301,18 @@ class NotificationService {
     await this.init(soundToUse);
 
     // Determine target trigger time
-    const targetDate = new Date();
-    targetDate.setHours(hour, minute, 0, 0);
+    let targetDate: Date;
+    if (targetDateOverride) {
+      targetDate = new Date(targetDateOverride);
+      targetDate.setHours(hour, minute, 0, 0);
+    } else {
+      targetDate = new Date();
+      targetDate.setHours(hour, minute, 0, 0);
 
-    // If today's time has already passed, schedule for tomorrow
-    if (targetDate.getTime() <= Date.now()) {
-      targetDate.setDate(targetDate.getDate() + 1);
+      // If today's time has already passed, schedule for tomorrow
+      if (targetDate.getTime() <= Date.now()) {
+        targetDate.setDate(targetDate.getDate() + 1);
+      }
     }
 
     const trigger: TimestampTrigger = {
@@ -391,32 +398,55 @@ class NotificationService {
   }
 
   /**
-   * Full sync of all timed notifications and daily digest
+   * Full sync of all timed notifications and daily digest with orphan cleanup
    */
   public async syncAll(
     allTudus: TuduViewModel[],
-    tudusForToday: TuduViewModel[],
+    tudusForDigest: TuduViewModel[],
     settings: NotificationSettingsState,
+    targetDigestDate?: Date,
   ): Promise<void> {
     const soundToUse =
       settings.notificationSound || DEFAULT_NOTIFICATION_SOUND;
     this.currentSound = soundToUse;
     await this.init(soundToUse);
 
+    const scheduledNotificationIds =
+      await notifee.getTriggerNotificationIds();
+
     // 1. Sync Timed Notifications
     if (!settings.timedNotificationsEnabled) {
       // Cancel all timed triggers
-      const scheduledNotifications =
-        await notifee.getTriggerNotificationIds();
-      for (const id of scheduledNotifications) {
+      for (const id of scheduledNotificationIds) {
         if (id.startsWith(NOTIFICATION_PREFIX.TIMED_TUDU)) {
           await notifee.cancelNotification(id);
         }
       }
     } else {
+      const now = Date.now();
       const timedTudus = allTudus.filter(
-        t => t.dueDate && t.hasTime && !t.done,
+        t =>
+          t.dueDate &&
+          t.hasTime &&
+          !t.done &&
+          new Date(t.dueDate).getTime() > now,
       );
+
+      const activeTimedNotificationIds = new Set(
+        timedTudus.map(t => `${NOTIFICATION_PREFIX.TIMED_TUDU}${t.id}`),
+      );
+
+      // Clean up orphaned timed notifications (deleted, completed, or untimed tasks)
+      for (const id of scheduledNotificationIds) {
+        if (
+          id.startsWith(NOTIFICATION_PREFIX.TIMED_TUDU) &&
+          !activeTimedNotificationIds.has(id)
+        ) {
+          await notifee.cancelNotification(id);
+        }
+      }
+
+      // Schedule active timed tudus
       for (const tudu of timedTudus) {
         await this.scheduleTimedTudu(tudu, true, soundToUse);
       }
@@ -424,11 +454,12 @@ class NotificationService {
 
     // 2. Sync Daily Digest
     await this.scheduleDailyDigest(
-      tudusForToday,
+      tudusForDigest,
       settings.dailyDigestHour,
       settings.dailyDigestMinute,
       settings.dailyDigestEnabled,
       soundToUse,
+      targetDigestDate,
     );
   }
 }

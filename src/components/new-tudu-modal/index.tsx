@@ -117,6 +117,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       }
     }, [visible, editingTudu, defaultDueDate, defaultListId, defaultOrigin, listName]);
 
+    const handleTextChangeRef = useRef<(text: string) => void>(() => {});
+
     const handleVoiceFinal = useCallback(
       (spokenText: string) => {
         if (!spokenText) return;
@@ -141,9 +143,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           return updated;
         });
 
-        handleTextChange(parsed.cleanedText);
+        handleTextChangeRef.current(parsed.cleanedText);
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [],
     );
 
@@ -225,6 +226,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       if (isListening) {
         await stopListening();
       } else {
+        inputRef.current?.blur();
         preVoiceLabelRef.current = internalTuduData.label || '';
         const currentLang = i18n.language || 'pt-BR';
         await startListening(currentLang);
@@ -328,6 +330,8 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         suggestedEmojis.length,
       ],
     );
+
+    handleTextChangeRef.current = handleTextChange;
 
     const isEditing = useMemo(() => !!editingTudu, [editingTudu]);
 
@@ -658,8 +662,9 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           onTouchBackground={handleRequestClose}
           TopContainerComponent={TopContainerComponent}
           onShow={() => {
-            setTimeout(() => inputRef.current?.focus(), 200);
-            if (autoStartVoice) {
+            if (!autoStartVoice) {
+              setTimeout(() => inputRef.current?.focus(), 200);
+            } else {
               setTimeout(() => {
                 preVoiceLabelRef.current = '';
                 const currentLang = i18n.language || 'pt-BR';
@@ -716,7 +721,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                 accessibilityLabel={t('voice.tapToSpeak', {
                   defaultValue: 'Ditar por voz',
                 })}>
-                <MicIcon isListening={isListening} size={18} />
+                <MicIcon isListening={isListening} size={18} color="#6B7280" />
               </MicButton>
             </InputContainer>
             <ScheduleRowContainer>

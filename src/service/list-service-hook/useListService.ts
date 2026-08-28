@@ -460,6 +460,15 @@ const useListService = () => {
         doStateBackup(listData.origin);
       }
 
+      // Cancel notifications for all tudus in the deleted list
+      const currentTudusState = getTudusState(listData.origin);
+      const tudusInList = currentTudusState.get(listData.id);
+      if (tudusInList) {
+        for (const [tuduId] of tudusInList) {
+          notificationService.cancelTimedTudu(tuduId);
+        }
+      }
+
       listStateSetter(previousState => {
         const newState = new Map(previousState);
         newState.delete(listData.id);
@@ -474,7 +483,7 @@ const useListService = () => {
         return newState;
       });
     },
-    [doStateBackup, getStateSetter, getTudusStateSetter],
+    [doStateBackup, getStateSetter, getTudusState, getTudusStateSetter],
   );
 
   const deleteTudu = useCallback(
@@ -490,7 +499,8 @@ const useListService = () => {
 
       tudusStateSetter(previousState => {
         const newState = new Map(previousState);
-        const tudus = newState.get(tuduData.listId);
+        const listKey = origin === 'unlisted' ? 'unlisted' : tuduData.listId;
+        const tudus = newState.get(listKey);
 
         tudus?.delete(tuduData.id);
 
@@ -517,7 +527,8 @@ const useListService = () => {
         const newState = new Map(previousState);
 
         tuduList.forEach(tudu => {
-          const tudus = newState.get(tudu.listId);
+          const listKey = origin === 'unlisted' ? 'unlisted' : tudu.listId;
+          const tudus = newState.get(listKey);
           tudus?.delete(tudu.id);
         });
 
@@ -535,7 +546,8 @@ const useListService = () => {
       const newState = new Map(previousState);
 
       tuduList.forEach(tudu => {
-        const tudus = newState.get(tudu.listId);
+        const listKey = origin === 'unlisted' ? 'unlisted' : tudu.listId;
+        const tudus = newState.get(listKey);
         var currentTudu = tudus?.get(tudu.id);
         if (currentTudu) {
           currentTudu.done = false;
@@ -550,7 +562,7 @@ const useListService = () => {
 
       return newState;
     });
-  }, [notificationSettings.timedNotificationsEnabled]);
+  }, [getTudusStateSetter, notificationSettings.timedNotificationsEnabled]);
 
   const deleteGroup = useCallback(
     (groupName: string) => {
@@ -576,6 +588,13 @@ const useListService = () => {
 
       const list = getListFromViewModel(listData);
       const tudusToArchive = customTudus.get(list.id);
+
+      // Cancel notifications for all tudus in the archived list
+      if (tudusToArchive) {
+        for (const [tuduId] of tudusToArchive) {
+          notificationService.cancelTimedTudu(tuduId);
+        }
+      }
 
       setArchivedLists(previousState => {
         const newState = new Map(previousState);
@@ -628,6 +647,19 @@ const useListService = () => {
       const list = getListFromViewModel(listData);
       const tudus = archivedTudus.get(list.id);
 
+      // Reschedule notifications for active timed tudus in the unarchived list
+      if (tudus) {
+        for (const [_, item] of tudus) {
+          if (item.dueDate && item.hasTime && !item.done) {
+            const vm = new TuduViewModel(item, list.id, 'default', list.label);
+            notificationService.scheduleTimedTudu(
+              vm,
+              notificationSettings.timedNotificationsEnabled,
+            );
+          }
+        }
+      }
+
       setCustomLists(previousState => {
         const newState = new Map(previousState);
         newState.set(list.id, list);
@@ -662,10 +694,11 @@ const useListService = () => {
     [
       archivedLists,
       archivedTudus,
-      setCustomLists,
-      setCustomTudus,
+      notificationSettings.timedNotificationsEnabled,
       setArchivedLists,
       setArchivedTudus,
+      setCustomLists,
+      setCustomTudus,
     ],
   );
 

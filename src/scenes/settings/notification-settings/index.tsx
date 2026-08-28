@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Switch, View } from 'react-native';
+import { Switch } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'styled-components/native';
 import DatePicker from 'react-native-date-picker';
@@ -94,52 +94,72 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
     navigation.goBack();
   }, [navigation]);
 
+  const getTargetDigestDate = useCallback((hour: number, minute: number): Date => {
+    const now = Date.now();
+    const targetDate = new Date();
+    targetDate.setHours(hour, minute, 0, 0);
+    if (targetDate.getTime() <= now) {
+      targetDate.setDate(targetDate.getDate() + 1);
+    }
+    return targetDate;
+  }, []);
+
   const handleTimePickerChange = useCallback(
     (newDate: Date) => {
       const h = newDate.getHours();
       const m = newDate.getMinutes();
       setDailyDigestTime(h, m);
-      const tudusForToday = getTudusForDate(new Date());
+      const targetDate = getTargetDigestDate(h, m);
+      const tudusForDigest = getTudusForDate(targetDate);
       notificationService.scheduleDailyDigest(
-        tudusForToday,
+        tudusForDigest,
         h,
         m,
         settings.dailyDigestEnabled,
         activeSound,
+        targetDate,
       );
     },
-    [activeSound, getTudusForDate, setDailyDigestTime, settings.dailyDigestEnabled],
+    [activeSound, getTargetDigestDate, getTudusForDate, setDailyDigestTime, settings.dailyDigestEnabled],
   );
 
   const handleShortcutPress = useCallback(
     (hour: number, minute: number) => {
       setDailyDigestTime(hour, minute);
-      const tudusForToday = getTudusForDate(new Date());
+      const targetDate = getTargetDigestDate(hour, minute);
+      const tudusForDigest = getTudusForDate(targetDate);
       notificationService.scheduleDailyDigest(
-        tudusForToday,
+        tudusForDigest,
         hour,
         minute,
         settings.dailyDigestEnabled,
         activeSound,
+        targetDate,
       );
     },
-    [activeSound, getTudusForDate, setDailyDigestTime, settings.dailyDigestEnabled],
+    [activeSound, getTargetDigestDate, getTudusForDate, setDailyDigestTime, settings.dailyDigestEnabled],
   );
 
   const handleToggleDailyDigest = useCallback(
     async (value: boolean) => {
       await toggleDailyDigest(value);
-      const tudusForToday = getTudusForDate(new Date());
+      const targetDate = getTargetDigestDate(
+        settings.dailyDigestHour,
+        settings.dailyDigestMinute,
+      );
+      const tudusForDigest = getTudusForDate(targetDate);
       notificationService.scheduleDailyDigest(
-        tudusForToday,
+        tudusForDigest,
         settings.dailyDigestHour,
         settings.dailyDigestMinute,
         value,
         activeSound,
+        targetDate,
       );
     },
     [
       activeSound,
+      getTargetDigestDate,
       getTudusForDate,
       settings.dailyDigestHour,
       settings.dailyDigestMinute,
