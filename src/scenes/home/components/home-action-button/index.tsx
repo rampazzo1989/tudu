@@ -8,35 +8,35 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
-import {MenuOption} from '../../../../components/menu-options/types';
-import {HomeActionButtonProps} from './types';
-import {FloatingActionButtonRef} from '../../../../components/floating-action-button/types';
-import {PlusIcon} from '../../../../components/animated-icons/plus-icon';
-import {FloatingActionButton} from '../../../../components/floating-action-button';
+import { ListDefaultIcon } from '../../../../components/animated-icons/list-default-icon';
+import { MenuOption } from '../../../../components/menu-options/types';
+import { HomeActionButtonProps } from './types';
+import { FloatingActionButtonRef } from '../../../../components/floating-action-button/types';
+import { PlusIcon } from '../../../../components/animated-icons/plus-icon';
+import { FloatingActionButton } from '../../../../components/floating-action-button';
 import {
   HashIcon,
   HashIconActionAnimation,
 } from '../../../../components/animated-icons/hash-icon';
-import {CopyIcon} from '../../../../components/animated-icons/copy-icon';
-import {NewListModal} from '../../../group/components/new-list-modal';
-import {PasteListModal} from '../../../../components/paste-list-modal';
-import {NewCounterModal} from '../../../counter/components/new-counter-modal';
-import {NewTuduModal} from '../../../../components/new-tudu-modal';
-import {useTranslation} from 'react-i18next';
-import {NewGroupIcon} from '../../../../components/animated-icons/new-group-icon';
-import {NewGroupModal} from '../../../group/components/new-group-modal';
-import {DraggableContextType} from '../../../../modules/draggable/draggable-context/types';
+import { CopyIcon } from '../../../../components/animated-icons/copy-icon';
+import { NewListModal } from '../../../group/components/new-list-modal';
+import { PasteListModal } from '../../../../components/paste-list-modal';
+import { NewCounterModal } from '../../../counter/components/new-counter-modal';
+import { NewTuduModal } from '../../../../components/new-tudu-modal';
+import { useTranslation } from 'react-i18next';
+import { NewGroupIcon } from '../../../../components/animated-icons/new-group-icon';
+import { NewGroupModal } from '../../../group/components/new-group-modal';
+import { DraggableContextType } from '../../../../modules/draggable/draggable-context/types';
 import Toast from 'react-native-toast-message';
-import {getUngroupedItems} from '../../../../modules/draggable/draggable-utils';
-import {ListViewModel} from '../../types';
-import {DraggableContext} from '../../../../modules/draggable/draggable-context';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {StackNavigatorParamList} from '../../../../navigation/stack-navigator/types';
-import {useListService} from '../../../../service/list-service-hook/useListService';
-import {UNLISTED_LIST_ID} from '../../state';
-import {MicIcon} from '../../../../components/animated-icons/mic-icon';
+import { getUngroupedItems } from '../../../../modules/draggable/draggable-utils';
+import { ListViewModel } from '../../types';
+import { DraggableContext } from '../../../../modules/draggable/draggable-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StackNavigatorParamList } from '../../../../navigation/stack-navigator/types';
+import { useListService } from '../../../../service/list-service-hook/useListService';
+import { UNLISTED_LIST_ID } from '../../state';
+import { MicIcon } from '../../../../components/animated-icons/mic-icon';
 
 const HomeActionButton = memo(
   forwardRef<FloatingActionButtonRef, HomeActionButtonProps>((props, ref) => {
@@ -50,10 +50,10 @@ const HomeActionButton = memo(
     const parentRef = useRef<FloatingActionButtonRef>(null);
     const draggableContext =
       useContext<DraggableContextType<ListViewModel>>(DraggableContext);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const navigation =
       useNavigation<NativeStackNavigationProp<StackNavigatorParamList>>();
-    const {saveTudu} = useListService();
+    const { saveTudu } = useListService();
 
     const handleCreateTuduForToday = useCallback(() => {
       setAutoStartVoice(true);
@@ -97,11 +97,6 @@ const HomeActionButton = memo(
 
     const options: MenuOption[] = [
       {
-        Icon: MicIcon,
-        label: t('actions.newTuduToday'),
-        onPress: handleCreateTuduForToday,
-      },
-      {
         Icon: ListDefaultIcon,
         label: t('actions.newList'),
         onPress: handleCreateNewList,
@@ -121,6 +116,11 @@ const HomeActionButton = memo(
         label: t('actions.newCounter'),
         onPress: handleCreateNewCounter,
       },
+      {
+        Icon: MicIcon,
+        label: t('actions.newTuduToday'),
+        onPress: handleCreateTuduForToday,
+      }
     ];
 
     useImperativeHandle(ref, () => ({
@@ -184,4 +184,4 @@ const HomeActionButton = memo(
   }),
 );
 
-export {HomeActionButton};
+export { HomeActionButton };
