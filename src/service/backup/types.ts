@@ -1,5 +1,11 @@
 import { Counter, List, TuduItem } from '../../scenes/home/types';
-import { AISettingsState, NotificationSettingsState } from '../../state/atoms';
+import {
+  AITokenUsageState,
+  AISettingsState,
+  AutoBackupFrequency,
+  LockTimeoutOption,
+  NotificationSettingsState,
+} from '../../state/atoms';
 
 export interface TuduBackupMetadata {
   version: number;
@@ -17,6 +23,30 @@ export interface TuduBackupMetadata {
   };
 }
 
+export interface TuduBackupSettingsData {
+  showOutdatedTudus?: boolean;
+  hasSeenOnboarding?: boolean;
+  notificationSettings?: NotificationSettingsState;
+  aiSettings?: {
+    provider: AISettingsState['provider'];
+    aiEmojiSuggestionsEnabled: boolean;
+  };
+  aiTokenUsage?: AITokenUsageState;
+  securitySettings?: {
+    isLockEnabled: boolean;
+    pinHash: string | null;
+    pinSalt: string | null;
+    isBiometricsEnabled: boolean;
+    lockTimeout: LockTimeoutOption;
+  };
+  backupPreferences?: {
+    autoBackupEnabled: boolean;
+    autoBackupFrequency: AutoBackupFrequency;
+    reminderEnabled: boolean;
+    reminderIntervalDays: number;
+  };
+}
+
 export interface TuduBackupData {
   myLists: [string, List][];
   archivedLists: [string, List][];
@@ -25,14 +55,7 @@ export interface TuduBackupData {
   unlistedTudus: [string, TuduItem][];
   counters: [string, Counter][];
   emojiUsage: [string, number][];
-  settings?: {
-    showOutdatedTudus?: boolean;
-    notificationSettings?: NotificationSettingsState;
-    aiSettings?: {
-      provider: AISettingsState['provider'];
-      aiEmojiSuggestionsEnabled: boolean;
-    };
-  };
+  settings?: TuduBackupSettingsData;
 }
 
 export interface TuduBackupPayload {
@@ -57,5 +80,7 @@ export interface BackupPreviewInfo {
   countersCount: number;
   archivedCount: number;
   source: 'google_drive' | 'local_file';
+  hasSettings?: boolean;
   rawPayload: TuduBackupPayload;
 }
+

@@ -66,6 +66,7 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
     setAutoBackupFrequency,
     toggleReminder,
     setReminderIntervalDays,
+    toggleIncludeSettingsInBackup,
   } = useBackupService();
 
   const [previewData, setPreviewData] = useState<BackupPreviewInfo | null>(null);
@@ -374,6 +375,28 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
               </ActionTileLeft>
               <Text style={{ fontSize: 18 }}>📂</Text>
             </ActionTile>
+          </Section>
+
+          {/* Section: Backup Content */}
+          <Section>
+            <SectionTitle>{t('settings.backup.sectionContent', { defaultValue: 'Conteúdo do Backup' })}</SectionTitle>
+
+            <ToggleCard>
+              <ToggleTextContainer>
+                <ToggleTitle>{t('settings.backup.includeSettingsTitle', { defaultValue: 'Incluir configurações no backup' })}</ToggleTitle>
+                <ToggleDescription>
+                  {t('settings.backup.includeSettingsDesc', {
+                    defaultValue: 'Salva preferências de notificações, segurança, IA, consumo de tokens e visual',
+                  })}
+                </ToggleDescription>
+              </ToggleTextContainer>
+              <Switch
+                value={backupSettings.includeSettingsInBackup ?? true}
+                onValueChange={toggleIncludeSettingsInBackup}
+                trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#7956BF' }}
+                thumbColor="#FFFFFF"
+              />
+            </ToggleCard>
           </Section>
 
           {/* Section: Automatic Backups */}

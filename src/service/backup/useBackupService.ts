@@ -10,12 +10,15 @@ import {
 } from '../../scenes/home/state';
 import {
   aiSettingsState,
+  aiTokenUsageState,
   AutoBackupFrequency,
   backupSettingsState,
   emojiUsageState,
   notificationSettingsState,
+  securitySettingsState,
   showOutdatedTudus as showOutdatedTudusAtom,
 } from '../../state/atoms';
+import { hasSeenOnboarding as hasSeenOnboardingAtom } from '../../state/onboarding';
 import {
   generateBackupFilename,
   getBackupPreview,
@@ -49,6 +52,9 @@ export const useBackupService = () => {
   const showOutdatedTudus = useRecoilValue(showOutdatedTudusAtom);
   const notificationSettings = useRecoilValue(notificationSettingsState);
   const aiSettings = useRecoilValue(aiSettingsState);
+  const aiTokenUsage = useRecoilValue(aiTokenUsageState);
+  const securitySettings = useRecoilValue(securitySettingsState);
+  const hasSeenOnboarding = useRecoilValue(hasSeenOnboardingAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
@@ -62,9 +68,14 @@ export const useBackupService = () => {
       unlistedTudus,
       counters,
       emojiUsage,
+      includeSettings: backupSettings.includeSettingsInBackup ?? true,
       showOutdatedTudus,
+      hasSeenOnboarding,
       notificationSettings,
       aiSettings,
+      aiTokenUsage,
+      securitySettings,
+      backupSettings,
     });
   }, [
     myLists,
@@ -74,9 +85,13 @@ export const useBackupService = () => {
     unlistedTudus,
     counters,
     emojiUsage,
+    backupSettings,
     showOutdatedTudus,
+    hasSeenOnboarding,
     notificationSettings,
     aiSettings,
+    aiTokenUsage,
+    securitySettings,
   ]);
 
   const connectGoogle = useCallback(async () => {
@@ -262,6 +277,16 @@ export const useBackupService = () => {
     [setBackupSettings],
   );
 
+  const toggleIncludeSettingsInBackup = useCallback(
+    (enabled: boolean) => {
+      setBackupSettings(prev => ({
+        ...prev,
+        includeSettingsInBackup: enabled,
+      }));
+    },
+    [setBackupSettings],
+  );
+
   const dismissReminderForToday = useCallback(() => {
     const todayStr = new Date().toISOString().split('T')[0];
     setBackupSettings(prev => ({
@@ -286,6 +311,7 @@ export const useBackupService = () => {
     setAutoBackupFrequency,
     toggleReminder,
     setReminderIntervalDays,
+    toggleIncludeSettingsInBackup,
     dismissReminderForToday,
   };
 };

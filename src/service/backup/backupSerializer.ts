@@ -1,11 +1,18 @@
 import { Platform } from 'react-native';
 import { Counter, List, TuduItem, TuduItemMap } from '../../scenes/home/types';
-import { AISettingsState, NotificationSettingsState } from '../../state/atoms';
+import {
+  AISettingsState,
+  AITokenUsageState,
+  BackupSettingsState,
+  NotificationSettingsState,
+  SecuritySettingsState,
+} from '../../state/atoms';
 import {
   BackupPreviewInfo,
   TuduBackupData,
   TuduBackupMetadata,
   TuduBackupPayload,
+  TuduBackupSettingsData,
 } from './types';
 
 export const CURRENT_BACKUP_VERSION = 1;
@@ -20,9 +27,14 @@ export interface SerializeBackupParams {
   unlistedTudus: TuduItemMap;
   counters: Map<string, Counter>;
   emojiUsage: Map<string, number>;
+  includeSettings?: boolean;
   showOutdatedTudus?: boolean;
+  hasSeenOnboarding?: boolean;
   notificationSettings?: NotificationSettingsState;
   aiSettings?: AISettingsState;
+  aiTokenUsage?: AITokenUsageState;
+  securitySettings?: SecuritySettingsState;
+  backupSettings?: BackupSettingsState;
 }
 
 export const serializeBackupPayload = (
@@ -36,9 +48,14 @@ export const serializeBackupPayload = (
     unlistedTudus,
     counters,
     emojiUsage,
+    includeSettings = true,
     showOutdatedTudus,
+    hasSeenOnboarding,
     notificationSettings,
     aiSettings,
+    aiTokenUsage,
+    securitySettings,
+    backupSettings,
   } = params;
 
   let totalTudus = unlistedTudus.size;
@@ -75,6 +92,45 @@ export const serializeBackupPayload = (
     archivedTudus.entries(),
   ).map(([listId, tuduMap]) => [listId, Array.from(tuduMap.entries())]);
 
+  let settingsData: TuduBackupSettingsData | undefined;
+
+  if (includeSettings) {
+    settingsData = {
+      showOutdatedTudus,
+      hasSeenOnboarding,
+      notificationSettings,
+      aiSettings: aiSettings
+        ? {
+            provider: aiSettings.provider,
+            aiEmojiSuggestionsEnabled: aiSettings.aiEmojiSuggestionsEnabled,
+          }
+        : undefined,
+      aiTokenUsage: aiTokenUsage
+        ? {
+            records: aiTokenUsage.records || [],
+            lastResetAt: aiTokenUsage.lastResetAt || null,
+          }
+        : undefined,
+      securitySettings: securitySettings
+        ? {
+            isLockEnabled: securitySettings.isLockEnabled,
+            pinHash: securitySettings.pinHash,
+            pinSalt: securitySettings.pinSalt,
+            isBiometricsEnabled: securitySettings.isBiometricsEnabled,
+            lockTimeout: securitySettings.lockTimeout,
+          }
+        : undefined,
+      backupPreferences: backupSettings
+        ? {
+            autoBackupEnabled: backupSettings.autoBackupEnabled,
+            autoBackupFrequency: backupSettings.autoBackupFrequency,
+            reminderEnabled: backupSettings.reminderEnabled,
+            reminderIntervalDays: backupSettings.reminderIntervalDays,
+          }
+        : undefined,
+    };
+  }
+
   const data: TuduBackupData = {
     myLists: Array.from(myLists.entries()),
     archivedLists: Array.from(archivedLists.entries()),
@@ -83,16 +139,7 @@ export const serializeBackupPayload = (
     unlistedTudus: Array.from(unlistedTudus.entries()),
     counters: Array.from(counters.entries()),
     emojiUsage: Array.from(emojiUsage.entries()),
-    settings: {
-      showOutdatedTudus,
-      notificationSettings,
-      aiSettings: aiSettings
-        ? {
-            provider: aiSettings.provider,
-            aiEmojiSuggestionsEnabled: aiSettings.aiEmojiSuggestionsEnabled,
-          }
-        : undefined,
-    },
+    settings: settingsData,
   };
 
   return {
@@ -174,6 +221,10 @@ export const getBackupPreview = (
       data.archivedTudus?.reduce((acc, [_, arr]) => acc + (Array.isArray(arr) ? arr.length : 0), 0) || 0
     ));
 
+  const hasSettings = Boolean(
+    data.settings && Object.values(data.settings).some(v => v !== undefined),
+  );
+
   return {
     createdAt,
     appVersion: metadata.appVersion || '1.0.0',
@@ -183,6 +234,7 @@ export const getBackupPreview = (
     countersCount,
     archivedCount,
     source,
+    hasSettings,
     rawPayload: payload,
   };
 };

@@ -140,6 +140,103 @@ describe('Backup Serializer and Validator Tests', () => {
     expect(payload.data.settings?.notificationSettings?.dailyDigestHour).toBe(9);
   });
 
+  it('should serialize full settings including security, AI token usage, and backup preferences', () => {
+    const payload = serializeBackupPayload({
+      myLists: sampleLists,
+      archivedLists: sampleArchivedLists,
+      tudus: sampleTudus,
+      archivedTudus: sampleArchivedTudus,
+      unlistedTudus: sampleUnlistedTudus,
+      counters: sampleCounters,
+      emojiUsage: sampleEmojiUsage,
+      includeSettings: true,
+      showOutdatedTudus: true,
+      hasSeenOnboarding: true,
+      notificationSettings: {
+        timedNotificationsEnabled: true,
+        dailyDigestEnabled: true,
+        dailyDigestHour: 8,
+        dailyDigestMinute: 30,
+        notificationSound: 'gentle_bell',
+      },
+      aiSettings: {
+        provider: 'openai',
+        aiEmojiSuggestionsEnabled: true,
+        hasApiKey: true,
+      },
+      aiTokenUsage: {
+        records: [
+          {
+            id: 'rec1',
+            timestamp: 1724000000000,
+            provider: 'openai',
+            feature: 'emoji',
+            promptTokens: 100,
+            completionTokens: 20,
+            totalTokens: 120,
+          },
+        ],
+        lastResetAt: '2026-08-01T00:00:00.000Z',
+      },
+      securitySettings: {
+        isLockEnabled: true,
+        pinHash: 'hashedpin123',
+        pinSalt: 'randomsalt456',
+        isBiometricsEnabled: true,
+        lockTimeout: '5m',
+        failedAttempts: 2,
+        lockoutUntil: 1724000030000,
+      },
+      backupSettings: {
+        googleUser: null,
+        lastCloudBackupDate: null,
+        lastLocalBackupDate: null,
+        autoBackupEnabled: true,
+        autoBackupFrequency: 'weekly',
+        reminderEnabled: true,
+        reminderIntervalDays: 15,
+        lastReminderDismissedDate: null,
+        includeSettingsInBackup: true,
+      },
+    });
+
+    expect(payload.data.settings).toBeDefined();
+    expect(payload.data.settings?.hasSeenOnboarding).toBe(true);
+    expect(payload.data.settings?.aiSettings?.provider).toBe('openai');
+    expect(payload.data.settings?.aiTokenUsage?.records.length).toBe(1);
+    expect(payload.data.settings?.aiTokenUsage?.records[0].totalTokens).toBe(120);
+    expect(payload.data.settings?.securitySettings?.isLockEnabled).toBe(true);
+    expect(payload.data.settings?.securitySettings?.pinHash).toBe('hashedpin123');
+    expect(payload.data.settings?.securitySettings?.lockTimeout).toBe('5m');
+    // Transient lockout state should not be serialized
+    expect((payload.data.settings?.securitySettings as any)?.failedAttempts).toBeUndefined();
+    expect(payload.data.settings?.backupPreferences?.autoBackupFrequency).toBe('weekly');
+  });
+
+  it('should exclude settings when includeSettings is false', () => {
+    const payload = serializeBackupPayload({
+      myLists: sampleLists,
+      archivedLists: sampleArchivedLists,
+      tudus: sampleTudus,
+      archivedTudus: sampleArchivedTudus,
+      unlistedTudus: sampleUnlistedTudus,
+      counters: sampleCounters,
+      emojiUsage: sampleEmojiUsage,
+      includeSettings: false,
+      showOutdatedTudus: true,
+      notificationSettings: {
+        timedNotificationsEnabled: true,
+        dailyDigestEnabled: true,
+        dailyDigestHour: 9,
+        dailyDigestMinute: 0,
+      },
+    });
+
+    expect(payload.data.settings).toBeUndefined();
+    const preview = getBackupPreview(payload, 'local_file');
+    expect(preview.hasSettings).toBe(false);
+  });
+
   it('should generate formatted backup JSON string and parse it back', () => {
     const json = serializeBackupToJson({
       myLists: sampleLists,
@@ -189,6 +286,8 @@ describe('Backup Serializer and Validator Tests', () => {
       unlistedTudus: sampleUnlistedTudus,
       counters: sampleCounters,
       emojiUsage: sampleEmojiUsage,
+      includeSettings: true,
+      showOutdatedTudus: true,
     });
 
     const preview = getBackupPreview(payload, 'google_drive');
@@ -198,9 +297,10 @@ describe('Backup Serializer and Validator Tests', () => {
     expect(preview.countersCount).toBe(1);
     expect(preview.archivedCount).toBe(2); // 1 list + 1 tudu
     expect(preview.createdAt).toBeInstanceOf(Date);
+    expect(preview.hasSettings).toBe(true);
   });
 
-  it('should restore state from payload and revive dates correctly', async () => {
+  it('should restore state from payload and revive dates and settings correctly', async () => {
     const payload = serializeBackupPayload({
       myLists: sampleLists,
       archivedLists: sampleArchivedLists,
@@ -209,6 +309,43 @@ describe('Backup Serializer and Validator Tests', () => {
       unlistedTudus: sampleUnlistedTudus,
       counters: sampleCounters,
       emojiUsage: sampleEmojiUsage,
+      includeSettings: true,
+      showOutdatedTudus: true,
+      hasSeenOnboarding: true,
+      notificationSettings: {
+        timedNotificationsEnabled: false,
+        dailyDigestEnabled: true,
+        dailyDigestHour: 7,
+        dailyDigestMinute: 15,
+      },
+      aiSettings: {
+        provider: 'claude',
+        aiEmojiSuggestionsEnabled: true,
+        hasApiKey: false,
+      },
+      aiTokenUsage: {
+        records: [
+          {
+            id: 't1',
+            timestamp: 1724000000000,
+            provider: 'claude',
+            feature: 'parse_list',
+            promptTokens: 50,
+            completionTokens: 50,
+            totalTokens: 100,
+          },
+        ],
+        lastResetAt: null,
+      },
+      securitySettings: {
+        isLockEnabled: true,
+        pinHash: 'hash999',
+        pinSalt: 'salt999',
+        isBiometricsEnabled: false,
+        lockTimeout: 'immediate',
+        failedAttempts: 0,
+        lockoutUntil: null,
+      },
     });
 
     const result = await restoreStateFromPayload(payload);
@@ -216,6 +353,7 @@ describe('Backup Serializer and Validator Tests', () => {
     expect(result.listsRestored).toBe(2);
     expect(result.tudusRestored).toBe(3);
     expect(result.countersRestored).toBe(1);
+    expect(result.settingsRestored).toBe(true);
     expect(setRecoil).toHaveBeenCalled();
   });
 

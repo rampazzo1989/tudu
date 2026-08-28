@@ -16,6 +16,8 @@ import {
   ModalTitle,
   PrimaryButton,
   PrimaryButtonText,
+  SettingsIncludedBadge,
+  SettingsIncludedText,
   StatBox,
   StatLabel,
   StatNumber,
@@ -84,6 +86,18 @@ export const BackupPreviewModal: React.FC<BackupPreviewModalProps> = memo(
                 <StatLabel>{t('settings.backup.statArchived', { defaultValue: 'Arquivados' })}</StatLabel>
               </StatBox>
             </StatsGrid>
+
+            {preview.hasSettings && (
+              <SettingsIncludedBadge>
+                <Text style={{ fontSize: 16 }}>⚙️</Text>
+                <SettingsIncludedText>
+                  {t(
+                    'settings.backup.previewIncludesSettings',
+                    { defaultValue: 'Inclui configurações (notificações, segurança, IA, consumo e preferências).' },
+                  )}
+                </SettingsIncludedText>
+              </SettingsIncludedBadge>
+            )}
 
             <WarningCard>
               <Text style={{ fontSize: 16 }}>⚠️</Text>

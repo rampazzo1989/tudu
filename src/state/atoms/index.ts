@@ -92,6 +92,7 @@ export interface BackupSettingsState {
   reminderEnabled: boolean;
   reminderIntervalDays: number;
   lastReminderDismissedDate: string | null;
+  includeSettingsInBackup: boolean;
 }
 
 export const backupSettingsState = atom<BackupSettingsState>({
@@ -105,6 +106,7 @@ export const backupSettingsState = atom<BackupSettingsState>({
     reminderEnabled: true,
     reminderIntervalDays: 7,
     lastReminderDismissedDate: null,
+    includeSettingsInBackup: true,
   },
   effects: [mmkvPersistAtom('backupSettingsState')],
 });

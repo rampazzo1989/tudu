@@ -96,6 +96,26 @@ export const StatLabel = styled.Text`
   color: ${({ theme }) => theme.colors.iconOverlay};
 `;
 
+export const SettingsIncludedBadge = styled.View`
+  background-color: rgba(121, 86, 191, 0.15);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  flex-direction: row;
+  align-items: center;
+  border-width: 1px;
+  border-color: rgba(121, 86, 191, 0.3);
+`;
+
+export const SettingsIncludedText = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.default};
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.text};
+  flex: 1;
+  margin-left: 8px;
+  line-height: 16px;
+`;
+
 export const WarningCard = styled.View`
   background-color: rgba(244, 67, 54, 0.12);
   border-radius: 12px;

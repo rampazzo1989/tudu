@@ -10,10 +10,15 @@ import {
 import { Counter, List, TuduItem, TuduItemMap, TuduViewModel } from '../../scenes/home/types';
 import {
   aiSettingsState,
+  aiTokenUsageState,
+  backupSettingsState,
   emojiUsageState,
   notificationSettingsState,
+  securitySettingsState,
   showOutdatedTudus as showOutdatedTudusAtom,
 } from '../../state/atoms';
+import { hasSeenOnboarding as hasSeenOnboardingAtom } from '../../state/onboarding';
+import { hasSecureApiKey } from '../ai/secure-storage';
 import { notificationService } from '../notification';
 import { TuduBackupPayload } from './types';
 import { getDateOnlyTimeStamp } from '../../utils/date-utils';
@@ -23,6 +28,7 @@ export interface RestoreResult {
   listsRestored: number;
   tudusRestored: number;
   countersRestored: number;
+  settingsRestored?: boolean;
 }
 
 export const restoreStateFromPayload = async (
@@ -77,20 +83,65 @@ export const restoreStateFromPayload = async (
   setRecoil(emojiUsageState, revivedEmojiUsage);
 
   // 5. Restore Settings if present
+  let hasRestoredSettings = false;
+
   if (data.settings) {
+    hasRestoredSettings = true;
+
     if (data.settings.showOutdatedTudus !== undefined) {
       setRecoil(showOutdatedTudusAtom, data.settings.showOutdatedTudus);
     }
+
+    if (data.settings.hasSeenOnboarding !== undefined) {
+      setRecoil(hasSeenOnboardingAtom, data.settings.hasSeenOnboarding);
+    }
+
     if (data.settings.notificationSettings) {
       setRecoil(notificationSettingsState, data.settings.notificationSettings);
     }
+
     if (data.settings.aiSettings) {
+      const provider = data.settings.aiSettings.provider || 'gemini';
+      const hasKey = hasSecureApiKey(provider);
       setRecoil(aiSettingsState, prev => ({
         ...prev,
         provider: data.settings?.aiSettings?.provider || prev.provider,
         aiEmojiSuggestionsEnabled:
           data.settings?.aiSettings?.aiEmojiSuggestionsEnabled ??
           prev.aiEmojiSuggestionsEnabled,
+        hasApiKey: hasKey,
+      }));
+    }
+
+    if (data.settings.aiTokenUsage) {
+      setRecoil(aiTokenUsageState, {
+        records: data.settings.aiTokenUsage.records || [],
+        lastResetAt: data.settings.aiTokenUsage.lastResetAt || null,
+      });
+    }
+
+    if (data.settings.securitySettings) {
+      const sec = data.settings.securitySettings;
+      setRecoil(securitySettingsState, prev => ({
+        ...prev,
+        isLockEnabled: sec.isLockEnabled ?? prev.isLockEnabled,
+        pinHash: sec.pinHash ?? null,
+        pinSalt: sec.pinSalt ?? null,
+        isBiometricsEnabled: sec.isBiometricsEnabled ?? false,
+        lockTimeout: sec.lockTimeout ?? 'immediate',
+        failedAttempts: 0,
+        lockoutUntil: null,
+      }));
+    }
+
+    if (data.settings.backupPreferences) {
+      const bp = data.settings.backupPreferences;
+      setRecoil(backupSettingsState, prev => ({
+        ...prev,
+        autoBackupEnabled: bp.autoBackupEnabled ?? prev.autoBackupEnabled,
+        autoBackupFrequency: bp.autoBackupFrequency ?? prev.autoBackupFrequency,
+        reminderEnabled: bp.reminderEnabled ?? prev.reminderEnabled,
+        reminderIntervalDays: bp.reminderIntervalDays ?? prev.reminderIntervalDays,
       }));
     }
   }
@@ -156,5 +207,6 @@ export const restoreStateFromPayload = async (
     listsRestored: revivedMyLists.size,
     tudusRestored: allTudusViewModels.length,
     countersRestored: revivedCounters.size,
+    settingsRestored: hasRestoredSettings,
   };
 };
