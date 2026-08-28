@@ -154,6 +154,8 @@ export const useBackupService = () => {
       setBackupSettings(prev => ({
         ...prev,
         lastCloudBackupDate: nowIso,
+        lastAutoBackupError: null,
+        lastAutoBackupErrorDate: null,
       }));
 
       return { filename, date };
@@ -196,6 +198,8 @@ export const useBackupService = () => {
       setBackupSettings(prev => ({
         ...prev,
         lastLocalBackupDate: nowIso,
+        lastAutoBackupError: null,
+        lastAutoBackupErrorDate: null,
       }));
     } finally {
       setIsLoading(false);
@@ -287,6 +291,25 @@ export const useBackupService = () => {
     [setBackupSettings],
   );
 
+  const recordAutoBackupError = useCallback(
+    (errorMessage: string) => {
+      setBackupSettings(prev => ({
+        ...prev,
+        lastAutoBackupError: errorMessage,
+        lastAutoBackupErrorDate: new Date().toISOString(),
+      }));
+    },
+    [setBackupSettings],
+  );
+
+  const clearAutoBackupError = useCallback(() => {
+    setBackupSettings(prev => ({
+      ...prev,
+      lastAutoBackupError: null,
+      lastAutoBackupErrorDate: null,
+    }));
+  }, [setBackupSettings]);
+
   const dismissReminderForToday = useCallback(() => {
     const todayStr = new Date().toISOString().split('T')[0];
     setBackupSettings(prev => ({
@@ -312,6 +335,8 @@ export const useBackupService = () => {
     toggleReminder,
     setReminderIntervalDays,
     toggleIncludeSettingsInBackup,
+    recordAutoBackupError,
+    clearAutoBackupError,
     dismissReminderForToday,
   };
 };

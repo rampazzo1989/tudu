@@ -22,6 +22,7 @@ import {
   ActionTile,
   ActionTileLeft,
   ActionTitle,
+  AutoBackupErrorCard,
   Avatar,
   AvatarFallback,
   AvatarFallbackText,
@@ -33,6 +34,10 @@ import {
   Container,
   DisconnectButton,
   DisconnectButtonText,
+  ErrorCardContent,
+  ErrorCardDate,
+  ErrorCardMessage,
+  ErrorCardTitle,
   InfoBadge,
   InfoText,
   LoadingOverlay,
@@ -438,6 +443,26 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
                 </ChipButton>
               </ChipsRow>
             )}
+
+            {backupSettings.lastAutoBackupError && (
+              <AutoBackupErrorCard>
+                <Text style={{ fontSize: 18 }}>⚠️</Text>
+                <ErrorCardContent>
+                  <ErrorCardTitle>
+                    {t('settings.backup.autoBackupErrorTitle', { defaultValue: 'Falha no Backup Automático' })}
+                  </ErrorCardTitle>
+                  <ErrorCardMessage>{backupSettings.lastAutoBackupError}</ErrorCardMessage>
+                  {backupSettings.lastAutoBackupErrorDate && (
+                    <ErrorCardDate>
+                      {t('settings.backup.failedAt', {
+                        date: formatDate(backupSettings.lastAutoBackupErrorDate),
+                        defaultValue: 'Ocorrido em: {{date}}',
+                      })}
+                    </ErrorCardDate>
+                  )}
+                </ErrorCardContent>
+              </AutoBackupErrorCard>
+            )}
           </Section>
 
           {/* Section: Periodic Reminders */}
@@ -448,9 +473,13 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
               <ToggleTextContainer>
                 <ToggleTitle>{t('settings.backup.remindersTitle', { defaultValue: 'Lembrar de fazer backup' })}</ToggleTitle>
                 <ToggleDescription>
-                  {t('settings.backup.remindersDesc', {
-                    defaultValue: 'Exibe um aviso na tela inicial quando passar muito tempo sem backup',
-                  })}
+                  {backupSettings.autoBackupEnabled && backupSettings.googleUser
+                    ? t('settings.backup.remindersDescAutoActive', {
+                        defaultValue: 'O backup automático está ativo. Os lembretes na tela inicial permanecerão pausados.',
+                      })
+                    : t('settings.backup.remindersDesc', {
+                        defaultValue: 'Exibe um aviso na tela inicial quando passar muito tempo sem backup',
+                      })}
                 </ToggleDescription>
               </ToggleTextContainer>
               <Switch

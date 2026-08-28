@@ -240,6 +240,43 @@ export const InfoText = styled.Text`
   line-height: 16px;
 `;
 
+export const AutoBackupErrorCard = styled.View`
+  flex-direction: row;
+  background-color: rgba(244, 67, 54, 0.12);
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 12px;
+  border-width: 1px;
+  border-color: rgba(244, 67, 54, 0.3);
+  align-items: flex-start;
+`;
+
+export const ErrorCardContent = styled.View`
+  flex: 1;
+  margin-left: 12px;
+`;
+
+export const ErrorCardTitle = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.sectionTitle};
+  font-size: 13px;
+  color: #ff8a80;
+  margin-bottom: 3px;
+`;
+
+export const ErrorCardMessage = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.default};
+  font-size: 12px;
+  color: #ffffff;
+  line-height: 16px;
+  margin-bottom: 4px;
+`;
+
+export const ErrorCardDate = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.default};
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+`;
+
 export const LoadingOverlay = styled.View`
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 10px;

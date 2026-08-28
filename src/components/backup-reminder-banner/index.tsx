@@ -76,7 +76,13 @@ export const BackupReminderBanner: React.FC<BackupReminderBannerProps> = memo(
       return null;
     }
 
-    const message = reminderInfo.isNever
+    const isFailure = Boolean(reminderInfo.isAutoBackupFailed);
+
+    const message = isFailure
+      ? t('settings.backup.autoBackupFailedReminderMsg', {
+          defaultValue: 'Houve uma falha ao tentar fazer o backup automático no Google Drive. Toque para tentar novamente.',
+        })
+      : reminderInfo.isNever
       ? t('settings.backup.reminderNeverMsg', {
           defaultValue: 'Você ainda não fez backup das suas tarefas. Conecte ao Google Drive para não perder seus dados.',
         })
@@ -85,15 +91,19 @@ export const BackupReminderBanner: React.FC<BackupReminderBannerProps> = memo(
           defaultValue: 'Seu último backup foi feito há {{days}} dias. Mantenha seus dados atualizados na nuvem.',
         });
 
+    const title = isFailure
+      ? t('settings.backup.autoBackupFailedReminderTitle', { defaultValue: 'Falha no Backup Automático' })
+      : t('settings.backup.reminderTitle', { defaultValue: 'Lembrete de Backup' });
+
     return (
       <BannerWrapper>
         <BannerContainer>
           <TopRow>
             <TitleGroup>
               <IconContainer>
-                <Text style={{ fontSize: 16 }}>🛡️</Text>
+                <Text style={{ fontSize: 16 }}>{isFailure ? '⚠️' : '🛡️'}</Text>
               </IconContainer>
-              <BannerTitle>{t('settings.backup.reminderTitle', { defaultValue: 'Lembrete de Backup' })}</BannerTitle>
+              <BannerTitle>{title}</BannerTitle>
             </TitleGroup>
             <DismissButton onPress={dismissReminderForToday}>
               <DismissButtonText>✕</DismissButtonText>

@@ -8,19 +8,47 @@ export const useBackupReminder = () => {
   const backupSettings = useRecoilValue(backupSettingsState);
   const myLists = useRecoilValue(myListsAtom);
   const tudus = useRecoilValue(tudusAtom);
-  const { backupToGoogleDrive } = useBackupService();
+  const { backupToGoogleDrive, recordAutoBackupError } = useBackupService();
 
   const hasCheckedAutoBackup = useRef(false);
 
   // 1. Calculate reminder conditions
   const reminderInfo = useMemo(() => {
-    if (!backupSettings.reminderEnabled) {
-      return { shouldShow: false, daysElapsed: 0, isNever: false };
+    const todayStr = new Date().toISOString().split('T')[0];
+    const isDismissedToday = backupSettings.lastReminderDismissedDate === todayStr;
+
+    // If auto backup encountered an error, surface it as a high-priority reminder
+    if (backupSettings.lastAutoBackupError) {
+      return {
+        shouldShow: !isDismissedToday,
+        daysElapsed: 0,
+        isNever: false,
+        isAutoBackupFailed: true,
+        autoBackupErrorMessage: backupSettings.lastAutoBackupError,
+      };
     }
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    if (backupSettings.lastReminderDismissedDate === todayStr) {
-      return { shouldShow: false, daysElapsed: 0, isNever: false };
+    // If auto backup is active and functional (connected, no error), reminders are not necessary
+    const isAutoBackupActive = Boolean(
+      backupSettings.autoBackupEnabled && backupSettings.googleUser,
+    );
+
+    if (!backupSettings.reminderEnabled || isAutoBackupActive) {
+      return {
+        shouldShow: false,
+        daysElapsed: 0,
+        isNever: false,
+        isAutoBackupFailed: false,
+      };
+    }
+
+    if (isDismissedToday) {
+      return {
+        shouldShow: false,
+        daysElapsed: 0,
+        isNever: false,
+        isAutoBackupFailed: false,
+      };
     }
 
     // Determine latest backup timestamp
@@ -47,6 +75,7 @@ export const useBackupReminder = () => {
         shouldShow: hasData,
         daysElapsed: 0,
         isNever: true,
+        isAutoBackupFailed: false,
       };
     }
 
@@ -57,16 +86,25 @@ export const useBackupReminder = () => {
         shouldShow: true,
         daysElapsed,
         isNever: false,
+        isAutoBackupFailed: false,
       };
     }
 
-    return { shouldShow: false, daysElapsed, isNever: false };
+    return {
+      shouldShow: false,
+      daysElapsed,
+      isNever: false,
+      isAutoBackupFailed: false,
+    };
   }, [
     backupSettings.reminderEnabled,
     backupSettings.lastReminderDismissedDate,
     backupSettings.lastCloudBackupDate,
     backupSettings.lastLocalBackupDate,
     backupSettings.reminderIntervalDays,
+    backupSettings.lastAutoBackupError,
+    backupSettings.autoBackupEnabled,
+    backupSettings.googleUser,
     myLists,
     tudus,
   ]);
@@ -103,6 +141,9 @@ export const useBackupReminder = () => {
 
     if (isDue) {
       backupToGoogleDrive().catch(err => {
+        const errorMessage =
+          err?.message || 'Falha ao conectar com o Google Drive para backup';
+        recordAutoBackupError(errorMessage);
         console.warn('[AutoBackup] Background backup skipped/failed:', err);
       });
     }
@@ -112,6 +153,7 @@ export const useBackupReminder = () => {
     backupSettings.lastCloudBackupDate,
     backupSettings.autoBackupFrequency,
     backupToGoogleDrive,
+    recordAutoBackupError,
   ]);
 
   return reminderInfo;
