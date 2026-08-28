@@ -79,6 +79,7 @@ const SwipeableTuduCard: React.FC<SwipeableTuduCardProps> = memo(
         backgroundColor={
           done ? theme.colors.tuduCardDone : theme.colors.tuduCard
         }
+        borderRadius={12}
         rightOptions={!done ? rightOptions : [deleteOption]}
         leftOptions={!done && allowSchedule ? leftOptions : undefined}
         optionsSize="large"

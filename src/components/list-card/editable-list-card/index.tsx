@@ -1,4 +1,5 @@
 import React, {memo, useMemo} from 'react';
+import {StyleSheet} from 'react-native';
 import {NumberOfActiveItems} from '..';
 import {trimEmoji} from '../../../utils/emoji-utils';
 import {ControlComponentContainer, IconLabelContainer, Label} from '../styles';
@@ -21,11 +22,18 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
     onEdit,
   }) => {
     const emojiInfo = useMemo(() => trimEmoji(label.trim()), [label]);
+    const flattenedStyle = useMemo(
+      () => (style ? StyleSheet.flatten(style) : undefined),
+      [style],
+    );
+    const cardBorderRadius =
+      (flattenedStyle?.borderRadius as number | undefined) ?? 14;
 
     return (
       <SwipeableListCard
         enabled={swipeEnabled}
         isHighlighted={isHighlighted}
+        borderRadius={cardBorderRadius}
         onArchive={onArchive}
         onDelete={onDelete}
         onEdit={onEdit}>

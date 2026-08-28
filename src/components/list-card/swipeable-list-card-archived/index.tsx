@@ -46,6 +46,7 @@ const SwipeableListCardArchived: React.FC<SwipeableListCardArchivedProps> =
         enabled={enabled}
         ref={swipeableRef}
         backgroundColor={theme.colors.listCard}
+        borderRadius={14}
         rightOptions={rightOptions}
         leftOptions={leftOptions}
         fullWidthOnLeftOptions

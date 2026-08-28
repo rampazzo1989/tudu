@@ -28,6 +28,7 @@ const SwipeableCard = memo(
         onSwipeRight,
         style,
         optionsSize = 'medium',
+        borderRadius = 14,
         enabled = true,
       },
       ref,
@@ -155,10 +156,14 @@ const SwipeableCard = memo(
           leftThreshold={90}
           containerStyle={[
             styles.parent,
+            {borderRadius, overflow: 'hidden'},
             style,
             {backgroundColor: optionsBackgroundColor},
           ]}
-          childrenContainerStyle={[styles.contentContainer, {backgroundColor}]}
+          childrenContainerStyle={[
+            styles.contentContainer,
+            {borderRadius, backgroundColor},
+          ]}
           renderRightActions={renderRightActions}
           renderLeftActions={renderLeftActions}>
           {children}

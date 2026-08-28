@@ -9,7 +9,16 @@ import {FolderAddIcon} from '../../animated-icons/folder-add-icon';
 import { useTranslation } from 'react-i18next';
 
 const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
-  ({children, isHighlighted, onArchive, onDelete, onEdit, style, enabled = false}) => {
+  ({
+    children,
+    isHighlighted,
+    onArchive,
+    onDelete,
+    onEdit,
+    style,
+    borderRadius = 14,
+    enabled = false,
+  }) => {
     const theme = useTheme();
     const swipeableRef = useRef<SwipeableCardRef>(null);
     const {t} = useTranslation();
@@ -53,6 +62,7 @@ const SwipeableListCard: React.FC<SwipeableListCardProps> = memo(
             ? theme.colors.listCardHighlighted
             : theme.colors.listCard
         }
+        borderRadius={borderRadius}
         rightOptions={rightOptions}
         leftOptions={leftOptions}
         fullWidthOnLeftOptions

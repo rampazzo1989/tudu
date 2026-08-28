@@ -8,5 +8,6 @@ export type SwipeableListCardProps = {
   onArchive: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   onDelete: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
   onEdit: (swipeableRef: React.RefObject<SwipeableCardRef>) => void;
+  borderRadius?: number;
   style?: ViewStyle;
 };
