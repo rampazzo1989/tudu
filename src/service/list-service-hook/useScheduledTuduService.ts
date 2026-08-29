@@ -166,6 +166,16 @@ const useScheduledTuduService = () => {
 
   const saveAllScheduledTudus = useCallback(
     (tudus: TuduViewModel[]) => {
+      console.log(`💾 [useScheduledTuduService] saveAllScheduledTudus:`,
+        tudus.map(t => ({
+          id: t.id,
+          label: t.label,
+          listId: t.listId,
+          origin: t.origin,
+          hasTime: t.hasTime,
+          dueDate: t.dueDate?.toString(),
+        }))
+      );
       tudus.forEach((tudu, index) => {
         if (!tudu.dueDate) {
           return;

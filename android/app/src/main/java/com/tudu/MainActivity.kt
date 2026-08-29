@@ -23,11 +23,28 @@ class MainActivity : ReactActivity() {
     w.navigationBarColor = Color.TRANSPARENT
     w.decorView.systemUiVisibility = 
         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+    
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+      setShowWhenLocked(true)
+      setTurnScreenOn(true)
+    } else {
+      @Suppress("DEPRECATION")
+      window.addFlags(
+        android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+        android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+        android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+      )
+    }
+
     normalizeIntentData(intent)
     super.onCreate(null)
   }
 
   override fun onNewIntent(intent: Intent) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+      setShowWhenLocked(true)
+      setTurnScreenOn(true)
+    }
     normalizeIntentData(intent)
     super.onNewIntent(intent)
     setIntent(intent)

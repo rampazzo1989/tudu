@@ -10,7 +10,11 @@ import './src/i18n';
 
 // Register Notifee background event handler
 notifee.onBackgroundEvent(async ({type, detail}) => {
-  // App automatically opens and triggers foreground/initial notification handler
+  if (type === EventType.ACTION_PRESS && detail.pressAction?.id === 'call_decline') {
+    if (detail.notification?.id) {
+      await notifee.cancelNotification(detail.notification.id);
+    }
+  }
 });
 
 AppRegistry.registerComponent(appName, () => App);

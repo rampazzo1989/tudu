@@ -44,3 +44,47 @@ export function navigateToToday() {
     setTimeout(() => clearInterval(interval), 4000);
   }
 }
+
+export function navigateToIncomingCall(params: {
+  tuduId?: string;
+  tuduTitle: string;
+  listName?: string;
+  listId?: string;
+  isTest?: boolean;
+  autoAnswer?: boolean;
+}) {
+  const performNavigation = () => {
+    if (!navigationRef.isReady()) {
+      return false;
+    }
+
+    const currentRoute = navigationRef.getCurrentRoute()?.name;
+
+    if (currentRoute === 'SplashScreen') {
+      navigationRef.reset({
+        index: 1,
+        routes: [
+          {name: 'Home'},
+          {
+            name: 'IncomingCall',
+            params,
+          },
+        ],
+      });
+    } else {
+      navigationRef.navigate('IncomingCall', params);
+    }
+    return true;
+  };
+
+  if (!performNavigation()) {
+    const interval = setInterval(() => {
+      if (performNavigation()) {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    setTimeout(() => clearInterval(interval), 4000);
+  }
+}
+

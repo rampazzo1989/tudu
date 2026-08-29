@@ -204,7 +204,8 @@
     "clearSchedule": "Remover agendamento",
     "googleCalendarOption": "Adicionar ao Google Agenda",
     "googleCalendarOptionActive": "Adicionando ao Google Agenda ao salvar",
-    "scheduledFor": "Agendado para:"
+    "scheduledFor": "Agendado para:",
+    "pickTime": "Definir horário ➔"
   },
   "settings": {
     "title": "Configurações",
@@ -302,7 +303,14 @@
       "selectTime": "Escolher horário",
       "testButton": "Testar Notificação",
       "testSuccess": "Notificação de teste disparada!",
-      "permissionNotice": "Permita notificações nas configurações do sistema para receber os alertas pontualmente."
+      "permissionNotice": "Permita notificações nas configurações do sistema para receber os alertas pontualmente.",
+      "callReminder": {
+        "sectionTitle": "Lembretes por Chamada (Tudú Call)",
+        "title": "Receber Lembretes como Ligação",
+        "description": "O aplicativo toca em tela cheia como uma chamada e fala o nome da tarefa com voz nativa offline.",
+        "voiceSpeedTitle": "Velocidade da Voz (TTS)",
+        "testButton": "Testar Chamada Agora"
+      }
     },
     "backup": {
       "pageTitle": "Backup & Restauração",
@@ -463,6 +471,28 @@
     "test": {
       "title": "🔔 Teste de Notificação",
       "body": "As notificações do Tudu estão funcionando perfeitamente!"
+    }
+  },
+  "incomingCall": {
+    "title": "Lembrete do Tudú",
+    "calling": "Chamada de Lembrete...",
+    "connected": "Em chamada",
+    "testDescription": "Toque para atender a ligação de teste do Tudú",
+    "sampleTask": "Revisar metas do dia",
+    "sampleList": "Foco & Produtividade",
+    "actions": {
+      "decline": "Recusar",
+      "answer": "Atender",
+      "snooze": "Lembrar em 5 min",
+      "snoozeShort": "+5 min",
+      "complete": "Concluir",
+      "view": "Ver Tarefa",
+      "endCall": "Encerrar Ligação"
+    },
+    "tts": {
+      "message": "Atenção! Lembrete do Tudú para agora: {{task}}.",
+      "messageWithList": "Atenção! Lembrete da sua lista {{list}}: {{task}}.",
+      "testMessage": "Olá! Este é um teste de ligação do Tudú. Suas notificações por chamada com voz offline estão funcionando com sucesso!"
     }
   },
   "aiSuggestions": {

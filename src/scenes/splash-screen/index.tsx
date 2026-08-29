@@ -1,6 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {StatusBar} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import {AnimatedIconRef} from '../../components/animated-icons/animated-icon/types';
 import {AppIcon, Logo, StyledSafeAreaView} from './styles';
 import {StackNavigatorParamList} from '../../navigation/stack-navigator/types';
@@ -11,6 +12,7 @@ const SplashScreen = React.memo(
     navigation,
   }: NativeStackScreenProps<StackNavigatorParamList, 'SplashScreen'>) => {
     const iconRef = useRef<AnimatedIconRef>(null);
+    const hasFinishedAnimation = useRef(false);
 
     const theme = useTheme();
 
@@ -18,6 +20,7 @@ const SplashScreen = React.memo(
       if (navigation) {
         iconRef.current?.play({
           onAnimationFinish: () => {
+            hasFinishedAnimation.current = true;
             if (navigation.isFocused()) {
               navigation.replace('Home');
             }
@@ -25,6 +28,14 @@ const SplashScreen = React.memo(
         });
       }
     }, [navigation]);
+
+    useFocusEffect(
+      useCallback(() => {
+        if (hasFinishedAnimation.current) {
+          navigation.replace('Home');
+        }
+      }, [navigation]),
+    );
 
     return (
       <>

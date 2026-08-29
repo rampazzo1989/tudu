@@ -39,6 +39,10 @@ import {
   SoundRadioOuter,
   SoundTitle,
   SoundTitleRow,
+  SpeedCard,
+  SpeedChip,
+  SpeedChipsContainer,
+  SpeedChipText,
   StatusFeedback,
   StatusFeedbackText,
   TimeChip,
@@ -61,6 +65,12 @@ const TIME_SHORTCUTS = [
   { label: '10:00', hour: 10, min: 0 },
 ];
 
+const SPEED_SHORTCUTS = [
+  { label: 'Lenta', rate: 0.4 },
+  { label: 'Normal', rate: 0.5 },
+  { label: 'Rápida', rate: 0.65 },
+];
+
 const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
   navigation,
 }) => {
@@ -70,9 +80,12 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
     settings,
     toggleTimedNotifications,
     toggleDailyDigest,
+    toggleCallReminders,
     setDailyDigestTime,
     setNotificationSound,
+    setTtsVoiceRate,
     sendTestNotification,
+    sendTestCallNotification,
   } = useNotificationSettings();
   const { getTudusForDate } = useScheduledTuduService();
 
@@ -80,6 +93,8 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
     success: boolean;
     message: string;
   } | null>(null);
+
+  const [callTestCountdown, setCallTestCountdown] = useState<number | null>(null);
 
   const activeSound =
     settings.notificationSound || DEFAULT_NOTIFICATION_SOUND;
@@ -196,6 +211,40 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
     }
   }, [activeSound, sendTestNotification, t]);
 
+  const handleTestCallSimulation = useCallback(() => {
+    RNReactNativeHapticFeedback.trigger('impactMedium');
+    setCallTestCountdown(3);
+
+    let count = 3;
+    const interval = setInterval(() => {
+      count -= 1;
+      if (count > 0) {
+        setCallTestCountdown(count);
+      } else {
+        clearInterval(interval);
+        setCallTestCountdown(null);
+        sendTestCallNotification(activeSound);
+        navigation.navigate('IncomingCall', {
+          tuduTitle: t('incomingCall.sampleTask', {
+            defaultValue: 'Revisar metas do dia',
+          }),
+          listName: t('incomingCall.sampleList', {
+            defaultValue: 'Foco & Produtividade',
+          }),
+          isTest: true,
+        });
+      }
+    }, 1000);
+  }, [activeSound, navigation, sendTestCallNotification, t]);
+
+  const handleSelectSpeechRate = useCallback(
+    (rate: number) => {
+      RNReactNativeHapticFeedback.trigger('impactLight');
+      setTtsVoiceRate(rate);
+    },
+    [setTtsVoiceRate],
+  );
+
   return (
     <Page>
       <DefaultHeader
@@ -277,6 +326,79 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
                 thumbColor="#FFFFFF"
               />
             </ToggleCard>
+          </Section>
+
+          {/* Lembretes por Chamada (Tudú Call) */}
+          <Section>
+            <SectionTitle>
+              {t('settings.notifications.callReminder.sectionTitle', {
+                defaultValue: 'Lembretes por Chamada (Tudú Call)',
+              })}
+            </SectionTitle>
+            <ToggleCard>
+              <ToggleTextContainer>
+                <ToggleTitle>
+                  {t('settings.notifications.callReminder.title', {
+                    defaultValue: 'Receber Lembretes como Ligação',
+                  })}
+                </ToggleTitle>
+                <ToggleDescription>
+                  {t('settings.notifications.callReminder.description', {
+                    defaultValue:
+                      'O aplicativo toca em tela cheia como uma chamada e fala o nome da tarefa com voz nativa offline.',
+                  })}
+                </ToggleDescription>
+              </ToggleTextContainer>
+              <Switch
+                value={Boolean(settings.callRemindersEnabled)}
+                onValueChange={toggleCallReminders}
+                trackColor={{
+                  false: '#3C414A',
+                  true: theme.colors.primary,
+                }}
+                thumbColor="#FFFFFF"
+              />
+            </ToggleCard>
+
+            {Boolean(settings.callRemindersEnabled) && (
+              <SpeedCard>
+                <TimePickerSectionTitle>
+                  🗣️{' '}
+                  {t('settings.notifications.callReminder.voiceSpeedTitle', {
+                    defaultValue: 'Velocidade da Voz (TTS)',
+                  })}
+                </TimePickerSectionTitle>
+
+                <SpeedChipsContainer>
+                  {SPEED_SHORTCUTS.map(s => {
+                    const isSelected =
+                      (settings.ttsVoiceRate || 0.5) === s.rate;
+                    return (
+                      <SpeedChip
+                        key={s.label}
+                        selected={isSelected}
+                        onPress={() => handleSelectSpeechRate(s.rate)}>
+                        <SpeedChipText selected={isSelected}>
+                          {s.label}
+                        </SpeedChipText>
+                      </SpeedChip>
+                    );
+                  })}
+                </SpeedChipsContainer>
+              </SpeedCard>
+            )}
+
+            <Card>
+              <SecondaryButton onPress={handleTestCallSimulation}>
+                <SecondaryButtonText>
+                  {callTestCountdown !== null
+                    ? `📞 Chamando em ${callTestCountdown}s...`
+                    : `📞 ${t('settings.notifications.callReminder.testButton', {
+                        defaultValue: 'Testar Chamada Agora',
+                      })}`}
+                </SecondaryButtonText>
+              </SecondaryButton>
+            </Card>
           </Section>
 
           {/* Resumo Diário (Daily Digest) */}

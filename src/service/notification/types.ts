@@ -58,6 +58,11 @@ export const NOTIFICATION_CHANNELS = {
     name: 'Resumo Diário',
     description: 'Resumo diário de tarefas agendadas para o dia',
   },
+  CALL_REMINDERS: {
+    id: 'tudus-calls',
+    name: 'Lembretes por Chamada',
+    description: 'Chamadas e alarmes de tela cheia para tarefas agendadas',
+  },
 } as const;
 
 export const NOTIFICATION_CHANNEL_VERSION = 'v1';
@@ -73,12 +78,16 @@ export const NOTIFICATION_PREFIX = {
   TIMED_TUDU: 'tudu_',
   DAILY_DIGEST: 'daily_digest',
   TEST: 'test_notification',
+  CALL_REMINDER: 'call_tudu_',
 } as const;
 
 export interface NotificationPayload {
-  type: 'timed_tudu' | 'daily_digest' | 'test';
+  type: 'timed_tudu' | 'daily_digest' | 'test' | 'call_reminder';
   tuduId?: string;
   listId?: string;
+  listName?: string;
+  taskTitle?: string;
   dateTimestamp?: number;
+  isTest?: boolean;
 }
 

@@ -1,4 +1,4 @@
-import {ListViewModel, TuduViewModel} from '../../scenes/home/types';
+import {ListOrigin, ListViewModel, TuduViewModel} from '../../scenes/home/types';
 import {ForwardedRefAnimatedIcon} from '../animated-icons/animated-icon/types';
 
 export type ListPageCoreProps = {
@@ -10,4 +10,7 @@ export type ListPageCoreProps = {
   allowAdding?: boolean;
   numberOfUndoneTudus?: number;
   TopComponent?: React.ReactNode;
+  defaultDueDate?: Date;
+  defaultListId?: string;
+  defaultOrigin?: ListOrigin;
 };

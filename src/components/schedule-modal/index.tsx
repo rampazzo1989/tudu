@@ -440,6 +440,8 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
     currentDate,
     hasTimeInitial,
     currentRecurrence,
+    tuduTitle,
+    listName,
     onModalClose,
     onSchedule,
   }) => {
@@ -483,10 +485,19 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
 
     const handleScheduleToDate = useCallback(
       (date: Date, withTime: boolean = false) => {
+        console.log(`📅 [ScheduleModal] Confirmando agendamento:`, {
+          tuduTitle,
+          listName,
+          dateISO: date.toISOString(),
+          dateLocal: date.toString(),
+          withTime,
+          recurrence,
+          addToGoogleCalendar,
+        });
         onSchedule(date, withTime, recurrence, addToGoogleCalendar);
         handleModalClose();
       },
-      [onSchedule, recurrence, addToGoogleCalendar, handleModalClose],
+      [onSchedule, recurrence, addToGoogleCalendar, handleModalClose, listName, tuduTitle],
     );
 
     const handleInitialDateChoice = useCallback(
@@ -540,7 +551,13 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
 
     const handleConfirmExistingDate = useCallback(() => {
       if (currentDate) {
-        handleScheduleToDate(currentDate, hasTime);
+        if (hasTime) {
+          setTargetDateForTime(currentDate);
+          setPreviousStage(PopupStageEnum.INITIAL);
+          setPopupStage(PopupStageEnum.TIME);
+        } else {
+          handleScheduleToDate(currentDate, false);
+        }
       }
     }, [currentDate, hasTime, handleScheduleToDate]);
 
@@ -553,14 +570,16 @@ const ScheduleModal: React.FC<ScheduleModalProps> = memo(
       const buttons: PopupButton[] = [];
       if (currentDate) {
         buttons.push({
-          label: t('buttons.confirm'),
+          label: hasTime
+            ? t('scheduleOptions.pickTime', { defaultValue: 'Definir horário ➔' })
+            : t('buttons.confirm'),
           onPress: handleConfirmExistingDate,
           highlight: true,
         });
       }
       buttons.push(cancelButton);
       return buttons;
-    }, [currentDate, handleConfirmExistingDate, cancelButton, t]);
+    }, [currentDate, hasTime, handleConfirmExistingDate, cancelButton, t]);
 
     const popupStages: Record<PopupStageEnum, PopupStage> = useMemo(
       () => ({

@@ -204,7 +204,8 @@
     "clearSchedule": "Quitar programación",
     "googleCalendarOption": "Añadir a Google Calendar",
     "googleCalendarOptionActive": "Añadiendo a Google Calendar al guardar",
-    "scheduledFor": "Programado para:"
+    "scheduledFor": "Programado para:",
+    "pickTime": "Definir hora ➔"
   },
   "settings": {
     "title": "Configuración",
@@ -302,7 +303,14 @@
       "selectTime": "Elegir hora",
       "testButton": "Probar Notificación",
       "testSuccess": "¡Notificación de prueba enviada!",
-      "permissionNotice": "Asegúrate de permitir notificaciones en los ajustes del sistema."
+      "permissionNotice": "Asegúrate de permitir notificaciones en los ajustes del sistema.",
+      "callReminder": {
+        "sectionTitle": "Recordatorios por Llamada (Tudú Call)",
+        "title": "Recibir Recordatorios como Llamada",
+        "description": "La app suena a pantalla completa como una llamada y lee tu tarea con voz nativa sin conexión.",
+        "voiceSpeedTitle": "Velocidad de Voz (TTS)",
+        "testButton": "Probar Llamada Ahora"
+      }
     },
     "backup": {
       "pageTitle": "Copia de Seguridad y Restauración",
@@ -463,6 +471,28 @@
     "test": {
       "title": "🔔 Prueba de Notificación",
       "body": "¡Las notificaciones de Tudu están funcionando correctamente!"
+    }
+  },
+  "incomingCall": {
+    "title": "Recordatorio de Tudú",
+    "calling": "Llamada de Recordatorio...",
+    "connected": "En llamada",
+    "testDescription": "Toca para responder a la llamada de prueba de Tudú",
+    "sampleTask": "Revisar metas del día",
+    "sampleList": "Enfoque y Productividad",
+    "actions": {
+      "decline": "Rechazar",
+      "answer": "Responder",
+      "snooze": "Recordar en 5 min",
+      "snoozeShort": "+5 min",
+      "complete": "Completar",
+      "view": "Ver Tarea",
+      "endCall": "Finalizar Llamada"
+    },
+    "tts": {
+      "message": "¡Atención! Recordatorio de Tudú para ahora: {{task}}.",
+      "messageWithList": "¡Atención! Recordatorio de tu lista {{list}}: {{task}}.",
+      "testMessage": "¡Hola! Esta es una llamada de prueba de Tudú. Tus recordatorios por llamada de voz sin conexión funcionan correctamente."
     }
   },
   "aiSuggestions": {

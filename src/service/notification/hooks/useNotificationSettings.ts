@@ -78,14 +78,51 @@ export const useNotificationSettings = () => {
     [settings.notificationSound],
   );
 
+  const toggleCallReminders = useCallback(
+    async (value?: boolean) => {
+      const nextValue =
+        value !== undefined ? value : !settings.callRemindersEnabled;
+      if (nextValue) {
+        await notificationService.requestPermissions();
+      }
+      setSettings(prev => ({
+        ...prev,
+        callRemindersEnabled: nextValue,
+      }));
+    },
+    [settings.callRemindersEnabled, setSettings],
+  );
+
+  const setTtsVoiceRate = useCallback(
+    (rate: number) => {
+      setSettings(prev => ({
+        ...prev,
+        ttsVoiceRate: rate,
+      }));
+    },
+    [setSettings],
+  );
+
+  const sendTestCallNotification = useCallback(
+    async (sound?: NotificationSound) => {
+      await notificationService.sendTestCallNotification(
+        sound || settings.notificationSound || DEFAULT_NOTIFICATION_SOUND,
+      );
+    },
+    [settings.notificationSound],
+  );
+
   return {
     settings,
     toggleTimedNotifications,
     toggleDailyDigest,
+    toggleCallReminders,
     setDailyDigestTime,
     setNotificationSound,
+    setTtsVoiceRate,
     updateSettings,
     sendTestNotification,
+    sendTestCallNotification,
   };
 };
 

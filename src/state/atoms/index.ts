@@ -60,6 +60,8 @@ export interface NotificationSettingsState {
   dailyDigestHour: number;
   dailyDigestMinute: number;
   notificationSound?: NotificationSound;
+  callRemindersEnabled?: boolean;
+  ttsVoiceRate?: number;
 }
 
 export const notificationSettingsState = atom<NotificationSettingsState>({
@@ -70,6 +72,8 @@ export const notificationSettingsState = atom<NotificationSettingsState>({
     dailyDigestHour: 8,
     dailyDigestMinute: 30,
     notificationSound: DEFAULT_NOTIFICATION_SOUND,
+    callRemindersEnabled: false,
+    ttsVoiceRate: 0.5,
   },
   effects: [mmkvPersistAtom('notificationSettingsState')],
 });

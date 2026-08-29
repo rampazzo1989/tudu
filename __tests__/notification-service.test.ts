@@ -26,6 +26,13 @@ jest.mock('@notifee/react-native', () => ({
   AndroidVisibility: {PUBLIC: 1},
   AuthorizationStatus: {AUTHORIZED: 1, PROVISIONAL: 2, DENIED: 0},
   TriggerType: {TIMESTAMP: 0},
+  AlarmType: {
+    SET_EXACT: 0,
+    SET_EXACT_AND_ALLOW_WHILE_IDLE: 1,
+    SET: 2,
+    SET_AND_ALLOW_WHILE_IDLE: 3,
+    SET_ALARM_CLOCK: 4,
+  },
 }));
 
 import notifee from '@notifee/react-native';
@@ -332,6 +339,45 @@ describe('Notification Service', () => {
           id: 'tudu_active-1',
         }),
         expect.anything(),
+      );
+    });
+
+    it('should schedule call reminder when callRemindersEnabled is true', async () => {
+      const futureDate = new Date(Date.now() + 3600000);
+      const tudu = createTudu('call-1', 'Ligar para cliente', futureDate, true, false);
+
+      notificationService.setCallRemindersEnabled(true);
+      await notificationService.scheduleTimedTudu(tudu, true);
+
+      expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'tudu_call-1',
+          data: expect.objectContaining({
+            type: 'call_reminder',
+            taskTitle: 'Ligar para cliente',
+          }),
+          android: expect.objectContaining({
+            fullScreenAction: expect.objectContaining({ id: 'call' }),
+          }),
+        }),
+        expect.anything(),
+      );
+    });
+
+    it('should display test call notification via sendTestCallNotification', async () => {
+      await notificationService.sendTestCallNotification('tudu_marimba');
+
+      expect(notifee.displayNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'call_tudu_test',
+          data: expect.objectContaining({
+            type: 'call_reminder',
+            isTest: true,
+          }),
+          android: expect.objectContaining({
+            fullScreenAction: expect.objectContaining({ id: 'call' }),
+          }),
+        }),
       );
     });
   });

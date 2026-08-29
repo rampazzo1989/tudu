@@ -249,4 +249,36 @@ export const SoundRadioInner = styled.View`
   background-color: ${({theme}) => theme.colors.primary};
 `;
 
+export const SpeedChipsContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 12px;
+  gap: 8px;
+`;
+
+export const SpeedChip = styled.TouchableOpacity<{selected?: boolean}>`
+  flex: 1;
+  padding-vertical: 8px;
+  border-radius: 10px;
+  background-color: ${({selected, theme}) =>
+    selected ? theme.colors.primary : theme.colors.counterIconBackground};
+  border-width: 1px;
+  border-color: ${({selected, theme}) =>
+    selected ? theme.colors.iconOverlay : 'rgba(255, 255, 255, 0.08)'};
+  align-items: center;
+  justify-content: center;
+`;
+
+export const SpeedChipText = styled.Text<{selected?: boolean}>`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 13px;
+  color: ${({selected, theme}) => (selected ? '#FFFFFF' : theme.colors.text)};
+`;
+
+export const SpeedCard = styled(Card)`
+  margin-bottom: 12px;
+`;
+
+
+
 

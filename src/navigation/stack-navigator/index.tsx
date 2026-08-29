@@ -19,6 +19,7 @@ import {AIUsagePage} from '../../scenes/settings/ai-usage';
 import {NotificationSettingsPage} from '../../scenes/settings/notification-settings';
 import {BackupSettingsPage} from '../../scenes/settings/backup-settings';
 import {SecuritySettingsPage} from '../../scenes/settings/security-settings';
+import {IncomingCallPage} from '../../scenes/incoming-call';
 
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
@@ -204,6 +205,18 @@ const StackNavigator = () => {
         component={SecuritySettingsPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: configSlow,
+            close: configSlow,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="IncomingCall"
+        component={IncomingCallPage}
+        options={{
+          cardStyle: {backgroundColor: '#121620'},
+          gestureEnabled: false,
           transitionSpec: {
             open: configSlow,
             close: configSlow,

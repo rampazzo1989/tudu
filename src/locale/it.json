@@ -204,7 +204,8 @@
     "clearSchedule": "Rimuovi pianificazione",
     "googleCalendarOption": "Aggiungi a Google Calendar",
     "googleCalendarOptionActive": "Aggiunta a Google Calendar al salvataggio",
-    "scheduledFor": "Pianificato per:"
+    "scheduledFor": "Pianificato per:",
+    "pickTime": "Imposta ora ➔"
   },
   "settings": {
     "title": "Impostazioni",
@@ -302,7 +303,14 @@
       "selectTime": "Scegli orario",
       "testButton": "Testa Notifica",
       "testSuccess": "Notifica di test inviata!",
-      "permissionNotice": "Assicurati di abilitare le notifiche nelle impostazioni di sistema."
+      "permissionNotice": "Assicurati di abilitare le notifiche nelle impostazioni di sistema.",
+      "callReminder": {
+        "sectionTitle": "Promemoria tramite Chiamata (Tudú Call)",
+        "title": "Ricevi Promemoria come Chiamata",
+        "description": "L'app squilla a schermo intero come una chiamata e legge la tua attività con voce nativa offline.",
+        "voiceSpeedTitle": "Velocità della Voce (TTS)",
+        "testButton": "Testa Chiamata Ora"
+      }
     },
     "backup": {
       "pageTitle": "Backup & Ripristino",
@@ -463,6 +471,28 @@
     "test": {
       "title": "🔔 Test Notifica",
       "body": "Le notifiche di Tudu funzionano correttamente!"
+    }
+  },
+  "incomingCall": {
+    "title": "Promemoria di Tudú",
+    "calling": "Chiamata di Promemoria...",
+    "connected": "In chiamata",
+    "testDescription": "Tocca per rispondere alla chiamata di prova di Tudú",
+    "sampleTask": "Rivedere gli obiettivi del giorno",
+    "sampleList": "Focus e Produttività",
+    "actions": {
+      "decline": "Rifiuta",
+      "answer": "Rispondi",
+      "snooze": "Ricorda tra 5 min",
+      "snoozeShort": "+5 min",
+      "complete": "Completa",
+      "view": "Vedi Attività",
+      "endCall": "Termina Chiamata"
+    },
+    "tts": {
+      "message": "Attenzione! Promemoria di Tudú per adesso: {{task}}.",
+      "messageWithList": "Attenzione! Promemoria dalla tua lista {{list}}: {{task}}.",
+      "testMessage": "Ciao! Questa è una chiamata di prova di Tudú. I tuoi promemoria vocali offline funzionano correttamente!"
     }
   },
   "aiSuggestions": {

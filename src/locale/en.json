@@ -204,7 +204,8 @@
     "clearSchedule": "Clear schedule",
     "googleCalendarOption": "Add to Google Calendar",
     "googleCalendarOptionActive": "Adding to Google Calendar upon save",
-    "scheduledFor": "Scheduled for:"
+    "scheduledFor": "Scheduled for:",
+    "pickTime": "Set time ➔"
   },
   "settings": {
     "title": "Settings",
@@ -302,7 +303,14 @@
       "selectTime": "Choose time",
       "testButton": "Test Notification",
       "testSuccess": "Test notification dispatched!",
-      "permissionNotice": "Make sure notifications are enabled in system settings to receive timely alerts."
+      "permissionNotice": "Make sure notifications are enabled in system settings to receive timely alerts.",
+      "callReminder": {
+        "sectionTitle": "Call Reminders (Tudú Call)",
+        "title": "Receive Reminders as Phone Calls",
+        "description": "The app rings full-screen like an incoming call and reads your task aloud with offline native voice.",
+        "voiceSpeedTitle": "Voice Speed (TTS)",
+        "testButton": "Test Call Now"
+      }
     },
     "backup": {
       "pageTitle": "Backup & Restore",
@@ -463,6 +471,28 @@
     "test": {
       "title": "🔔 Notification Test",
       "body": "Tudu notifications are working properly!"
+    }
+  },
+  "incomingCall": {
+    "title": "Tudú Reminder",
+    "calling": "Reminder Call...",
+    "connected": "In Call",
+    "testDescription": "Tap to answer the Tudú test call",
+    "sampleTask": "Review today's goals",
+    "sampleList": "Focus & Productivity",
+    "actions": {
+      "decline": "Decline",
+      "answer": "Answer",
+      "snooze": "Remind in 5 min",
+      "snoozeShort": "+5 min",
+      "complete": "Complete",
+      "view": "View Task",
+      "endCall": "End Call"
+    },
+    "tts": {
+      "message": "Attention! Tudú reminder for now: {{task}}.",
+      "messageWithList": "Attention! Reminder for your list {{list}}: {{task}}.",
+      "testMessage": "Hello! This is a test call from Tudú. Your offline voice call reminders are working successfully!"
     }
   },
   "aiSuggestions": {

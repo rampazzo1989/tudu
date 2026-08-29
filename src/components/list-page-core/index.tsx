@@ -67,6 +67,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     isSmartList = false,
     allowAdding = true,
     TopComponent,
+    defaultDueDate,
+    defaultListId,
+    defaultOrigin,
   }) => {
     const toastBottomSpan = useRecoilValue(toastSpan);
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
@@ -231,6 +234,15 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleInsertOrUpdate = useCallback(
       (tudu: TuduViewModel) => {
+        console.log(`📋 [ListPageCore] handleInsertOrUpdate:`, {
+          tuduId: tudu.id,
+          label: tudu.label,
+          listId: tudu.listId,
+          origin: tudu.origin,
+          dueDate: tudu.dueDate?.toString(),
+          hasTime: tudu.hasTime,
+          isEditing: !!editingTudu,
+        });
         if (editingTudu) {
           const tuduIndex = tudus.findIndex(
             x => x.id === tudu.id,
@@ -239,6 +251,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
             const newList = [...tudus];
             newList[tuduIndex] = tudu;
             handleSetTudus(newList);
+          } else {
+            handleSetTudus([tudu, ...tudus]);
           }
         } else {
           const newList = tudus.length
@@ -291,11 +305,25 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         recurrence?: RecurrenceType,
         addToGoogleCalendar?: boolean,
       ) => {
+        console.log(`📋 [ListPageCore] handleSchedule:`, {
+          editingTuduId: editingTudu?.id,
+          editingTuduLabel: editingTudu?.label,
+          editingTuduListId: editingTudu?.listId,
+          editingTuduOrigin: editingTudu?.origin,
+          date: date.toString(),
+          hasTime,
+          recurrence,
+        });
         if (editingTudu) {
           editingTudu.dueDate = date;
           editingTudu.hasTime = hasTime;
           editingTudu.recurrence = recurrence;
+          if (!editingTudu.listId || editingTudu.listId === 'scheduled') {
+            editingTudu.listId = UNLISTED_LIST_ID;
+            editingTudu.origin = 'unlisted';
+          }
           handleInsertOrUpdate(editingTudu);
+          saveTudu(editingTudu);
 
           if (addToGoogleCalendar && date) {
             openGoogleCalendarEvent({
@@ -308,7 +336,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           }
         }
       },
-      [editingTudu, handleInsertOrUpdate, list?.label],
+      [editingTudu, handleInsertOrUpdate, list?.label, saveTudu],
     );
 
     const existingTasks = useMemo(() => {
@@ -319,14 +347,17 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       (taskLabels: string[]) => {
         if (!taskLabels.length) return;
         const newTudus = taskLabels.map(label => {
+          const listIdToUse = defaultListId || (internalList?.id === 'scheduled' || isSmartList ? UNLISTED_LIST_ID : (internalList?.id || ''));
+          const originToUse = defaultOrigin || (internalList?.id === 'scheduled' || isSmartList ? 'unlisted' : (internalList?.origin || 'default'));
           const tudu = new TuduViewModel(
             {
               label,
               done: false,
               id: generateRandomHash('Tudu'),
+              dueDate: defaultDueDate,
             },
-            internalList?.id || '',
-            internalList?.origin || 'default',
+            listIdToUse,
+            originToUse,
           );
           return tudu;
         });
@@ -335,7 +366,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         handleSetTudus(updatedList);
         RNReactNativeHapticFeedback.trigger('notificationSuccess');
       },
-      [handleSetTudus, internalList, tudus],
+      [defaultDueDate, defaultListId, defaultOrigin, handleSetTudus, internalList, isSmartList, tudus],
     );
 
     const handleAISuggestionsPress = useCallback(() => {
@@ -477,6 +508,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           editingTudu={editingTudu}
           listName={list?.label}
           existingTasks={existingTasks}
+          defaultDueDate={defaultDueDate}
+          defaultListId={defaultListId}
+          defaultOrigin={defaultOrigin}
         />
         <ScheduleModal
           isVisible={scheduleModalVisible}

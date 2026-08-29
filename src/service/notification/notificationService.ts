@@ -1,4 +1,5 @@
 import notifee, {
+  AlarmType,
   AndroidImportance,
   AndroidVisibility,
   AuthorizationStatus,
@@ -22,6 +23,7 @@ class NotificationService {
   private static instance: NotificationService;
   private isInitialized = false;
   private currentSound: NotificationSound = DEFAULT_NOTIFICATION_SOUND;
+  private callRemindersEnabled = false;
 
   private constructor() {}
 
@@ -37,6 +39,13 @@ class NotificationService {
    */
   public setSound(sound: NotificationSound): void {
     this.currentSound = sound;
+  }
+
+  /**
+   * Sets whether call reminders are enabled globally
+   */
+  public setCallRemindersEnabled(enabled: boolean): void {
+    this.callRemindersEnabled = enabled;
   }
 
   /**
@@ -71,7 +80,17 @@ class NotificationService {
           id: getSoundChannelId(NOTIFICATION_CHANNELS.DAILY_DIGEST.id, soundOpt.id),
           name: NOTIFICATION_CHANNELS.DAILY_DIGEST.name,
           description: NOTIFICATION_CHANNELS.DAILY_DIGEST.description,
-          importance: AndroidImportance.DEFAULT,
+          importance: AndroidImportance.HIGH,
+          vibration: true,
+          visibility: AndroidVisibility.PUBLIC,
+          sound: soundParam,
+        });
+
+        await notifee.createChannel({
+          id: getSoundChannelId(NOTIFICATION_CHANNELS.CALL_REMINDERS.id, soundOpt.id),
+          name: NOTIFICATION_CHANNELS.CALL_REMINDERS.name,
+          description: NOTIFICATION_CHANNELS.CALL_REMINDERS.description,
+          importance: AndroidImportance.HIGH,
           vibration: true,
           visibility: AndroidVisibility.PUBLIC,
           sound: soundParam,
@@ -94,6 +113,16 @@ class NotificationService {
         name: NOTIFICATION_CHANNELS.DAILY_DIGEST.name,
         description: NOTIFICATION_CHANNELS.DAILY_DIGEST.description,
         importance: AndroidImportance.DEFAULT,
+        vibration: true,
+        visibility: AndroidVisibility.PUBLIC,
+        sound: DEFAULT_NOTIFICATION_SOUND,
+      });
+
+      await notifee.createChannel({
+        id: NOTIFICATION_CHANNELS.CALL_REMINDERS.id,
+        name: NOTIFICATION_CHANNELS.CALL_REMINDERS.name,
+        description: NOTIFICATION_CHANNELS.CALL_REMINDERS.description,
+        importance: AndroidImportance.HIGH,
         vibration: true,
         visibility: AndroidVisibility.PUBLIC,
         sound: DEFAULT_NOTIFICATION_SOUND,
@@ -133,14 +162,26 @@ class NotificationService {
     tudu: TuduViewModel,
     enabled: boolean = true,
     sound?: NotificationSound,
+    isCallReminder?: boolean,
   ): Promise<void> {
     const notificationId = `${NOTIFICATION_PREFIX.TIMED_TUDU}${tudu.id}`;
 
     // Cancel existing notification for this tudu first
     await notifee.cancelNotification(notificationId);
 
+    console.log(`🔔 [NotificationService] scheduleTimedTudu:`, {
+      id: tudu.id,
+      label: tudu.label,
+      dueDate: tudu.dueDate?.toString(),
+      hasTime: tudu.hasTime,
+      done: tudu.done,
+      enabled,
+      isCallReminder,
+    });
+
     // If notifications disabled, no dueDate, no hasTime, or tudu is done, don't schedule
     if (!enabled || !tudu.dueDate || !tudu.hasTime || tudu.done) {
+      console.log(`🔔 [NotificationService] Abortado agendamento: enabled=${enabled}, hasDueDate=${!!tudu.dueDate}, hasTime=${tudu.hasTime}, done=${tudu.done}`);
       return;
     }
 
@@ -149,11 +190,15 @@ class NotificationService {
 
     // If the due time is in the past, skip
     if (timestamp <= now) {
+      console.log(`🔔 [NotificationService] Abortado pois timestamp (${new Date(timestamp).toLocaleTimeString()}) <= now (${new Date(now).toLocaleTimeString()})`);
       return;
     }
 
     const soundToUse = sound || this.currentSound || DEFAULT_NOTIFICATION_SOUND;
     await this.init(soundToUse);
+
+    const shouldUseCall =
+      isCallReminder !== undefined ? isCallReminder : this.callRemindersEnabled;
 
     const title =
       tudu.listName && tudu.listName !== 'Unlisted'
@@ -166,6 +211,9 @@ class NotificationService {
       type: TriggerType.TIMESTAMP,
       timestamp,
       alarmManager: {
+        type: shouldUseCall
+          ? AlarmType.SET_ALARM_CLOCK
+          : AlarmType.SET_EXACT_AND_ALLOW_WHILE_IDLE,
         allowWhileIdle: true,
       },
     };
@@ -173,36 +221,68 @@ class NotificationService {
     const iosSound =
       soundToUse === 'default' ? 'default' : `${soundToUse}.wav`;
 
-    await notifee.createTriggerNotification(
-      {
-        id: notificationId,
-        title,
-        body: tudu.label,
-        data: {
-          type: 'timed_tudu',
-          tuduId: tudu.id,
-          listId: tudu.listId,
-          dateTimestamp: timestamp,
-          sound: soundToUse,
-        },
-        android: {
-          channelId: getSoundChannelId(
-            NOTIFICATION_CHANNELS.TIMED_TUDUS.id,
-            soundToUse,
-          ),
-          importance: AndroidImportance.HIGH,
-          sound: soundToUse === 'default' ? 'default' : soundToUse,
-          pressAction: {
-            id: 'default',
+    const channelId = shouldUseCall
+      ? getSoundChannelId(NOTIFICATION_CHANNELS.CALL_REMINDERS.id, soundToUse)
+      : getSoundChannelId(NOTIFICATION_CHANNELS.TIMED_TUDUS.id, soundToUse);
+
+    try {
+      await notifee.createTriggerNotification(
+        {
+          id: notificationId,
+          title: shouldUseCall
+            ? `📞 ${i18next.t('incomingCall.title', { defaultValue: 'Lembrete do Tudú' })}`
+            : title,
+          body: tudu.label,
+          data: {
+            type: shouldUseCall ? 'call_reminder' : 'timed_tudu',
+            tuduId: tudu.id,
+            listId: tudu.listId,
+            listName: tudu.listName,
+            taskTitle: tudu.label,
+            dateTimestamp: timestamp,
+            sound: soundToUse,
           },
-          smallIcon: 'ic_launcher',
+          android: {
+            channelId,
+            importance: AndroidImportance.HIGH,
+            sound: soundToUse === 'default' ? 'default' : soundToUse,
+            pressAction: {
+              id: shouldUseCall ? 'call' : 'default',
+              launchActivity: shouldUseCall ? 'default' : undefined,
+            },
+            ...(shouldUseCall
+              ? {
+                  fullScreenAction: {
+                    id: 'call',
+                    launchActivity: 'default',
+                  },
+                  actions: [
+                    {
+                      title: `📞 ${i18next.t('incomingCall.actions.answer', { defaultValue: 'Atender' })}`,
+                      pressAction: { id: 'call_answer', launchActivity: 'default' },
+                    },
+                    {
+                      title: `🔴 ${i18next.t('incomingCall.actions.decline', { defaultValue: 'Recusar' })}`,
+                      pressAction: { id: 'call_decline' },
+                    },
+                  ],
+                }
+              : {}),
+            smallIcon: 'ic_launcher',
+          },
+          ios: {
+            sound: iosSound,
+            interruptionLevel: 'timeSensitive',
+          },
         },
-        ios: {
-          sound: iosSound,
-        },
-      },
-      trigger,
-    );
+        trigger,
+      );
+      console.log(
+        `🔔 [NotificationService] Agendado ${shouldUseCall ? 'Chamada' : 'Lembrete'}: "${tudu.label}" para ${new Date(timestamp).toLocaleTimeString()} (timestamp: ${timestamp})`,
+      );
+    } catch (err) {
+      console.warn('[NotificationService] Erro ao criar trigger notification:', err);
+    }
   }
 
   /**
@@ -398,6 +478,64 @@ class NotificationService {
   }
 
   /**
+   * Sends an immediate test call notification to preview the incoming call experience
+   */
+  public async sendTestCallNotification(sound?: NotificationSound): Promise<void> {
+    const soundToUse = sound || this.currentSound || DEFAULT_NOTIFICATION_SOUND;
+    await this.init(soundToUse);
+    await this.requestPermissions();
+
+    const iosSound =
+      soundToUse === 'default' ? 'default' : `${soundToUse}.wav`;
+
+    await notifee.displayNotification({
+      id: `${NOTIFICATION_PREFIX.CALL_REMINDER}test`,
+      title: `📞 ${i18next.t('incomingCall.title', { defaultValue: 'Lembrete do Tudú' })}`,
+      body: i18next.t('incomingCall.testDescription', {
+        defaultValue: 'Toque para atender a ligação de teste do Tudú',
+      }),
+      data: {
+        type: 'call_reminder',
+        taskTitle: i18next.t('incomingCall.sampleTask', { defaultValue: 'Revisar metas do dia' }),
+        listName: i18next.t('incomingCall.sampleList', { defaultValue: 'Foco & Produtividade' }),
+        isTest: true,
+        sound: soundToUse,
+      },
+      android: {
+        channelId: getSoundChannelId(
+          NOTIFICATION_CHANNELS.CALL_REMINDERS.id,
+          soundToUse,
+        ),
+        importance: AndroidImportance.HIGH,
+        sound: soundToUse === 'default' ? 'default' : soundToUse,
+        pressAction: {
+          id: 'call',
+          launchActivity: 'default',
+        },
+        fullScreenAction: {
+          id: 'call',
+          launchActivity: 'default',
+        },
+        actions: [
+          {
+            title: `📞 ${i18next.t('incomingCall.actions.answer', { defaultValue: 'Atender' })}`,
+            pressAction: { id: 'call_answer', launchActivity: 'default' },
+          },
+          {
+            title: `🔴 ${i18next.t('incomingCall.actions.decline', { defaultValue: 'Recusar' })}`,
+            pressAction: { id: 'call_decline' },
+          },
+        ],
+        smallIcon: 'ic_launcher',
+      },
+      ios: {
+        sound: iosSound,
+        interruptionLevel: 'timeSensitive',
+      },
+    });
+  }
+
+  /**
    * Full sync of all timed notifications and daily digest with orphan cleanup
    */
   public async syncAll(
@@ -448,7 +586,12 @@ class NotificationService {
 
       // Schedule active timed tudus
       for (const tudu of timedTudus) {
-        await this.scheduleTimedTudu(tudu, true, soundToUse);
+        await this.scheduleTimedTudu(
+          tudu,
+          true,
+          soundToUse,
+          Boolean(settings.callRemindersEnabled),
+        );
       }
     }
 

@@ -51,6 +51,8 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
       handleBackButtonPress={handleBackButtonPress}
       setTudus={setTudus}
       list={list}
+      defaultListId={listId}
+      defaultOrigin={listOrigin || 'default'}
       numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
     />
   );

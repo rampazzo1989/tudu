@@ -188,26 +188,57 @@ const useListService = () => {
 
   const saveUnlistedTudus = useCallback(
     (tudus: TuduViewModel[]) => {
+      console.log(`💾 [useListService] saveUnlistedTudus chamado com ${tudus.length} tudus:`,
+        tudus.map(t => ({
+          id: t.id,
+          label: t.label,
+          hasTime: t.hasTime,
+          dueDate: t.dueDate?.toString(),
+          done: t.done,
+        }))
+      );
       setUnlistedTudus(previousState => {
         const newTuduMap = new Map(previousState);
 
         tudus.forEach(tudu => {
           newTuduMap.set(tudu.id, tudu.mapBack());
-          if (tudu.dueDate && tudu.hasTime && !tudu.done) {
-            notificationService.scheduleTimedTudu(tudu, notificationSettings.timedNotificationsEnabled);
-          } else {
-            notificationService.cancelTimedTudu(tudu.id);
-          }
         });
 
         return newTuduMap;
       });
+
+      tudus.forEach(tudu => {
+        if (tudu.dueDate && tudu.hasTime && !tudu.done) {
+          notificationService.scheduleTimedTudu(
+            tudu,
+            notificationSettings.timedNotificationsEnabled,
+            notificationSettings.notificationSound,
+            Boolean(notificationSettings.callRemindersEnabled),
+          );
+        } else {
+          notificationService.cancelTimedTudu(tudu.id);
+        }
+      });
     },
-    [setUnlistedTudus, notificationSettings.timedNotificationsEnabled],
+    [
+      setUnlistedTudus,
+      notificationSettings.timedNotificationsEnabled,
+      notificationSettings.notificationSound,
+      notificationSettings.callRemindersEnabled,
+    ],
   );
 
   const saveTudu = useCallback(
     (tudu: TuduViewModel) => {
+      console.log(`💾 [useListService] saveTudu chamado:`, {
+        id: tudu.id,
+        label: tudu.label,
+        listId: tudu.listId,
+        origin: tudu.origin,
+        hasTime: tudu.hasTime,
+        dueDate: tudu.dueDate?.toString(),
+        done: tudu.done,
+      });
       if (tudu.listId === UNLISTED_LIST_ID) {
         return saveUnlistedTudus([tudu]);
       }
@@ -226,7 +257,12 @@ const useListService = () => {
       });
 
       if (tudu.dueDate && tudu.hasTime && !tudu.done) {
-        notificationService.scheduleTimedTudu(tudu, notificationSettings.timedNotificationsEnabled);
+        notificationService.scheduleTimedTudu(
+          tudu,
+          notificationSettings.timedNotificationsEnabled,
+          notificationSettings.notificationSound,
+          Boolean(notificationSettings.callRemindersEnabled),
+        );
       } else {
         notificationService.cancelTimedTudu(tudu.id);
       }
@@ -237,14 +273,23 @@ const useListService = () => {
       }
       
     },
-    [getTudusStateSetter, saveUnlistedTudus, setRecurrentTuduToRecalculate, notificationSettings.timedNotificationsEnabled],
+    [
+      getTudusStateSetter,
+      saveUnlistedTudus,
+      setRecurrentTuduToRecalculate,
+      notificationSettings.timedNotificationsEnabled,
+      notificationSettings.notificationSound,
+      notificationSettings.callRemindersEnabled,
+    ],
   );
 
   const saveAllTudus = useCallback(
     (tudus: TuduViewModel[], origin: ListOrigin = 'default') => {
+      console.log(`💾 [useListService] saveAllTudus chamado com ${tudus.length} tudus`);
       const unlistedTudusVMs = tudus.filter(x => x.listId === UNLISTED_LIST_ID);
+      console.log(`💾 [useListService] unlisted count: ${unlistedTudusVMs.length}`);
 
-      if (unlistedTudusVMs) {
+      if (unlistedTudusVMs && unlistedTudusVMs.length > 0) {
         saveUnlistedTudus(unlistedTudusVMs);
       }
 
@@ -267,11 +312,6 @@ const useListService = () => {
 
           savingTudus.forEach(tudu => {
             newTuduMap.set(tudu.id, tudu.mapBack());
-            if (tudu.dueDate && tudu.hasTime && !tudu.done) {
-              notificationService.scheduleTimedTudu(tudu, notificationSettings.timedNotificationsEnabled);
-            } else {
-              notificationService.cancelTimedTudu(tudu.id);
-            }
           });
 
           newState.set(listId, newTuduMap);
@@ -279,8 +319,30 @@ const useListService = () => {
 
         return newState;
       });
+
+      // Schedule or cancel notifications outside state setter
+      tudus
+        .filter(x => x.listId !== UNLISTED_LIST_ID)
+        .forEach(tudu => {
+          if (tudu.dueDate && tudu.hasTime && !tudu.done) {
+            notificationService.scheduleTimedTudu(
+              tudu,
+              notificationSettings.timedNotificationsEnabled,
+              notificationSettings.notificationSound,
+              Boolean(notificationSettings.callRemindersEnabled),
+            );
+          } else {
+            notificationService.cancelTimedTudu(tudu.id);
+          }
+        });
     },
-    [getTudusStateSetter, saveUnlistedTudus, notificationSettings.timedNotificationsEnabled],
+    [
+      getTudusStateSetter,
+      saveUnlistedTudus,
+      notificationSettings.timedNotificationsEnabled,
+      notificationSettings.notificationSound,
+      notificationSettings.callRemindersEnabled,
+    ],
   );
 
   const getAllTudus = useCallback(
@@ -410,8 +472,29 @@ const useListService = () => {
 
         return newState;
       });
+
+      if (list.tudus) {
+        list.tudus.forEach(tudu => {
+          if (tudu.dueDate && tudu.hasTime && !tudu.done) {
+            notificationService.scheduleTimedTudu(
+              tudu,
+              notificationSettings.timedNotificationsEnabled,
+              notificationSettings.notificationSound,
+              Boolean(notificationSettings.callRemindersEnabled),
+            );
+          } else {
+            notificationService.cancelTimedTudu(tudu.id);
+          }
+        });
+      }
     },
-    [getStateSetter, getTudusStateSetter],
+    [
+      getStateSetter,
+      getTudusStateSetter,
+      notificationSettings.timedNotificationsEnabled,
+      notificationSettings.notificationSound,
+      notificationSettings.callRemindersEnabled,
+    ],
   );
 
   const doStateBackup = useCallback(
@@ -551,18 +634,28 @@ const useListService = () => {
         var currentTudu = tudus?.get(tudu.id);
         if (currentTudu) {
           currentTudu.done = false;
-          if (currentTudu.dueDate && currentTudu.hasTime) {
-            notificationService.scheduleTimedTudu(
-              new TuduViewModel(currentTudu, tudu.listId, origin),
-              notificationSettings.timedNotificationsEnabled,
-            );
-          }
         }
       });
 
       return newState;
     });
-  }, [getTudusStateSetter, notificationSettings.timedNotificationsEnabled]);
+
+    tuduList.forEach(tudu => {
+      if (tudu.dueDate && tudu.hasTime) {
+        notificationService.scheduleTimedTudu(
+          new TuduViewModel(tudu.mapBack(), tudu.listId, origin),
+          notificationSettings.timedNotificationsEnabled,
+          notificationSettings.notificationSound,
+          Boolean(notificationSettings.callRemindersEnabled),
+        );
+      }
+    });
+  }, [
+    getTudusStateSetter,
+    notificationSettings.timedNotificationsEnabled,
+    notificationSettings.notificationSound,
+    notificationSettings.callRemindersEnabled,
+  ]);
 
   const deleteGroup = useCallback(
     (groupName: string) => {
@@ -655,6 +748,8 @@ const useListService = () => {
             notificationService.scheduleTimedTudu(
               vm,
               notificationSettings.timedNotificationsEnabled,
+              notificationSettings.notificationSound,
+              Boolean(notificationSettings.callRemindersEnabled),
             );
           }
         }

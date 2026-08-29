@@ -66,16 +66,33 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
 
     const setTudus = useCallback(
       (tudus: TuduViewModel[]) => {
+        console.log(`🗓️ [ScheduledListPage] setTudus chamado com ${tudus.length} tudus:`,
+          tudus.map(t => ({
+            id: t.id,
+            label: t.label,
+            listId: t.listId,
+            origin: t.origin,
+            dueDate: t.dueDate?.toString(),
+            hasTime: t.hasTime,
+            done: t.done,
+          }))
+        );
         if (!list) {
           return;
         }
 
         tudus.forEach(tudu => {
-          if (!tudu.listId) {
+          if (
+            !tudu.listId ||
+            tudu.listId === 'scheduled' ||
+            tudu.listId === UNLISTED_LIST_ID ||
+            tudu.origin === 'unlisted'
+          ) {
             if (!tudu.dueDate) {
               tudu.dueDate = date;
             }
             tudu.listId = UNLISTED_LIST_ID;
+            tudu.origin = 'unlisted';
           }
         });
 
@@ -91,6 +108,9 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         list={list}
         Icon={getDaytimeIcon()}
         isSmartList
+        defaultDueDate={date}
+        defaultListId={UNLISTED_LIST_ID}
+        defaultOrigin="unlisted"
         numberOfUndoneTudus={route.params?.numberOfUndoneTudus}
         TopComponent={outdatedTudus.length ? (<OutdatedTudusList tudus={outdatedTudus} showUpToDateHeader={!!list.tudus.length} />) : undefined}
       />
