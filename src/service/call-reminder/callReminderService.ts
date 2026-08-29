@@ -19,7 +19,7 @@ class CallReminderService {
   private vibrationInterval: NodeJS.Timeout | null = null;
   private timerInterval: NodeJS.Timeout | null = null;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): CallReminderService {
     if (!CallReminderService.instance) {
@@ -94,18 +94,25 @@ class CallReminderService {
     this.stopRingingEffect();
     ttsService.stop();
 
+    console.log(
+      `Snooze: ${tudu.label} para ${minutes} minutos`, tudu
+    );
+
     const snoozeDate = new Date(Date.now() + minutes * 60 * 1000);
-    const updatedTudu: TuduViewModel = {
-      id: tudu.id,
-      label: tudu.label,
-      done: false,
-      hasTime: true,
-      dueDate: snoozeDate.toISOString(),
-      listId: tudu.listId || '',
-      listName: tudu.listName,
-      createdAt: tudu.createdAt || new Date().toISOString(),
-      position: tudu.position || 0,
-    };
+    const updatedTudu = new TuduViewModel(
+      {
+        id: tudu.id,
+        label: tudu.label,
+        done: false,
+        hasTime: true,
+        dueDate: snoozeDate,
+        starred: tudu.starred,
+        recurrence: tudu.recurrence,
+      },
+      tudu.listId || 'unlisted',
+      tudu.listId ? 'default' : 'unlisted',
+      tudu.listName,
+    );
 
     await notificationService.scheduleTimedTudu(updatedTudu, true);
   }

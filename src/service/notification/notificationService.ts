@@ -6,9 +6,9 @@ import notifee, {
   TimestampTrigger,
   TriggerType,
 } from '@notifee/react-native';
-import {Platform} from 'react-native';
-import {TuduViewModel} from '../../scenes/home/types';
-import {NotificationSettingsState} from '../../state/atoms';
+import { Platform } from 'react-native';
+import { TuduViewModel } from '../../scenes/home/types';
+import { NotificationSettingsState } from '../../state/atoms';
 import {
   DEFAULT_NOTIFICATION_SOUND,
   NOTIFICATION_CHANNELS,
@@ -25,7 +25,7 @@ class NotificationService {
   private currentSound: NotificationSound = DEFAULT_NOTIFICATION_SOUND;
   private callRemindersEnabled = false;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): NotificationService {
     if (!NotificationService.instance) {
@@ -200,12 +200,19 @@ class NotificationService {
     const shouldUseCall =
       isCallReminder !== undefined ? isCallReminder : this.callRemindersEnabled;
 
+    const resolvedListName =
+      tudu.listName && tudu.listName !== 'Unlisted' && tudu.listName !== 'sem lista'
+        ? tudu.listName
+        : i18next.t('notifications.timedTudu.defaultListName', {
+          defaultValue: i18next.t('listTitles.today', { defaultValue: 'Hoje' }),
+        });
+
     const title =
       tudu.listName && tudu.listName !== 'Unlisted'
         ? tudu.listName
         : i18next.t('notifications.timedTudu.defaultTitle', {
-            defaultValue: 'Tudú Agendado',
-          });
+          defaultValue: 'Tudú Agendado',
+        });
 
     const trigger: TimestampTrigger = {
       type: TriggerType.TIMESTAMP,
@@ -237,7 +244,7 @@ class NotificationService {
             type: shouldUseCall ? 'call_reminder' : 'timed_tudu',
             tuduId: tudu.id,
             listId: tudu.listId,
-            listName: tudu.listName,
+            listName: resolvedListName,
             taskTitle: tudu.label,
             dateTimestamp: timestamp,
             sound: soundToUse,
@@ -252,21 +259,21 @@ class NotificationService {
             },
             ...(shouldUseCall
               ? {
-                  fullScreenAction: {
-                    id: 'call',
-                    launchActivity: 'default',
+                fullScreenAction: {
+                  id: 'call',
+                  launchActivity: 'default',
+                },
+                actions: [
+                  {
+                    title: `📞 ${i18next.t('incomingCall.actions.answer', { defaultValue: 'Atender' })}`,
+                    pressAction: { id: 'call_answer', launchActivity: 'default' },
                   },
-                  actions: [
-                    {
-                      title: `📞 ${i18next.t('incomingCall.actions.answer', { defaultValue: 'Atender' })}`,
-                      pressAction: { id: 'call_answer', launchActivity: 'default' },
-                    },
-                    {
-                      title: `🔴 ${i18next.t('incomingCall.actions.decline', { defaultValue: 'Recusar' })}`,
-                      pressAction: { id: 'call_decline' },
-                    },
-                  ],
-                }
+                  {
+                    title: `🔴 ${i18next.t('incomingCall.actions.decline', { defaultValue: 'Recusar' })}`,
+                    pressAction: { id: 'call_decline' },
+                  },
+                ],
+              }
               : {}),
             smallIcon: 'ic_launcher',
           },
@@ -278,7 +285,7 @@ class NotificationService {
         trigger,
       );
       console.log(
-        `🔔 [NotificationService] Agendado ${shouldUseCall ? 'Chamada' : 'Lembrete'}: "${tudu.label}" para ${new Date(timestamp).toLocaleTimeString()} (timestamp: ${timestamp})`,
+        `🔔 [NotificationService] Agendado ${shouldUseCall ? 'Chamada' : 'Lembrete'}: "${tudu.label}" para ${new Date(timestamp).toLocaleTimeString()} (timestamp: ${timestamp}) Hora: ${Date.now()}`,
       );
     } catch (err) {
       console.warn('[NotificationService] Erro ao criar trigger notification:', err);
@@ -337,9 +344,8 @@ class NotificationService {
         body = i18next.t('notifications.dailyDigest.singleUntimedWithOthers', {
           text: untimedTudu.label,
           remainingCount,
-          defaultValue: `${untimedTudu.label} (+ ${remainingCount} ${
-            remainingCount === 1 ? 'outra agendada' : 'outras agendadas'
-          } para hoje)`,
+          defaultValue: `${untimedTudu.label} (+ ${remainingCount} ${remainingCount === 1 ? 'outra agendada' : 'outras agendadas'
+            } para hoje)`,
         });
       }
     } else {
@@ -350,7 +356,7 @@ class NotificationService {
       });
     }
 
-    return {title, body};
+    return { title, body };
   }
 
   /**

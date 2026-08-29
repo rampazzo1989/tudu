@@ -459,7 +459,8 @@
   },
   "notifications": {
     "timedTudu": {
-      "defaultTitle": "Tudú Programmato"
+      "defaultTitle": "Tudú Programmato",
+      "defaultListName": "Oggi"
     },
     "dailyDigest": {
       "title": "Attività di Oggi",

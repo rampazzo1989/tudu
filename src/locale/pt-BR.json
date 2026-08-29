@@ -459,7 +459,8 @@
   },
   "notifications": {
     "timedTudu": {
-      "defaultTitle": "Tudú Agendado"
+      "defaultTitle": "Tudú Agendado",
+      "defaultListName": "Hoje"
     },
     "dailyDigest": {
       "title": "Tarefas de Hoje",

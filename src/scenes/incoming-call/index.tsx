@@ -19,6 +19,8 @@ import { notificationSettingsState } from '../../state/atoms';
 import { useListService } from '../../service/list-service-hook/useListService';
 import { callReminderService } from '../../service/call-reminder/callReminderService';
 import { ttsService } from '../../service/tts/ttsService';
+import { TuduViewModel } from '../../scenes/home/types';
+import { UNLISTED_LIST_ID } from '../../scenes/home/state';
 import {
   ActionButtonLabel,
   ActionButtonWrapper,
@@ -268,27 +270,43 @@ export const IncomingCallPage: React.FC = () => {
   const handleCompleteTask = useCallback(() => {
     RNReactNativeHapticFeedback.trigger('notificationSuccess');
     if (currentTudu) {
-      saveTudu({
-        ...currentTudu,
-        done: true,
-      });
+      const updatedTudu = currentTudu.clone();
+      updatedTudu.done = true;
+      saveTudu(updatedTudu);
+    } else if (tuduId) {
+      const updatedTudu = new TuduViewModel(
+        {
+          id: tuduId,
+          label: tuduTitle,
+          done: true,
+        },
+        listId || UNLISTED_LIST_ID,
+        listId ? 'default' : 'unlisted',
+        listName,
+      );
+      saveTudu(updatedTudu);
     }
     handleEndCall();
-  }, [currentTudu, handleEndCall, saveTudu]);
+  }, [currentTudu, handleEndCall, listId, listName, saveTudu, tuduId, tuduTitle]);
 
   const handleViewTask = useCallback(() => {
-    handleEndCall();
-    if (listId && listName) {
-      navigation.navigate('List', {
-        listId,
-        title: listName,
-      });
-    } else {
-      navigation.navigate('ScheduledList', {
-        date: new Date(),
-      });
-    }
-  }, [handleEndCall, listId, listName, navigation]);
+    setCallStatus('ended');
+    callReminderService.endCall();
+    RNReactNativeHapticFeedback.trigger('impactLight');
+
+    navigation.reset({
+      index: 1,
+      routes: [
+        { name: 'Home' },
+        {
+          name: 'ScheduledList',
+          params: {
+            date: new Date(),
+          },
+        },
+      ],
+    });
+  }, [navigation]);
 
   const isRinging = callStatus === 'ringing';
   const isConnected = callStatus === 'connected';

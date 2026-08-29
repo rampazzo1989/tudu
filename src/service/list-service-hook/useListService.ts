@@ -41,6 +41,22 @@ class SingletonBackup {
   }
 }
 
+const toTuduItem = (tudu: TuduViewModel | TuduItem): TuduItem => {
+  if (tudu && typeof (tudu as any).mapBack === 'function') {
+    return (tudu as TuduViewModel).mapBack();
+  }
+  return {
+    id: tudu.id,
+    label: tudu.label,
+    done: tudu.done,
+    dueDate: tudu.dueDate ? new Date(tudu.dueDate) : undefined,
+    hasTime: tudu.hasTime,
+    scheduledOrder: tudu.scheduledOrder,
+    starred: tudu.starred,
+    recurrence: tudu.recurrence,
+  };
+};
+
 const useListService = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
   const [customTudus, setCustomTudus] = useRecoilState(tudusState);
@@ -201,7 +217,7 @@ const useListService = () => {
         const newTuduMap = new Map(previousState);
 
         tudus.forEach(tudu => {
-          newTuduMap.set(tudu.id, tudu.mapBack());
+          newTuduMap.set(tudu.id, toTuduItem(tudu));
         });
 
         return newTuduMap;
@@ -248,7 +264,7 @@ const useListService = () => {
         const foundTuduMap =
           previousState.get(tudu.listId) ?? new Map<string, TuduItem>();
         const newTuduMap = new Map(foundTuduMap);
-        newTuduMap.set(tudu.id, tudu.mapBack());
+        newTuduMap.set(tudu.id, toTuduItem(tudu));
 
         const newState = new Map([...previousState]);
         newState.set(tudu.listId, newTuduMap);
@@ -311,7 +327,7 @@ const useListService = () => {
           const savingTudus = groupedTudus[listId];
 
           savingTudus.forEach(tudu => {
-            newTuduMap.set(tudu.id, tudu.mapBack());
+            newTuduMap.set(tudu.id, toTuduItem(tudu));
           });
 
           newState.set(listId, newTuduMap);
@@ -643,7 +659,7 @@ const useListService = () => {
     tuduList.forEach(tudu => {
       if (tudu.dueDate && tudu.hasTime) {
         notificationService.scheduleTimedTudu(
-          new TuduViewModel(tudu.mapBack(), tudu.listId, origin),
+          new TuduViewModel(toTuduItem(tudu), tudu.listId, origin),
           notificationSettings.timedNotificationsEnabled,
           notificationSettings.notificationSound,
           Boolean(notificationSettings.callRemindersEnabled),

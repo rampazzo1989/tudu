@@ -459,7 +459,8 @@
   },
   "notifications": {
     "timedTudu": {
-      "defaultTitle": "Tudú Programado"
+      "defaultTitle": "Tudú Programado",
+      "defaultListName": "Hoy"
     },
     "dailyDigest": {
       "title": "Tareas de Hoy",

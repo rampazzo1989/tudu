@@ -459,7 +459,8 @@
   },
   "notifications": {
     "timedTudu": {
-      "defaultTitle": "Scheduled Tudú"
+      "defaultTitle": "Scheduled Tudú",
+      "defaultListName": "Today"
     },
     "dailyDigest": {
       "title": "Today's Tasks",
