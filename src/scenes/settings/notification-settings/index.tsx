@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Switch } from 'react-native';
+import { Platform, Switch } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'styled-components/native';
 import DatePicker from 'react-native-date-picker';
@@ -54,8 +54,16 @@ import {
   ToggleDescription,
   ToggleTextContainer,
   ToggleTitle,
+  PermissionWarningCard,
+  PermissionWarningText,
+  PermissionWarningButton,
+  PermissionWarningButtonText,
 } from './styles';
 import { NotificationSettingsPageProps } from './types';
+import {
+  useFullScreenIntentPermission,
+  openFullScreenIntentSettings,
+} from '../../../service/notification/fullScreenIntent';
 
 const TIME_SHORTCUTS = [
   { label: '07:00', hour: 7, min: 0 },
@@ -95,6 +103,12 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
   } | null>(null);
 
   const [callTestCountdown, setCallTestCountdown] = useState<number | null>(null);
+
+  const { hasPermission: hasFullScreenPermission } = useFullScreenIntentPermission();
+  const showFsiWarning =
+    Platform.OS === 'android' &&
+    Boolean(settings.callRemindersEnabled) &&
+    !hasFullScreenPermission;
 
   const activeSound =
     settings.notificationSound || DEFAULT_NOTIFICATION_SOUND;
@@ -359,6 +373,26 @@ const NotificationSettingsPage: React.FC<NotificationSettingsPageProps> = ({
                 thumbColor="#FFFFFF"
               />
             </ToggleCard>
+
+            {showFsiWarning && (
+              <PermissionWarningCard>
+                <PermissionWarningText>
+                  ⚠️{' '}
+                  {t('settings.notifications.callReminder.fullScreenPermissionWarning', {
+                    defaultValue:
+                      'Para exibir a tela de chamada sobre a tela de bloqueio, é necessário permitir notificações em tela cheia nas configurações do dispositivo.',
+                  })}
+                </PermissionWarningText>
+                <PermissionWarningButton onPress={openFullScreenIntentSettings}>
+                  <PermissionWarningButtonText>
+                    ⚙️{' '}
+                    {t('settings.notifications.callReminder.fullScreenPermissionButton', {
+                      defaultValue: 'Abrir Configurações',
+                    })}
+                  </PermissionWarningButtonText>
+                </PermissionWarningButton>
+              </PermissionWarningCard>
+            )}
 
             {Boolean(settings.callRemindersEnabled) && (
               <SpeedCard>

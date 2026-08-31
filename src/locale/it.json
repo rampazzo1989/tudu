@@ -309,7 +309,9 @@
         "title": "Ricevi Promemoria come Chiamata",
         "description": "L'app squilla a schermo intero come una chiamata e legge la tua attività con voce nativa offline.",
         "voiceSpeedTitle": "Velocità della Voce (TTS)",
-        "testButton": "Testa Chiamata Ora"
+        "testButton": "Testa Chiamata Ora",
+        "fullScreenPermissionWarning": "Per mostrare la schermata di chiamata sopra la schermata di blocco, è necessario consentire le notifiche a schermo intero nelle impostazioni del dispositivo.",
+        "fullScreenPermissionButton": "Apri Impostazioni"
       }
     },
     "backup": {

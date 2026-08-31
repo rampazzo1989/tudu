@@ -309,7 +309,9 @@
         "title": "Receber Lembretes como Ligação",
         "description": "O aplicativo toca em tela cheia como uma chamada e fala o nome da tarefa com voz nativa offline.",
         "voiceSpeedTitle": "Velocidade da Voz (TTS)",
-        "testButton": "Testar Chamada Agora"
+        "testButton": "Testar Chamada Agora",
+        "fullScreenPermissionWarning": "Para exibir a tela de chamada sobre a tela de bloqueio, é necessário permitir notificações em tela cheia nas configurações do dispositivo.",
+        "fullScreenPermissionButton": "Abrir Configurações"
       }
     },
     "backup": {

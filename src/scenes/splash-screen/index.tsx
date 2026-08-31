@@ -7,6 +7,8 @@ import {AppIcon, Logo, StyledSafeAreaView} from './styles';
 import {StackNavigatorParamList} from '../../navigation/stack-navigator/types';
 import {useTheme} from 'styled-components/native';
 
+import {navigationRef} from '../../navigation/navigation-ref';
+
 const SplashScreen = React.memo(
   ({
     navigation,
@@ -21,7 +23,11 @@ const SplashScreen = React.memo(
         iconRef.current?.play({
           onAnimationFinish: () => {
             hasFinishedAnimation.current = true;
-            if (navigation.isFocused()) {
+            if (
+              navigation.isFocused() &&
+              (!navigationRef.isReady() ||
+                navigationRef.getCurrentRoute()?.name === 'SplashScreen')
+            ) {
               navigation.replace('Home');
             }
           },
@@ -31,7 +37,11 @@ const SplashScreen = React.memo(
 
     useFocusEffect(
       useCallback(() => {
-        if (hasFinishedAnimation.current) {
+        if (
+          hasFinishedAnimation.current &&
+          (!navigationRef.isReady() ||
+            navigationRef.getCurrentRoute()?.name === 'SplashScreen')
+        ) {
           navigation.replace('Home');
         }
       }, [navigation]),

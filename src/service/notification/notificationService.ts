@@ -1,5 +1,6 @@
 import notifee, {
   AlarmType,
+  AndroidCategory,
   AndroidImportance,
   AndroidVisibility,
   AuthorizationStatus,
@@ -94,6 +95,7 @@ class NotificationService {
           vibration: true,
           visibility: AndroidVisibility.PUBLIC,
           sound: soundParam,
+          bypassDnd: true,
         });
       }
 
@@ -126,6 +128,7 @@ class NotificationService {
         vibration: true,
         visibility: AndroidVisibility.PUBLIC,
         sound: DEFAULT_NOTIFICATION_SOUND,
+        bypassDnd: true,
       });
     }
 
@@ -259,6 +262,9 @@ class NotificationService {
             },
             ...(shouldUseCall
               ? {
+                category: AndroidCategory.CALL,
+                ongoing: true,
+                lightUpScreen: true,
                 fullScreenAction: {
                   id: 'call',
                   launchActivity: 'default',
@@ -513,6 +519,9 @@ class NotificationService {
           soundToUse,
         ),
         importance: AndroidImportance.HIGH,
+        category: AndroidCategory.CALL,
+        ongoing: true,
+        lightUpScreen: true,
         sound: soundToUse === 'default' ? 'default' : soundToUse,
         pressAction: {
           id: 'call',

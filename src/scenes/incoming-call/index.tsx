@@ -58,6 +58,8 @@ import {
   WaveformContainer,
 } from './styles';
 
+import notifee from '@notifee/react-native';
+
 type IncomingCallRouteProp = RouteProp<StackNavigatorParamList, 'IncomingCall'>;
 type NavigationProp = StackNavigationProp<StackNavigatorParamList, 'IncomingCall'>;
 
@@ -66,7 +68,14 @@ export const IncomingCallPage: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<IncomingCallRouteProp>();
 
-  const { tuduId, tuduTitle, listName, listId, isTest, autoAnswer } = route.params || {
+  const {
+    tuduId,
+    tuduTitle = 'Lembrete do Tudú',
+    listName,
+    listId,
+    isTest,
+    autoAnswer,
+  } = route.params || {
     tuduTitle: 'Lembrete do Tudú',
   };
 
@@ -77,6 +86,19 @@ export const IncomingCallPage: React.FC = () => {
     'ringing',
   );
   const [durationSeconds, setDurationSeconds] = useState(0);
+
+  const cancelRelatedNotification = useCallback(async () => {
+    try {
+      if (tuduId) {
+        await notifee.cancelNotification(`tudu_${tuduId}`);
+      }
+      if (isTest) {
+        await notifee.cancelNotification('call_test');
+      }
+    } catch {
+      // Ignore
+    }
+  }, [isTest, tuduId]);
 
   // Animated shared values for pulsating ripples
   const pulseScale1 = useSharedValue(1);
@@ -233,6 +255,7 @@ export const IncomingCallPage: React.FC = () => {
   const handleEndCall = useCallback(() => {
     setCallStatus('ended');
     callReminderService.endCall();
+    cancelRelatedNotification();
     RNReactNativeHapticFeedback.trigger('impactLight');
 
     const routes = navigation.getState()?.routes;
@@ -247,7 +270,7 @@ export const IncomingCallPage: React.FC = () => {
         routes: [{ name: 'Home' }],
       });
     }
-  }, [navigation]);
+  }, [cancelRelatedNotification, navigation]);
 
   const handleSnooze = useCallback(async () => {
     RNReactNativeHapticFeedback.trigger('impactMedium');
@@ -292,6 +315,7 @@ export const IncomingCallPage: React.FC = () => {
   const handleViewTask = useCallback(() => {
     setCallStatus('ended');
     callReminderService.endCall();
+    cancelRelatedNotification();
     RNReactNativeHapticFeedback.trigger('impactLight');
 
     navigation.reset({
@@ -306,7 +330,7 @@ export const IncomingCallPage: React.FC = () => {
         },
       ],
     });
-  }, [navigation]);
+  }, [cancelRelatedNotification, navigation]);
 
   const isRinging = callStatus === 'ringing';
   const isConnected = callStatus === 'connected';

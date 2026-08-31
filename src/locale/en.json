@@ -309,7 +309,9 @@
         "title": "Receive Reminders as Phone Calls",
         "description": "The app rings full-screen like an incoming call and reads your task aloud with offline native voice.",
         "voiceSpeedTitle": "Voice Speed (TTS)",
-        "testButton": "Test Call Now"
+        "testButton": "Test Call Now",
+        "fullScreenPermissionWarning": "To display the call screen over the lock screen, you need to allow full-screen notifications in your device settings.",
+        "fullScreenPermissionButton": "Open Settings"
       }
     },
     "backup": {

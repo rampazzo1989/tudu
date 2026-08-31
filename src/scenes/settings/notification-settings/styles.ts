@@ -279,6 +279,35 @@ export const SpeedCard = styled(Card)`
   margin-bottom: 12px;
 `;
 
+export const PermissionWarningCard = styled.View`
+  background-color: rgba(255, 152, 0, 0.1);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-width: 1px;
+  border-color: rgba(255, 152, 0, 0.25);
+`;
 
+export const PermissionWarningText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  font-size: 13px;
+  color: #FFB74D;
+  line-height: 18px;
+  margin-bottom: 12px;
+`;
 
+export const PermissionWarningButton = styled(ShrinkableView)`
+  background-color: rgba(255, 152, 0, 0.2);
+  border-radius: 10px;
+  padding-vertical: 10px;
+  align-items: center;
+  justify-content: center;
+  border-width: 1px;
+  border-color: rgba(255, 152, 0, 0.35);
+`;
 
+export const PermissionWarningButtonText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 13px;
+  color: #FFB74D;
+`;

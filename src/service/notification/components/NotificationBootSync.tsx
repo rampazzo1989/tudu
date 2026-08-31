@@ -1,11 +1,15 @@
 import React, {useEffect} from 'react';
+import {AppState, AppStateStatus} from 'react-native';
 import notifee, {EventType} from '@notifee/react-native';
+import {MMKV} from 'react-native-mmkv';
 import {useRecoilValue} from 'recoil';
 import {notificationSettingsState} from '../../../state/atoms';
 import {useListService} from '../../list-service-hook/useListService';
 import {useScheduledTuduService} from '../../list-service-hook/useScheduledTuduService';
 import {notificationService} from '../notificationService';
 import {navigateToIncomingCall, navigateToToday} from '../../../navigation/navigation-ref';
+
+const storage = new MMKV();
 
 export const NotificationBootSync: React.FC = () => {
   const {getAllTudus} = useListService();
@@ -84,6 +88,33 @@ export const NotificationBootSync: React.FC = () => {
       }
     };
 
+    const checkPendingCallFromStorage = () => {
+      try {
+        const rawPending = storage.getString('pending_incoming_call');
+        if (rawPending) {
+          const parsed = JSON.parse(rawPending);
+          if (Date.now() - (parsed.timestamp || 0) < 60000) {
+            storage.delete('pending_incoming_call');
+            console.log('📱 [NotificationBootSync] Pending call encontrada no storage:', parsed);
+            navigateToIncomingCall(parsed);
+            return true;
+          }
+          storage.delete('pending_incoming_call');
+        }
+      } catch (err) {
+        console.warn('Error checking pending call from storage:', err);
+      }
+      return false;
+    };
+
+    checkPendingCallFromStorage();
+
+    const appStateSub = AppState.addEventListener('change', (state: AppStateStatus) => {
+      if (state === 'active') {
+        checkPendingCallFromStorage();
+      }
+    });
+
     // Check if app was opened from a notification when completely closed
     const checkInitialNotification = async () => {
       const initialNotification = await notifee.getInitialNotification();
@@ -128,6 +159,7 @@ export const NotificationBootSync: React.FC = () => {
     });
 
     return () => {
+      appStateSub.remove();
       unsubscribe();
     };
   }, []);

@@ -9,15 +9,18 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.zoontek.rnbootsplash.RNBootSplash
+import io.invertase.notifee.NotifeeApiModule
 
 import android.graphics.Color
 import android.view.View
 import android.view.Window
+import android.view.WindowManager
 
 class MainActivity : ReactActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    RNBootSplash.init(this) // ⬅️ initialize the splash screen
+    RNBootSplash.init(this)
+
     val w = window
     w.statusBarColor = Color.TRANSPARENT
     w.navigationBarColor = Color.TRANSPARENT
@@ -30,11 +33,12 @@ class MainActivity : ReactActivity() {
     } else {
       @Suppress("DEPRECATION")
       window.addFlags(
-        android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-        android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-        android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
       )
     }
+    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
     normalizeIntentData(intent)
     super.onCreate(null)
@@ -45,6 +49,7 @@ class MainActivity : ReactActivity() {
       setShowWhenLocked(true)
       setTurnScreenOn(true)
     }
+    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     normalizeIntentData(intent)
     super.onNewIntent(intent)
     setIntent(intent)

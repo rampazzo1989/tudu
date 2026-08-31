@@ -24,6 +24,7 @@ jest.mock('@notifee/react-native', () => ({
   getNotificationSettings: jest.fn().mockResolvedValue({authorizationStatus: 1}),
   AndroidImportance: {HIGH: 4, DEFAULT: 3},
   AndroidVisibility: {PUBLIC: 1},
+  AndroidCategory: {CALL: 'call', ALARM: 'alarm'},
   AuthorizationStatus: {AUTHORIZED: 1, PROVISIONAL: 2, DENIED: 0},
   TriggerType: {TIMESTAMP: 0},
   AlarmType: {
@@ -317,17 +318,19 @@ describe('Notification Service', () => {
       ]);
 
       const futureDate = new Date(Date.now() + 3600000);
-      const activeTudus = [
-        createTudu('active-1', 'Ativa', futureDate, true, false),
-      ];
+      const activeTimedTudu = createTudu('active-1', 'Ativa', futureDate, true, false);
 
-      await notificationService.syncAll(activeTudus, [], {
-        timedNotificationsEnabled: true,
-        dailyDigestEnabled: false,
-        dailyDigestHour: 8,
-        dailyDigestMinute: 30,
-        notificationSound: 'tudu_marimba',
-      });
+      await notificationService.syncAll(
+        [activeTimedTudu],
+        [activeTimedTudu],
+        {
+          timedNotificationsEnabled: true,
+          dailyDigestEnabled: true,
+          dailyDigestHour: 9,
+          dailyDigestMinute: 0,
+          notificationSound: 'default',
+        },
+      );
 
       // Should cancel orphaned notifications
       expect(notifee.cancelNotification).toHaveBeenCalledWith('tudu_deleted-2');
@@ -357,7 +360,10 @@ describe('Notification Service', () => {
             taskTitle: 'Ligar para cliente',
           }),
           android: expect.objectContaining({
-            fullScreenAction: expect.objectContaining({ id: 'call' }),
+            fullScreenAction: expect.objectContaining({
+              id: 'call',
+              launchActivity: 'default',
+            }),
           }),
         }),
         expect.anything(),
@@ -375,11 +381,13 @@ describe('Notification Service', () => {
             isTest: true,
           }),
           android: expect.objectContaining({
-            fullScreenAction: expect.objectContaining({ id: 'call' }),
+            fullScreenAction: expect.objectContaining({
+              id: 'call',
+              launchActivity: 'default',
+            }),
           }),
         }),
       );
     });
   });
 });
-

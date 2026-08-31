@@ -24,7 +24,15 @@ import {IncomingCallPage} from '../../scenes/incoming-call';
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 
-const StackNavigator = () => {
+export interface StackNavigatorProps {
+  initialRouteName?: keyof StackNavigatorParamList;
+  initialParams?: any;
+}
+
+const StackNavigator: React.FC<StackNavigatorProps> = ({
+  initialRouteName = 'SplashScreen',
+  initialParams,
+}) => {
   const theme = useTheme();
 
   const config: TransitionSpec = {
@@ -43,7 +51,7 @@ const StackNavigator = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="SplashScreen"
+      initialRouteName={initialRouteName}
       screenOptions={{headerShown: false, detachPreviousScreen: false}}>
       <Stack.Screen
         name="SplashScreen"
@@ -214,6 +222,7 @@ const StackNavigator = () => {
       <Stack.Screen
         name="IncomingCall"
         component={IncomingCallPage}
+        initialParams={initialRouteName === 'IncomingCall' ? initialParams : undefined}
         options={{
           cardStyle: {backgroundColor: '#121620'},
           gestureEnabled: false,

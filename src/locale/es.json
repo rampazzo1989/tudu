@@ -309,7 +309,9 @@
         "title": "Recibir Recordatorios como Llamada",
         "description": "La app suena a pantalla completa como una llamada y lee tu tarea con voz nativa sin conexión.",
         "voiceSpeedTitle": "Velocidad de Voz (TTS)",
-        "testButton": "Probar Llamada Ahora"
+        "testButton": "Probar Llamada Ahora",
+        "fullScreenPermissionWarning": "Para mostrar la pantalla de llamada sobre la pantalla de bloqueo, debes permitir las notificaciones a pantalla completa en la configuración del dispositivo.",
+        "fullScreenPermissionButton": "Abrir Configuración"
       }
     },
     "backup": {
