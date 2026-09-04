@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import Tts from 'react-native-tts';
 import i18next from '../../i18n';
+import { stripEmojis } from '../../utils/emoji-utils';
 
 export interface SpeakOptions {
   onStart?: () => void;
@@ -112,23 +113,26 @@ class TtsService {
       });
     }
 
+    const cleanTask = stripEmojis(taskTitle) || taskTitle?.trim() || '';
+    const cleanList = listName ? stripEmojis(listName) : undefined;
+
     const hasValidList =
-      listName &&
-      listName.trim().length > 0 &&
-      listName.toLowerCase() !== 'unlisted' &&
-      listName.toLowerCase() !== 'sem lista';
+      cleanList &&
+      cleanList.trim().length > 0 &&
+      cleanList.toLowerCase() !== 'unlisted' &&
+      cleanList.toLowerCase() !== 'sem lista';
 
     if (hasValidList) {
       return i18next.t('incomingCall.tts.messageWithList', {
-        list: listName,
-        task: taskTitle,
-        defaultValue: `Atenção! Lembrete da sua lista ${listName}: ${taskTitle}.`,
+        list: cleanList,
+        task: cleanTask,
+        defaultValue: `Atenção! Lembrete da sua lista ${cleanList}: ${cleanTask}.`,
       });
     }
 
     return i18next.t('incomingCall.tts.message', {
-      task: taskTitle,
-      defaultValue: `Atenção! Lembrete do Tudú para agora: ${taskTitle}.`,
+      task: cleanTask,
+      defaultValue: `Atenção! Lembrete do Tudú para agora: ${cleanTask}.`,
     });
   }
 
@@ -149,9 +153,9 @@ class TtsService {
     if (options?.onStart) {
       const subStart = Tts.addEventListener('tts-start', () => {
         options.onStart?.();
-      });
+      }) as any;
       if (subStart) {
-        this.activeSubscriptions.push(subStart as any);
+        this.activeSubscriptions.push(subStart);
       }
     }
 
@@ -159,9 +163,9 @@ class TtsService {
       const subFinish = Tts.addEventListener('tts-finish', () => {
         options.onFinish?.();
         this.clearSubscriptions();
-      });
+      }) as any;
       if (subFinish) {
-        this.activeSubscriptions.push(subFinish as any);
+        this.activeSubscriptions.push(subFinish);
       }
     }
 
@@ -169,15 +173,16 @@ class TtsService {
       const subError = Tts.addEventListener('tts-error', (err: any) => {
         options.onError?.(err);
         this.clearSubscriptions();
-      });
+      }) as any;
       if (subError) {
-        this.activeSubscriptions.push(subError as any);
+        this.activeSubscriptions.push(subError);
       }
     }
 
     try {
       Tts.stop();
-      Tts.speak(text);
+      const cleanText = stripEmojis(text) || text;
+      Tts.speak(cleanText);
     } catch (err) {
       console.warn('[TtsService] Speak error:', err);
       options?.onError?.(err);

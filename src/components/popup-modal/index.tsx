@@ -136,8 +136,11 @@ const PopupModal: React.FC<PopupModalProps> = memo(
                     onPress={button.onPress}
                     highlight={button.highlight}
                     disabled={button.disabled}
+                    isSingle={buttons.length === 1}
                     key={button.label}>
-                    <ButtonLabel highlight={button.highlight}>{button.label}</ButtonLabel>
+                    <ButtonLabel highlight={button.highlight} numberOfLines={1} adjustsFontSizeToFit>
+                      {button.label}
+                    </ButtonLabel>
                   </PopupButton>
                 ))}
               </ButtonsContainer>

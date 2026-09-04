@@ -69,6 +69,7 @@ export const ModeButtonText = styled.Text<{ active?: boolean }>`
 
 export const TimeStageContainer = styled.View`
   width: 100%;
+  min-width: 252px;
   align-items: center;
   justify-content: center;
 `;

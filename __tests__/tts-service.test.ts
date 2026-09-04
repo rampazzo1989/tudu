@@ -63,13 +63,23 @@ describe('TtsService', () => {
     expect(message).toBe('Atenção! Lembrete do Tudú para agora: Fazer caminhada.');
   });
 
+  it('should format task message stripping emojis from task and list', () => {
+    const message = ttsService.formatTaskMessage('🥦 Comprar brócolis 🍎', '🛒 Compras de Mercado');
+    expect(message).toBe('Atenção! Lembrete da sua lista Compras de Mercado: Comprar brócolis.');
+  });
+
+  it('should format task message without list name and strip emoji from task', () => {
+    const message = ttsService.formatTaskMessage('🏃‍♂️ Fazer caminhada matinal', 'Unlisted');
+    expect(message).toBe('Atenção! Lembrete do Tudú para agora: Fazer caminhada matinal.');
+  });
+
   it('should format test message when isTest is true', () => {
     const message = ttsService.formatTaskMessage('Qualquer coisa', 'Geral', true);
     expect(message).toContain('teste de ligação do Tudú');
   });
 
-  it('should call Tts.speak when speak is invoked', async () => {
-    await ttsService.speak('Olá mundo');
+  it('should call Tts.speak when speak is invoked and strip emojis from text', async () => {
+    await ttsService.speak('🔔 Olá mundo 🚀');
     expect(Tts.stop).toHaveBeenCalled();
     expect(Tts.speak).toHaveBeenCalledWith('Olá mundo');
   });

@@ -46,3 +46,21 @@ export const trimEmoji = (text: string, side: "start" | "end" | "both" = "both")
 
   return {emoji: null, formattedText: text};
 };
+
+export const EMOJI_REGEX_PATTERN =
+  /(?:[\u231A\u231B\u23E9-\u23EC\u23F0-\u23F3\u25FD\u25FE\u2600-\u27BF\u2B50\u2B55]|\p{Extended_Pictographic}|\p{Regional_Indicator}|\p{Emoji_Presentation})(?:[\u{1F3FB}-\u{1F3FF}]|[\u{E0020}-\u{E007F}]|[\uFE0E\uFE0F\u200D\u20E3]|\p{Extended_Pictographic}|\p{Regional_Indicator}|\p{Emoji_Presentation})*/gu;
+
+/**
+ * Removes all emojis and related Unicode pictograms/symbols from a text string,
+ * cleaning up extraneous spaces.
+ */
+export const stripEmojis = (text?: string | null): string => {
+  if (!text) {
+    return '';
+  }
+  return text
+    .replace(EMOJI_REGEX_PATTERN, '')
+    .replace(/[\uFE0E\uFE0F\u200D]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+};

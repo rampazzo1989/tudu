@@ -20,6 +20,7 @@ export const PopupContainer = styled(AnimatedTouchable).attrs({
   border: 1px solid #ffffff30;
   margin-top: -8px;
   max-width: 90%;
+  min-width: 284px;
 `;
 
 export const PopupTopContainer = styled(Animated.View)`
@@ -58,23 +59,25 @@ export const SeparatorContainer = styled.View`
 export const ButtonsContainer = styled(Animated.View)<{shouldMarginTop: boolean, alignCenter?: boolean}>`
   flex-direction: row;
   align-items: center;
-  justify-content: ${({alignCenter}) => (alignCenter ? 'space-around' : 'flex-end')};
+  justify-content: ${({alignCenter}) => (alignCenter ? 'center' : 'flex-end')};
+  gap: 10px;
   height: 50px;
   margin-top: ${({shouldMarginTop}) => (shouldMarginTop ? 10 : 0)}px;
-  padding: 0 12px;
+  width: 100%;
 `;
 
-type HighlightableComponent = {highlight?: boolean};
+type HighlightableComponent = {highlight?: boolean; isSingle?: boolean};
 
 export const PopupButton = styled.TouchableOpacity<HighlightableComponent>`
-  padding: 10px 16px;
+  padding: 10px 12px;
   border-radius: 10px;
   border-width: 1px;
   border-color: ${({ highlight, theme }) =>
     highlight ? theme.colors.primary : 'rgba(255, 255, 255, 0.12)'};
   background-color: ${({ highlight, theme }) =>
     highlight ? theme.colors.primary : 'rgba(255, 255, 255, 0.05)'};
-  min-width: 105px;
+  min-width: ${({ isSingle }) => (isSingle ? '105px' : '0px')};
+  flex: ${({ isSingle }) => (isSingle ? 'none' : '1')};
   height: 42px;
   align-items: center;
   justify-content: center;
@@ -85,8 +88,9 @@ export const ButtonLabel = styled.Text<HighlightableComponent>`
     highlight ? theme.fonts.sectionTitle : theme.fonts.default};
   color: ${({ highlight }) =>
     highlight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.70)'};
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: ${({ highlight }) => (highlight ? '700' : '500')};
+  text-align: center;
 `;
 
 export const TopContainerLabel = styled.Text`

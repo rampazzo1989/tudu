@@ -22,6 +22,12 @@ import { ttsService } from '../../service/tts/ttsService';
 import { TuduViewModel } from '../../scenes/home/types';
 import { UNLISTED_LIST_ID } from '../../scenes/home/state';
 import {
+  dismissToLockScreen,
+  isDeviceLocked,
+  requestDismissKeyguard,
+  setShowWhenLocked,
+} from '../../service/device-lock/deviceLock';
+import {
   ActionButtonLabel,
   ActionButtonWrapper,
   AvatarCircle,
@@ -133,6 +139,7 @@ export const IncomingCallPage: React.FC = () => {
 
   // Start ringing animations & effects
   useEffect(() => {
+    setShowWhenLocked(true);
     callReminderService.startRingingEffect();
 
     // Pulse animation 1
@@ -175,10 +182,11 @@ export const IncomingCallPage: React.FC = () => {
     );
 
     return () => {
+      setShowWhenLocked(false);
       callReminderService.endCall();
       backHandler.remove();
     };
-  }, []);
+  }, [handleEndCall, pulseOpacity1, pulseOpacity2, pulseScale1, pulseScale2]);
 
   // Timer for connected call
   useEffect(() => {
@@ -212,7 +220,7 @@ export const IncomingCallPage: React.FC = () => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [callStatus]);
+  }, [callStatus, wave1, wave2, wave3, wave4, wave5, wave6, wave7]);
 
   // Pulse animated styles
   const pulseStyle1 = useAnimatedStyle(() => ({
@@ -252,11 +260,21 @@ export const IncomingCallPage: React.FC = () => {
     }
   }, [autoAnswer, handleAnswer]);
 
-  const handleEndCall = useCallback(() => {
+  const handleEndCall = useCallback(async () => {
     setCallStatus('ended');
     callReminderService.endCall();
     cancelRelatedNotification();
     RNReactNativeHapticFeedback.trigger('impactLight');
+
+    const locked = await isDeviceLocked();
+    if (locked) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+      await dismissToLockScreen();
+      return;
+    }
 
     const routes = navigation.getState()?.routes;
     const prevRoute =
@@ -287,10 +305,10 @@ export const IncomingCallPage: React.FC = () => {
         5,
       );
     }
-    handleEndCall();
+    await handleEndCall();
   }, [currentTudu, handleEndCall, listId, listName, tuduId, tuduTitle]);
 
-  const handleCompleteTask = useCallback(() => {
+  const handleCompleteTask = useCallback(async () => {
     RNReactNativeHapticFeedback.trigger('notificationSuccess');
     if (currentTudu) {
       const updatedTudu = currentTudu.clone();
@@ -309,14 +327,23 @@ export const IncomingCallPage: React.FC = () => {
       );
       saveTudu(updatedTudu);
     }
-    handleEndCall();
+    await handleEndCall();
   }, [currentTudu, handleEndCall, listId, listName, saveTudu, tuduId, tuduTitle]);
 
-  const handleViewTask = useCallback(() => {
+  const handleViewTask = useCallback(async () => {
+    const locked = await isDeviceLocked();
+    if (locked) {
+      const unlocked = await requestDismissKeyguard();
+      if (!unlocked) {
+        return;
+      }
+    }
+
     setCallStatus('ended');
     callReminderService.endCall();
     cancelRelatedNotification();
     RNReactNativeHapticFeedback.trigger('impactLight');
+    await setShowWhenLocked(false);
 
     navigation.reset({
       index: 1,

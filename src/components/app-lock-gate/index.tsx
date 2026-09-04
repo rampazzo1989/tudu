@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { useAppLockLifecycle } from '../../service/security';
 import { LockScreen } from '../lock-screen';
 import { navigationRef } from '../../navigation/navigation-ref';
+import { setShowWhenLocked } from '../../service/device-lock/deviceLock';
 
 export interface AppLockGateProps {
   children: React.ReactNode;
@@ -15,7 +16,11 @@ export const AppLockGate: React.FC<AppLockGateProps> = ({ children }) => {
   useEffect(() => {
     const updateRoute = () => {
       if (navigationRef.isReady()) {
-        setCurrentRoute(navigationRef.getCurrentRoute()?.name);
+        const routeName = navigationRef.getCurrentRoute()?.name;
+        setCurrentRoute(routeName);
+        if (routeName && routeName !== 'IncomingCall') {
+          setShowWhenLocked(false);
+        }
       }
     };
     updateRoute();
