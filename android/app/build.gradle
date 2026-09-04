@@ -82,8 +82,8 @@ android {
         applicationId "com.rampazzo.tudu"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 16
-        versionName "1.8.0"
+        versionCode 18
+        versionName "1.9.0"
     }
 
     signingConfigs {
