@@ -19,7 +19,7 @@ const NumberOfActiveItems: React.FC<NumberOfActiveItemsProps> = memo(
       <Container
         numberOfActiveItems={numberOfActiveItems}
         isHighlighted={isHighlighted}>
-        <Number>{numberOfActiveItems}</Number>
+        <Number isHighlighted={isHighlighted}>{numberOfActiveItems}</Number>
       </Container>
     );
   },
@@ -60,12 +60,14 @@ const ListCard: React.FC<ListCardProps> = memo(
             </ControlComponentContainer>
           )}
           {emojiInfo?.emoji ? (
-            <Emoji adjustsFontSizeToFit>{emojiInfo.emoji}</Emoji>
+            <Emoji isHighlighted={isHighlighted} adjustsFontSizeToFit>
+              {emojiInfo.emoji}
+            </Emoji>
           ) : (
             <Icon
               animateWhenIdle
               autoPlay={checkIfAutoAnimateIcon(label)}
-              size={24}
+              size={isHighlighted ? 28 : 24}
             />
           )}
           <Label isHighlighted={isHighlighted} numberOfLines={1}>

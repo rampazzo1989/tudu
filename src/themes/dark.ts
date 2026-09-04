@@ -11,7 +11,7 @@ const darkTheme: DefaultTheme = {
     headerText: '#FFFFFF',
     tabbar: '#2D344A',
     listCard: '#3C414A',
-    listCardHighlighted: '#444B56',
+    listCardHighlighted: '#323740',
     listCardNumber: '#444B56',
     listCardNumberHighlighted: '#3C414A',
     listCardGroup: '#3C414A',
