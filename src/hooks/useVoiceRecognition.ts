@@ -162,6 +162,102 @@ export const useVoiceRecognition = (options?: UseVoiceRecognitionOptions) => {
     }
   }, [clearWatchdog]);
 
+  const handlerRef = useRef<VoiceHandler>({
+    onSpeechStart: () => {},
+    onSpeechRecognized: () => {},
+    onSpeechEnd: () => {},
+    onSpeechError: () => {},
+    onSpeechResults: () => {},
+    onSpeechPartialResults: () => {},
+  });
+
+  handlerRef.current.onSpeechStart = () => {
+    setIsListening(true);
+    isListeningRef.current = true;
+    setError(null);
+  };
+
+  handlerRef.current.onSpeechRecognized = () => {};
+
+  handlerRef.current.onSpeechEnd = () => {
+    clearWatchdog();
+    setIsListening(false);
+    isListeningRef.current = false;
+
+    // Fallback: If partial results were received but onSpeechResults never fired on Android
+    if (!finalProcessedRef.current && lastPartialTextRef.current.trim()) {
+      finalizeText(lastPartialTextRef.current);
+    }
+  };
+
+  handlerRef.current.onSpeechError = (e: SpeechErrorEvent) => {
+    clearWatchdog();
+    setIsListening(false);
+    isListeningRef.current = false;
+
+    const rawCode =
+      e?.error?.code !== undefined && e?.error?.code !== null
+        ? String(e.error.code)
+        : '';
+    const rawMessage = e?.error?.message ? String(e.error.message) : '';
+    const codeFromMessage = rawMessage.includes('/')
+      ? rawMessage.split('/')[0].trim()
+      : '';
+    const errorCode = rawCode || codeFromMessage || rawMessage;
+
+    console.log('[useVoiceRecognition] onSpeechError:', {
+      errorCode,
+      rawCode,
+      rawMessage,
+    });
+
+    // Fallback: If partial text exists and benign error occurred, commit partial text
+    if (!finalProcessedRef.current && lastPartialTextRef.current.trim()) {
+      finalizeText(lastPartialTextRef.current);
+    }
+
+    if (isBenignVoiceError(errorCode) || isBenignVoiceError(rawMessage)) {
+      return;
+    }
+
+    if (
+      errorCode === '9' ||
+      rawMessage.toLowerCase().includes('insufficient permissions')
+    ) {
+      setError('permission_denied');
+      optionsRef.current?.onError?.('permission_denied');
+      return;
+    }
+
+    const reportedError = errorCode || rawMessage || 'voice_error';
+    setError(reportedError);
+    optionsRef.current?.onError?.(reportedError);
+  };
+
+  handlerRef.current.onSpeechResults = (e: SpeechResultsEvent) => {
+    clearWatchdog();
+    setIsListening(false);
+    isListeningRef.current = false;
+
+    const texts = e.value;
+    if (texts && texts.length > 0) {
+      const bestMatch = texts[0];
+      finalizeText(bestMatch);
+    } else if (!finalProcessedRef.current && lastPartialTextRef.current.trim()) {
+      finalizeText(lastPartialTextRef.current);
+    }
+  };
+
+  handlerRef.current.onSpeechPartialResults = (e: SpeechResultsEvent) => {
+    const texts = e.value;
+    if (texts && texts.length > 0) {
+      const partial = texts[0];
+      lastPartialTextRef.current = partial;
+      setRecognizedText(partial);
+      optionsRef.current?.onSpeechPartial?.(partial);
+    }
+  };
+
   const startListening = useCallback(
     async (locale = 'pt-BR') => {
       clearWatchdog();
@@ -169,6 +265,9 @@ export const useVoiceRecognition = (options?: UseVoiceRecognitionOptions) => {
       setRecognizedText('');
       lastPartialTextRef.current = '';
       finalProcessedRef.current = false;
+
+      // Register this instance as the active receiver of voice events
+      activeHandler = handlerRef.current;
 
       // Dismiss soft keyboard so it doesn't conflict with Android audio focus
       Keyboard.dismiss();
@@ -236,101 +335,14 @@ export const useVoiceRecognition = (options?: UseVoiceRecognitionOptions) => {
   );
 
   useEffect(() => {
-    const handler: VoiceHandler = {
-      onSpeechStart: () => {
-        setIsListening(true);
-        isListeningRef.current = true;
-        setError(null);
-      },
-      onSpeechRecognized: () => {
-        // Speech activity
-      },
-      onSpeechEnd: () => {
-        clearWatchdog();
-        setIsListening(false);
-        isListeningRef.current = false;
-
-        // Fallback: If partial results were received but onSpeechResults never fired on Android
-        if (!finalProcessedRef.current && lastPartialTextRef.current.trim()) {
-          finalizeText(lastPartialTextRef.current);
-        }
-      },
-      onSpeechError: (e: SpeechErrorEvent) => {
-        clearWatchdog();
-        setIsListening(false);
-        isListeningRef.current = false;
-
-        const rawCode =
-          e?.error?.code !== undefined && e?.error?.code !== null
-            ? String(e.error.code)
-            : '';
-        const rawMessage = e?.error?.message ? String(e.error.message) : '';
-        const codeFromMessage = rawMessage.includes('/')
-          ? rawMessage.split('/')[0].trim()
-          : '';
-        const errorCode = rawCode || codeFromMessage || rawMessage;
-
-        console.log('[useVoiceRecognition] onSpeechError:', {
-          errorCode,
-          rawCode,
-          rawMessage,
-        });
-
-        // Fallback: If partial text exists and benign error occurred, commit partial text
-        if (!finalProcessedRef.current && lastPartialTextRef.current.trim()) {
-          finalizeText(lastPartialTextRef.current);
-        }
-
-        if (isBenignVoiceError(errorCode) || isBenignVoiceError(rawMessage)) {
-          return;
-        }
-
-        if (
-          errorCode === '9' ||
-          rawMessage.toLowerCase().includes('insufficient permissions')
-        ) {
-          setError('permission_denied');
-          optionsRef.current?.onError?.('permission_denied');
-          return;
-        }
-
-        const reportedError = errorCode || rawMessage || 'voice_error';
-        setError(reportedError);
-        optionsRef.current?.onError?.(reportedError);
-      },
-      onSpeechResults: (e: SpeechResultsEvent) => {
-        clearWatchdog();
-        setIsListening(false);
-        isListeningRef.current = false;
-
-        const texts = e.value;
-        if (texts && texts.length > 0) {
-          const bestMatch = texts[0];
-          finalizeText(bestMatch);
-        } else if (!finalProcessedRef.current && lastPartialTextRef.current.trim()) {
-          finalizeText(lastPartialTextRef.current);
-        }
-      },
-      onSpeechPartialResults: (e: SpeechResultsEvent) => {
-        const texts = e.value;
-        if (texts && texts.length > 0) {
-          const partial = texts[0];
-          lastPartialTextRef.current = partial;
-          setRecognizedText(partial);
-          optionsRef.current?.onSpeechPartial?.(partial);
-        }
-      },
-    };
-
-    activeHandler = handler;
-
     return () => {
       clearWatchdog();
-      if (activeHandler === handler) {
+      if (activeHandler === handlerRef.current) {
         activeHandler = null;
+        Voice.stop().catch(() => {});
       }
     };
-  }, [clearWatchdog, finalizeText]);
+  }, [clearWatchdog]);
 
   return {
     isListening,
