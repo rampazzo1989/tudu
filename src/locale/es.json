@@ -311,7 +311,13 @@
         "voiceSpeedTitle": "Velocidad de Voz (TTS)",
         "testButton": "Probar Llamada Ahora",
         "fullScreenPermissionWarning": "Para mostrar la pantalla de llamada sobre la pantalla de bloqueo, debes permitir las notificaciones a pantalla completa en la configuración del dispositivo.",
-        "fullScreenPermissionButton": "Abrir Configuración"
+        "fullScreenPermissionButton": "Abrir Configuración",
+        "bannerTitle": "Recordatorio por Llamada",
+        "bannerDescription": "Recibe llamadas a pantalla completa con voz para no perder tareas con horario.",
+        "bannerEnableButton": "Activar",
+        "bannerDismissButton": "Ahora no",
+        "bannerSuccessToastTitle": "¡Recordatorios por llamada activados!",
+        "bannerSuccessToastMsg": "Recibirás llamadas cuando venzan tus tudús con horario."
       }
     },
     "backup": {
@@ -394,7 +400,9 @@
       "reminderNeverMsg": "Aún no has hecho una copia de seguridad de tus tareas. Conéctate a Google Drive para proteger tus datos.",
       "snooze": "Recordar más tarde",
       "backupNow": "Hacer Copia Ahora",
-      "connectAndBackup": "Conectar y Guardar"
+      "connectAndBackup": "Conectar y Guardar",
+      "activate": "Activar",
+      "configure": "Configurar"
     },
     "importList": {
       "title": "Importar Lista",

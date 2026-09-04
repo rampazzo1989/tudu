@@ -64,7 +64,8 @@ const useListService = () => {
   const [archivedTudus, setArchivedTudus] = useRecoilState(archivedTudusState);
   const [unlistedTudus, setUnlistedTudus] = useRecoilState(unlistedTudusState);
   const setRecurrentTuduToRecalculate = useSetRecoilState(recalculateRecurrence);
-  const notificationSettings = useRecoilValue(notificationSettingsState);
+  const [notificationSettings, setNotificationSettings] =
+    useRecoilState(notificationSettingsState);
   
   const getListState = useCallback(
     (stateOrigin: ListOrigin) =>
@@ -225,6 +226,12 @@ const useListService = () => {
 
       tudus.forEach(tudu => {
         if (tudu.dueDate && tudu.hasTime && !tudu.done) {
+          if (!notificationSettings.hasScheduledWithTime) {
+            setNotificationSettings(prev => ({
+              ...prev,
+              hasScheduledWithTime: true,
+            }));
+          }
           notificationService.scheduleTimedTudu(
             tudu,
             notificationSettings.timedNotificationsEnabled,
@@ -238,9 +245,11 @@ const useListService = () => {
     },
     [
       setUnlistedTudus,
+      notificationSettings.hasScheduledWithTime,
       notificationSettings.timedNotificationsEnabled,
       notificationSettings.notificationSound,
       notificationSettings.callRemindersEnabled,
+      setNotificationSettings,
     ],
   );
 
@@ -273,6 +282,12 @@ const useListService = () => {
       });
 
       if (tudu.dueDate && tudu.hasTime && !tudu.done) {
+        if (!notificationSettings.hasScheduledWithTime) {
+          setNotificationSettings(prev => ({
+            ...prev,
+            hasScheduledWithTime: true,
+          }));
+        }
         notificationService.scheduleTimedTudu(
           tudu,
           notificationSettings.timedNotificationsEnabled,
@@ -293,9 +308,11 @@ const useListService = () => {
       getTudusStateSetter,
       saveUnlistedTudus,
       setRecurrentTuduToRecalculate,
+      notificationSettings.hasScheduledWithTime,
       notificationSettings.timedNotificationsEnabled,
       notificationSettings.notificationSound,
       notificationSettings.callRemindersEnabled,
+      setNotificationSettings,
     ],
   );
 

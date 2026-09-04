@@ -31,33 +31,36 @@ export const BackupReminderBanner: React.FC<BackupReminderBannerProps> = memo(
     const reminderInfo = useBackupReminder();
     const {
       backupSettings,
-      backupToGoogleDrive,
       connectGoogle,
       dismissReminderForToday,
       isLoading,
     } = useBackupService();
 
-    const handleQuickBackup = useCallback(async () => {
+    const handleActivateBackup = useCallback(async () => {
       try {
         if (!backupSettings.googleUser) {
           const user = await connectGoogle();
           if (!user) {
             return;
           }
+          Toast.show({
+            type: 'success',
+            text1: t('settings.backup.connectSuccessTitle', { defaultValue: 'Conta conectada!' }),
+            text2: t('settings.backup.connectSuccessMsg', { defaultValue: 'Sua conta Google foi conectada com sucesso.' }),
+          });
         }
 
-        await backupToGoogleDrive();
+        dismissReminderForToday();
+
+        if (onNavigateToBackupSettings) {
+          onNavigateToBackupSettings();
+        }
+      } catch (err: any) {
         dismissReminderForToday();
         Toast.show({
-          type: 'success',
-          text1: t('settings.backup.backupSuccessTitle', { defaultValue: 'Backup realizado!' }),
-          text2: t('settings.backup.backupSuccessMsg', { defaultValue: 'Seus dados estão salvos no Google Drive.' }),
-        });
-      } catch (err: any) {
-        Toast.show({
           type: 'error',
-          text1: t('settings.backup.backupErrorTitle', { defaultValue: 'Erro no Backup' }),
-          text2: err.message || t('settings.backup.backupErrorMsg', { defaultValue: 'Não foi possível concluir o backup.' }),
+          text1: t('settings.backup.connectErrorTitle', { defaultValue: 'Falha na Conexão' }),
+          text2: err.message || t('settings.backup.connectErrorMsg', { defaultValue: 'Não foi possível autenticar com o Google.' }),
         });
         if (onNavigateToBackupSettings) {
           onNavigateToBackupSettings();
@@ -66,7 +69,6 @@ export const BackupReminderBanner: React.FC<BackupReminderBannerProps> = memo(
     }, [
       backupSettings.googleUser,
       connectGoogle,
-      backupToGoogleDrive,
       dismissReminderForToday,
       t,
       onNavigateToBackupSettings,
@@ -116,14 +118,14 @@ export const BackupReminderBanner: React.FC<BackupReminderBannerProps> = memo(
             <SnoozeButton onPress={dismissReminderForToday}>
               <SnoozeButtonText>{t('settings.backup.snooze', { defaultValue: 'Lembrar mais tarde' })}</SnoozeButtonText>
             </SnoozeButton>
-            <PrimaryAction onPress={handleQuickBackup} disabled={isLoading}>
+            <PrimaryAction onPress={handleActivateBackup} disabled={isLoading}>
               {isLoading ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
                 <PrimaryActionText>
                   {backupSettings.googleUser
-                    ? t('settings.backup.backupNow', { defaultValue: 'Fazer Backup' })
-                    : t('settings.backup.connectAndBackup', { defaultValue: 'Conectar & Salvar' })}
+                    ? t('settings.backup.configure', { defaultValue: 'Configurar' })
+                    : t('settings.backup.activate', { defaultValue: 'Ativar' })}
                 </PrimaryActionText>
               )}
             </PrimaryAction>

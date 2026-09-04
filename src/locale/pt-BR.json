@@ -311,7 +311,13 @@
         "voiceSpeedTitle": "Velocidade da Voz (TTS)",
         "testButton": "Testar Chamada Agora",
         "fullScreenPermissionWarning": "Para exibir a tela de chamada sobre a tela de bloqueio, é necessário permitir notificações em tela cheia nas configurações do dispositivo.",
-        "fullScreenPermissionButton": "Abrir Configurações"
+        "fullScreenPermissionButton": "Abrir Configurações",
+        "bannerTitle": "Lembrete por Ligação",
+        "bannerDescription": "Receba chamadas em tela cheia com voz para não perder suas tarefas com horário marcado.",
+        "bannerEnableButton": "Ativar",
+        "bannerDismissButton": "Agora não",
+        "bannerSuccessToastTitle": "Lembretes por Ligação ativados!",
+        "bannerSuccessToastMsg": "Você receberá chamadas quando seus tudús com horário vencerem."
       }
     },
     "backup": {
@@ -394,7 +400,9 @@
       "reminderNeverMsg": "Você ainda não fez backup das suas tarefas. Conecte ao Google Drive para não perder seus dados.",
       "snooze": "Lembrar mais tarde",
       "backupNow": "Fazer Backup",
-      "connectAndBackup": "Conectar & Salvar"
+      "connectAndBackup": "Conectar & Salvar",
+      "activate": "Ativar",
+      "configure": "Configurar"
     },
     "importList": {
       "title": "Importar Lista",

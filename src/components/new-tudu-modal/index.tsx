@@ -105,17 +105,39 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       getDefaultEmojis,
     } = useEmojiSearch(1200);
 
+    const isVisibleRef = useRef(false);
+    const editingTuduIdRef = useRef<string | undefined>(editingTudu?.id);
+
     useEffect(() => {
       if (visible) {
-        setInternalTuduData(
-          editingTudu
-            ? editingTudu.clone()
-            : getNewEmptyTudu(defaultDueDate, defaultListId, defaultOrigin, listName),
-        );
-        setIsScheduleModalVisible(false);
-        setAddToGoogleCalendar(false);
+        const isNewlyOpened = !isVisibleRef.current;
+        const isDifferentTudu = editingTuduIdRef.current !== editingTudu?.id;
+
+        if (isNewlyOpened || isDifferentTudu) {
+          setInternalTuduData(
+            editingTudu
+              ? editingTudu.clone()
+              : getNewEmptyTudu(defaultDueDate, defaultListId, defaultOrigin, listName),
+          );
+          setIsScheduleModalVisible(false);
+          setAddToGoogleCalendar(false);
+        }
       }
+      isVisibleRef.current = visible;
+      editingTuduIdRef.current = editingTudu?.id;
     }, [visible, editingTudu, defaultDueDate, defaultListId, defaultOrigin, listName]);
+
+    useEffect(() => {
+      if (visible && autoStartVoice) {
+        inputRef.current?.blur();
+        preVoiceLabelRef.current = '';
+        const currentLang = i18n.language || 'pt-BR';
+        const timer = setTimeout(() => {
+          startListening(currentLang);
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    }, [visible, autoStartVoice, i18n.language, startListening]);
 
     const handleTextChangeRef = useRef<(text: string) => void>(() => {});
 
@@ -664,12 +686,6 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           onShow={() => {
             if (!autoStartVoice) {
               setTimeout(() => inputRef.current?.focus(), 200);
-            } else {
-              setTimeout(() => {
-                preVoiceLabelRef.current = '';
-                const currentLang = i18n.language || 'pt-BR';
-                startListening(currentLang);
-              }, 300);
             }
             setTimeout(() => {
               setIsLoading(true);

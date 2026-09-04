@@ -62,6 +62,8 @@ export interface NotificationSettingsState {
   notificationSound?: NotificationSound;
   callRemindersEnabled?: boolean;
   ttsVoiceRate?: number;
+  callReminderSuggestionDismissed?: boolean;
+  hasScheduledWithTime?: boolean;
 }
 
 export const notificationSettingsState = atom<NotificationSettingsState>({
@@ -74,6 +76,8 @@ export const notificationSettingsState = atom<NotificationSettingsState>({
     notificationSound: DEFAULT_NOTIFICATION_SOUND,
     callRemindersEnabled: false,
     ttsVoiceRate: 0.5,
+    callReminderSuggestionDismissed: false,
+    hasScheduledWithTime: false,
   },
   effects: [mmkvPersistAtom('notificationSettingsState')],
 });

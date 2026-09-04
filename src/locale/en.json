@@ -311,7 +311,13 @@
         "voiceSpeedTitle": "Voice Speed (TTS)",
         "testButton": "Test Call Now",
         "fullScreenPermissionWarning": "To display the call screen over the lock screen, you need to allow full-screen notifications in your device settings.",
-        "fullScreenPermissionButton": "Open Settings"
+        "fullScreenPermissionButton": "Open Settings",
+        "bannerTitle": "Call Reminder",
+        "bannerDescription": "Get full-screen voice calls so you never miss scheduled tasks.",
+        "bannerEnableButton": "Enable",
+        "bannerDismissButton": "Not now",
+        "bannerSuccessToastTitle": "Call Reminders enabled!",
+        "bannerSuccessToastMsg": "You will receive incoming calls when your timed tudús are due."
       }
     },
     "backup": {
@@ -394,7 +400,9 @@
       "reminderNeverMsg": "You haven't backed up your tasks yet. Connect to Google Drive to keep your data safe.",
       "snooze": "Remind later",
       "backupNow": "Backup Now",
-      "connectAndBackup": "Connect & Backup"
+      "connectAndBackup": "Connect & Backup",
+      "activate": "Enable",
+      "configure": "Configure"
     },
     "importList": {
       "title": "Import List",

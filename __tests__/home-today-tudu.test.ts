@@ -70,4 +70,13 @@ describe('Home Today Tudú Quick Capture', () => {
     expect(tudu.label).toBe('Pagar contas');
     expect(tudu.dueDate?.getDate()).toBe(tomorrow.getDate());
   });
+
+  it('should parse time and recurrence from voice dictation', () => {
+    const parsed = parseVoiceInput('Tomar remédio todos os dias às 14h30');
+    expect(parsed.cleanedText).toBe('Tomar remédio');
+    expect(parsed.recurrence).toBe('daily');
+    expect(parsed.hasTime).toBe(true);
+    expect(parsed.dueDate?.getHours()).toBe(14);
+    expect(parsed.dueDate?.getMinutes()).toBe(30);
+  });
 });

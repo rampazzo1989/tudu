@@ -311,7 +311,13 @@
         "voiceSpeedTitle": "Velocità della Voce (TTS)",
         "testButton": "Testa Chiamata Ora",
         "fullScreenPermissionWarning": "Per mostrare la schermata di chiamata sopra la schermata di blocco, è necessario consentire le notifiche a schermo intero nelle impostazioni del dispositivo.",
-        "fullScreenPermissionButton": "Apri Impostazioni"
+        "fullScreenPermissionButton": "Apri Impostazioni",
+        "bannerTitle": "Promemoria con Chiamata",
+        "bannerDescription": "Ricevi chiamate vocali a schermo intero per non perdere le tue attività pianificate.",
+        "bannerEnableButton": "Attiva",
+        "bannerDismissButton": "Non ora",
+        "bannerSuccessToastTitle": "Promemoria con chiamata attivati!",
+        "bannerSuccessToastMsg": "Riceverai chiamate quando scadranno i tuoi tudú con orario."
       }
     },
     "backup": {
@@ -394,7 +400,9 @@
       "reminderNeverMsg": "Non hai ancora eseguito il backup dei tuoi tudú. Connettiti a Google Drive per proteggere i tuoi dati.",
       "snooze": "Ricorda più tardi",
       "backupNow": "Esegui Backup",
-      "connectAndBackup": "Connetti e Salva"
+      "connectAndBackup": "Connetti e Salva",
+      "activate": "Attiva",
+      "configure": "Configura"
     },
     "importList": {
       "title": "Importa Lista",

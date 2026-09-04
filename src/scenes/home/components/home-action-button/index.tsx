@@ -47,6 +47,7 @@ const HomeActionButton = memo(
     const [newGroupPopupVisible, setNewGroupPopupVisible] = useState(false);
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [autoStartVoice, setAutoStartVoice] = useState(false);
+    const [defaultDueDate, setDefaultDueDate] = useState<Date | undefined>();
     const parentRef = useRef<FloatingActionButtonRef>(null);
     const draggableContext =
       useContext<DraggableContextType<ListViewModel>>(DraggableContext);
@@ -56,6 +57,7 @@ const HomeActionButton = memo(
     const { saveTudu } = useListService();
 
     const handleCreateTuduForToday = useCallback(() => {
+      setDefaultDueDate(new Date());
       setAutoStartVoice(true);
       setNewTuduPopupVisible(true);
       parentRef.current?.closeMenu();
@@ -150,9 +152,10 @@ const HomeActionButton = memo(
           onRequestClose={() => {
             setNewTuduPopupVisible(false);
             setAutoStartVoice(false);
+            setDefaultDueDate(undefined);
           }}
           onInsertOrUpdate={saveTudu}
-          defaultDueDate={new Date()}
+          defaultDueDate={defaultDueDate}
           defaultListId={UNLISTED_LIST_ID}
           defaultOrigin="unlisted"
           listName={t('listTitles.today')}

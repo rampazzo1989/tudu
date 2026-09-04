@@ -33,6 +33,7 @@ const PopupModal: React.FC<PopupModalProps> = memo(
     onRequestClose,
     haptics = false,
     topContainerVisible = false,
+    onShow,
     ...props
   }) => {
     const shakeValue = useSharedValue(0);
@@ -78,7 +79,8 @@ const PopupModal: React.FC<PopupModalProps> = memo(
       setTimeout(() => {
         setShowLayoutAnimation(true);
       }, 300);
-    }, []);
+      onShow?.();
+    }, [onShow]);
 
     return (
       <BlurredModal

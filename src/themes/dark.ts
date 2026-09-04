@@ -1,4 +1,4 @@
-import {DefaultTheme} from 'styled-components/native';
+import { DefaultTheme } from 'styled-components/native';
 
 const darkTheme: DefaultTheme = {
   colors: {
@@ -77,4 +77,4 @@ const darkTheme: DefaultTheme = {
   },
 };
 
-export {darkTheme};
+export { darkTheme };
