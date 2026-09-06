@@ -13,7 +13,6 @@ import { ShareIcon } from '../animated-icons/share-icon';
 import { CopyIcon } from '../animated-icons/copy-icon';
 import { RefreshIcon } from '../animated-icons/refresh-icon';
 import { PlusIcon } from '../animated-icons/plus-icon';
-import { AIIcon } from '../animated-icons/ai-icon';
 import {
   IconWrapper,
   OptionsButton,
@@ -88,7 +87,7 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
 
       if (onReorderWithAIPress) {
         opts.push({
-          Icon: AIIcon,
+          Icon: CopyIcon,
           label: t('reorderPromptModal.title', { defaultValue: 'Reordenar com IA' }) + ' ✨',
           onPress: handleReorderWithAI,
         });
@@ -101,7 +100,7 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
           onPress: handleInvertOrder,
         },
         {
-          Icon: CopyIcon,
+          Icon: ShareIcon,
           label: t('menuLabels.shareText', { defaultValue: 'Compartilhar texto' }),
           onPress: handleShareText,
         },
