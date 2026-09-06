@@ -20,6 +20,7 @@ import {NotificationSettingsPage} from '../../scenes/settings/notification-setti
 import {BackupSettingsPage} from '../../scenes/settings/backup-settings';
 import {SecuritySettingsPage} from '../../scenes/settings/security-settings';
 import {IncomingCallPage} from '../../scenes/incoming-call';
+import {GroupPage} from '../../scenes/group';
 
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
@@ -211,6 +212,17 @@ const StackNavigator: React.FC<StackNavigatorProps> = ({
       <Stack.Screen
         name="SecuritySettings"
         component={SecuritySettingsPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: configSlow,
+            close: configSlow,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Group"
+        component={GroupPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {

@@ -97,6 +97,7 @@
     "scheduleToNext": "Schedule to next...",
     "scheduleToDate": "Schedule to date",
     "newGroup": "Create new group",
+    "editGroup": "Edit group",
     "newTudu": "Create new tudú",
     "editTudu": "Edit tudú"
   },
@@ -104,6 +105,10 @@
     "suggestedEmojis": "Suggested emojis:",
     "mostUsedEmojis": "Most used / suggested emojis:",
     "loading": "Loading..."
+  },
+  "groupCard": {
+    "seeMore": "+ {{count}} list",
+    "seeMore_plural": "+ {{count}} lists"
   },
   "inputLabels": {
     "description": "Description",
@@ -127,6 +132,7 @@
   },
   "menuLabels": {
     "edit": "Edit",
+    "editGroup": "Edit group",
     "delete": "Delete",
     "undoAll": "Undo all",
     "clearAll": "Clear all",
@@ -607,6 +613,10 @@
     "genericError": "Could not reorder the list with AI at this time."
   },
   "emptyStates": {
+    "group": {
+      "title": "No lists in this group",
+      "subtitle": "Edit this group to add lists to it."
+    },
     "myLists": {
       "title": "No lists created yet",
       "subtitle": "Create custom lists to organize your tasks or import text using AI.",

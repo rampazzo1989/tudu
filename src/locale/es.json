@@ -95,6 +95,7 @@
     "schedule": "Programar tudú",
     "scheduleTime": "Definir horario",
     "newGroup": "Crear nuevo grupo",
+    "editGroup": "Editar grupo",
     "newTudu": "Crear nuevo tudú",
     "editTudu": "Editar tudú",
     "scheduleToNext": "Programar para el próximo…",
@@ -104,6 +105,10 @@
     "suggestedEmojis": "Emojis sugeridos:",
     "mostUsedEmojis": "Emojis más usados / sugeridos:",
     "loading": "Cargando..."
+  },
+  "groupCard": {
+    "seeMore": "+ {{count}} lista",
+    "seeMore_plural": "+ {{count}} listas"
   },
   "inputLabels": {
     "description": "Descripción",
@@ -127,6 +132,7 @@
   },
   "menuLabels": {
     "edit": "Editar",
+    "editGroup": "Editar grupo",
     "delete": "Eliminar",
     "undoAll": "Deshacer todos",
     "clearAll": "Limpiar todos",
@@ -607,6 +613,10 @@
     "genericError": "No fue posible reordenar la lista con IA en este momento."
   },
   "emptyStates": {
+    "group": {
+      "title": "Ninguna lista en este grupo",
+      "subtitle": "Edita este grupo para agregar listas."
+    },
     "myLists": {
       "title": "Aún no hay listas creadas",
       "subtitle": "Crea listas personalizadas para organizar tus tareas o importa texto con IA.",

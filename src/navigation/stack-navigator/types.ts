@@ -26,6 +26,9 @@ type StackNavigatorParamList = {
   NotificationSettings: undefined;
   BackupSettings: undefined;
   SecuritySettings: undefined;
+  Group: {
+    groupName: string;
+  };
   IncomingCall: {
     tuduId?: string;
     tuduTitle: string;

@@ -12,7 +12,7 @@ import {showItemDeletedToast} from '../../../../../../utils/toast-utils';
 import {useTranslation} from 'react-i18next';
 
 const GroupOptions: React.FC<GroupOptionsProps> = memo(
-  ({groupData, closeMenu, onRename, onDelete, onUndoDeletion}) => {
+  ({groupData, closeMenu, onEditGroup, onDelete, onUndoDeletion}) => {
     const draggableContext = useContext(DraggableContext);
 
     const {t} = useTranslation();
@@ -50,17 +50,17 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
       );
     }, [closeMenu, draggableContext, groupData]);
 
-    const handleRenameOptionPress = useCallback(() => {
+    const handleEditGroupOptionPress = useCallback(() => {
       closeMenu();
-      onRename();
-    }, [closeMenu, onRename]);
+      onEditGroup();
+    }, [closeMenu, onEditGroup]);
 
     const options = useMemo<MenuOption[]>(() => {
       return [
         {
           Icon: RenameIcon,
-          label: t('menuLabels.rename'),
-          onPress: handleRenameOptionPress,
+          label: t('menuLabels.editGroup', {defaultValue: 'Editar grupo'}),
+          onPress: handleEditGroupOptionPress,
         },
         {
           Icon: DeleteIcon,
@@ -75,8 +75,9 @@ const GroupOptions: React.FC<GroupOptionsProps> = memo(
       ];
     }, [
       handleDeleteOptionPress,
-      handleRenameOptionPress,
+      handleEditGroupOptionPress,
       handleUngroupOptionPress,
+      t,
     ]);
 
     return <MenuOptions options={options} />;

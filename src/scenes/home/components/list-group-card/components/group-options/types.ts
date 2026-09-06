@@ -4,7 +4,7 @@ import {ListDataViewModel} from '../../../../types';
 export type GroupOptionsProps = {
   groupData: DraggableItem<ListDataViewModel>;
   closeMenu: () => void;
-  onRename: () => void;
+  onEditGroup: () => void;
   onDelete: () => void;
   onUndoDeletion: () => void;
 };

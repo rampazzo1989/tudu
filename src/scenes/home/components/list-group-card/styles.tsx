@@ -53,3 +53,33 @@ export const OptionsIconContainer = styled.View`
   width: 20px;
 `;
 
+export const SeeMoreButton = styled(ShrinkableView)`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({theme}) => theme.colors.listCardGroupItem};
+  border-radius: 12px;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.04);
+  padding-vertical: 10px;
+  padding-horizontal: 14px;
+  margin-bottom: 8px;
+`;
+
+export const SeeMoreText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 13px;
+  line-height: 18px;
+  color: ${({theme}) => theme.colors.iconOverlay};
+  letter-spacing: 0.3px;
+`;
+
+export const SeeMoreIconContainer = styled.View`
+  height: 18px;
+  width: 18px;
+  margin-left: 6px;
+  justify-content: center;
+  align-items: center;
+`;
+
+

@@ -34,6 +34,7 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
         enabled={swipeEnabled}
         isHighlighted={isHighlighted}
         borderRadius={cardBorderRadius}
+        style={style}
         onArchive={onArchive}
         onDelete={onDelete}
         onEdit={onEdit}>
@@ -43,7 +44,6 @@ const EditableListCard: React.FC<EditableListCardProps> = memo(
           delayPressEvent={150}
           disabled={!onPress}
           scaleFactor={0.02}
-          style={style}
           onPress={onPress}>
           <IconLabelContainer>
             {ControlComponent && (

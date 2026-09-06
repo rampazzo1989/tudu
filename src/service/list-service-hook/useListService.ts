@@ -142,6 +142,8 @@ const useListService = () => {
             label: value.label,
             color: value.color,
             groupName: value.groupName,
+            sections: value.sections,
+            orderingPrompt: value.orderingPrompt,
             origin,
             numberOfActiveItems,
           };
@@ -154,8 +156,19 @@ const useListService = () => {
 
   const saveAllLists = useCallback(
     (newLists: ListDataViewModel[], origin: ListOrigin = 'default') => {
+      const listState = getListState(origin);
       const lists = newLists.map<[string, List]>(x => {
-        return [x.id, getListFromViewModel(x)];
+        const existing = listState.get(x.id);
+        const mapped = getListFromViewModel(x);
+        return [
+          x.id,
+          {
+            ...existing,
+            ...mapped,
+            sections: mapped.sections ?? existing?.sections,
+            orderingPrompt: mapped.orderingPrompt ?? existing?.orderingPrompt,
+          },
+        ];
       });
       const newMap = new Map<string, List>(lists);
 
@@ -163,7 +176,7 @@ const useListService = () => {
 
       stateSetter(newMap);
     },
-    [getStateSetter],
+    [getListState, getStateSetter],
   );
 
   const getListById = useCallback(
@@ -713,7 +726,13 @@ const useListService = () => {
         throw new ItemNotFoundError("The list couldn't be found.", listData);
       }
 
-      const list = getListFromViewModel(listData);
+      const existingList = customLists.get(listData.id)!;
+      const list: List = {
+        ...existingList,
+        ...getListFromViewModel(listData),
+        sections: listData.sections ?? existingList.sections,
+        orderingPrompt: listData.orderingPrompt ?? existingList.orderingPrompt,
+      };
       const tudusToArchive = customTudus.get(list.id);
 
       // Cancel notifications for all tudus in the archived list
@@ -771,7 +790,13 @@ const useListService = () => {
         throw new ItemNotFoundError("The list couldn't be found.", listData);
       }
 
-      const list = getListFromViewModel(listData);
+      const existingList = archivedLists.get(listData.id)!;
+      const list: List = {
+        ...existingList,
+        ...getListFromViewModel(listData),
+        sections: listData.sections ?? existingList.sections,
+        orderingPrompt: listData.orderingPrompt ?? existingList.orderingPrompt,
+      };
       const tudus = archivedTudus.get(list.id);
 
       // Reschedule notifications for active timed tudus in the unarchived list

@@ -94,11 +94,13 @@ export const getDuplicateProofGroupTitle = (
 };
 
 export const getListFromViewModel = (viewModel: ListDataViewModel): List => {
-  const {id, label, color, groupName} = viewModel;
+  const {id, label, color, groupName, sections, orderingPrompt} = viewModel;
   return {
     id,
     label,
     color,
     groupName,
+    sections,
+    orderingPrompt,
   };
 };
