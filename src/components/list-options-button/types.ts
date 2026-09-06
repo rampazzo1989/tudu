@@ -3,4 +3,6 @@ export interface ListOptionsButtonProps {
   onShareFilePress?: () => void;
   onSharePress?: () => void;
   onInvertOrderPress?: () => void;
+  onReorderWithAIPress?: () => void;
+  onAddSectionPress?: () => void;
 }

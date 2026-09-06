@@ -56,6 +56,14 @@ import { ListOptionsButton } from '../list-options-button';
 import { exportAndShareListFile, shareListAsText } from '../../service/list-sharing';
 import Toast from 'react-native-toast-message';
 import { openGoogleCalendarEvent } from '../../utils/google-calendar-utils';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StackNavigatorParamList } from '../../navigation/stack-navigator/types';
+import { useAISettings } from '../../service/ai';
+import { SectionModal } from '../section-modal';
+import { ReorderPromptModal } from '../reorder-prompt-modal';
+import { ReorderApplyPayload } from '../reorder-prompt-modal/types';
+import { Section } from '../../scenes/home/types';
 
 const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
@@ -74,16 +82,24 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const toastBottomSpan = useRecoilValue(toastSpan);
     const actionButtonRef = useRef<FloatingActionButtonRef>(null);
 
+    const { settings } = useAISettings();
+    const navigation =
+      useNavigation<NativeStackNavigationProp<StackNavigatorParamList>>();
     const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
     const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
     const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
     const [aiSuggestionsModalVisible, setAiSuggestionsModalVisible] = useState(false);
+    const [sectionModalVisible, setSectionModalVisible] = useState(false);
+    const [reorderPromptModalVisible, setReorderPromptModalVisible] = useState(false);
     const aiIconRef = useRef<AnimatedIconRef>(null);
+
+    const handleOpenAISettings = useCallback(() => {
+      navigation.navigate('AISettings');
+    }, [navigation]);
 
     const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
 
-
-    const { saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup } = useListService();
+    const { saveTudu, deleteTudu, deleteTudus, undoTudus, restoreBackup, saveListAndTudus } = useListService();
 
     const { t } = useTranslation();
 
@@ -422,6 +438,110 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       RNReactNativeHapticFeedback.trigger('impactLight');
     }, [internalList, tudus, handleSetTudus]);
 
+    const handleUpdateList = useCallback(
+      (updatedList: ListViewModel) => {
+        setInternalList(updatedList);
+        saveListAndTudus(updatedList);
+      },
+      [saveListAndTudus],
+    );
+
+    const handleCreateSection = useCallback(
+      (title: string) => {
+        if (!internalList) return;
+        const currentSections = internalList.sections ? [...internalList.sections] : [];
+        const newSection: Section = {
+          id: generateRandomHash('Section'),
+          title,
+          order: currentSections.length,
+        };
+        const newList = internalList.clone();
+        newList.sections = [...currentSections, newSection];
+        handleUpdateList(newList);
+      },
+      [internalList, handleUpdateList],
+    );
+
+    const handleOpenReorderPrompt = useCallback(() => {
+      setReorderPromptModalVisible(true);
+    }, []);
+
+    const handleOpenAddSection = useCallback(() => {
+      setSectionModalVisible(true);
+    }, []);
+
+    const handleApplyReorderedList = useCallback(
+      async (payload: ReorderApplyPayload) => {
+        if (!internalList || !internalList.tudus || internalList.tudus.length === 0) return;
+
+        const currentTudus = internalList.tudus;
+        const newSections: Section[] = [];
+        const sectionTitleToId = new Map<string, string>();
+
+        if (payload.sections && payload.sections.length > 0) {
+          payload.sections.forEach((sec, idx) => {
+            const secId = generateRandomHash('Section');
+            sectionTitleToId.set(sec.title, secId);
+            newSections.push({
+              id: secId,
+              title: sec.title,
+              order: idx,
+            });
+          });
+        }
+
+        const usedTuduIds = new Set<string>();
+        const reorderedTudus: TuduViewModel[] = [];
+
+        payload.reorderedItems.forEach(item => {
+          const secId = item.sectionTitle ? sectionTitleToId.get(item.sectionTitle) : undefined;
+          const match =
+            currentTudus.find(
+              t =>
+                !usedTuduIds.has(t.id) &&
+                t.label.trim().toLowerCase() === item.label.trim().toLowerCase(),
+            ) ||
+            currentTudus.find(
+              t =>
+                !usedTuduIds.has(t.id) &&
+                (t.label.toLowerCase().includes(item.label.toLowerCase()) ||
+                  item.label.toLowerCase().includes(t.label.toLowerCase())),
+            );
+
+          if (match) {
+            usedTuduIds.add(match.id);
+            const cloned = match.clone();
+            cloned.sectionId = secId;
+            reorderedTudus.push(cloned);
+          }
+        });
+
+        currentTudus.forEach(t => {
+          if (!usedTuduIds.has(t.id)) {
+            reorderedTudus.push(t.clone());
+          }
+        });
+
+        const newList = internalList.clone();
+        newList.sections = newSections.length > 0 ? newSections : undefined;
+        newList.orderingPrompt = payload.orderingPrompt || undefined;
+        newList.tudus = reorderedTudus;
+
+        handleUpdateList(newList);
+
+        RNReactNativeHapticFeedback.trigger('notificationSuccess');
+        Toast.show({
+          type: 'success',
+          text1: t('reorderPromptModal.successToast', {
+            defaultValue: 'Lista reordenada com sucesso!',
+          }),
+          position: 'bottom',
+          bottomOffset: 60,
+        });
+      },
+      [internalList, handleUpdateList, t],
+    );
+
     return (
       <Page>
         <ListHeader
@@ -462,6 +582,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 onInsertTuduPress={allowAdding ? handleInsertTudu : undefined}
                 onAISuggestionsPress={handleAISuggestionsPress}
                 isSmartList={isSmartList}
+                onUpdateList={handleUpdateList}
               />
             </Animated.View>
           )}
@@ -470,6 +591,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
               onInvertOrderPress={handleInvertOrder}
               onShareTextPress={handleShareText}
               onShareFilePress={handleShareFile}
+              onAddSectionPress={handleOpenAddSection}
+              onReorderWithAIPress={
+                internalList?.tudus && internalList.tudus.length > 0
+                  ? handleOpenReorderPrompt
+                  : undefined
+              }
             />
           )}
           {allowAdding && !loading && (
@@ -532,6 +659,21 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           listName={list?.label}
           existingTasks={existingTasks}
           onConfirm={handleBatchInsertTudus}
+        />
+        <SectionModal
+          visible={sectionModalVisible}
+          isEditing={false}
+          onSave={handleCreateSection}
+          onRequestClose={() => setSectionModalVisible(false)}
+        />
+        <ReorderPromptModal
+          visible={reorderPromptModalVisible}
+          initialPrompt={internalList?.orderingPrompt}
+          currentItems={internalList?.tudus?.map(t => t.label) ?? []}
+          currentSections={internalList?.sections?.map(s => s.title)}
+          onApplyReorder={handleApplyReorderedList}
+          onRequestClose={() => setReorderPromptModalVisible(false)}
+          onOpenAISettings={handleOpenAISettings}
         />
       </Page>
     );

@@ -8,6 +8,12 @@ export type {HomePageProps};
 
 export type RecurrenceType = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
+export type Section = {
+  id: string;
+  title: string;
+  order: number;
+};
+
 export type TuduItem = {
   id: string;
   label: string;
@@ -17,6 +23,7 @@ export type TuduItem = {
   scheduledOrder?: number;
   starred?: boolean;
   recurrence?: RecurrenceType;
+  sectionId?: string;
 };
 
 interface Clonable<T> {
@@ -35,6 +42,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
   listName?: string;
   starred?: boolean;
   recurrence?: RecurrenceType;
+  sectionId?: string;
 
   public mapBack() {
     const listModel: TuduItem = {
@@ -46,6 +54,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
       scheduledOrder: this.scheduledOrder,
       starred: this.starred,
       recurrence: this.recurrence,
+      sectionId: this.sectionId,
     };
 
     return listModel;
@@ -79,6 +88,7 @@ export class TuduViewModel implements Clonable<TuduViewModel> {
     this.listName = listName;
     this.starred = data.starred;
     this.recurrence = data.recurrence;
+    this.sectionId = data.sectionId;
   }
 }
 
@@ -87,6 +97,8 @@ export type List = {
   id: string;
   color?: string;
   groupName?: string;
+  sections?: Section[];
+  orderingPrompt?: string;
 };
 
 export type ListOrigin = 'archived' | 'default' | 'unlisted';
@@ -98,6 +110,8 @@ export class ListViewModel implements Clonable<ListViewModel> {
   tudus: TuduViewModel[];
   color?: string;
   groupName?: string;
+  sections?: Section[];
+  orderingPrompt?: string;
 
   public getNumberOfActiveItems() {
     return this.tudus.filter(x => !x.done).length;
@@ -123,6 +137,8 @@ export class ListViewModel implements Clonable<ListViewModel> {
       label: this.label,
       color: this.color,
       groupName: this.groupName,
+      sections: this.sections,
+      orderingPrompt: this.orderingPrompt,
     };
 
     return listModel;
@@ -152,6 +168,8 @@ export class ListViewModel implements Clonable<ListViewModel> {
     this.label = data.label;
     this.color = data.color;
     this.groupName = data.groupName;
+    this.sections = data.sections;
+    this.orderingPrompt = data.orderingPrompt;
     this.tudus = this.getTuduViewModelsFromList(data, origin, tudus);
     this.origin = origin;
   }

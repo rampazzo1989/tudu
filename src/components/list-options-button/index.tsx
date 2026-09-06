@@ -12,6 +12,8 @@ import { AnimatedIconRef } from '../animated-icons/animated-icon/types';
 import { ShareIcon } from '../animated-icons/share-icon';
 import { CopyIcon } from '../animated-icons/copy-icon';
 import { RefreshIcon } from '../animated-icons/refresh-icon';
+import { PlusIcon } from '../animated-icons/plus-icon';
+import { AIIcon } from '../animated-icons/ai-icon';
 import {
   IconWrapper,
   OptionsButton,
@@ -20,7 +22,14 @@ import {
 import { ListOptionsButtonProps } from './types';
 
 const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
-  ({ onShareTextPress, onShareFilePress, onSharePress, onInvertOrderPress }) => {
+  ({
+    onShareTextPress,
+    onShareFilePress,
+    onSharePress,
+    onInvertOrderPress,
+    onReorderWithAIPress,
+    onAddSectionPress,
+  }) => {
     const { t } = useTranslation();
     const iconRef = useRef<AnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
@@ -56,8 +65,36 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
       }
     }, [handlePopoverRequestClose, onShareFilePress, onSharePress]);
 
-    const options: MenuOption[] = useMemo(
-      () => [
+    const handleReorderWithAI = useCallback(() => {
+      handlePopoverRequestClose();
+      onReorderWithAIPress?.();
+    }, [handlePopoverRequestClose, onReorderWithAIPress]);
+
+    const handleAddSection = useCallback(() => {
+      handlePopoverRequestClose();
+      onAddSectionPress?.();
+    }, [handlePopoverRequestClose, onAddSectionPress]);
+
+    const options: MenuOption[] = useMemo(() => {
+      const opts: MenuOption[] = [];
+
+      if (onAddSectionPress) {
+        opts.push({
+          Icon: PlusIcon,
+          label: t('sections.addSection', { defaultValue: 'Nova Seção' }),
+          onPress: handleAddSection,
+        });
+      }
+
+      if (onReorderWithAIPress) {
+        opts.push({
+          Icon: AIIcon,
+          label: t('reorderPromptModal.title', { defaultValue: 'Reordenar com IA' }) + ' ✨',
+          onPress: handleReorderWithAI,
+        });
+      }
+
+      opts.push(
         {
           Icon: RefreshIcon,
           label: t('menuLabels.reverseOrder', { defaultValue: 'Inverter ordem' }),
@@ -73,9 +110,19 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
           label: t('menuLabels.shareFile', { defaultValue: 'Compartilhar arquivo (.tudu)' }),
           onPress: handleShareFile,
         },
-      ],
-      [handleInvertOrder, handleShareFile, handleShareText, t],
-    );
+      );
+
+      return opts;
+    }, [
+      handleAddSection,
+      handleInvertOrder,
+      handleReorderWithAI,
+      handleShareFile,
+      handleShareText,
+      onAddSectionPress,
+      onReorderWithAIPress,
+      t,
+    ]);
 
     const buttonContent = (
       <OptionsButtonContainer

@@ -54,6 +54,7 @@ const toTuduItem = (tudu: TuduViewModel | TuduItem): TuduItem => {
     scheduledOrder: tudu.scheduledOrder,
     starred: tudu.starred,
     recurrence: tudu.recurrence,
+    sectionId: tudu.sectionId,
   };
 };
 

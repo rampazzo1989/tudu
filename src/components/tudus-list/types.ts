@@ -20,5 +20,5 @@ export type TudusListProps = {
   onInsertTuduPress?: () => void;
   onAISuggestionsPress?: () => void;
   isSmartList?: boolean;
+  onUpdateList?: (list: ListViewModel) => void;
 };
-

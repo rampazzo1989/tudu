@@ -52,19 +52,35 @@ export interface TaskSuggestionItem {
   selected: boolean;
 }
 
+export type AIOrderingType = 'none' | 'smart' | 'custom';
+
 export interface ParseListRequest {
   rawText: string;
+  orderingType?: AIOrderingType;
+  customPrompt?: string;
+}
+
+export interface ParsedSectionResult {
+  title: string;
+  items: string[];
 }
 
 export interface ParsedListResult {
   title: string;
   items: string[];
+  sections?: ParsedSectionResult[];
 }
 
 export interface ParsedListItem {
   id: string;
   label: string;
   selected: boolean;
+  sectionTitle?: string;
+}
+
+export interface ParsedSectionGroup {
+  title: string;
+  items: ParsedListItem[];
 }
 
 export interface AIProviderInfo {

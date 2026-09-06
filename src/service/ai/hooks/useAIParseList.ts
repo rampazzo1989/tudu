@@ -1,5 +1,5 @@
 import {useCallback, useState} from 'react';
-import {ParsedListItem, ParsedListResult} from '../types';
+import {AIOrderingType, ParsedListItem, ParsedListResult, ParsedSectionGroup} from '../types';
 import {parseListFromTextWithAI} from '../ai-service';
 import {useAISettings} from './useAISettings';
 import {generateRandomHash} from '../../../hooks/useHashGenerator';
@@ -9,6 +9,9 @@ export const useAIParseList = () => {
   const [rawText, setRawText] = useState<string>('');
   const [parsedTitle, setParsedTitle] = useState<string>('📝 Lista');
   const [items, setItems] = useState<ParsedListItem[]>([]);
+  const [sections, setSections] = useState<ParsedSectionGroup[]>([]);
+  const [orderingType, setOrderingType] = useState<AIOrderingType>('smart');
+  const [customPrompt, setCustomPrompt] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [hasParsed, setHasParsed] = useState<boolean>(false);
@@ -16,7 +19,11 @@ export const useAIParseList = () => {
   const isAIConfigured = !!getCurrentApiKey();
 
   const parseText = useCallback(
-    async (textToParse?: string): Promise<ParsedListResult | null> => {
+    async (
+      textToParse?: string,
+      chosenOrderingType?: AIOrderingType,
+      customOrderingPrompt?: string,
+    ): Promise<ParsedListResult | null> => {
       const text = (textToParse ?? rawText).trim();
       if (!text || text.length < 2) {
         setError('O texto está vazio.');
@@ -26,21 +33,49 @@ export const useAIParseList = () => {
       setIsLoading(true);
       setError(null);
 
+      const effectiveOrdering = chosenOrderingType ?? orderingType;
+      const effectivePrompt = customOrderingPrompt ?? customPrompt;
+
       try {
         const result = await parseListFromTextWithAI(
           settings.provider,
           text,
-          12000,
+          effectiveOrdering,
+          effectivePrompt,
+          15000,
         );
 
         setParsedTitle(result.title || '📝 Lista');
-        const parsedItems: ParsedListItem[] = result.items.map(label => ({
-          id: generateRandomHash('parsed_item'),
-          label,
-          selected: true,
-        }));
 
-        setItems(parsedItems);
+        const allParsedItems: ParsedListItem[] = [];
+        const structuredSections: ParsedSectionGroup[] = [];
+
+        if (result.sections && result.sections.length > 0) {
+          result.sections.forEach(sec => {
+            const sectionItems: ParsedListItem[] = sec.items.map(label => ({
+              id: generateRandomHash('parsed_item'),
+              label,
+              selected: true,
+              sectionTitle: sec.title,
+            }));
+            allParsedItems.push(...sectionItems);
+            structuredSections.push({
+              title: sec.title,
+              items: sectionItems,
+            });
+          });
+        } else {
+          result.items.forEach(label => {
+            allParsedItems.push({
+              id: generateRandomHash('parsed_item'),
+              label,
+              selected: true,
+            });
+          });
+        }
+
+        setItems(allParsedItems);
+        setSections(structuredSections);
         setHasParsed(true);
 
         return result;
@@ -55,7 +90,7 @@ export const useAIParseList = () => {
         setIsLoading(false);
       }
     },
-    [rawText, settings.provider],
+    [rawText, orderingType, customPrompt, settings.provider],
   );
 
   const toggleItem = useCallback((id: string) => {
@@ -68,6 +103,14 @@ export const useAIParseList = () => {
 
   const removeItem = useCallback((id: string) => {
     setItems(prev => prev.filter(item => item.id !== id));
+    setSections(prev =>
+      prev
+        .map(sec => ({
+          ...sec,
+          items: sec.items.filter(item => item.id !== id),
+        }))
+        .filter(sec => sec.items.length > 0),
+    );
   }, []);
 
   const updateItemLabel = useCallback((id: string, newLabel: string) => {
@@ -75,6 +118,14 @@ export const useAIParseList = () => {
       prev.map(item =>
         item.id === id ? {...item, label: newLabel} : item,
       ),
+    );
+    setSections(prev =>
+      prev.map(sec => ({
+        ...sec,
+        items: sec.items.map(item =>
+          item.id === id ? {...item, label: newLabel} : item,
+        ),
+      })),
     );
   }, []);
 
@@ -92,6 +143,9 @@ export const useAIParseList = () => {
     setRawText('');
     setParsedTitle('📝 Lista');
     setItems([]);
+    setSections([]);
+    setOrderingType('smart');
+    setCustomPrompt('');
     setIsLoading(false);
     setError(null);
     setHasParsed(false);
@@ -109,6 +163,12 @@ export const useAIParseList = () => {
     setParsedTitle,
     items,
     setItems,
+    sections,
+    setSections,
+    orderingType,
+    setOrderingType,
+    customPrompt,
+    setCustomPrompt,
     isLoading,
     error,
     hasParsed,

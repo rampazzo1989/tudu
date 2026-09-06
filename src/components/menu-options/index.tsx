@@ -26,9 +26,11 @@ const MenuOptions: React.FC<MenuOptionsProps> = memo(({options, closeMenu}) => {
         return (
           <OptionContainer key={label} onPress={handlePress}>
             <OptionLine>
-              <IconContainer>
-                <Icon style={styles.icon} />
-              </IconContainer>
+              {Icon && (
+                <IconContainer>
+                  <Icon style={styles.icon} />
+                </IconContainer>
+              )}
               <Label>{label}</Label>
             </OptionLine>
             {!isLastItem && (

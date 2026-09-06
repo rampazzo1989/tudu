@@ -1,7 +1,8 @@
-import React, { memo, useCallback, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   TextInput,
   TouchableWithoutFeedback,
   View,
@@ -18,11 +19,11 @@ import { BlurredModal } from '../blurred-modal';
 import { GradientSeparator } from '../gradient-separator';
 import Skeleton from '../skeleton';
 import { CheckboxSimple } from '../checkbox-simple';
-import { useAIParseList } from '../../service/ai';
+import { AIOrderingType, useAIParseList } from '../../service/ai';
 import { useListService } from '../../service/list-service-hook/useListService';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
 import { getDuplicateProofListTitle } from '../../utils/list-and-group-utils';
-import { List, ListViewModel, TuduItem, TuduViewModel } from '../../scenes/home/types';
+import { List, ListViewModel, Section, TuduItem, TuduViewModel } from '../../scenes/home/types';
 import { StackNavigatorParamList } from '../../navigation/stack-navigator/types';
 import { PasteListModalProps } from './types';
 import {
@@ -33,6 +34,8 @@ import {
   ClearTextButtonText,
   CloseIconButton,
   CloseIconText,
+  CustomPromptContainer,
+  CustomPromptInput,
   ErrorCard,
   ErrorText,
   FooterButtonsRow,
@@ -60,12 +63,24 @@ import {
   NoticeCard,
   NoticeIcon,
   NoticeText,
+  OptionDesc,
+  OptionRadioCircle,
+  OptionRadioInner,
+  OptionTextContainer,
+  OptionTitle,
+  OrderingOptionCard,
+  OrderingOptionsContainer,
   PrimaryConfirmButton,
   PrimaryConfirmButtonText,
   SecondaryCancelButton,
   SecondaryCancelButtonText,
+  SectionHeaderPreview,
+  SectionHeaderPreviewText,
   SparkleBadge,
   SparkleText,
+  StepHeader,
+  StepSubtitle,
+  StepTitle,
   TextAreaContainer,
   TextAreaInput,
   TextCharCount,
@@ -79,6 +94,9 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
     const navigation =
       useNavigation<NativeStackNavigationProp<StackNavigatorParamList>>();
     const textInputRef = useRef<TextInput>(null);
+    const customPromptInputRef = useRef<TextInput>(null);
+
+    const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
     const {
       rawText,
@@ -86,6 +104,11 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
       parsedTitle,
       setParsedTitle,
       items,
+      sections,
+      orderingType,
+      setOrderingType,
+      customPrompt,
+      setCustomPrompt,
       isLoading,
       error,
       hasParsed,
@@ -97,7 +120,7 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
       toggleSelectAll,
       reset,
       selectedCount,
-      selectedLabels,
+      selectedItems,
       isAllSelected,
     } = useAIParseList();
 
@@ -105,28 +128,51 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
 
     useEffect(() => {
       if (visible) {
+        setCurrentStep(1);
         setTimeout(() => textInputRef.current?.focus(), 250);
       } else {
         reset();
+        setCurrentStep(1);
       }
     }, [visible, reset]);
 
     const handleRequestClose = useCallback(() => {
       reset();
+      setCurrentStep(1);
       onRequestClose();
     }, [onRequestClose, reset]);
+
+    const handleProceedToStep2 = useCallback(() => {
+      if (!rawText.trim() || rawText.trim().length < 2) return;
+      RNReactNativeHapticFeedback.trigger('impactLight');
+      setCurrentStep(2);
+    }, [rawText]);
+
+    const handleBackToStep1 = useCallback(() => {
+      RNReactNativeHapticFeedback.trigger('impactLight');
+      setCurrentStep(1);
+      setTimeout(() => textInputRef.current?.focus(), 200);
+    }, []);
 
     const handleProcessWithAI = useCallback(async () => {
       if (!rawText.trim() || rawText.trim().length < 2) return;
       RNReactNativeHapticFeedback.trigger('impactLight');
-      await parseText();
-    }, [parseText, rawText]);
+      await parseText(rawText, orderingType, customPrompt);
+    }, [parseText, rawText, orderingType, customPrompt]);
 
     const handleBackToInput = useCallback(() => {
       RNReactNativeHapticFeedback.trigger('impactLight');
       setHasParsed(false);
-      setTimeout(() => textInputRef.current?.focus(), 200);
+      setCurrentStep(2);
     }, [setHasParsed]);
+
+    const handleSelectOrderingType = useCallback((type: AIOrderingType) => {
+      RNReactNativeHapticFeedback.trigger('impactLight');
+      setOrderingType(type);
+      if (type === 'custom') {
+        setTimeout(() => customPromptInputRef.current?.focus(), 150);
+      }
+    }, [setOrderingType]);
 
     const handleToggleItem = useCallback(
       (id: string) => {
@@ -157,16 +203,43 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
       const finalTitle = getDuplicateProofListTitle(allLists, cleanTitle);
       const listId = generateRandomHash('List');
 
+      // Create sections mapping if sections were returned
+      const finalSections: Section[] = [];
+      const sectionTitleToId = new Map<string, string>();
+
+      if (sections && sections.length > 0) {
+        sections.forEach((sec, index) => {
+          const secId = generateRandomHash('Section');
+          sectionTitleToId.set(sec.title, secId);
+          finalSections.push({
+            id: secId,
+            title: sec.title,
+            order: index,
+          });
+        });
+      }
+
       const newListData: List = {
         id: listId,
         label: finalTitle,
+        sections: finalSections.length > 0 ? finalSections : undefined,
+        orderingPrompt:
+          orderingType === 'custom' && customPrompt.trim()
+            ? customPrompt.trim()
+            : undefined,
       };
 
-      const tuduViewModels = selectedLabels.map(label => {
+      const tuduViewModels = selectedItems.map(it => {
+        const tuduId = generateRandomHash('Tudu');
+        const sectionId = it.sectionTitle
+          ? sectionTitleToId.get(it.sectionTitle)
+          : undefined;
+
         const item: TuduItem = {
-          id: generateRandomHash('Tudu'),
-          label: label.trim(),
+          id: tuduId,
+          label: it.label.trim(),
           done: false,
+          sectionId,
         };
         return new TuduViewModel(item, listId, 'default', finalTitle);
       });
@@ -206,8 +279,11 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
       onListCreated,
       parsedTitle,
       saveListAndTudus,
+      sections,
       selectedCount,
-      selectedLabels,
+      selectedItems,
+      orderingType,
+      customPrompt,
       t,
     ]);
 
@@ -226,277 +302,448 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
             style={{ width: '100%', alignItems: 'center' }}>
             <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
               <ModalContainer>
-              {/* Header */}
-              <HeaderContainer>
-                <HeaderTopRow>
-                  <TitleContainer>
-                    <SparkleBadge>
-                      <SparkleText>✨</SparkleText>
-                    </SparkleBadge>
-                    <ModalTitle numberOfLines={1}>
-                      {t('pasteListModal.title', {
-                        defaultValue: 'Lista a partir de Texto',
-                      })}
-                    </ModalTitle>
-                  </TitleContainer>
-                  <CloseIconButton onPress={handleRequestClose} hitSlop={15}>
-                    <CloseIconText>×</CloseIconText>
-                  </CloseIconButton>
-                </HeaderTopRow>
-                <ModalSubtitle numberOfLines={1}>
-                  {t('pasteListModal.subtitle', {
-                    defaultValue: 'Cole qualquer texto para organizar com IA',
-                  })}
-                </ModalSubtitle>
-              </HeaderContainer>
-
-              <GradientSeparator
-                colorArray={theme.colors.defaultSeparatorGradientColors}
-                marginTop={6}
-              />
-
-              {/* No API key notice */}
-              {!isAIConfigured ? (
-                <NoticeCard>
-                  <NoticeIcon>🔑</NoticeIcon>
-                  <NoticeText>
-                    {t('pasteListModal.noApiKey', {
-                      defaultValue:
-                        'Configure sua chave de API nas configurações de IA para converter textos em listas.',
-                    })}
-                  </NoticeText>
-                  {onOpenAISettings && (
-                    <NoticeButton
-                      onPress={() => {
-                        handleRequestClose();
-                        onOpenAISettings();
-                      }}>
-                      <NoticeButtonText>
-                        {t('pasteListModal.configureAI', {
-                          defaultValue: '⚙️ Configurar IA',
+                {/* Header */}
+                <HeaderContainer>
+                  <HeaderTopRow>
+                    <TitleContainer>
+                      <SparkleBadge>
+                        <SparkleText>✨</SparkleText>
+                      </SparkleBadge>
+                      <ModalTitle numberOfLines={1}>
+                        {t('pasteListModal.title', {
+                          defaultValue: 'Smart list',
                         })}
-                      </NoticeButtonText>
-                    </NoticeButton>
-                  )}
-                </NoticeCard>
-              ) : isLoading ? (
-                /* Loading State */
-                <LoadingContainer>
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <View
-                      key={index}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        width: '100%',
-                        paddingVertical: 9,
-                        paddingHorizontal: 10,
-                        marginBottom: 5,
-                        borderRadius: 10,
-                        backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                        borderWidth: 1,
-                        borderColor: 'rgba(255, 255, 255, 0.05)',
-                      }}>
-                      <Skeleton
-                        style={{
-                          width: 20,
-                          height: 20,
-                          borderRadius: 4,
-                          backgroundColor: '#585f69',
-                        }}
-                      />
-                      <Skeleton
-                        style={{
-                          flex: 1,
-                          height: 16,
-                          borderRadius: 4,
-                          marginLeft: 10,
-                          backgroundColor: '#585f69',
-                        }}
-                      />
-                    </View>
-                  ))}
-                  <LoadingText>
-                    {t('pasteListModal.loading', {
-                      defaultValue: '✨ Analisando e organizando itens com IA...',
+                      </ModalTitle>
+                    </TitleContainer>
+                    <CloseIconButton onPress={handleRequestClose} hitSlop={15}>
+                      <CloseIconText>×</CloseIconText>
+                    </CloseIconButton>
+                  </HeaderTopRow>
+                  <ModalSubtitle numberOfLines={1}>
+                    {t('pasteListModal.subtitle', {
+                      defaultValue: 'Cole qualquer texto para organizar com IA',
                     })}
-                  </LoadingText>
-                </LoadingContainer>
-              ) : !hasParsed ? (
-                /* Step 1: Input / Paste Text */
-                <>
-                  <TextAreaContainer>
-                    <TextAreaInput
-                      ref={textInputRef}
-                      value={rawText}
-                      onChangeText={setRawText}
-                      placeholder={t('pasteListModal.placeholder', {
-                        defaultValue:
-                          'Cole aqui sua lista de compras, tarefas, ingredientes ou mensagens do WhatsApp...\n\nExemplo:\n• Pão de forma\n• 8 pão francês\n• Mamão\n• 2 bandejas de ovos',
-                      })}
-                      placeholderTextColor="#6D7886"
-                      multiline
-                      numberOfLines={6}
-                      autoFocus
-                    />
-                    <InputFooterRow>
-                      <TextCharCount>{rawText.length} caracteres</TextCharCount>
-                      {rawText.length > 0 && (
-                        <ClearTextButton onPress={() => setRawText('')}>
-                          <ClearTextButtonText>Limpar</ClearTextButtonText>
-                        </ClearTextButton>
-                      )}
-                    </InputFooterRow>
-                  </TextAreaContainer>
+                  </ModalSubtitle>
+                </HeaderContainer>
 
-                  {error && (
-                    <ErrorCard>
-                      <ErrorText>
-                        {error === 'API Key not found'
-                          ? t('pasteListModal.noApiKey')
-                          : t('pasteListModal.genericError', {
+                <GradientSeparator
+                  colorArray={theme.colors.defaultSeparatorGradientColors}
+                  marginTop={6}
+                />
+
+                {/* No API key notice */}
+                {!isAIConfigured ? (
+                  <NoticeCard>
+                    <NoticeIcon>🔑</NoticeIcon>
+                    <NoticeText>
+                      {t('pasteListModal.noApiKey', {
+                        defaultValue:
+                          'Configure sua chave de API nas configurações de IA para converter textos em listas.',
+                      })}
+                    </NoticeText>
+                    {onOpenAISettings && (
+                      <NoticeButton
+                        onPress={() => {
+                          handleRequestClose();
+                          onOpenAISettings();
+                        }}>
+                        <NoticeButtonText>
+                          {t('pasteListModal.configureAI', {
+                            defaultValue: '⚙️ Configurar IA',
+                          })}
+                        </NoticeButtonText>
+                      </NoticeButton>
+                    )}
+                  </NoticeCard>
+                ) : isLoading ? (
+                  /* Loading State */
+                  <LoadingContainer>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <View
+                        key={index}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          width: '100%',
+                          paddingVertical: 9,
+                          paddingHorizontal: 10,
+                          marginBottom: 5,
+                          borderRadius: 10,
+                          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                          borderWidth: 1,
+                          borderColor: 'rgba(255, 255, 255, 0.05)',
+                        }}>
+                        <Skeleton
+                          style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: 4,
+                            backgroundColor: '#585f69',
+                          }}
+                        />
+                        <Skeleton
+                          style={{
+                            flex: 1,
+                            height: 16,
+                            borderRadius: 4,
+                            marginLeft: 10,
+                            backgroundColor: '#585f69',
+                          }}
+                        />
+                      </View>
+                    ))}
+                    <LoadingText>
+                      {t('pasteListModal.loading', {
+                        defaultValue: '✨ Analisando e organizando itens com IA...',
+                      })}
+                    </LoadingText>
+                  </LoadingContainer>
+                ) : !hasParsed ? (
+                  currentStep === 1 ? (
+                    /* Step 1: Input / Paste Text */
+                    <>
+                      <TextAreaContainer>
+                        <TextAreaInput
+                          ref={textInputRef}
+                          value={rawText}
+                          onChangeText={setRawText}
+                          placeholder={t('pasteListModal.placeholder', {
+                            defaultValue:
+                              'Cole aqui sua lista de compras, tarefas, ingredientes ou mensagens do WhatsApp...\n\nExemplo:\n• Pão de forma\n• 8 pão francês\n• Mamão\n• 2 bandejas de ovos',
+                          })}
+                          placeholderTextColor="#6D7886"
+                          multiline
+                          numberOfLines={6}
+                          autoFocus
+                        />
+                        <InputFooterRow>
+                          <TextCharCount>{rawText.length} caracteres</TextCharCount>
+                          {rawText.length > 0 && (
+                            <ClearTextButton onPress={() => setRawText('')}>
+                              <ClearTextButtonText>Limpar</ClearTextButtonText>
+                            </ClearTextButton>
+                          )}
+                        </InputFooterRow>
+                      </TextAreaContainer>
+
+                      {error && (
+                        <ErrorCard>
+                          <ErrorText>
+                            {error === 'API Key not found'
+                              ? t('pasteListModal.noApiKey')
+                              : t('pasteListModal.genericError', {
+                                  defaultValue:
+                                    'Não foi possível processar o texto com IA no momento.',
+                                })}
+                          </ErrorText>
+                        </ErrorCard>
+                      )}
+
+                      <FooterButtonsRow>
+                        <SecondaryCancelButton onPress={handleRequestClose}>
+                          <SecondaryCancelButtonText>
+                            {t('buttons.cancel', { defaultValue: 'Cancelar' })}
+                          </SecondaryCancelButtonText>
+                        </SecondaryCancelButton>
+                        <PrimaryConfirmButton
+                          disabled={!rawText.trim() || rawText.trim().length < 2}
+                          onPress={handleProceedToStep2}>
+                          <PrimaryConfirmButtonText
+                            disabled={!rawText.trim() || rawText.trim().length < 2}>
+                            {t('pasteListModal.step1Next', {
+                              defaultValue: 'Avançar',
+                            })}
+                          </PrimaryConfirmButtonText>
+                        </PrimaryConfirmButton>
+                      </FooterButtonsRow>
+                    </>
+                  ) : (
+                    /* Step 2: Choose Ordering Type */
+                    <>
+                      <StepHeader>
+                        <StepTitle>
+                          {t('pasteListModal.step2Title', {
+                            defaultValue: 'Tipo de Ordenação',
+                          })}
+                        </StepTitle>
+                        <StepSubtitle>
+                          {t('pasteListModal.step2Subtitle', {
+                            defaultValue: 'Escolha como a lista deve ser organizada',
+                          })}
+                        </StepSubtitle>
+                      </StepHeader>
+
+                      <OrderingOptionsContainer>
+                        {/* Option 1: None */}
+                        <OrderingOptionCard
+                          isSelected={orderingType === 'none'}
+                          onPress={() => handleSelectOrderingType('none')}>
+                          <OptionRadioCircle isSelected={orderingType === 'none'}>
+                            {orderingType === 'none' && <OptionRadioInner />}
+                          </OptionRadioCircle>
+                          <OptionTextContainer>
+                            <OptionTitle isSelected={orderingType === 'none'}>
+                              {t('pasteListModal.orderNone', {
+                                defaultValue: 'Nenhuma',
+                              })}
+                            </OptionTitle>
+                            <OptionDesc>
+                              {t('pasteListModal.orderNoneDesc', {
+                                defaultValue: 'Segue a ordenação do texto informado',
+                              })}
+                            </OptionDesc>
+                          </OptionTextContainer>
+                        </OrderingOptionCard>
+
+                        {/* Option 2: Smart */}
+                        <OrderingOptionCard
+                          isSelected={orderingType === 'smart'}
+                          onPress={() => handleSelectOrderingType('smart')}>
+                          <OptionRadioCircle isSelected={orderingType === 'smart'}>
+                            {orderingType === 'smart' && <OptionRadioInner />}
+                          </OptionRadioCircle>
+                          <OptionTextContainer>
+                            <OptionTitle isSelected={orderingType === 'smart'}>
+                              {t('pasteListModal.orderSmart', {
+                                defaultValue: 'Inteligente ✨',
+                              })}
+                            </OptionTitle>
+                            <OptionDesc>
+                              {t('pasteListModal.orderSmartDesc', {
+                                defaultValue:
+                                  'Identifica o contexto e organiza em seções lógicas',
+                              })}
+                            </OptionDesc>
+                          </OptionTextContainer>
+                        </OrderingOptionCard>
+
+                        {/* Option 3: Custom */}
+                        <OrderingOptionCard
+                          isSelected={orderingType === 'custom'}
+                          onPress={() => handleSelectOrderingType('custom')}>
+                          <OptionRadioCircle isSelected={orderingType === 'custom'}>
+                            {orderingType === 'custom' && <OptionRadioInner />}
+                          </OptionRadioCircle>
+                          <OptionTextContainer>
+                            <OptionTitle isSelected={orderingType === 'custom'}>
+                              {t('pasteListModal.orderCustom', {
+                                defaultValue: 'Personalizada',
+                              })}
+                            </OptionTitle>
+                            <OptionDesc>
+                              {t('pasteListModal.orderCustomDesc', {
+                                defaultValue: 'Defina sua própria lógica ou layout',
+                              })}
+                            </OptionDesc>
+                          </OptionTextContainer>
+                        </OrderingOptionCard>
+                      </OrderingOptionsContainer>
+
+                      {/* Custom Prompt Input if Custom is Selected */}
+                      {orderingType === 'custom' && (
+                        <CustomPromptContainer>
+                          <CustomPromptInput
+                            ref={customPromptInputRef}
+                            value={customPrompt}
+                            onChangeText={setCustomPrompt}
+                            placeholder={t('pasteListModal.customPromptPlaceholder', {
+                              defaultValue:
+                                'Ex: Mercado Assaí, primeira seção é hortifruti...',
+                            })}
+                            placeholderTextColor="#6D7886"
+                            multiline
+                            numberOfLines={3}
+                          />
+                        </CustomPromptContainer>
+                      )}
+
+                      {error && (
+                        <ErrorCard>
+                          <ErrorText>
+                            {t('pasteListModal.genericError', {
                               defaultValue:
                                 'Não foi possível processar o texto com IA no momento.',
                             })}
-                      </ErrorText>
-                    </ErrorCard>
-                  )}
+                          </ErrorText>
+                        </ErrorCard>
+                      )}
 
-                  <FooterButtonsRow>
-                    <SecondaryCancelButton onPress={handleRequestClose}>
-                      <SecondaryCancelButtonText>
-                        {t('buttons.cancel', { defaultValue: 'Cancelar' })}
-                      </SecondaryCancelButtonText>
-                    </SecondaryCancelButton>
-                    <PrimaryConfirmButton
-                      disabled={!rawText.trim() || rawText.trim().length < 2}
-                      onPress={handleProcessWithAI}>
-                      <PrimaryConfirmButtonText
-                        disabled={!rawText.trim() || rawText.trim().length < 2}>
-                        {t('pasteListModal.buttonProcess', {
-                          defaultValue: '✨ Organizar com IA',
-                        })}
-                      </PrimaryConfirmButtonText>
-                    </PrimaryConfirmButton>
-                  </FooterButtonsRow>
-                </>
-              ) : items.length === 0 ? (
-                /* Step 2 (Empty Result): No items found */
-                <NoticeCard>
-                  <NoticeIcon>⚠️</NoticeIcon>
-                  <NoticeText>
-                    {t('pasteListModal.emptyError', {
-                      defaultValue:
-                        'Nenhum item identificado no texto colado. Tente colar uma lista com itens ou tarefas.',
-                    })}
-                  </NoticeText>
-                  <NoticeButton onPress={handleBackToInput}>
-                    <NoticeButtonText>
-                      {t('pasteListModal.buttonBack', {
-                        defaultValue: 'Voltar ao texto',
-                      })}
-                    </NoticeButtonText>
-                  </NoticeButton>
-                </NoticeCard>
-              ) : (
-                /* Step 2 (Success): Result Preview & Customization */
-                <>
-                  <ListTitleContainer>
-                    <ListTitleLabel>
-                      {t('pasteListModal.listTitleLabel', {
-                        defaultValue: 'Nome da Lista',
-                      })}
-                    </ListTitleLabel>
-                    <ListTitleInput
-                      value={parsedTitle}
-                      onChangeText={setParsedTitle}
-                      placeholder="Nome da lista"
-                      placeholderTextColor="#6D7886"
-                      maxLength={35}
-                    />
-                  </ListTitleContainer>
-
-                  <ActionsBar>
-                    <ItemCountBadge>
-                      <ItemCountBadgeText>
-                        {t('pasteListModal.itemsFound', {
-                          count: items.length,
-                          defaultValue: `${items.length} itens encontrados`,
-                        })}
-                      </ItemCountBadgeText>
-                    </ItemCountBadge>
-
-                    <ActionPill onPress={handleToggleSelectAll}>
-                      <ActionPillText>
-                        {isAllSelected
-                          ? t('pasteListModal.deselectAll', {
-                              defaultValue: 'Desmarcar todos',
-                            })
-                          : t('pasteListModal.selectAll', {
-                              defaultValue: 'Selecionar todos',
+                      <FooterButtonsRow>
+                        <SecondaryCancelButton onPress={handleBackToStep1}>
+                          <SecondaryCancelButtonText>
+                            {t('pasteListModal.buttonBack', { defaultValue: 'Voltar' })}
+                          </SecondaryCancelButtonText>
+                        </SecondaryCancelButton>
+                        <PrimaryConfirmButton onPress={handleProcessWithAI}>
+                          <PrimaryConfirmButtonText>
+                            {t('pasteListModal.buttonProcess', {
+                              defaultValue: '✨ Organizar com IA',
                             })}
-                      </ActionPillText>
-                    </ActionPill>
-                  </ActionsBar>
-
-                  <ItemsScrollView
-                    showsVerticalScrollIndicator={false}
-                    keyboardShouldPersistTaps="handled">
-                    {items.map(item => (
-                      <Animated.View key={item.id} layout={LinearTransition}>
-                        <ItemRow
-                          isSelected={item.selected}
-                          activeOpacity={0.7}
-                          onPress={() => handleToggleItem(item.id)}>
-                          <CheckboxSimple
-                            checked={item.selected}
-                            onPress={() => handleToggleItem(item.id)}
-                          />
-                          <ItemTextContainer>
-                            <ItemLabel
-                              isSelected={item.selected}
-                              numberOfLines={2}>
-                              {item.label}
-                            </ItemLabel>
-                          </ItemTextContainer>
-                          <ItemDismissButton
-                            onPress={() => handleDismissItem(item.id)}
-                            hitSlop={10}>
-                            <ItemDismissText>×</ItemDismissText>
-                          </ItemDismissButton>
-                        </ItemRow>
-                      </Animated.View>
-                    ))}
-                  </ItemsScrollView>
-
-                  <FooterButtonsRow>
-                    <SecondaryCancelButton onPress={handleBackToInput}>
-                      <SecondaryCancelButtonText>
+                          </PrimaryConfirmButtonText>
+                        </PrimaryConfirmButton>
+                      </FooterButtonsRow>
+                    </>
+                  )
+                ) : items.length === 0 ? (
+                  /* Step 3 (Empty Result): No items found */
+                  <NoticeCard>
+                    <NoticeIcon>⚠️</NoticeIcon>
+                    <NoticeText>
+                      {t('pasteListModal.emptyError', {
+                        defaultValue:
+                          'Nenhum item identificado no texto colado. Tente colar uma lista com itens ou tarefas.',
+                      })}
+                    </NoticeText>
+                    <NoticeButton onPress={handleBackToInput}>
+                      <NoticeButtonText>
                         {t('pasteListModal.buttonBack', {
-                          defaultValue: 'Voltar ao texto',
+                          defaultValue: 'Voltar',
                         })}
-                      </SecondaryCancelButtonText>
-                    </SecondaryCancelButton>
-                    <PrimaryConfirmButton
-                      disabled={selectedCount === 0}
-                      onPress={handleCreateList}>
-                      <PrimaryConfirmButtonText disabled={selectedCount === 0}>
-                        {selectedCount > 0
-                          ? t('pasteListModal.buttonCreate', {
-                              count: selectedCount,
-                              defaultValue: `Criar Lista (${selectedCount})`,
-                            })
-                          : t('pasteListModal.buttonCreateNone', {
-                              defaultValue: 'Nenhum selecionado',
-                            })}
-                      </PrimaryConfirmButtonText>
-                    </PrimaryConfirmButton>
-                  </FooterButtonsRow>
-                </>
-              )}
-            </ModalContainer>
-          </TouchableWithoutFeedback>
-        </Animated.View>
+                      </NoticeButtonText>
+                    </NoticeButton>
+                  </NoticeCard>
+                ) : (
+                  /* Step 3 (Success): Result Preview & Customization */
+                  <>
+                    <ListTitleContainer>
+                      <ListTitleLabel>
+                        {t('pasteListModal.listTitleLabel', {
+                          defaultValue: 'Nome da Lista',
+                        })}
+                      </ListTitleLabel>
+                      <ListTitleInput
+                        value={parsedTitle}
+                        onChangeText={setParsedTitle}
+                        placeholder="Nome da lista"
+                        placeholderTextColor="#6D7886"
+                        maxLength={35}
+                      />
+                    </ListTitleContainer>
+
+                    <ActionsBar>
+                      <ItemCountBadge>
+                        <ItemCountBadgeText>
+                          {t('pasteListModal.itemsFound', {
+                            count: items.length,
+                            defaultValue: `${items.length} itens encontrados`,
+                          })}
+                        </ItemCountBadgeText>
+                      </ItemCountBadge>
+
+                      <ActionPill onPress={handleToggleSelectAll}>
+                        <ActionPillText>
+                          {isAllSelected
+                            ? t('pasteListModal.deselectAll', {
+                                defaultValue: 'Desmarcar todos',
+                              })
+                            : t('pasteListModal.selectAll', {
+                                defaultValue: 'Selecionar todos',
+                              })}
+                        </ActionPillText>
+                      </ActionPill>
+                    </ActionsBar>
+
+                    <ItemsScrollView
+                      showsVerticalScrollIndicator={false}
+                      keyboardShouldPersistTaps="handled">
+                      {sections && sections.length > 0 ? (
+                        sections.map(sec => {
+                          const secItems = items.filter(
+                            it => it.sectionTitle === sec.title,
+                          );
+                          if (secItems.length === 0) return null;
+                          return (
+                            <View key={sec.title}>
+                              <SectionHeaderPreview>
+                                <SectionHeaderPreviewText>
+                                  {sec.title}
+                                </SectionHeaderPreviewText>
+                              </SectionHeaderPreview>
+                              {secItems.map(item => (
+                                <Animated.View key={item.id} layout={LinearTransition}>
+                                  <ItemRow
+                                    isSelected={item.selected}
+                                    activeOpacity={0.7}
+                                    onPress={() => handleToggleItem(item.id)}>
+                                    <CheckboxSimple
+                                      checked={item.selected}
+                                      onPress={() => handleToggleItem(item.id)}
+                                    />
+                                    <ItemTextContainer>
+                                      <ItemLabel
+                                        isSelected={item.selected}
+                                        numberOfLines={2}>
+                                        {item.label}
+                                      </ItemLabel>
+                                    </ItemTextContainer>
+                                    <ItemDismissButton
+                                      onPress={() => handleDismissItem(item.id)}
+                                      hitSlop={10}>
+                                      <ItemDismissText>×</ItemDismissText>
+                                    </ItemDismissButton>
+                                  </ItemRow>
+                                </Animated.View>
+                              ))}
+                            </View>
+                          );
+                        })
+                      ) : (
+                        items.map(item => (
+                          <Animated.View key={item.id} layout={LinearTransition}>
+                            <ItemRow
+                              isSelected={item.selected}
+                              activeOpacity={0.7}
+                              onPress={() => handleToggleItem(item.id)}>
+                              <CheckboxSimple
+                                checked={item.selected}
+                                onPress={() => handleToggleItem(item.id)}
+                              />
+                              <ItemTextContainer>
+                                <ItemLabel
+                                  isSelected={item.selected}
+                                  numberOfLines={2}>
+                                  {item.label}
+                                </ItemLabel>
+                              </ItemTextContainer>
+                              <ItemDismissButton
+                                onPress={() => handleDismissItem(item.id)}
+                                hitSlop={10}>
+                                <ItemDismissText>×</ItemDismissText>
+                              </ItemDismissButton>
+                            </ItemRow>
+                          </Animated.View>
+                        ))
+                      )}
+                    </ItemsScrollView>
+
+                    <FooterButtonsRow>
+                      <SecondaryCancelButton onPress={handleBackToInput}>
+                        <SecondaryCancelButtonText>
+                          {t('pasteListModal.buttonBack', {
+                            defaultValue: 'Voltar',
+                          })}
+                        </SecondaryCancelButtonText>
+                      </SecondaryCancelButton>
+                      <PrimaryConfirmButton
+                        disabled={selectedCount === 0}
+                        onPress={handleCreateList}>
+                        <PrimaryConfirmButtonText disabled={selectedCount === 0}>
+                          {selectedCount > 0
+                            ? t('pasteListModal.buttonCreate', {
+                                count: selectedCount,
+                                defaultValue: `Criar Lista (${selectedCount})`,
+                              })
+                            : t('pasteListModal.buttonCreateNone', {
+                                defaultValue: 'Nenhum selecionado',
+                              })}
+                        </PrimaryConfirmButtonText>
+                      </PrimaryConfirmButton>
+                    </FooterButtonsRow>
+                  </>
+                )}
+              </ModalContainer>
+            </TouchableWithoutFeedback>
+          </Animated.View>
         </KeyboardAvoidingView>
       </BlurredModal>
     );

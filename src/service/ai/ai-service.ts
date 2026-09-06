@@ -1,5 +1,6 @@
 import {
   AIFeature,
+  AIOrderingType,
   AIProvider,
   AIResponseWithUsage,
   AITokenUsage,
@@ -452,7 +453,7 @@ export const testAIConnection = async (
 };
 
 /**
- * Parses title and items from raw LLM response.
+ * Parses title, sections, and items from raw LLM response.
  * Tries JSON parsing first, then falls back to resilient line-by-line extraction.
  */
 export const parseListResultFromResponse = (raw: string): ParsedListResult => {
@@ -488,14 +489,38 @@ export const parseListResultFromResponse = (raw: string): ParsedListResult => {
       const rawTitle = typeof parsed.title === 'string' ? parsed.title.trim() : '';
       const title = rawTitle.length > 0 ? rawTitle : '📝 Lista';
 
-      const rawItems = Array.isArray(parsed.items) ? parsed.items : [];
-      const items = rawItems
-        .map((t: any) => (typeof t === 'string' ? t.trim() : ''))
-        .filter((t: string) => t.length > 0);
+      // Parse sections if present
+      let sections: { title: string; items: string[] }[] | undefined;
+      if (Array.isArray(parsed.sections)) {
+        sections = parsed.sections
+          .filter((s: any) => s && typeof s === 'object' && typeof s.title === 'string')
+          .map((s: any) => ({
+            title: s.title.trim(),
+            items: Array.isArray(s.items)
+              ? s.items
+                  .map((it: any) => (typeof it === 'string' ? it.trim() : ''))
+                  .filter((it: string) => it.length > 0)
+              : [],
+          }))
+          .filter(
+            (s: { items: string[]; title: string }) =>
+              s.items.length > 0 || s.title.length > 0,
+          );
+      }
+
+      let items: string[] = [];
+      if (Array.isArray(parsed.items) && parsed.items.length > 0) {
+        items = parsed.items
+          .map((t: any) => (typeof t === 'string' ? t.trim() : ''))
+          .filter((t: string) => t.length > 0);
+      } else if (sections && sections.length > 0) {
+        items = sections.flatMap(s => s.items);
+      }
 
       return {
         title,
         items: Array.from(new Set(items)),
+        sections: sections && sections.length > 0 ? sections : undefined,
       };
     }
   } catch {
@@ -519,7 +544,8 @@ export const parseListResultFromResponse = (raw: string): ParsedListResult => {
         !line.startsWith('[') &&
         !line.startsWith(']') &&
         !line.toLowerCase().startsWith('items:') &&
-        !line.toLowerCase().startsWith('title:'),
+        !line.toLowerCase().startsWith('title:') &&
+        !line.toLowerCase().startsWith('sections:'),
     );
 
   const uniqueItems = Array.from(new Set(lines));
@@ -530,20 +556,57 @@ export const parseListResultFromResponse = (raw: string): ParsedListResult => {
   };
 };
 
-export const buildParseListPrompt = (rawText: string): string => {
+export const buildParseListPrompt = (
+  rawText: string,
+  orderingType: AIOrderingType = 'none',
+  customPrompt?: string,
+): string => {
   const clean = rawText.trim();
+  let orderingInstruction = '';
+
+  if (orderingType === 'smart') {
+    orderingInstruction =
+      `\nDiretrizes de Agrupamento e Ordenação Inteligente:\n` +
+      `- Identifique o contexto dos itens informados (ex: compras de mercado, afazeres domésticos, preparação de viagem, trabalho, rotina, farmácia, etc.).\n` +
+      `- Agrupe os itens em seções temáticas que façam sentido prático para o contexto identificado. Crie títulos descritivos para as seções, cada uma iniciando com um emoji relevante (ex: "🥦 Hortifruti", "🧼 Limpeza", "💼 Documentos").\n` +
+      `- Ordene as seções e os itens dentro de cada seção segundo uma sequência de execução ou conveniência lógica e prática para o contexto identificado.\n`;
+  } else if (orderingType === 'custom' && customPrompt?.trim()) {
+    orderingInstruction =
+      `\nDiretrizes de Agrupamento e Ordenação Personalizadas:\n` +
+      `- Siga ESTRITAMENTE as seguintes instruções de agrupamento e ordenação fornecidas pelo usuário:\n` +
+      `"""\n${customPrompt.trim()}\n"""\n` +
+      `- Organize os itens em seções com títulos descritivos e emojis respeitando o layout, ordem e regras informadas pelo usuário acima.\n`;
+  } else {
+    orderingInstruction =
+      `\nDiretrizes de Ordenação:\n` +
+      `- Mantenha a ordem dos itens fiel à sequência em que aparecem no texto original informado.\n` +
+      `- Se fizer sentido agrupar em seções preservando a ordem relativa dos itens, crie as seções correspondentes.\n`;
+  }
+
   return (
     `Texto colado pelo usuário:\n` +
     `"""\n${clean}\n"""\n\n` +
     `Analise o texto acima e organize-o em uma lista de tudús/tarefas estruturada.\n` +
-    `Diretrizes:\n` +
+    `Diretrizes Gerais:\n` +
     `1. Extraia somente tarefas/itens reais. Ignore carimbos de data/hora, nomes de pessoas, cabeçalhos de mensagens (ex: "[15/08/2026, 14:46:44] Day ❤:") e conversas informais.\n` +
     `2. Se mensagens posteriores complementarem ou retificarem um item anterior (ex: "ovos" e depois "Pega logo 2 bandejas de ovo"), consolide na intenção final ("2 bandejas de ovos").\n` +
     `3. Mantenha quantidades, unidades e observações (ex: "8 pão francês", "2 leite condensado moça", "pera (se tiver macia)").\n` +
     `4. Adicione um emoji relevante e claro no início de CADA item da lista (ex: "🥚 2 bandejas de ovos", "🍞 Pão de forma", "🍌 Banana", "🍅 4 tomates").\n` +
     `5. Gere um título conciso para a lista com um emoji adequado no mesmo idioma do texto (ex: "🛒 Compras de Mercado", "📝 Lista de Tarefas", "💊 Farmácia").\n` +
-    `6. Se o texto NÃO contiver tarefas ou itens acionáveis, retorne "items": [].\n` +
-    `7. Retorne estritamente um JSON no formato: {"title": "Título com emoji", "items": ["emoji item 1", "emoji item 2"]}. Não inclua blocos de markdown nem explicações adicionais.`
+    `6. Se o texto NÃO contiver tarefas ou itens acionáveis, retorne "items": [], "sections": [].\n` +
+    orderingInstruction +
+    `7. Retorne estritamente um JSON no formato:\n` +
+    `{\n` +
+    `  "title": "Título com emoji",\n` +
+    `  "sections": [\n` +
+    `    {\n` +
+    `      "title": "Emoji e Nome da Seção",\n` +
+    `      "items": ["emoji item 1", "emoji item 2"]\n` +
+    `    }\n` +
+    `  ],\n` +
+    `  "items": ["emoji item 1", "emoji item 2"]\n` +
+    `}\n` +
+    `Não inclua blocos de markdown nem explicações adicionais fora do JSON.`
   );
 };
 
@@ -553,7 +616,9 @@ export const buildParseListPrompt = (rawText: string): string => {
 export const parseListFromTextWithAI = async (
   provider: AIProvider,
   rawText: string,
-  timeoutMs: number = 10000,
+  orderingType: AIOrderingType = 'none',
+  customPrompt?: string,
+  timeoutMs: number = 12000,
 ): Promise<ParsedListResult> => {
   const cleanText = rawText.trim();
   if (!cleanText || cleanText.length < 2) {
@@ -566,12 +631,12 @@ export const parseListFromTextWithAI = async (
     throw new Error('API Key not found');
   }
 
-  const prompt = buildParseListPrompt(cleanText);
+  const prompt = buildParseListPrompt(cleanText, orderingType, customPrompt);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`🤖 [Tudú AI] 🚀 Enviando texto para conversão em lista com ${provider.toUpperCase()}`);
+  console.log(`🤖 [Tudú AI] 🚀 Enviando texto para conversão em lista com ${provider.toUpperCase()} (ordenação: ${orderingType})`);
   console.log(`📌 Tamanho do texto: ${cleanText.length} caracteres`);
   console.log(`💬 Prompt:\n${prompt}`);
   console.log('─────────────────────────────────────────────────────');
@@ -600,6 +665,7 @@ export const parseListFromTextWithAI = async (
 
     console.log(`📥 [Tudú AI] Resposta de conversão recebida (${duration}ms) de ${provider.toUpperCase()}:`);
     console.log(`🏷️ Título: "${result.title}"`);
+    console.log(`📂 Seções: ${result.sections?.length || 0}`);
     console.log(`✨ Itens Extraídos (${result.items.length}):\n${result.items.map(t => `  • ${t}`).join('\n')}`);
     if (responseResult.usage) {
       console.log(
@@ -612,6 +678,116 @@ export const parseListFromTextWithAI = async (
   } catch (error: any) {
     clearTimeout(timeoutId);
     console.error(`❌ [Tudú AI] Erro na conversão de texto (${provider.toUpperCase()}):`, error?.message || error);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    throw error;
+  }
+};
+
+export const buildReorderListPrompt = (
+  items: string[],
+  currentSections?: string[],
+  customPrompt?: string,
+): string => {
+  const itemsText = items.map(t => `- ${t}`).join('\n');
+  const sectionsText = currentSections && currentSections.length > 0
+    ? `Seções existentes atualmente:\n${currentSections.map(s => `- ${s}`).join('\n')}\n\n`
+    : '';
+
+  let promptRule = '';
+  if (customPrompt?.trim()) {
+    promptRule =
+      `Instruções específicas de ordenação e agrupamento fornecidas pelo usuário:\n` +
+      `"""\n${customPrompt.trim()}\n"""\n\n` +
+      `Aplique estritamente as regras acima para agrupar e ordenar os itens.`;
+  } else {
+    promptRule =
+      `Identifique o contexto dos itens acima e agrupe e ordene os itens em seções temáticas que façam sentido prático para o contexto identificado.`;
+  }
+
+  return (
+    `Itens atuais da lista:\n` +
+    `${itemsText}\n\n` +
+    sectionsText +
+    `${promptRule}\n\n` +
+    `Diretrizes:\n` +
+    `1. TODOS os itens da lista original DEVEM ser mantidos. Não remova nem adicione itens novos.\n` +
+    `2. Mantenha os emojis e o texto exato de cada item.\n` +
+    `3. Crie ou reorganize seções com títulos descritivos e um emoji inicial.\n` +
+    `4. Retorne estritamente um JSON no formato:\n` +
+    `{\n` +
+    `  "sections": [\n` +
+    `    {\n` +
+    `      "title": "Emoji e Nome da Seção",\n` +
+    `      "items": ["emoji item 1", "emoji item 2"]\n` +
+    `    }\n` +
+    `  ],\n` +
+    `  "items": ["emoji item 1", "emoji item 2"]\n` +
+    `}\n` +
+    `Não inclua markdown ou explicações fora do JSON.`
+  );
+};
+
+/**
+ * Reorders an existing list's items using AI with custom rules or smart context.
+ */
+export const reorderListWithAI = async (
+  provider: AIProvider,
+  items: string[],
+  currentSections?: string[],
+  customPrompt?: string,
+  timeoutMs: number = 12000,
+): Promise<ParsedListResult> => {
+  if (!items || items.length === 0) {
+    return { title: '📝 Lista', items: [] };
+  }
+
+  const apiKey = getSecureApiKey(provider);
+  if (!apiKey) {
+    console.warn(`⚠️ [Tudú AI] Nenhuma chave de API configurada para o provedor: ${provider}`);
+    throw new Error('API Key not found');
+  }
+
+  const prompt = buildReorderListPrompt(items, currentSections, customPrompt);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`🤖 [Tudú AI] 🚀 Reordenando lista com ${provider.toUpperCase()}`);
+  console.log(`📌 Quantidade de itens: ${items.length}`);
+  console.log(`💬 Prompt:\n${prompt}`);
+  console.log('─────────────────────────────────────────────────────');
+
+  try {
+    let responseResult: AIResponseWithUsage = { content: '' };
+    const startTime = Date.now();
+
+    if (provider === 'openai') {
+      responseResult = await requestOpenAIParseList(apiKey, prompt, controller.signal);
+    } else if (provider === 'gemini') {
+      responseResult = await requestGeminiParseList(apiKey, prompt, controller.signal);
+    } else if (provider === 'claude') {
+      responseResult = await requestClaudeParseList(apiKey, prompt, controller.signal);
+    }
+
+    clearTimeout(timeoutId);
+    const duration = Date.now() - startTime;
+    const rawResponse = responseResult.content;
+
+    if (responseResult.usage) {
+      recordAITokenUsage(provider, 'parse_list', responseResult.usage);
+    }
+
+    const result = parseListResultFromResponse(rawResponse);
+
+    console.log(`📥 [Tudú AI] Resposta de reordenação recebida (${duration}ms) de ${provider.toUpperCase()}:`);
+    console.log(`📂 Seções: ${result.sections?.length || 0}`);
+    console.log(`✨ Itens Reordenados (${result.items.length})`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    return result;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    console.error(`❌ [Tudú AI] Erro na reordenação de itens (${provider.toUpperCase()}):`, error?.message || error);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     throw error;
   }
