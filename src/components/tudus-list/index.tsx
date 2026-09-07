@@ -625,7 +625,9 @@ const TudusList: React.FC<TudusListProps> = memo(
 
     return (
       <Container>
-        <NestableScrollContainer style={{ flexGrow: 1, overflow: 'visible' }}>
+        <NestableScrollContainer
+          style={{ flexGrow: 1, overflow: 'visible' }}
+          contentContainerStyle={{ paddingBottom: 110 }}>
           {TopComponent}
           {flatRows.length === 0 && doneTudus.length === 0 && (
             <EmptyTudusState

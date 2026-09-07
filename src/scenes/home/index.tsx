@@ -190,12 +190,12 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
         onSearchPress={handleSearchPress}
         onSettingsPress={handleSettingsPress}
       />
-      <DraxProvider>
-        <DraggableContextProvider<ListDataViewModel>
-          data={groupedCustomLists}
-          onSetData={handleSetCustomLists}
-          onDragStart={handleListDragStart}
-          onDragEnd={handleListDragEnd}>
+      <DraggableContextProvider<ListDataViewModel>
+        data={groupedCustomLists}
+        onSetData={handleSetCustomLists}
+        onDragStart={handleListDragStart}
+        onDragEnd={handleListDragEnd}>
+        <DraxProvider>
           <DraggableScrollablePageContent
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
@@ -246,8 +246,8 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
             undoDeletionFn={restoreBackup}
           />
           <HomeActionButton ref={actionButtonRef} />
-        </DraggableContextProvider>
-      </DraxProvider>
+        </DraxProvider>
+      </DraggableContextProvider>
     </Page>
   );
 };

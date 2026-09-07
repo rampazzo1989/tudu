@@ -79,8 +79,8 @@ const HomeActionButton = memo(
     }, []);
 
     const handleCreateNewGroup = useCallback(() => {
-      const ungroupedLists = getUngroupedItems(draggableContext.data);
-      const thereAreLists = !!draggableContext.data.length;
+      const ungroupedLists = getUngroupedItems(draggableContext?.data);
+      const thereAreLists = !!draggableContext?.data?.length;
       if (!ungroupedLists.length) {
         parentRef.current?.closeMenu();
         return Toast.show({
@@ -95,7 +95,7 @@ const HomeActionButton = memo(
       }
       setNewGroupPopupVisible(true);
       parentRef.current?.closeMenu();
-    }, [draggableContext.data]);
+    }, [draggableContext?.data]);
 
     const options: MenuOption[] = [
       {

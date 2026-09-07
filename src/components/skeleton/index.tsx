@@ -28,15 +28,28 @@ const Skeleton: React.FC<SkeletonProps> = ({ count = 1, style }) => {
     ),
   }));
 
+  if (count === 1) {
+    return (
+      <Animated.View
+        style={[
+          styles.skeleton,
+          style?.flex !== undefined && !style?.width ? { width: undefined } : null,
+          animatedStyle,
+          style,
+        ]}
+      />
+    );
+  }
+
   return (
-    <View>
+    <>
       {Array.from({ length: count || 3 }).map((_, index) => (
         <Animated.View
           key={index}
           style={[styles.skeleton, animatedStyle, style]}
         />
       ))}
-    </View>
+    </>
   );
 };
 

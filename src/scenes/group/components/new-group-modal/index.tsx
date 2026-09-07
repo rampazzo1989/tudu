@@ -47,22 +47,22 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
     const theme = useTheme();
 
     const availableLists = useMemo(() => {
-      const ungrouped = getUngroupedItems(draggableContext.data);
+      const ungrouped = getUngroupedItems(draggableContext?.data);
       if (!editingGroupData) {
         return ungrouped;
       }
-      const currentGroupLists = editingGroupData.data.map(
+      const currentGroupLists = (editingGroupData.data || []).map(
         list => new DraggableItem([list]),
       );
       return [...currentGroupLists, ...ungrouped];
-    }, [draggableContext.data, editingGroupData]);
+    }, [draggableContext?.data, editingGroupData]);
 
     const handleConfirmButtonPress = useCallback(() => {
       const allSelectedLists = selectedLists.flatMap(x => x.data);
 
       if (editingGroupData) {
         const isUpdatingTitle = title.trim() !== editingGroupData.groupId;
-        const otherItems = draggableContext.data.filter(
+        const otherItems = (draggableContext?.data || []).filter(
           item => item !== editingGroupData,
         );
         const finalTitle = isUpdatingTitle
@@ -71,7 +71,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
 
         const selectedListIds = selectedLists.map(s => s.data[0].id);
 
-        const removedLists = editingGroupData.data.filter(
+        const removedLists = (editingGroupData.data || []).filter(
           orig => !selectedListIds.includes(orig.id),
         );
 
@@ -84,7 +84,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
         const updatedGroup = new DraggableItem(allSelectedLists, finalTitle);
         const newData: DraggableItem<ListDataViewModel>[] = [];
 
-        for (const item of draggableContext.data) {
+        for (const item of (draggableContext?.data || [])) {
           if (item === editingGroupData) {
             if (allSelectedLists.length > 0) {
               newData.push(updatedGroup);
@@ -101,10 +101,10 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
           }
         }
 
-        draggableContext.setData(newData);
+        draggableContext?.setData(newData);
       } else {
         const duplicateProofListTitle = getDuplicateProofGroupTitle(
-          draggableContext.data,
+          draggableContext?.data || [],
           title.trim(),
         );
         const newGroup = new DraggableItem(
@@ -112,11 +112,11 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
           duplicateProofListTitle,
         );
         const selectedListIds = selectedLists.map(s => s.data[0].id);
-        const newDataWithoutGroupedItems = draggableContext.data.filter(
+        const newDataWithoutGroupedItems = (draggableContext?.data || []).filter(
           item => !selectedListIds.includes(item.data[0]?.id),
         );
         newDataWithoutGroupedItems.push(newGroup);
-        draggableContext.setData(newDataWithoutGroupedItems);
+        draggableContext?.setData(newDataWithoutGroupedItems);
       }
       onRequestClose();
     }, [draggableContext, editingGroupData, onRequestClose, selectedLists, title]);

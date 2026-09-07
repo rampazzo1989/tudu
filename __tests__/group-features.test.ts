@@ -153,5 +153,26 @@ describe('Group Features', () => {
       expect(mapped.label).toBe('Lista com Seções');
     });
   });
+
+  describe('getUngroupedItems robustness', () => {
+    const {getUngroupedItems} = require('../src/modules/draggable/draggable-utils');
+
+    it('should return an empty array when passed undefined or null', () => {
+      expect(getUngroupedItems(undefined)).toEqual([]);
+      expect(getUngroupedItems(null as any)).toEqual([]);
+    });
+
+    it('should return only ungrouped items when list has mixed items', () => {
+      const listA = createMockList('a', 'Lista A', 'Grupo 1');
+      const listB = createMockList('b', 'Lista B');
+
+      const groupItem = new DraggableItem([listA], 'Grupo 1');
+      const ungroupedItem = new DraggableItem([listB]);
+
+      const result = getUngroupedItems([groupItem, ungroupedItem]);
+      expect(result).toHaveLength(1);
+      expect(result[0].data[0].id).toBe('b');
+    });
+  });
 });
 

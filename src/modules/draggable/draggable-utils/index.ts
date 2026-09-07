@@ -149,7 +149,10 @@ export const refreshListState = <T>(
   listSetter([...list]);
 };
 
-export const getUngroupedItems = <T>(list: DraggableItem<T>[]) => {
-  const ungrouped = list.filter(x => !x.groupId);
+export const getUngroupedItems = <T>(list?: DraggableItem<T>[]) => {
+  if (!list || !Array.isArray(list)) {
+    return [];
+  }
+  const ungrouped = list.filter(x => !x?.groupId);
   return ungrouped;
 };
