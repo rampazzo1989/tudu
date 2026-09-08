@@ -262,7 +262,7 @@
         "features": {
           "emoji": "Suggerimento Emoji",
           "task_suggestions": "Suggerimento Attività",
-          "parse_list": "Lista da Testo",
+          "parse_list": "Smart Lists",
           "test": "Test di Connessione"
         },
         "resetTitle": "Azzera Contatore Consumo",

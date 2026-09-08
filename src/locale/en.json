@@ -262,7 +262,7 @@
         "features": {
           "emoji": "Emoji Suggestions",
           "task_suggestions": "Task Suggestions",
-          "parse_list": "List from Text",
+          "parse_list": "Smart Lists",
           "test": "Connection Tests"
         },
         "resetTitle": "Reset Usage Counter",
