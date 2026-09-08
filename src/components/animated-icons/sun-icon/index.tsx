@@ -6,6 +6,7 @@ import {
   AnimationOptions,
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
+import {SunChipSvg} from '../../../assets/static/tudu-icons';
 
 const SunIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -38,6 +39,7 @@ const SunIcon = memo(
         loop={false}
         componentName="SunIcon"
         size={24}
+        StaticComponent={SunChipSvg}
         ref={iconRef}
         {...props}
       />

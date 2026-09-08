@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import {LogoText} from '../../../../assets/static/logo_text';
 import {ProfileIcon} from '../../../../components/animated-icons/profile-icon';
-import {TuduIcon} from '../../../../components/animated-icons/tudu-icon';
+import {CheckedLogoStaticIcon} from '../../../../assets/static/tudu-icons';
 import {ShrinkableView} from '../../../../components/shrinkable-view';
 
 export const LogoAndTitle = styled.View`
@@ -9,7 +9,7 @@ export const LogoAndTitle = styled.View`
   align-items: center;
 `;
 
-export const LogoIcon = styled(TuduIcon)`
+export const LogoIcon = styled(CheckedLogoStaticIcon)`
   height: 32px;
   width: 32px;
 `;

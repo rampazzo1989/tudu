@@ -23,10 +23,11 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, [navigation]);
 
   useEffect(() => {
-    var a = getListById(listId, listOrigin);
-    setTimeout(() => {
-      setList(a);
-    }, 100);
+    const foundList = getListById(listId, listOrigin);
+    const timer = setTimeout(() => {
+      setList(foundList);
+    }, 50);
+    return () => clearTimeout(timer);
   }, [getListById, listId, listOrigin]);
 
   const setTudus = useCallback(

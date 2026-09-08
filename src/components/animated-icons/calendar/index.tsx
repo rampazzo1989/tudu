@@ -1,6 +1,7 @@
 import React, {forwardRef, memo, useImperativeHandle, useRef} from 'react';
 import {BaseAnimatedIcon} from '../animated-icon';
 import {AnimatedIconProps, AnimatedIconRef, AnimationOptions, BaseAnimatedIconRef} from '../animated-icon/types';
+import {CalendarChipSvg} from '../../../assets/static/tudu-icons';
 
 const CalendarIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -34,6 +35,7 @@ const CalendarIcon = memo(
         componentName="CalendarIcon"
         initialFrame={60}
         finalFrame={120}
+        StaticComponent={CalendarChipSvg}
         ref={iconRef}
         {...props}
       />

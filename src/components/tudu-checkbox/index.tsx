@@ -1,44 +1,61 @@
-import React, {memo, useEffect, useRef, useState} from 'react';
+import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {BaseAnimatedIcon} from '../animated-icons/animated-icon';
 import {BaseAnimatedIconRef} from '../animated-icons/animated-icon/types';
+import {CheckboxCheckedSvg, CheckboxUncheckedSvg} from '../../assets/static/tudu-icons';
 import {Touchable} from './styles';
 import {TuduCheckboxProps} from './types';
 
 const TuduCheckbox: React.FC<TuduCheckboxProps> = memo(({checked, onPress}) => {
   const iconRef = useRef<BaseAnimatedIconRef>(null);
-  const [internalCheck, setInternalCheck] = useState(checked);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const handlePress = useCallback(() => {
+    setIsAnimating(true);
+    onPress?.();
+  }, [onPress]);
+
+  const handleAnimationFinish = useCallback(() => {
+    setIsAnimating(false);
+  }, []);
 
   useEffect(() => {
-    let didntChange = false;
-    setInternalCheck(x => {
-      didntChange = checked === x;
-      return didntChange ? x : checked;
-    });
-
-    if (didntChange) {
-      return;
+    if (isAnimating) {
+      if (checked) {
+        iconRef.current?.play({
+          initialFrame: 0,
+          finalFrame: 32,
+          onAnimationFinish: handleAnimationFinish,
+        });
+      } else {
+        iconRef.current?.play({
+          initialFrame: 32,
+          finalFrame: 81,
+          onAnimationFinish: handleAnimationFinish,
+        });
+      }
     }
-
-    if (checked) {
-      iconRef.current?.play({initialFrame: 0, finalFrame: 32});
-    } else {
-      iconRef.current?.play({initialFrame: 32, finalFrame: 81});
-    }
-  }, [checked]);
+  }, [checked, isAnimating, handleAnimationFinish]);
 
   return (
-    <Touchable onPress={onPress}>
-      <BaseAnimatedIcon
-        loop={false}
-        ref={iconRef}
-        source={require('../../assets/lottie/tudu_checkbox.json')}
-        componentName="TuduCheckbox"
-        staticStateFrame={internalCheck ? 32 : 81}
-        initialFrame={0}
-        finalFrame={81}
-        size={20}
-        speed={3}
-      />
+    <Touchable onPress={handlePress}>
+      {isAnimating ? (
+        <BaseAnimatedIcon
+          loop={false}
+          ref={iconRef}
+          source={require('../../assets/lottie/tudu_checkbox.json')}
+          componentName="TuduCheckbox"
+          staticStateFrame={checked ? 32 : 81}
+          initialFrame={0}
+          finalFrame={81}
+          size={20}
+          speed={3}
+          onAnimationFinish={handleAnimationFinish}
+        />
+      ) : checked ? (
+        <CheckboxCheckedSvg size={20} color="white" />
+      ) : (
+        <CheckboxUncheckedSvg size={20} color="white" />
+      )}
     </Touchable>
   );
 });

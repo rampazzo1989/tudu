@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-popover-view/dist/RNModalPopover.js b/node_modules/react-native-popover-view/dist/RNModalPopover.js
-index e9e611b..21d01af 100644
+index e9e611b..8754ff2 100644
 --- a/node_modules/react-native-popover-view/dist/RNModalPopover.js
 +++ b/node_modules/react-native-popover-view/dist/RNModalPopover.js
 @@ -25,7 +25,7 @@ var __assign = (this && this.__assign) || function () {
@@ -11,7 +11,35 @@ index e9e611b..21d01af 100644
  import AdaptivePopover from './AdaptivePopover';
  import { DEFAULT_STATUS_BAR_TRANSLUCENT, MULTIPLE_POPOVER_WARNING } from './Constants';
  import { Point } from './Types';
-@@ -66,16 +66,17 @@ var RNModalPopover = /** @class */ (function (_super) {
+@@ -40,18 +40,12 @@ var RNModalPopover = /** @class */ (function (_super) {
+     }
+     RNModalPopover.prototype.componentDidMount = function () {
+         if (this.props.isVisible) {
+-            if (RNModalPopover.isShowingInModal)
+-                console.warn(MULTIPLE_POPOVER_WARNING);
+-            else
+-                this.setState({ visible: true });
++            this.setState({ visible: true });
+         }
+     };
+     RNModalPopover.prototype.componentDidUpdate = function (prevProps, prevState) {
+         if (this.props.isVisible && !prevProps.isVisible) {
+-            if (RNModalPopover.isShowingInModal)
+-                console.warn(MULTIPLE_POPOVER_WARNING);
+-            else
+-                this.setState({ visible: true });
++            this.setState({ visible: true });
+         }
+         if (!this.state.visible && prevState.visible && this.props.onCloseComplete) {
+             /*
+@@ -62,20 +56,27 @@ var RNModalPopover = /** @class */ (function (_super) {
+             setTimeout(this.props.onCloseComplete, 50);
+         }
+     };
++    RNModalPopover.prototype.componentWillUnmount = function () {
++        RNModalPopover.isShowingInModal = false;
++    };
+     RNModalPopover.prototype.render = function () {
          var _this = this;
          var _a = this.props, statusBarTranslucent = _a.statusBarTranslucent, onCloseStart = _a.onCloseStart, onRequestClose = _a.onRequestClose;
          var visible = this.state.visible;
@@ -35,7 +63,96 @@ index e9e611b..21d01af 100644
 +                        RNModalPopover.isShowingInModal = false;
 +                        if (onCloseStart)
 +                            onCloseStart();
-+                    }, onCloseComplete: function () { return _this.setState({ visible: false }); }, getDisplayAreaOffset: function () { return Promise.resolve(new Point(0, 0)); } })))));
++                    }, onCloseComplete: function () { 
++                        RNModalPopover.isShowingInModal = false;
++                        return _this.setState({ visible: false }); 
++                    }, getDisplayAreaOffset: function () { return Promise.resolve(new Point(0, 0)); } })))));
      };
      RNModalPopover.isShowingInModal = false;
      return RNModalPopover;
+diff --git a/node_modules/react-native-popover-view/src/RNModalPopover.tsx b/node_modules/react-native-popover-view/src/RNModalPopover.tsx
+index 5ae019b..6871497 100644
+--- a/node_modules/react-native-popover-view/src/RNModalPopover.tsx
++++ b/node_modules/react-native-popover-view/src/RNModalPopover.tsx
+@@ -19,15 +19,13 @@ export default class RNModalPopover extends Component<RNModalPopoverProps, Modal
+ 
+   componentDidMount(): void {
+     if (this.props.isVisible) {
+-      if (RNModalPopover.isShowingInModal) console.warn(MULTIPLE_POPOVER_WARNING);
+-      else this.setState({ visible: true });
++      this.setState({ visible: true });
+     }
+   }
+ 
+   componentDidUpdate(prevProps: RNModalPopoverProps, prevState: ModalPopoverState): void {
+     if (this.props.isVisible && !prevProps.isVisible) {
+-      if (RNModalPopover.isShowingInModal) console.warn(MULTIPLE_POPOVER_WARNING);
+-      else this.setState({ visible: true });
++      this.setState({ visible: true });
+     }
+ 
+     if (!this.state.visible && prevState.visible && this.props.onCloseComplete) {
+@@ -40,6 +38,10 @@ export default class RNModalPopover extends Component<RNModalPopoverProps, Modal
+     }
+   }
+ 
++  componentWillUnmount(): void {
++    RNModalPopover.isShowingInModal = false;
++  }
++
+   render(): ReactNode {
+     const {
+       statusBarTranslucent,
+@@ -49,27 +51,32 @@ export default class RNModalPopover extends Component<RNModalPopoverProps, Modal
+     const { visible } = this.state;
+ 
+     return (
+-      <Modal
+-        transparent={true}
+-        supportedOrientations={['portrait', 'portrait-upside-down', 'landscape']}
+-        hardwareAccelerated={true}
+-        visible={visible}
+-        statusBarTranslucent={statusBarTranslucent ?? DEFAULT_STATUS_BAR_TRANSLUCENT}
+-        onShow={() => {
+-          RNModalPopover.isShowingInModal = true;
+-        }}
+-        // Handles android back button
+-        onRequestClose={onRequestClose}>
+-        <AdaptivePopover
+-          {...this.props}
+-          onCloseStart={() => {
+-            RNModalPopover.isShowingInModal = false;
+-            if (onCloseStart) onCloseStart();
++      <View>
++        <Modal
++          transparent={true}
++          supportedOrientations={['portrait', 'portrait-upside-down', 'landscape']}
++          hardwareAccelerated={true}
++          visible={visible}
++          statusBarTranslucent={statusBarTranslucent ?? DEFAULT_STATUS_BAR_TRANSLUCENT}
++          onShow={() => {
++            RNModalPopover.isShowingInModal = true;
+           }}
+-          onCloseComplete={() => this.setState({ visible: false })}
+-          getDisplayAreaOffset={() => Promise.resolve(new Point(0, 0))}
+-        />
+-      </Modal>
++          // Handles android back button
++          onRequestClose={onRequestClose}>
++          <AdaptivePopover
++            {...this.props}
++            onCloseStart={() => {
++              RNModalPopover.isShowingInModal = false;
++              if (onCloseStart) onCloseStart();
++            }}
++            onCloseComplete={() => {
++              RNModalPopover.isShowingInModal = false;
++              this.setState({ visible: false });
++            }}
++            getDisplayAreaOffset={() => Promise.resolve(new Point(0, 0))}
++          />
++        </Modal>
++      </View>
+     );
+   }
+ }

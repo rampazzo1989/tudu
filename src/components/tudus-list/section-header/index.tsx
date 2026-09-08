@@ -1,8 +1,7 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { OptionsThreeDotsIcon } from '../../animated-icons/options-arrow-down-icon';
-import { RenameIcon } from '../../animated-icons/rename-icon';
-import { DeleteIcon } from '../../animated-icons/delete-icon';
+import { DeleteStaticIcon, RenameStaticIcon } from '../../../assets/static/tudu-icons';
 import { AnimatedIconRef } from '../../animated-icons/animated-icon/types';
 import { PopoverMenu } from '../../popover-menu';
 import { MenuOptions } from '../../menu-options';
@@ -66,7 +65,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = memo(
     const options: MenuOption[] = useMemo(() => {
       const opts: MenuOption[] = [
         {
-          Icon: RenameIcon,
+          Icon: RenameStaticIcon,
           label: t('sections.renameSection', { defaultValue: 'Renomear seção' }),
           onPress: handleRename,
         },
@@ -87,7 +86,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = memo(
       }
 
       opts.push({
-        Icon: DeleteIcon,
+        Icon: DeleteStaticIcon,
         label: t('sections.deleteSection', { defaultValue: 'Excluir seção' }),
         onPress: handleDelete,
       });

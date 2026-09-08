@@ -6,6 +6,7 @@ import {
   AnimationOptions,
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
+import {StarFilledSvg} from '../../../assets/static/tudu-icons';
 
 const StarIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -38,6 +39,7 @@ const StarIcon = memo(
         loop={false}
         componentName="StarIcon"
         size={24}
+        StaticComponent={StarFilledSvg}
         ref={iconRef}
         {...props}
       />

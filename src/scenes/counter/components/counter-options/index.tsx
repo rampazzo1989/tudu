@@ -1,6 +1,5 @@
 import React, {memo, useCallback, useMemo} from 'react';
-import {DeleteIcon} from '../../../../components/animated-icons/delete-icon';
-import {RenameIcon} from '../../../../components/animated-icons/rename-icon';
+import {DeleteStaticIcon, RenameStaticIcon} from '../../../../assets/static/tudu-icons';
 import {MenuOptions} from '../../../../components/menu-options';
 import {MenuOption} from '../../../../components/menu-options/types';
 import {CounterOptionsProps} from './types';
@@ -23,12 +22,12 @@ const CounterOptions: React.FC<CounterOptionsProps> = memo(
     const options = useMemo<MenuOption[]>(() => {
       return [
         {
-          Icon: RenameIcon,
+          Icon: RenameStaticIcon,
           label: t('menuLabels.edit'),
           onPress: handleEditOptionPress,
         },
         {
-          Icon: DeleteIcon,
+          Icon: DeleteStaticIcon,
           label: t('menuLabels.delete'),
           onPress: handleDeleteOptionPress,
         },

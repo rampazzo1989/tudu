@@ -5,8 +5,7 @@ import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
 import { TuduViewModel, RecurrenceType, ListOrigin } from '../../scenes/home/types';
 import { CheckMarkIcon } from '../animated-icons/check-mark';
-import { CalendarIcon } from '../animated-icons/calendar';
-import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
+import { CalendarStaticIcon, RecurrenceStaticIcon } from '../../assets/static/tudu-icons';
 import { PopupModal } from '../popup-modal';
 import { PopupButton } from '../popup-modal/types';
 import { ScheduleModal } from '../schedule-modal';
@@ -670,7 +669,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const ActionButtonComponent = useMemo(
       () => (
         <HeaderCalendarButton onPress={handleOpenScheduleModal}>
-          <CalendarIcon size={20} />
+          <CalendarStaticIcon size={20} />
         </HeaderCalendarButton>
       ),
       [handleOpenScheduleModal],
@@ -745,10 +744,10 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                 <ScheduledBadgeContainer>
                   <ScheduledBadgeButton onPress={handleOpenScheduleModal}>
                     {internalTuduData.recurrence ? (
-                      <RecurrenceIcon size={14} autoPlay={false} />
-                    ) : (
-                      <CalendarIcon size={14} autoPlay={false} />
-                    )}
+                       <RecurrenceStaticIcon size={14} />
+                     ) : (
+                       <CalendarStaticIcon size={14} />
+                     )}
                     <ScheduledBadgeText>
                       {formatScheduledDateTime(
                         internalTuduData.dueDate,
@@ -766,7 +765,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                 </ScheduledBadgeContainer>
               ) : (
                 <ScheduleAddButton onPress={handleOpenScheduleModal}>
-                  <CalendarIcon size={14} autoPlay={false} />
+                  <CalendarStaticIcon size={14} />
                   <ScheduleAddButtonText style={{ marginLeft: 5 }}>
                     {t('scheduleOptions.addSchedule', {
                       defaultValue: '+ Agendar data/hora',
@@ -775,7 +774,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                 </ScheduleAddButton>
               )}
               <AISuggestionButton onPress={handleOpenAISuggestions}>
-                <CalendarIcon size={14} autoPlay={false} overrideColor="transparent" />
+                <CalendarStaticIcon size={14} overrideColor="transparent" />
                 <AISuggestionButtonText>
                   {t('aiSuggestions.buttonSuggestShort', {
                     defaultValue: '✨ Sugerir itens',

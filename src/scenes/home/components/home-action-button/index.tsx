@@ -8,23 +8,25 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ListDefaultIcon } from '../../../../components/animated-icons/list-default-icon';
+import {
+  CopyStaticIcon,
+  HashStaticIcon,
+  ListDefaultStaticIcon,
+  NewGroupStaticIcon,
+} from '../../../../assets/static/tudu-icons';
 import { MenuOption } from '../../../../components/menu-options/types';
 import { HomeActionButtonProps } from './types';
 import { FloatingActionButtonRef } from '../../../../components/floating-action-button/types';
 import { PlusIcon } from '../../../../components/animated-icons/plus-icon';
 import { FloatingActionButton } from '../../../../components/floating-action-button';
 import {
-  HashIcon,
   HashIconActionAnimation,
 } from '../../../../components/animated-icons/hash-icon';
-import { CopyIcon } from '../../../../components/animated-icons/copy-icon';
 import { NewListModal } from '../../../group/components/new-list-modal';
 import { PasteListModal } from '../../../../components/paste-list-modal';
 import { NewCounterModal } from '../../../counter/components/new-counter-modal';
 import { NewTuduModal } from '../../../../components/new-tudu-modal';
 import { useTranslation } from 'react-i18next';
-import { NewGroupIcon } from '../../../../components/animated-icons/new-group-icon';
 import { NewGroupModal } from '../../../group/components/new-group-modal';
 import { DraggableContextType } from '../../../../modules/draggable/draggable-context/types';
 import Toast from 'react-native-toast-message';
@@ -99,22 +101,22 @@ const HomeActionButton = memo(
 
     const options: MenuOption[] = [
       {
-        Icon: ListDefaultIcon,
+        Icon: ListDefaultStaticIcon,
         label: t('actions.newList'),
         onPress: handleCreateNewList,
       },
       {
-        Icon: CopyIcon,
+        Icon: CopyStaticIcon,
         label: t('actions.newListFromText'),
         onPress: handleCreateNewListFromText,
       },
       {
-        Icon: NewGroupIcon,
+        Icon: NewGroupStaticIcon,
         label: t('actions.newGroup'),
         onPress: handleCreateNewGroup,
       },
       {
-        Icon: HashIcon,
+        Icon: HashStaticIcon,
         label: t('actions.newCounter'),
         onPress: handleCreateNewCounter,
       },

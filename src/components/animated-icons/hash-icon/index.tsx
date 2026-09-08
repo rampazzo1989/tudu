@@ -6,6 +6,7 @@ import {
   AnimationOptions,
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
+import {HashSvg} from '../../../assets/static/tudu-icons';
 
 const HashIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -37,6 +38,7 @@ const HashIcon = memo(
         source={require('../../../assets/lottie/hash.json')}
         loop={false}
         componentName="HashIcon"
+        StaticComponent={HashSvg}
         ref={iconRef}
         {...props}
       />

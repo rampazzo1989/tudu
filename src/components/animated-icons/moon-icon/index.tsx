@@ -7,6 +7,7 @@ import {
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
 import {AnimatedIcon} from './styles';
+import {MoonSvg} from '../../../assets/static/tudu-icons';
 
 const MoonIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -38,6 +39,7 @@ const MoonIcon = memo(
         source={require('../../../assets/lottie/moon.json')}
         loop={false}
         componentName="MoonIcon"
+        StaticComponent={MoonSvg}
         ref={iconRef}
         {...props}
       />

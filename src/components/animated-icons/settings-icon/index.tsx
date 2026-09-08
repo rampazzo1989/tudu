@@ -6,6 +6,7 @@ import {
   AnimationOptions,
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
+import {SettingsSvg} from '../../../assets/static/tudu-icons';
 
 const SettingsIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -40,6 +41,7 @@ const SettingsIcon = memo(
         staticStateFrame={60}
         componentName="SettingsIcon"
         source={require('../../../assets/lottie/settings.json')}
+        StaticComponent={SettingsSvg}
         ref={iconRef}
         {...props}
       />

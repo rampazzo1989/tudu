@@ -9,10 +9,12 @@ import { MenuOptions } from '../menu-options';
 import { MenuOption } from '../menu-options/types';
 import { OptionsThreeDotsIcon } from '../animated-icons/options-arrow-down-icon';
 import { AnimatedIconRef } from '../animated-icons/animated-icon/types';
-import { ShareIcon } from '../animated-icons/share-icon';
-import { CopyIcon } from '../animated-icons/copy-icon';
-import { RefreshIcon } from '../animated-icons/refresh-icon';
-import { PlusIcon } from '../animated-icons/plus-icon';
+import {
+  CopyStaticIcon,
+  PlusStaticIcon,
+  RefreshStaticIcon,
+  ShareStaticIcon,
+} from '../../assets/static/tudu-icons';
 import {
   IconWrapper,
   OptionsButton,
@@ -79,7 +81,7 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
 
       if (onAddSectionPress) {
         opts.push({
-          Icon: PlusIcon,
+          Icon: PlusStaticIcon,
           label: t('sections.addSection', { defaultValue: 'Nova Seção' }),
           onPress: handleAddSection,
         });
@@ -87,7 +89,7 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
 
       if (onReorderWithAIPress) {
         opts.push({
-          Icon: CopyIcon,
+          Icon: CopyStaticIcon,
           label: t('reorderPromptModal.title', { defaultValue: 'Reordenar com IA' }) + ' ✨',
           onPress: handleReorderWithAI,
         });
@@ -95,17 +97,17 @@ const ListOptionsButton: React.FC<ListOptionsButtonProps> = memo(
 
       opts.push(
         {
-          Icon: RefreshIcon,
+          Icon: RefreshStaticIcon,
           label: t('menuLabels.reverseOrder', { defaultValue: 'Inverter ordem' }),
           onPress: handleInvertOrder,
         },
         {
-          Icon: ShareIcon,
+          Icon: ShareStaticIcon,
           label: t('menuLabels.shareText', { defaultValue: 'Compartilhar texto' }),
           onPress: handleShareText,
         },
         {
-          Icon: ShareIcon,
+          Icon: ShareStaticIcon,
           label: t('menuLabels.shareFile', { defaultValue: 'Compartilhar arquivo (.tudu)' }),
           onPress: handleShareFile,
         },

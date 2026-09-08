@@ -10,6 +10,7 @@ export interface BaseAnimatedIconProps extends LottieViewProps {
   staticStateFrame?: number;
   size?: number | 'max';
   overrideColor?: string;
+  StaticComponent?: React.ComponentType<any>;
 }
 
 export type AnimatedIconProps = Omit<

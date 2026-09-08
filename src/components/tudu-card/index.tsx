@@ -1,22 +1,15 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import { useTheme } from 'styled-components/native';
 import { toggle } from '../../utils/state-utils';
-import { CalendarIcon } from '../animated-icons/calendar';
-import { ListDefaultIcon } from '../animated-icons/list-default-icon';
-import { SunIcon } from '../animated-icons/sun-icon';
 import { Star } from '../star';
 import { TuduCheckbox } from '../tudu-checkbox';
-import {
-  Card,
-  CheckAndTextContainer,
-  ChipsRow,
-  Label,
-  LabelAndAdditionalInfoContainer,
-  StarContainer,
-} from './styles';
+import { styles } from './styles';
 import { TuduAdditionalInformationOriginType, TuduCardProps } from './types';
 import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
 import { useTranslation } from 'react-i18next';
 import { TagChip } from '../tag-chip';
+import { CalendarChipSvg, ListChipSvg, SunChipSvg } from '../../assets/static/tudu-icons';
 
 const TuduCard = memo<TuduCardProps>(
   ({
@@ -26,6 +19,7 @@ const TuduCard = memo<TuduCardProps>(
     additionalInfo,
   }) => {
     const { t } = useTranslation();
+    const theme = useTheme();
     const [internalDone, setInternalDone] = useState(data.done);
     const [internalStarred, setInternalStarred] = useState(!!data.starred);
 
@@ -63,16 +57,17 @@ const TuduCard = memo<TuduCardProps>(
 
     const getAdditionalInfoIcon = useCallback(
       (type: TuduAdditionalInformationOriginType) => {
+        const iconColor = theme.colors.contrastColor || 'white';
         switch (type) {
           case 'today':
-            return <SunIcon size={12} />;
+            return <SunChipSvg size={12} color={iconColor} />;
           case 'list':
-            return <ListDefaultIcon size={10} />;
+            return <ListChipSvg size={10} color={iconColor} />;
           case 'scheduled':
-            return <CalendarIcon size={11} />;
+            return <CalendarChipSvg size={11} color={iconColor} />;
         }
       },
-      [],
+      [theme.colors.contrastColor],
     );
 
     const getAdditionalInformationLabel = useCallback(
@@ -93,21 +88,40 @@ const TuduCard = memo<TuduCardProps>(
     );
 
     return (
-      <Card
-        scaleFactor={0.03}
-        onPress={handleTuduPress}
-        onLongPress={() => {
-          return undefined;
-        }}
-        done={internalDone}>
-        <StarContainer>
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: internalDone
+              ? theme.colors.tuduCardDone
+              : theme.colors.tuduCard,
+            borderColor: internalDone
+              ? 'rgba(255, 255, 255, 0.03)'
+              : 'rgba(255, 255, 255, 0.06)',
+          },
+        ]}>
+        <View style={styles.starContainer}>
           <Star checked={internalStarred} onPress={handleStarPress} />
-        </StarContainer>
-        <CheckAndTextContainer done={data.done}>
-          <LabelAndAdditionalInfoContainer>
-            <Label done={internalDone}>{data.label}</Label>
+        </View>
+        <View
+          style={[
+            styles.checkAndTextContainer,
+            { opacity: internalDone ? 0.35 : 1 },
+          ]}>
+          <View style={styles.labelAndAdditionalInfoContainer}>
+            <Text
+              style={[
+                styles.label,
+                {
+                  fontFamily: theme.fonts.itemLabel,
+                  color: theme.colors.text,
+                  textDecorationLine: internalDone ? 'line-through' : 'none',
+                },
+              ]}>
+              {data.label}
+            </Text>
             {(additionalInfo || data.recurrence) && (
-              <ChipsRow>
+              <View style={styles.chipsRow}>
                 {additionalInfo && (
                   <TagChip
                     label={getAdditionalInformationLabel(
@@ -127,15 +141,14 @@ const TuduCard = memo<TuduCardProps>(
                     size="small"
                   />
                 )}
-              </ChipsRow>
+              </View>
             )}
-          </LabelAndAdditionalInfoContainer>
+          </View>
           <TuduCheckbox checked={internalDone} onPress={handleTuduPress} />
-        </CheckAndTextContainer>
-      </Card>
+        </View>
+      </View>
     );
   },
 );
 
 export { TuduCard };
-

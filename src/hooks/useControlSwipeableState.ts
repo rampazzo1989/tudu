@@ -3,20 +3,22 @@ import {Swipeable} from 'react-native-gesture-handler';
 import {currentlyOpenSwipeableRef} from '../state/atoms';
 import {useRecoilState} from 'recoil';
 
-const useControlSwipeableState = (swipeableRef: React.RefObject<Swipeable>) => {
+type ClosableSwipeable = {close: () => void};
+
+const useControlSwipeableState = (
+  swipeableRef: React.RefObject<ClosableSwipeable | null>,
+) => {
   const [currentlyOpenSwipeable, setCurrentlyOpenSwipeable] = useRecoilState(
     currentlyOpenSwipeableRef,
   );
 
   const setOpenSwipeable = useCallback(() => {
-    setCurrentlyOpenSwipeable(swipeableRef);
+    setCurrentlyOpenSwipeable(swipeableRef as any);
   }, [setCurrentlyOpenSwipeable, swipeableRef]);
 
   useEffect(() => {
     if (currentlyOpenSwipeable?.current !== swipeableRef.current) {
-      if (swipeableRef.current?.state.rowState !== 0) {
-        swipeableRef.current?.close();
-      }
+      swipeableRef.current?.close();
     }
   }, [swipeableRef, currentlyOpenSwipeable]);
 

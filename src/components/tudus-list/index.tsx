@@ -47,6 +47,7 @@ import { SectionHeader } from './section-header';
 import { EmptySectionDropzone } from './empty-section-dropzone';
 import { SectionModal } from '../section-modal';
 import { SectionDeleteModal } from '../section-delete-modal';
+import { TuduListRowItem } from './tudu-list-row-item';
 
 export type TudusListRow =
   | {
@@ -119,88 +120,72 @@ const TudusList: React.FC<TudusListProps> = memo(
       return list ? list.tudus : [];
     }, [list]);
 
+    const undoneTudus = useMemo(() => {
+      return tuduList.filter(t => !t.done);
+    }, [tuduList]);
+
+    const doneTudus = useMemo(() => {
+      return tuduList.filter(t => t.done);
+    }, [tuduList]);
+
     const sections = useMemo(() => {
-      return (list?.sections ? [...list.sections] : []).sort(
-        (a, b) => a.order - b.order,
-      );
+      if (!list?.sections) return [];
+      return [...list.sections].sort((a, b) => a.order - b.order);
     }, [list?.sections]);
 
     const hasSections = sections.length > 0;
 
-    const undoneTudus = useMemo(() => {
-      return tuduList.filter(x => !x.done);
-    }, [tuduList]);
-
-    const doneTudus = useMemo(() => {
-      return tuduList.filter(x => x.done);
-    }, [tuduList]);
-
-    const handleClearAllDonePress = useCallback(() => {
-      onClearAllDonePress(doneTudus);
-      animateIcon?.(DeleteIconActionAnimation);
-    }, [doneTudus, onClearAllDonePress, animateIcon]);
-
-    const handleUndoAllPress = useCallback(() => {
-      onUndoAllPress(doneTudus);
-      animateIcon?.(RefreshIcon);
-    }, [doneTudus, onUndoAllPress, animateIcon]);
-
-    const OptionsComponent = useCallback(
-      () => (
-        <OptionsTouchable
-          onPress={handleOptionsButtonPress}
-          hitSlop={20}
-          scaleFactor={0}>
-          <OptionsIconContainer>
-            <OptionsThreeDotsIcon ref={iconRef} speed={2} />
-          </OptionsIconContainer>
-        </OptionsTouchable>
-      ),
-      [handleOptionsButtonPress],
-    );
-
-    const OptionsMenu = useMemo(
-      () => (
+    const OptionsMenu = useMemo(() => {
+      return (
         <PopoverMenu
+          from={
+            <OptionsTouchable
+              onPress={handleOptionsButtonPress}
+              scaleFactor={0.1}>
+              <OptionsIconContainer>
+                <OptionsThreeDotsIcon ref={iconRef} />
+              </OptionsIconContainer>
+            </OptionsTouchable>
+          }
           isVisible={popoverMenuVisible}
-          onRequestClose={handlePopoverMenuRequestClose}
-          from={OptionsComponent}>
+          onRequestClose={handlePopoverMenuRequestClose}>
           <DoneItemsOptions
             closeMenu={handlePopoverMenuRequestClose}
-            onClearAllDone={handleClearAllDonePress}
-            onUndoAll={handleUndoAllPress}
+            onClearAllDone={onClearAllDonePress}
+            onUndoAll={onUndoAllPress}
           />
         </PopoverMenu>
-      ),
-      [
-        popoverMenuVisible,
-        handlePopoverMenuRequestClose,
-        OptionsComponent,
-        handleClearAllDonePress,
-        handleUndoAllPress,
-      ],
-    );
+      );
+    }, [
+      handleOptionsButtonPress,
+      handlePopoverMenuRequestClose,
+      onClearAllDonePress,
+      onUndoAllPress,
+      popoverMenuVisible,
+    ]);
 
     const CheckMarkAnimation = useMemo(() => {
       return (
         <CheckMarkIcon
-          onAnimationFinish={() =>
-            setTimeout(() => setAllDoneReactionVisible(false), 1500)
-          }
-          autoPlay
-          speed={3}
+          onAnimationFinish={() => {
+            setAllDoneReactionVisible(false);
+          }}
+          autoPlay={true}
         />
       );
     }, []);
 
     useEffect(() => {
-      setAllDoneReactionVisible(undoneTudus.length === 0);
+      if (!undoneTudus.length) {
+        setAllDoneReactionVisible(true);
+      }
     }, [undoneTudus.length]);
 
     const getSectionTitle = useCallback(
-      (doneLength: number) => {
+      (count?: number) => {
         return (
           <Animated.View
+            key="done-section-header"
             layout={LinearTransition}
             entering={FadeInUp}
             exiting={FadeOutUp}>
@@ -211,7 +196,7 @@ const TudusList: React.FC<TudusListProps> = memo(
                   : t('sectionTitles.allDone')
               }
               key="allTudus"
-              marginTop={0}
+              marginTop={16}
               ControlComponent={
                 allDoneReactionVisible ? undefined : OptionsMenu
               }
@@ -231,28 +216,25 @@ const TudusList: React.FC<TudusListProps> = memo(
       ],
     );
 
-    const handleDeleteGenerator = useCallback(
-      (deletingItem: TuduViewModel) => () => {
+    const handleDeleteTudu = useCallback(
+      (deletingItem: TuduViewModel) => {
         onDeletePress(deletingItem);
         animateIcon?.(DeleteIconActionAnimation);
       },
       [animateIcon, onDeletePress],
     );
 
-    const handleEditGenerator = useCallback(
-      (editingItem: TuduViewModel) =>
-        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-          onEditPress(editingItem);
-          swipeableRef.current?.closeOptions();
-        },
+    const handleEditTudu = useCallback(
+      (editingItem: TuduViewModel) => {
+        onEditPress(editingItem);
+      },
       [onEditPress],
     );
 
-    const handleScheduleGenerator = useCallback(
-      (editingItem: TuduViewModel) =>
-        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-          onSchedulePress(editingItem);
-        },
+    const handleScheduleTudu = useCallback(
+      (editingItem: TuduViewModel) => {
+        onSchedulePress(editingItem);
+      },
       [onSchedulePress],
     );
 
@@ -272,27 +254,26 @@ const TudusList: React.FC<TudusListProps> = memo(
       [saveTudu],
     );
 
-    const handleSendToOrRemoveFromTodayGenerator = useCallback(
-      (editingItem: TuduViewModel) =>
-        (swipeableRef: React.RefObject<SwipeableCardRef>) => {
-          const dueDate = editingItem.dueDate;
-          if (dueDate && isToday(dueDate)) {
-            setTimeout(() => {
-              removeFromToday(editingItem);
-              swipeableRef.current?.closeOptions();
-            }, 700);
-          } else {
-            if (editingItem.recurrence) {
-              setTuduWaitingForConfirmation(editingItem);
-              return;
-            }
-            setTimeout(() => {
-              sendToToday(editingItem);
-              swipeableRef.current?.closeOptions();
-            }, 700);
+    const handleSendToOrRemoveFromToday = useCallback(
+      (editingItem: TuduViewModel, swipeableRef: React.RefObject<SwipeableCardRef>) => {
+        const dueDate = editingItem.dueDate;
+        if (dueDate && isToday(dueDate)) {
+          setTimeout(() => {
+            removeFromToday(editingItem);
+            swipeableRef.current?.closeOptions();
+          }, 700);
+        } else {
+          if (editingItem.recurrence) {
+            setTuduWaitingForConfirmation(editingItem);
+            return;
           }
-        },
-      [removeFromToday, saveTudu, sendToToday],
+          setTimeout(() => {
+            sendToToday(editingItem);
+            swipeableRef.current?.closeOptions();
+          }, 700);
+        }
+      },
+      [removeFromToday, sendToToday],
     );
 
     // Section CRUD Actions
@@ -400,99 +381,67 @@ const TudusList: React.FC<TudusListProps> = memo(
       [list, onUpdateList],
     );
 
-    // Build Unified Flattened Rows
+    // Build Flattened Undone Rows (sections + undone items)
     const flatRows = useMemo<TudusListRow[]>(() => {
-      if (!hasSections) {
-        return undoneTudus.map(tudu => ({
-          type: 'tudu',
-          id: `tudu-${tudu.id}`,
-          tudu,
-        }));
-      }
-
       const rows: TudusListRow[] = [];
-      const sectionIds = new Set(sections.map(s => s.id));
 
-      // 1. Unsectioned items
-      const unsectionedTudus = undoneTudus.filter(
-        t => !t.sectionId || !sectionIds.has(t.sectionId),
-      );
-      unsectionedTudus.forEach(tudu => {
-        rows.push({
-          type: 'tudu',
-          id: `tudu-${tudu.id}`,
-          tudu,
-        });
-      });
-
-      // 2. Sections
-      sections.forEach((sec, sIdx) => {
-        const secTudus = undoneTudus.filter(t => t.sectionId === sec.id);
-
-        rows.push({
-          type: 'section_header',
-          id: `section-${sec.id}`,
-          section: sec,
-          itemCount: secTudus.length,
-          isFirst: sIdx === 0,
-          isLast: sIdx === sections.length - 1,
-        });
-
-        if (secTudus.length === 0) {
+      if (!hasSections) {
+        undoneTudus.forEach(tudu => {
           rows.push({
-            type: 'empty_section_dropzone',
-            id: `empty-${sec.id}`,
+            type: 'tudu',
+            id: `tudu-${tudu.id}`,
+            tudu,
+          });
+        });
+      } else {
+        const sectionIds = new Set(sections.map(s => s.id));
+
+        // 1. Unsectioned items
+        const unsectionedTudus = undoneTudus.filter(
+          t => !t.sectionId || !sectionIds.has(t.sectionId),
+        );
+        unsectionedTudus.forEach(tudu => {
+          rows.push({
+            type: 'tudu',
+            id: `tudu-${tudu.id}`,
+            tudu,
+          });
+        });
+
+        // 2. Sections
+        sections.forEach((sec, sIdx) => {
+          const secTudus = undoneTudus.filter(t => t.sectionId === sec.id);
+
+          rows.push({
+            type: 'section_header',
+            id: `section-${sec.id}`,
             section: sec,
+            itemCount: secTudus.length,
+            isFirst: sIdx === 0,
+            isLast: sIdx === sections.length - 1,
           });
-        } else {
-          secTudus.forEach(tudu => {
+
+          if (secTudus.length === 0) {
             rows.push({
-              type: 'tudu',
-              id: `tudu-${tudu.id}`,
-              tudu,
-              sectionId: sec.id,
+              type: 'empty_section_dropzone',
+              id: `empty-${sec.id}`,
+              section: sec,
             });
-          });
-        }
-      });
+          } else {
+            secTudus.forEach(tudu => {
+              rows.push({
+                type: 'tudu',
+                id: `tudu-${tudu.id}`,
+                tudu,
+                sectionId: sec.id,
+              });
+            });
+          }
+        });
+      }
 
       return rows;
     }, [hasSections, sections, undoneTudus]);
-
-    const SwipeableTudu: React.FC<{ tudu: TuduViewModel; isActive: boolean }> =
-      useCallback(
-        ({ tudu, isActive }) => {
-          return (
-            <SwipeableTuduCard
-              enabled={!isActive}
-              done={tudu.done}
-              onDelete={handleDeleteGenerator(tudu)}
-              onEdit={handleEditGenerator(tudu)}
-              onSchedule={handleScheduleGenerator(tudu)}
-              isOnToday={Boolean(tudu.dueDate && isToday(tudu.dueDate))}
-              onSendToOrRemoveFromToday={handleSendToOrRemoveFromTodayGenerator(
-                tudu,
-              )}
-              allowSchedule={tudu.origin !== 'archived'}>
-              <TuduCard
-                data={tudu}
-                onPress={onTuduPress}
-                onStarPress={onStarPress}
-                additionalInfo={getAdditionalInformation(tudu)}
-              />
-            </SwipeableTuduCard>
-          );
-        },
-        [
-          getAdditionalInformation,
-          handleDeleteGenerator,
-          handleEditGenerator,
-          handleScheduleGenerator,
-          handleSendToOrRemoveFromTodayGenerator,
-          onStarPress,
-          onTuduPress,
-        ],
-      );
 
     const renderUndoneRow = useCallback(
       ({ item: row, drag, isActive }: RenderItemParams<TudusListRow>) => {
@@ -520,25 +469,23 @@ const TudusList: React.FC<TudusListProps> = memo(
           );
         }
 
-        const tudu = row.tudu;
-
         return (
           <ShadowDecorator elevation={5} color="black" opacity={1} radius={2}>
-            <ScaleDecorator activeScale={1.05}>
-              <ShrinkableView
-                onPress={() => onTuduPress(tudu)}
-                scaleFactor={0.03}
-                style={{
-                  height: 'auto',
-                  width: '100%',
-                  zIndex: 9999,
-                  marginBottom: 8,
-                }}
-                onLongPress={drag}
-                disabled={isActive}>
-                {SwipeableTudu({ tudu, isActive })}
-              </ShrinkableView>
-            </ScaleDecorator>
+            <TuduListRowItem
+              key={row.id}
+              tudu={row.tudu}
+              isActive={isActive}
+              isDraggable={true}
+              drag={drag}
+              onTuduPress={onTuduPress}
+              onStarPress={onStarPress}
+              onDelete={handleDeleteTudu}
+              onEdit={handleEditTudu}
+              onSchedule={handleScheduleTudu}
+              onSendToOrRemoveFromToday={handleSendToOrRemoveFromToday}
+              additionalInfo={getAdditionalInformation(row.tudu)}
+              allowSchedule={row.tudu.origin !== 'archived'}
+            />
           </ShadowDecorator>
         );
       },
@@ -549,7 +496,12 @@ const TudusList: React.FC<TudusListProps> = memo(
         handleMoveSectionDown,
         onInsertTuduPress,
         onTuduPress,
-        SwipeableTudu,
+        onStarPress,
+        handleDeleteTudu,
+        handleEditTudu,
+        handleScheduleTudu,
+        handleSendToOrRemoveFromToday,
+        getAdditionalInformation,
       ],
     );
 
@@ -559,21 +511,32 @@ const TudusList: React.FC<TudusListProps> = memo(
 
         return (
           <TuduAnimatedWrapper key={tudu.id} layout={LinearTransition}>
-            <ShrinkableView
-              onPress={() => onTuduPress(tudu)}
-              scaleFactor={0.03}
-              style={{
-                height: 'auto',
-                width: '100%',
-                zIndex: 0,
-                marginBottom: 8,
-              }}>
-              {SwipeableTudu({ tudu, isActive: false })}
-            </ShrinkableView>
+            <TuduListRowItem
+              key={tudu.id}
+              tudu={tudu}
+              isActive={false}
+              isDraggable={false}
+              onTuduPress={onTuduPress}
+              onStarPress={onStarPress}
+              onDelete={handleDeleteTudu}
+              onEdit={handleEditTudu}
+              onSchedule={handleScheduleTudu}
+              onSendToOrRemoveFromToday={handleSendToOrRemoveFromToday}
+              additionalInfo={getAdditionalInformation(tudu)}
+              allowSchedule={tudu.origin !== 'archived'}
+            />
           </TuduAnimatedWrapper>
         );
       },
-      [onTuduPress, SwipeableTudu],
+      [
+        onTuduPress,
+        onStarPress,
+        handleDeleteTudu,
+        handleEditTudu,
+        handleScheduleTudu,
+        handleSendToOrRemoveFromToday,
+        getAdditionalInformation,
+      ],
     );
 
     const handleDragBegin = useCallback(() => {

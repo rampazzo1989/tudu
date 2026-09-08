@@ -6,6 +6,7 @@ import {
   AnimationOptions,
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
+import {SearchSvg} from '../../../assets/static/tudu-icons';
 
 const SearchIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -40,6 +41,7 @@ const SearchIcon = memo(
         staticStateFrame={60}
         componentName="SearchIcon"
         source={require('../../../assets/lottie/search.json')}
+        StaticComponent={SearchSvg}
         ref={iconRef}
         {...props}
       />

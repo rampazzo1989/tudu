@@ -28,7 +28,7 @@ import {
   DraggableItem,
 } from '../../../../modules/draggable/draggable-context/types';
 import {NewGroupModalProps} from './types';
-import {ListDefaultIcon} from '../../../../components/animated-icons/list-default-icon';
+import {ListDefaultStaticIcon} from '../../../../assets/static/tudu-icons';
 import {CheckboxSimple} from '../../../../components/checkbox-simple';
 import {useTheme} from 'styled-components/native';
 import {getUngroupedItems} from '../../../../modules/draggable/draggable-utils';
@@ -207,7 +207,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = memo(
                   return (
                     <SelectableListCard
                       label={list.data[0].label}
-                      Icon={ListDefaultIcon}
+                      Icon={ListDefaultStaticIcon}
                       numberOfActiveItems={list.data[0].numberOfActiveItems}
                       isHighlighted
                       key={`${list.data[0].id}`}

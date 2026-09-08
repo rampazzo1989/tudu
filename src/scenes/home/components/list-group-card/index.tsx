@@ -21,7 +21,7 @@ import { FadeIn } from 'react-native-reanimated';
 import { ListDataViewModel } from '../../types';
 import { DeleteIconActionAnimation } from '../../../../components/animated-icons/delete-icon';
 import { NewGroupModal } from '../../../group/components/new-group-modal';
-import { NextIcon } from '../../../../components/animated-icons/next-icon';
+import { NextStaticIcon } from '../../../../assets/static/tudu-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackNavigatorParamList } from '../../../../navigation/stack-navigator/types';
@@ -163,7 +163,7 @@ const ListGroupCard: React.FC<ListGroupProps> = memo(
               })}
             </SeeMoreText>
             <SeeMoreIconContainer>
-              <NextIcon size={14} />
+              <NextStaticIcon size={14} />
             </SeeMoreIconContainer>
           </SeeMoreButton>
         )}

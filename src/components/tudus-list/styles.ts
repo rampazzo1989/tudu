@@ -18,7 +18,9 @@ export const SectionTitle = styled(Title)<{marginTop: number}>`
 `;
 
 
+
 export const TuduAnimatedWrapper = styled(Animated.View)`
+  width: 100%;
 `;
 
 export const TuduAnimatedContainer = styled.View`

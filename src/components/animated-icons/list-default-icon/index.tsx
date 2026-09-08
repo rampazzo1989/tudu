@@ -6,6 +6,7 @@ import {
   AnimationOptions,
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
+import {ListChipSvg} from '../../../assets/static/tudu-icons';
 
 const ListDefaultIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -55,6 +56,7 @@ const ListDefaultIcon = memo(
         componentName="ListDefaultIcon"
         staticStateFrame={165}
         finalFrame={165}
+        StaticComponent={ListChipSvg}
         ref={iconRef}
         speed={2}
         {...props}

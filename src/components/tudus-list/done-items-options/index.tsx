@@ -1,9 +1,8 @@
 import React, {memo, useCallback, useContext, useMemo, useRef} from 'react';
 import {useTranslation} from 'react-i18next';
-import { DeleteIcon } from '../../animated-icons/delete-icon';
+import { DeleteStaticIcon, RefreshStaticIcon } from '../../../assets/static/tudu-icons';
 import { MenuOption } from '../../menu-options/types';
 import { MenuOptions } from '../../menu-options';
-import { RefreshIcon } from '../../animated-icons/refresh-icon';
 import { DoneItemsOptionsProps } from './types';
 import { DraggableContext } from '../../../modules/draggable/draggable-context';
 import { showItemDeletedToast } from '../../../utils/toast-utils';
@@ -30,12 +29,12 @@ const DoneItemsOptions: React.FC<DoneItemsOptionsProps> = memo(
     const options = useMemo<MenuOption[]>(() => {
       return [
         {
-          Icon: RefreshIcon,
+          Icon: RefreshStaticIcon,
           label: t('menuLabels.undoAll'),
           onPress: handleUndoAllPress,
         },
         {
-          Icon: DeleteIcon,
+          Icon: DeleteStaticIcon,
           label: t('menuLabels.clearAll'),
           onPress: handleClearAllPress,
         },

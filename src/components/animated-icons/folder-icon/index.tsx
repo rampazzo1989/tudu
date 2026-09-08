@@ -6,6 +6,7 @@ import {
   AnimationOptions,
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
+import {FolderSvg} from '../../../assets/static/tudu-icons';
 
 const FolderIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
@@ -58,6 +59,7 @@ const FolderIcon = memo(
         staticStateFrame={85}
         finalFrame={150}
         size={24}
+        StaticComponent={FolderSvg}
         ref={iconRef}
         {...props}
       />

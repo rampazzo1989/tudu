@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useRecoilState } from 'recoil';
 import { Container, Title, EmojiList, EmojiButton, EmojiText, RightFadingGradient } from './styles';
 import { FadeIn } from 'react-native-reanimated';
-import { ListDefaultIcon } from '../animated-icons/list-default-icon';
+import { ListDefaultStaticIcon } from '../../assets/static/tudu-icons';
 import { emojiUsageState } from '../../state/atoms';
 import { useTheme } from 'styled-components/native';
 import Skeleton from '../skeleton';
@@ -98,7 +98,7 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({
                         onPress={() => handleEmojiPress('')}
                         selected={selectedEmoji === ''}
                         entering={FadeIn}>
-                        <ListDefaultIcon size={24} />
+                        <ListDefaultStaticIcon size={24} />
                     </EmojiButton>
                 )}
                 {emojis.map((emoji, index) => (

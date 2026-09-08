@@ -7,6 +7,7 @@ export const styles = StyleSheet.create({
     backgroundColor: CurrentTheme.colors.swipeableCard.optionsBackground,
     borderRadius: 14,
     overflow: 'hidden',
+    width: '100%',
   },
   contentContainer: {
     flexDirection: 'row',
@@ -14,6 +15,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 14,
+    width: '100%',
   },
 });
 

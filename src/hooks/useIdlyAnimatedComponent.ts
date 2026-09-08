@@ -10,6 +10,7 @@ type UseIdlyAnimatedComponent = {
   finalFrame?: number;
   shouldAnimate?: boolean;
   staticStateFrame?: number;
+  onAnimate?: () => void;
 };
 
 const useIdlyAnimatedComponent = ({
@@ -19,12 +20,17 @@ const useIdlyAnimatedComponent = ({
   finalFrame = 500,
   shouldAnimate = false,
   staticStateFrame = 0,
+  onAnimate,
 }: UseIdlyAnimatedComponent) => {
   const setIdlyAnimatedComponent = useSetRecoilState(idlyAnimatedComponents);
 
   const animate = useCallback(() => {
-    componentRef?.current?.play(initialFrame, finalFrame);
-  }, [componentRef, finalFrame, initialFrame]);
+    if (onAnimate) {
+      onAnimate();
+    } else {
+      componentRef?.current?.play(initialFrame, finalFrame);
+    }
+  }, [componentRef, finalFrame, initialFrame, onAnimate]);
 
   // Starts the animation from static state frame (to show the image static on a specific frame).
   useEffect(() => {
