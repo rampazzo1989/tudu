@@ -20,24 +20,28 @@ const TuduCard = memo<TuduCardProps>(
   }) => {
     const { t } = useTranslation();
     const theme = useTheme();
-    const [internalDone, setInternalDone] = useState(data.done);
-    const [internalStarred, setInternalStarred] = useState(!!data.starred);
+    const [optimisticDone, setOptimisticDone] = useState<boolean | null>(null);
+    const [optimisticStarred, setOptimisticStarred] = useState<boolean | null>(null);
 
-    useEffect(() => {
-      setInternalDone(data.done);
-      setInternalStarred(!!data.starred);
-    }, [data.done, data.starred]);
+    const isDone = optimisticDone !== null ? optimisticDone : data.done;
+    const isStarred = optimisticStarred !== null ? optimisticStarred : !!data.starred;
 
     const handleTuduPress = useCallback(() => {
-      setInternalDone(toggle);
+      setOptimisticDone(!data.done);
     
       const toggleTimeout = data.done ? 0 : 100;
-      setTimeout(() => onPress(data), toggleTimeout);
+      setTimeout(() => {
+        onPress(data);
+        setOptimisticDone(null);
+      }, toggleTimeout);
     }, [data, onPress]);
 
     const handleStarPress = useCallback(() => {
-      setInternalStarred(toggle);
-      setTimeout(() => onStarPress(data), 100);
+      setOptimisticStarred(!data.starred);
+      setTimeout(() => {
+        onStarPress(data);
+        setOptimisticStarred(null);
+      }, 100);
     }, [data, onStarPress]);
 
     const getAdditionalInfoVariant = useCallback(
@@ -92,21 +96,21 @@ const TuduCard = memo<TuduCardProps>(
         style={[
           styles.card,
           {
-            backgroundColor: internalDone
+            backgroundColor: isDone
               ? theme.colors.tuduCardDone
               : theme.colors.tuduCard,
-            borderColor: internalDone
+            borderColor: isDone
               ? 'rgba(255, 255, 255, 0.03)'
               : 'rgba(255, 255, 255, 0.06)',
           },
         ]}>
         <View style={styles.starContainer}>
-          <Star checked={internalStarred} onPress={handleStarPress} />
+          <Star checked={isStarred} onPress={handleStarPress} />
         </View>
         <View
           style={[
             styles.checkAndTextContainer,
-            { opacity: internalDone ? 0.35 : 1 },
+            { opacity: isDone ? 0.35 : 1 },
           ]}>
           <View style={styles.labelAndAdditionalInfoContainer}>
             <Text
@@ -115,7 +119,7 @@ const TuduCard = memo<TuduCardProps>(
                 {
                   fontFamily: theme.fonts.itemLabel,
                   color: theme.colors.text,
-                  textDecorationLine: internalDone ? 'line-through' : 'none',
+                  textDecorationLine: isDone ? 'line-through' : 'none',
                 },
               ]}>
               {data.label}
@@ -144,7 +148,7 @@ const TuduCard = memo<TuduCardProps>(
               </View>
             )}
           </View>
-          <TuduCheckbox checked={internalDone} onPress={handleTuduPress} />
+          <TuduCheckbox checked={isDone} onPress={handleTuduPress} />
         </View>
       </View>
     );

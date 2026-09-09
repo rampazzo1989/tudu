@@ -23,12 +23,11 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   }, [navigation]);
 
   useEffect(() => {
-    const foundList = getListById(listId, listOrigin);
-    const timer = setTimeout(() => {
+    if (list?.id === UNLOADED_ID) {
+      const foundList = getListById(listId, listOrigin);
       setList(foundList);
-    }, 50);
-    return () => clearTimeout(timer);
-  }, [getListById, listId, listOrigin]);
+    }
+  }, [getListById, listId, listOrigin, list?.id]);
 
   const setTudus = useCallback(
     (tudus: TuduViewModel[]) => {
@@ -42,6 +41,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
         list.origin,
       );
       newList.tudus = tudus;
+      setList(newList);
       saveListAndTudus(newList);
     },
     [list, saveListAndTudus],

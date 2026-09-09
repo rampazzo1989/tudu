@@ -565,7 +565,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           {loading ? (
             <SkeletonTuduList numberOfItems={numberOfUndoneTudus} />
           ) : (
-            <Animated.View style={{ flex: 1 }} layout={LinearTransition}>
+            <Animated.View style={{ flex: 1 }}>
               <TudusList
                 onTuduPress={handleTuduPress}
                 animateIcon={animateThisIcon}

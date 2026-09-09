@@ -33,8 +33,6 @@ import {
   NestableDraggableFlatList,
   NestableScrollContainer,
   RenderItemParams,
-  ScaleDecorator,
-  ShadowDecorator,
 } from 'react-native-draggable-flatlist';
 import { useListService } from '../../service/list-service-hook/useListService';
 import { SwipeableTuduCard } from '../tudu-card/swipeable-tudu-card';
@@ -92,7 +90,6 @@ const TudusList: React.FC<TudusListProps> = memo(
     const iconRef = useRef<BaseAnimatedIconRef>(null);
     const [popoverMenuVisible, setPopoverMenuVisible] = useState(false);
     const [allDoneReactionVisible, setAllDoneReactionVisible] = useState(false);
-    const [dragVersion, setDragVersion] = useState(0);
     const [tuduWaitingForConfirmation, setTuduWaitingForConfirmation] =
       useState<TuduViewModel | null>(null);
 
@@ -470,23 +467,21 @@ const TudusList: React.FC<TudusListProps> = memo(
         }
 
         return (
-          <ShadowDecorator elevation={5} color="black" opacity={1} radius={2}>
-            <TuduListRowItem
-              key={row.id}
-              tudu={row.tudu}
-              isActive={isActive}
-              isDraggable={true}
-              drag={drag}
-              onTuduPress={onTuduPress}
-              onStarPress={onStarPress}
-              onDelete={handleDeleteTudu}
-              onEdit={handleEditTudu}
-              onSchedule={handleScheduleTudu}
-              onSendToOrRemoveFromToday={handleSendToOrRemoveFromToday}
-              additionalInfo={getAdditionalInformation(row.tudu)}
-              allowSchedule={row.tudu.origin !== 'archived'}
-            />
-          </ShadowDecorator>
+          <TuduListRowItem
+            key={row.id}
+            tudu={row.tudu}
+            isActive={isActive}
+            isDraggable={true}
+            drag={drag}
+            onTuduPress={onTuduPress}
+            onStarPress={onStarPress}
+            onDelete={handleDeleteTudu}
+            onEdit={handleEditTudu}
+            onSchedule={handleScheduleTudu}
+            onSendToOrRemoveFromToday={handleSendToOrRemoveFromToday}
+            additionalInfo={getAdditionalInformation(row.tudu)}
+            allowSchedule={row.tudu.origin !== 'archived'}
+          />
         );
       },
       [
@@ -546,7 +541,6 @@ const TudusList: React.FC<TudusListProps> = memo(
     const handleDragEnd: (params: DragEndParams<TudusListRow>) => void =
       useCallback(
         ({ data }) => {
-          setDragVersion(v => v + 1);
           if (!hasSections) {
             const reordered = data
               .filter(
@@ -602,8 +596,6 @@ const TudusList: React.FC<TudusListProps> = memo(
 
           {flatRows.length > 0 && (
             <NestableDraggableFlatList
-              key={`draggable-list-${dragVersion}`}
-              extraData={dragVersion}
               data={flatRows}
               renderItem={renderUndoneRow}
               keyExtractor={item => item.id}
