@@ -5,6 +5,7 @@ export type ListPageCoreProps = {
   setTudus: (tudus: TuduViewModel[]) => void;
   handleBackButtonPress: () => void;
   list?: ListViewModel;
+  onUpdateList?: (list: ListViewModel) => void;
   Icon?: ForwardedRefAnimatedIcon;
   isSmartList?: boolean;
   allowAdding?: boolean;

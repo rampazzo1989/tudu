@@ -1,5 +1,5 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
-import {ListViewModel, TuduViewModel} from '../home/types';
+import {ListViewModel, TuduViewModel, cloneList} from '../home/types';
 import {ListPageProps} from './types';
 import {DraggableItem} from '../../modules/draggable/draggable-context/types';
 import {useListService} from '../../service/list-service-hook/useListService';
@@ -31,26 +31,25 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
 
   const setTudus = useCallback(
     (tudus: TuduViewModel[]) => {
-      if (!list) {
-        return;
-      }
+      setList(current => {
+        if (!current) {
+          return current;
+        }
 
-      const newList = new ListViewModel(
-        list.mapBackList(),
-        undefined,
-        list.origin,
-      );
-      newList.tudus = tudus;
-      setList(newList);
-      saveListAndTudus(newList);
+        const newList = cloneList(current);
+        newList.tudus = tudus;
+        saveListAndTudus(newList);
+        return newList;
+      });
     },
-    [list, saveListAndTudus],
+    [saveListAndTudus],
   );
 
   return (
     <ListPageCore
       handleBackButtonPress={handleBackButtonPress}
       setTudus={setTudus}
+      onUpdateList={setList}
       list={list}
       defaultListId={listId}
       defaultOrigin={listOrigin || 'default'}

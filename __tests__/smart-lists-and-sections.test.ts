@@ -5,7 +5,7 @@ import {
   buildReorderListPrompt,
   parseListResultFromResponse,
 } from '../src/service/ai/ai-service';
-import { Section, TuduItem, TuduViewModel } from '../src/scenes/home/types';
+import { Section, TuduItem, TuduViewModel, ListViewModel, cloneList } from '../src/scenes/home/types';
 
 describe('Smart Lists & Sections', () => {
   describe('buildParseListPrompt', () => {
@@ -173,6 +173,55 @@ describe('Smart Lists & Sections', () => {
 
       expect(resultTudus[0].sectionId).toBeUndefined();
     });
+
+    it('correctly maps sectionId when item is dragged into an empty section (with empty dropzone)', () => {
+      const secNova: Section = { id: 'sec-new', title: 'Nova Seção', order: 0 };
+      const item1 = new TuduViewModel({ id: 't1', label: 'Item 1', done: false }, 'l1');
+
+      type Row =
+        | { type: 'section_header'; section: Section }
+        | { type: 'empty_section_dropzone'; section: Section }
+        | { type: 'tudu'; tudu: TuduViewModel };
+
+      // User drags item1 below section_header or after dropzone
+      const reorderedRows: Row[] = [
+        { type: 'section_header', section: secNova },
+        { type: 'empty_section_dropzone', section: secNova },
+        { type: 'tudu', tudu: item1 },
+      ];
+
+      let currentSectionId: string | undefined = undefined;
+      const resultTudus: TuduViewModel[] = [];
+
+      for (const row of reorderedRows) {
+        if (row.type === 'section_header') {
+          currentSectionId = row.section.id;
+        } else if (row.type === 'empty_section_dropzone') {
+          currentSectionId = row.section.id;
+        } else if (row.type === 'tudu') {
+          const cloned = row.tudu.clone();
+          cloned.sectionId = currentSectionId;
+          resultTudus.push(cloned);
+        }
+      }
+
+      expect(resultTudus).toHaveLength(1);
+      expect(resultTudus[0].sectionId).toBe('sec-new');
+
+      // Now verify list state update preserves the section
+      const list = new ListViewModel({
+        id: 'l1',
+        label: 'Minha Lista',
+        sections: [secNova],
+      });
+
+      const updatedList = cloneList(list);
+      updatedList.tudus = resultTudus;
+
+      expect(updatedList.sections).toHaveLength(1);
+      expect(updatedList.sections![0].id).toBe('sec-new');
+      expect(updatedList.tudus[0].sectionId).toBe('sec-new');
+    });
   });
 
   describe('Reorder Prompt Modal Logic', () => {
@@ -237,5 +286,194 @@ describe('Smart Lists & Sections', () => {
       expect(reorderedTudus[2].sectionId).toBeUndefined();
     });
   });
+
+  describe('Section Visibility Logic (Hide on All Done, Show Empty Sections)', () => {
+    const getVisibleSections = (
+      sections: Section[],
+      tudus: TuduViewModel[],
+    ): Section[] => {
+      const undoneTudus = tudus.filter(t => !t.done);
+      const doneTudus = tudus.filter(t => t.done);
+      return sections.filter(sec => {
+        const hasUndone = undoneTudus.some(t => t.sectionId === sec.id);
+        const hasDone = doneTudus.some(t => t.sectionId === sec.id);
+        return hasUndone || !hasDone;
+      });
+    };
+
+    it('shows newly created empty section with no items', () => {
+      const sec1: Section = { id: 'sec-1', title: 'Compras', order: 0 };
+      const sections = [sec1];
+      const tudus: TuduViewModel[] = [];
+
+      const visible = getVisibleSections(sections, tudus);
+      expect(visible).toHaveLength(1);
+      expect(visible[0].id).toBe('sec-1');
+    });
+
+    it('shows section with active items', () => {
+      const sec1: Section = { id: 'sec-1', title: 'Compras', order: 0 };
+      const sections = [sec1];
+      const tudus = [
+        new TuduViewModel({ id: 't1', label: 'Pão', done: false, sectionId: 'sec-1' }, 'l1'),
+      ];
+
+      const visible = getVisibleSections(sections, tudus);
+      expect(visible).toHaveLength(1);
+      expect(visible[0].id).toBe('sec-1');
+    });
+
+    it('shows section with mixed active and done items', () => {
+      const sec1: Section = { id: 'sec-1', title: 'Compras', order: 0 };
+      const sections = [sec1];
+      const tudus = [
+        new TuduViewModel({ id: 't1', label: 'Pão', done: false, sectionId: 'sec-1' }, 'l1'),
+        new TuduViewModel({ id: 't2', label: 'Leite', done: true, sectionId: 'sec-1' }, 'l1'),
+      ];
+
+      const visible = getVisibleSections(sections, tudus);
+      expect(visible).toHaveLength(1);
+      expect(visible[0].id).toBe('sec-1');
+    });
+
+    it('hides section when the last active item is marked done', () => {
+      const sec1: Section = { id: 'sec-1', title: 'Compras', order: 0 };
+      const sections = [sec1];
+      const tudus = [
+        new TuduViewModel({ id: 't1', label: 'Pão', done: true, sectionId: 'sec-1' }, 'l1'),
+        new TuduViewModel({ id: 't2', label: 'Leite', done: true, sectionId: 'sec-1' }, 'l1'),
+      ];
+
+      const visible = getVisibleSections(sections, tudus);
+      expect(visible).toHaveLength(0);
+    });
+
+    it('shows empty section when all its items were dragged to another section', () => {
+      const sec1: Section = { id: 'sec-1', title: 'Compras', order: 0 };
+      const sec2: Section = { id: 'sec-2', title: 'Trabalho', order: 1 };
+      const sections = [sec1, sec2];
+      // Item was previously in sec-1, but dragged to sec-2
+      const tudus = [
+        new TuduViewModel({ id: 't1', label: 'Pão', done: false, sectionId: 'sec-2' }, 'l1'),
+      ];
+
+      const visible = getVisibleSections(sections, tudus);
+      expect(visible).toHaveLength(2);
+      expect(visible.map(s => s.id)).toEqual(['sec-1', 'sec-2']);
+    });
+
+    it('shows empty section when all its items were deleted', () => {
+      const sec1: Section = { id: 'sec-1', title: 'Compras', order: 0 };
+      const sections = [sec1];
+      // Item deleted from list
+      const tudus: TuduViewModel[] = [];
+
+      const visible = getVisibleSections(sections, tudus);
+      expect(visible).toHaveLength(1);
+      expect(visible[0].id).toBe('sec-1');
+    });
+
+    it('unhides section when a done item is unmarked', () => {
+      const sec1: Section = { id: 'sec-1', title: 'Compras', order: 0 };
+      const sections = [sec1];
+      const item1 = new TuduViewModel({ id: 't1', label: 'Pão', done: true, sectionId: 'sec-1' }, 'l1');
+      const tudus = [item1];
+
+      // Initially hidden because all items are done
+      expect(getVisibleSections(sections, tudus)).toHaveLength(0);
+
+      // User unmarks the item
+      item1.done = false;
+      const visibleAfterUnmark = getVisibleSections(sections, tudus);
+      expect(visibleAfterUnmark).toHaveLength(1);
+      expect(visibleAfterUnmark[0].id).toBe('sec-1');
+    });
+
+    it('only hides the completed section among multiple sections', () => {
+      const sec1: Section = { id: 'sec-1', title: 'Compras', order: 0 };
+      const sec2: Section = { id: 'sec-2', title: 'Trabalho', order: 1 };
+      const sections = [sec1, sec2];
+      const tudus = [
+        // sec-1 is completed
+        new TuduViewModel({ id: 't1', label: 'Pão', done: true, sectionId: 'sec-1' }, 'l1'),
+        // sec-2 has an active item
+        new TuduViewModel({ id: 't2', label: 'Relatório', done: false, sectionId: 'sec-2' }, 'l1'),
+      ];
+
+      const visible = getVisibleSections(sections, tudus);
+      expect(visible).toHaveLength(1);
+      expect(visible[0].id).toBe('sec-2');
+    });
+  });
+
+  describe('cloneList and Section Creation Resilience', () => {
+    it('clones an instance of ListViewModel successfully', () => {
+      const list = new ListViewModel({
+        id: 'list-1',
+        label: 'Minha Lista',
+        sections: [{ id: 'sec-1', title: 'Seção 1', order: 0 }],
+      });
+      list.tudus = [
+        new TuduViewModel({ id: 't1', label: 'Item 1', done: false, sectionId: 'sec-1' }, 'list-1'),
+      ];
+
+      const cloned = cloneList(list);
+      expect(cloned).toBeInstanceOf(ListViewModel);
+      expect(cloned.id).toBe('list-1');
+      expect(cloned.sections).toHaveLength(1);
+      expect(cloned.tudus).toHaveLength(1);
+      expect(typeof cloned.clone).toBe('function');
+    });
+
+    it('safely clones a plain object that lost its prototype (e.g. from state spread)', () => {
+      // Simulate object that lost its prototype like `{ ...current }`
+      const plainObject = {
+        id: 'list-1',
+        label: 'Minha Lista',
+        origin: 'default' as const,
+        sections: [{ id: 'sec-1', title: 'Seção 1', order: 0 }],
+        tudus: [
+          new TuduViewModel({ id: 't1', label: 'Item 1', done: false, sectionId: 'sec-1' }, 'list-1'),
+        ],
+      } as unknown as ListViewModel;
+
+      // Notice plainObject.clone is undefined
+      expect((plainObject as any).clone).toBeUndefined();
+
+      // cloneList should not throw and return a full ListViewModel instance
+      const cloned = cloneList(plainObject);
+      expect(cloned).toBeInstanceOf(ListViewModel);
+      expect(cloned.id).toBe('list-1');
+      expect(cloned.sections).toHaveLength(1);
+      expect(cloned.tudus).toHaveLength(1);
+      expect(typeof cloned.clone).toBe('function');
+    });
+
+    it('allows adding a new section to a cloned list without throwing', () => {
+      const plainObject = {
+        id: 'list-1',
+        label: 'Minha Lista',
+        origin: 'default' as const,
+        sections: [],
+        tudus: [],
+      } as unknown as ListViewModel;
+
+      const newList = cloneList(plainObject);
+      const newSection: Section = {
+        id: 'sec-new',
+        title: 'Nova Seção',
+        order: 0,
+      };
+      newList.sections = [...(newList.sections || []), newSection];
+
+      expect(newList.sections).toHaveLength(1);
+      expect(newList.sections[0].title).toBe('Nova Seção');
+      // Verify subsequent clone calls work
+      const chainedClone = cloneList(newList);
+      expect(chainedClone.sections).toHaveLength(1);
+    });
+  });
 });
+
+
 

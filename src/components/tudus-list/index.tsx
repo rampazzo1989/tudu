@@ -19,7 +19,7 @@ import { LegendList, LegendListRenderItemProps } from '@legendapp/list';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { CheckMarkIcon } from '../animated-icons/check-mark';
 import { TuduCard } from '../tudu-card';
-import { Section, TuduViewModel } from '../../scenes/home/types';
+import { Section, TuduViewModel, cloneList } from '../../scenes/home/types';
 import { SwipeableCardRef } from '../swipeable-card/types';
 import { isToday } from '../../utils/date-utils';
 import { DeleteIconActionAnimation } from '../animated-icons/delete-icon';
@@ -285,7 +285,7 @@ const TudusList: React.FC<TudusListProps> = memo(
         const updatedSections = (list.sections || []).map(s =>
           s.id === editingSection.id ? { ...s, title: newTitle } : s,
         );
-        const newList = list.clone();
+        const newList = cloneList(list);
         newList.sections = updatedSections;
         onUpdateList?.(newList);
         setEditingSection(null);
@@ -321,7 +321,7 @@ const TudusList: React.FC<TudusListProps> = memo(
           });
         }
 
-        const newList = list.clone();
+        const newList = cloneList(list);
         newList.sections = updatedSections;
         newList.tudus = updatedTudus;
         onUpdateList?.(newList);
@@ -330,28 +330,44 @@ const TudusList: React.FC<TudusListProps> = memo(
       [deletingSection, list, onUpdateList],
     );
 
+    const visibleSections = useMemo(() => {
+      return sections.filter(sec => {
+        const hasUndone = undoneTudus.some(t => t.sectionId === sec.id);
+        const hasDone = doneTudus.some(t => t.sectionId === sec.id);
+        // An empty section is only displayed if it has no items at all (created with no items, items dragged away or deleted).
+        // If it has done items and no undone items (the last active item was marked), it is hidden.
+        return hasUndone || !hasDone;
+      });
+    }, [sections, undoneTudus, doneTudus]);
+
     const handleMoveSectionUp = useCallback(
       (sec: Section) => {
         if (!list?.sections) return;
         const currentSections = [...list.sections].sort(
           (a, b) => a.order - b.order,
         );
-        const idx = currentSections.findIndex(s => s.id === sec.id);
-        if (idx <= 0) return;
+        const vIdx = visibleSections.findIndex(s => s.id === sec.id);
+        if (vIdx <= 0) return;
 
-        const temp = currentSections[idx - 1];
-        currentSections[idx - 1] = currentSections[idx];
-        currentSections[idx] = temp;
+        const prevVisibleSec = visibleSections[vIdx - 1];
+        const currentIdx = currentSections.findIndex(s => s.id === sec.id);
+        if (currentIdx < 0) return;
+
+        // Move sec immediately before prevVisibleSec in currentSections
+        const [movedSec] = currentSections.splice(currentIdx, 1);
+        const targetIdx = currentSections.findIndex(s => s.id === prevVisibleSec.id);
+        if (targetIdx < 0) return;
+        currentSections.splice(targetIdx, 0, movedSec);
 
         const updatedSections = currentSections.map((s, i) => ({
           ...s,
           order: i,
         }));
-        const newList = list.clone();
+        const newList = cloneList(list);
         newList.sections = updatedSections;
         onUpdateList?.(newList);
       },
-      [list, onUpdateList],
+      [list, onUpdateList, visibleSections],
     );
 
     const handleMoveSectionDown = useCallback(
@@ -360,22 +376,28 @@ const TudusList: React.FC<TudusListProps> = memo(
         const currentSections = [...list.sections].sort(
           (a, b) => a.order - b.order,
         );
-        const idx = currentSections.findIndex(s => s.id === sec.id);
-        if (idx < 0 || idx >= currentSections.length - 1) return;
+        const vIdx = visibleSections.findIndex(s => s.id === sec.id);
+        if (vIdx < 0 || vIdx >= visibleSections.length - 1) return;
 
-        const temp = currentSections[idx + 1];
-        currentSections[idx + 1] = currentSections[idx];
-        currentSections[idx] = temp;
+        const nextVisibleSec = visibleSections[vIdx + 1];
+        const currentIdx = currentSections.findIndex(s => s.id === sec.id);
+        if (currentIdx < 0) return;
+
+        // Move sec immediately after nextVisibleSec in currentSections
+        const [movedSec] = currentSections.splice(currentIdx, 1);
+        const targetIdx = currentSections.findIndex(s => s.id === nextVisibleSec.id);
+        if (targetIdx < 0) return;
+        currentSections.splice(targetIdx + 1, 0, movedSec);
 
         const updatedSections = currentSections.map((s, i) => ({
           ...s,
           order: i,
         }));
-        const newList = list.clone();
+        const newList = cloneList(list);
         newList.sections = updatedSections;
         onUpdateList?.(newList);
       },
-      [list, onUpdateList],
+      [list, onUpdateList, visibleSections],
     );
 
     // Build Flattened Undone Rows (sections + undone items)
@@ -405,8 +427,8 @@ const TudusList: React.FC<TudusListProps> = memo(
           });
         });
 
-        // 2. Sections
-        sections.forEach((sec, sIdx) => {
+        // 2. Visible sections
+        visibleSections.forEach((sec, sIdx) => {
           const secTudus = undoneTudus.filter(t => t.sectionId === sec.id);
 
           rows.push({
@@ -415,7 +437,7 @@ const TudusList: React.FC<TudusListProps> = memo(
             section: sec,
             itemCount: secTudus.length,
             isFirst: sIdx === 0,
-            isLast: sIdx === sections.length - 1,
+            isLast: sIdx === visibleSections.length - 1,
           });
 
           if (secTudus.length === 0) {
@@ -438,7 +460,7 @@ const TudusList: React.FC<TudusListProps> = memo(
       }
 
       return rows;
-    }, [hasSections, sections, undoneTudus]);
+    }, [hasSections, sections, undoneTudus, visibleSections]);
 
     const renderUndoneRow = useCallback(
       ({ item: row, drag, isActive }: RenderItemParams<TudusListRow>) => {
@@ -557,8 +579,13 @@ const TudusList: React.FC<TudusListProps> = memo(
           for (const row of data) {
             if (row.type === 'section_header') {
               currentSectionId = row.section.id;
+            } else if (row.type === 'empty_section_dropzone') {
+              currentSectionId = row.section.id;
             } else if (row.type === 'tudu') {
-              const cloned = row.tudu.clone();
+              const cloned =
+                typeof row.tudu?.clone === 'function'
+                  ? row.tudu.clone()
+                  : new TuduViewModel(row.tudu, row.tudu.listId, row.tudu.origin, row.tudu.listName);
               cloned.sectionId = currentSectionId;
               reorderedUndone.push(cloned);
             }
@@ -597,6 +624,7 @@ const TudusList: React.FC<TudusListProps> = memo(
           {flatRows.length > 0 && (
             <NestableDraggableFlatList
               data={flatRows}
+              extraData={flatRows}
               renderItem={renderUndoneRow}
               keyExtractor={item => item.id}
               onDragEnd={handleDragEnd}

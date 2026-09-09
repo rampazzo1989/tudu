@@ -30,7 +30,7 @@ import { NewTuduModal } from '../new-tudu-modal';
 import { ListActionButton } from '../list-action-button';
 import { TudusList } from '../tudus-list';
 import { ListPageCoreProps } from './types';
-import { ListViewModel, TuduViewModel, RecurrenceType } from '../../scenes/home/types';
+import { ListViewModel, TuduViewModel, RecurrenceType, cloneList } from '../../scenes/home/types';
 import { ListHeader } from '../list-header';
 import { TuduAdditionalInformation } from '../tudu-card/types';
 import {
@@ -69,6 +69,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
   ({
     setTudus,
     handleBackButtonPress,
+    onUpdateList,
     list,
     Icon,
     numberOfUndoneTudus,
@@ -127,13 +128,15 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           if (!current) {
             return undefined;
           }
-          const newList = current.clone();
+          const newList = cloneList(current);
           newList.tudus = tudusList;
+          saveListAndTudus(newList);
+          onUpdateList?.(newList);
           return newList;
         });
         setTudus(tudusList);
       },
-      [setTudus],
+      [setTudus, saveListAndTudus, onUpdateList],
     );
 
     const handleListCompleted = useCallback(() => {
@@ -163,15 +166,14 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           if (!current) {
             return undefined;
           }
-          return {
-            ...current,
-            tudus: current.tudus?.map(x => {
-              if (x.id === tudu.id) {
-                return tudu;
-              }
-              return x;
-            }),
-          } as ListViewModel;
+          const newList = cloneList(current);
+          newList.tudus = current.tudus?.map(x => {
+            if (x.id === tudu.id) {
+              return tudu;
+            }
+            return x;
+          }) || [];
+          return newList;
         });
 
         // Then updates the global list
@@ -442,8 +444,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       (updatedList: ListViewModel) => {
         setInternalList(updatedList);
         saveListAndTudus(updatedList);
+        onUpdateList?.(updatedList);
       },
-      [saveListAndTudus],
+      [saveListAndTudus, onUpdateList],
     );
 
     const handleCreateSection = useCallback(
@@ -455,7 +458,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           title,
           order: currentSections.length,
         };
-        const newList = internalList.clone();
+        const newList = cloneList(internalList);
         newList.sections = [...currentSections, newSection];
         handleUpdateList(newList);
       },
@@ -522,7 +525,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           }
         });
 
-        const newList = internalList.clone();
+        const newList = cloneList(internalList);
         newList.sections = newSections.length > 0 ? newSections : undefined;
         newList.orderingPrompt = payload.orderingPrompt || undefined;
         newList.tudus = reorderedTudus;

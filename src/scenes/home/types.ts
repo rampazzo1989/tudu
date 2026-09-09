@@ -159,6 +159,32 @@ export class ListViewModel implements Clonable<ListViewModel> {
     return newList;
   }
 
+  public static clone(list: ListViewModel): ListViewModel {
+    if (list && typeof list.clone === 'function') {
+      return list.clone();
+    }
+    const newList = new ListViewModel(
+      {
+        id: list?.id || '',
+        label: list?.label || '',
+        color: list?.color,
+        groupName: list?.groupName,
+        sections: list?.sections ? [...list.sections] : undefined,
+        orderingPrompt: list?.orderingPrompt,
+      },
+      undefined,
+      list?.origin || 'default',
+    );
+    newList.tudus = list?.tudus
+      ? list.tudus.map(t =>
+          typeof t?.clone === 'function'
+            ? t.clone()
+            : new TuduViewModel(t, list.id, list.origin, list.label),
+        )
+      : [];
+    return newList;
+  }
+
   constructor(
     data: List,
     tudus?: Map<string, TuduItem>,
@@ -234,3 +260,8 @@ export type StateBackup = {
   tudusBkp: Map<string, TuduItemMap>;
   listBkp?: Map<string, List>;
 };
+
+export const cloneList = (list: ListViewModel): ListViewModel => {
+  return ListViewModel.clone(list);
+};
+
