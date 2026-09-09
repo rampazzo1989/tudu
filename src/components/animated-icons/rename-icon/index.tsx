@@ -7,6 +7,8 @@ import {
   BaseAnimatedIconRef,
 } from '../animated-icon/types';
 
+import {RenameActionSvg} from '../../../assets/static/tudu-icons';
+
 const RenameIcon = memo(
   forwardRef<AnimatedIconRef, AnimatedIconProps>((props, ref) => {
     const iconRef = useRef<BaseAnimatedIconRef>(null);
@@ -52,6 +54,7 @@ const RenameIcon = memo(
         componentName="RenameIcon"
         initialFrame={70}
         staticStateFrame={70}
+        StaticComponent={RenameActionSvg}
         ref={iconRef}
         {...props}
       />

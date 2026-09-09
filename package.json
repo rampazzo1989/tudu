@@ -1,6 +1,6 @@
 {
   "name": "tudu",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android --active-arch-only && react-native start",
