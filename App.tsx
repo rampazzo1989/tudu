@@ -19,6 +19,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider } from 'react-i18next';
 import i18next from './src/i18n';
 import { NotificationBootSync } from './src/service/notification';
+import { DataIntegritySync } from './src/components/data-integrity-sync';
 import { navigationRef } from './src/navigation/navigation-ref';
 import { AppLockGate } from './src/components/app-lock-gate';
 import { IncomingTuduFileHandler } from './src/components/incoming-tudu-file-handler';
@@ -111,6 +112,7 @@ function App(): React.JSX.Element {
                 store={ReactNativeRecoilPersist}>
                 <IdleProvider>
                   <AppLockGate>
+                    <DataIntegritySync />
                     <NotificationBootSync />
                     <IncomingTuduFileHandler />
                     {hasCheckedNotification && (

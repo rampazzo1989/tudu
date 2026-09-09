@@ -153,33 +153,43 @@ export class ListViewModel implements Clonable<ListViewModel> {
   public clone() {
     const newList = new ListViewModel(
       this.mapBackList(),
-      this.mapBackTudus(),
+      undefined,
       this.origin,
     );
+    newList.tudus = this.tudus
+      ? this.tudus.map(t =>
+          typeof t?.clone === 'function'
+            ? t.clone()
+            : new TuduViewModel(t, t.listId, t.origin, t.listName),
+        )
+      : [];
     return newList;
   }
 
   public static clone(list: ListViewModel): ListViewModel {
-    if (list && typeof list.clone === 'function') {
+    if (!list) {
+      return list;
+    }
+    if (typeof list.clone === 'function') {
       return list.clone();
     }
     const newList = new ListViewModel(
       {
-        id: list?.id || '',
-        label: list?.label || '',
-        color: list?.color,
-        groupName: list?.groupName,
-        sections: list?.sections ? [...list.sections] : undefined,
-        orderingPrompt: list?.orderingPrompt,
+        id: list.id || '',
+        label: list.label || '',
+        color: list.color,
+        groupName: list.groupName,
+        sections: list.sections ? [...list.sections] : undefined,
+        orderingPrompt: list.orderingPrompt,
       },
       undefined,
-      list?.origin || 'default',
+      list.origin || 'default',
     );
-    newList.tudus = list?.tudus
+    newList.tudus = list.tudus
       ? list.tudus.map(t =>
           typeof t?.clone === 'function'
             ? t.clone()
-            : new TuduViewModel(t, list.id, list.origin, list.label),
+            : new TuduViewModel(t, t.listId, t.origin, t.listName),
         )
       : [];
     return newList;

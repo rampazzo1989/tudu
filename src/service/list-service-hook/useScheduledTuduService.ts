@@ -22,7 +22,12 @@ const useScheduledTuduService = () => {
 
       const tudusFromDate: Array<TuduViewModel> = [];
 
+      const customTuduIds = new Set<string>();
+
       customTudus.forEach((tuduMap, listId) => {
+        if (listId === 'scheduled' || listId === UNLISTED_LIST_ID) {
+          return;
+        }
         const filteredTudus = [...tuduMap].filter(([_, tudu]) => {
           const itsFromDate =
             tudu.dueDate &&
@@ -34,20 +39,24 @@ const useScheduledTuduService = () => {
 
         const listName = customLists.get(listId)?.label;
 
-        filteredTudus.forEach(([_, tudu]) =>
+        filteredTudus.forEach(([id, tudu]) => {
+          customTuduIds.add(id);
           tudusFromDate.push(
             new TuduViewModel(tudu, listId, 'default', listName),
-          ),
-        );
+          );
+        });
       });
 
-      const filteredUnlistedTudus = [...unlistedTudus].filter(([_, tudu]) => {
+      const filteredUnlistedTudus = [...unlistedTudus].filter(([id, tudu]) => {
+        if (customTuduIds.has(id)) {
+          return false;
+        }
         const itsFromDate =
           tudu.dueDate &&
           getDateOnlyTimeStamp(tudu.dueDate) === dateOnlyTimeStamp;
-          const isOutdated = showOutdated 
-            && tudu.dueDate && !tudu.done && getDateOnlyTimeStamp(tudu.dueDate) < dateOnlyTimeStamp;
-          return itsFromDate || isOutdated;
+        const isOutdated = showOutdated 
+          && tudu.dueDate && !tudu.done && getDateOnlyTimeStamp(tudu.dueDate) < dateOnlyTimeStamp;
+        return itsFromDate || isOutdated;
       });
 
       filteredUnlistedTudus.forEach(([_, tudu]) =>
@@ -85,7 +94,12 @@ const useScheduledTuduService = () => {
     (baseDate: Date = new Date()) => {
       const upcomingTudus: Array<TuduViewModel> = [];
 
+      const customTuduIds = new Set<string>();
+
       customTudus.forEach((tuduMap, listId) => {
+        if (listId === 'scheduled' || listId === UNLISTED_LIST_ID) {
+          return;
+        }
         const filteredTudus = [...tuduMap].filter(([_, tudu]) => {
           return (
             tudu.dueDate &&
@@ -96,14 +110,18 @@ const useScheduledTuduService = () => {
 
         const listName = customLists.get(listId)?.label;
 
-        filteredTudus.forEach(([_, tudu]) =>
+        filteredTudus.forEach(([id, tudu]) => {
+          customTuduIds.add(id);
           upcomingTudus.push(
             new TuduViewModel(tudu, listId, 'default', listName),
-          ),
-        );
+          );
+        });
       });
 
-      const filteredUnlistedTudus = [...unlistedTudus].filter(([_, tudu]) => {
+      const filteredUnlistedTudus = [...unlistedTudus].filter(([id, tudu]) => {
+        if (customTuduIds.has(id)) {
+          return false;
+        }
         return (
           tudu.dueDate &&
           !tudu.done &&

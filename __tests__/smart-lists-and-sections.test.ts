@@ -472,6 +472,99 @@ describe('Smart Lists & Sections', () => {
       const chainedClone = cloneList(newList);
       expect(chainedClone.sections).toHaveLength(1);
     });
+
+    it('preserves individual tudu listId, origin, and listName when cloning a virtual smart list (e.g. Hoje / scheduled)', () => {
+      const virtualList = new ListViewModel({
+        id: 'scheduled',
+        label: 'Hoje',
+      });
+      virtualList.tudus = [
+        new TuduViewModel(
+          { id: 't1', label: 'Tarefa de Trabalho', done: false },
+          'custom-list-work',
+          'default',
+          'Trabalho',
+        ),
+        new TuduViewModel(
+          { id: 't2', label: 'Comprar Leite', done: false },
+          'custom-list-home',
+          'default',
+          'Casa',
+        ),
+        new TuduViewModel(
+          { id: 't3', label: 'Tarefa Solta', done: false },
+          'unlisted',
+          'unlisted',
+          'Unlisted',
+        ),
+      ];
+
+      // Clone using ListViewModel.prototype.clone
+      const instanceClone = virtualList.clone();
+      expect(instanceClone.tudus[0].listId).toBe('custom-list-work');
+      expect(instanceClone.tudus[0].origin).toBe('default');
+      expect(instanceClone.tudus[0].listName).toBe('Trabalho');
+
+      expect(instanceClone.tudus[1].listId).toBe('custom-list-home');
+      expect(instanceClone.tudus[1].origin).toBe('default');
+      expect(instanceClone.tudus[1].listName).toBe('Casa');
+
+      expect(instanceClone.tudus[2].listId).toBe('unlisted');
+      expect(instanceClone.tudus[2].origin).toBe('unlisted');
+
+      // Clone using cloneList (static)
+      const staticClone = cloneList(virtualList);
+      expect(staticClone.tudus[0].listId).toBe('custom-list-work');
+      expect(staticClone.tudus[0].origin).toBe('default');
+      expect(staticClone.tudus[0].listName).toBe('Trabalho');
+
+      expect(staticClone.tudus[1].listId).toBe('custom-list-home');
+      expect(staticClone.tudus[1].origin).toBe('default');
+      expect(staticClone.tudus[1].listName).toBe('Casa');
+
+      expect(staticClone.tudus[2].listId).toBe('unlisted');
+      expect(staticClone.tudus[2].origin).toBe('unlisted');
+    });
+
+    it('correctly distinguishes custom list items from unlisted items to avoid duplication', () => {
+      const tudus = [
+        new TuduViewModel(
+          { id: 't1', label: 'Item de Lista', done: false },
+          'custom-list-1',
+          'default',
+          'Minha Lista',
+        ),
+        new TuduViewModel(
+          { id: 't2', label: 'Item Solto', done: false },
+          'unlisted',
+          'unlisted',
+        ),
+      ];
+
+      // Simulate ScheduledListPage listId normalization
+      const processed = tudus.map(tudu => {
+        const cloned = tudu.clone();
+        if (
+          !cloned.listId ||
+          (cloned.listId === 'scheduled' && !cloned.listName) ||
+          cloned.listId === 'unlisted' ||
+          cloned.origin === 'unlisted'
+        ) {
+          cloned.listId = 'unlisted';
+          cloned.origin = 'unlisted';
+        }
+        return cloned;
+      });
+
+      // Custom list item must NOT be changed to unlisted
+      expect(processed[0].listId).toBe('custom-list-1');
+      expect(processed[0].origin).toBe('default');
+      expect(processed[0].listName).toBe('Minha Lista');
+
+      // Unlisted item remains unlisted
+      expect(processed[1].listId).toBe('unlisted');
+      expect(processed[1].origin).toBe('unlisted');
+    });
   });
 });
 

@@ -130,13 +130,15 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           }
           const newList = cloneList(current);
           newList.tudus = tudusList;
-          saveListAndTudus(newList);
+          if (!isSmartList) {
+            saveListAndTudus(newList);
+          }
           onUpdateList?.(newList);
           return newList;
         });
         setTudus(tudusList);
       },
-      [setTudus, saveListAndTudus, onUpdateList],
+      [setTudus, saveListAndTudus, onUpdateList, isSmartList],
     );
 
     const handleListCompleted = useCallback(() => {
@@ -337,8 +339,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           editingTudu.hasTime = hasTime;
           editingTudu.recurrence = recurrence;
           if (!editingTudu.listId || editingTudu.listId === 'scheduled') {
-            editingTudu.listId = UNLISTED_LIST_ID;
-            editingTudu.origin = 'unlisted';
+            editingTudu.listId = defaultListId || UNLISTED_LIST_ID;
+            editingTudu.origin = defaultOrigin || 'unlisted';
           }
           handleInsertOrUpdate(editingTudu);
           saveTudu(editingTudu);
@@ -354,7 +356,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           }
         }
       },
-      [editingTudu, handleInsertOrUpdate, list?.label, saveTudu],
+      [editingTudu, handleInsertOrUpdate, list?.label, saveTudu, defaultListId, defaultOrigin],
     );
 
     const existingTasks = useMemo(() => {
@@ -443,10 +445,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const handleUpdateList = useCallback(
       (updatedList: ListViewModel) => {
         setInternalList(updatedList);
-        saveListAndTudus(updatedList);
+        if (!isSmartList) {
+          saveListAndTudus(updatedList);
+        }
         onUpdateList?.(updatedList);
       },
-      [saveListAndTudus, onUpdateList],
+      [saveListAndTudus, onUpdateList, isSmartList],
     );
 
     const handleCreateSection = useCallback(

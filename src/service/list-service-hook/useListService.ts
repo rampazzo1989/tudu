@@ -24,6 +24,7 @@ import {getListFromViewModel} from '../../utils/list-and-group-utils';
 import { isOutdated } from '../../utils/date-utils';
 import { recalculateRecurrence, notificationSettingsState } from '../../state/atoms';
 import { notificationService } from '../notification';
+import { UNLOADED_ID } from '../../constants';
 
 class SingletonBackup {
   private static instance: SingletonBackup;
@@ -341,7 +342,13 @@ const useListService = () => {
       }
 
       const groupedTudus = groupBy(
-        tudus.filter(x => x.listId !== UNLISTED_LIST_ID),
+        tudus.filter(
+          x =>
+            x.listId !== UNLISTED_LIST_ID &&
+            x.listId !== 'scheduled' &&
+            x.listId !== 'upcoming-tudus' &&
+            x.listId !== UNLOADED_ID,
+        ),
         tudu => tudu.listId,
       );
 
@@ -396,16 +403,23 @@ const useListService = () => {
     (origin: ListOrigin = 'default') => {
       const state = getTudusState(origin);
       const listState = getListState(origin);
+      const customTuduIds = new Set<string>();
       const allTudus =
         [...state].flatMap(([listId, tudus]) => {
+          if (listId === 'scheduled' || listId === UNLISTED_LIST_ID) {
+            return [];
+          }
           const listName = listState.get(listId)?.label;
-          return [...tudus].map(
-            ([_, tudu]) => new TuduViewModel(tudu, listId, origin, listName),
-          );
+          return [...tudus].map(([id, tudu]) => {
+            customTuduIds.add(id);
+            return new TuduViewModel(tudu, listId, origin, listName);
+          });
         }) ?? [];
-      const unlisted = [...unlistedTudus].map(
-        ([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'),
-      );
+      const unlisted = [...unlistedTudus]
+        .filter(([id]) => !customTuduIds.has(id))
+        .map(
+          ([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'),
+        );
       return allTudus.concat(unlisted);
     },
     [getListState, getTudusState, unlistedTudus],
@@ -415,17 +429,22 @@ const useListService = () => {
     (origin: ListOrigin = 'default') => {
       const state = getTudusState(origin);
       const listState = getListState(origin);
+      const customTuduIds = new Set<string>();
       const allTudus =
         [...state].flatMap(([listId, tudus]) => {
+          if (listId === 'scheduled' || listId === UNLISTED_LIST_ID) {
+            return [];
+          }
           const listName = listState.get(listId)?.label;
           return [...tudus]
             .filter(([_, tudu]) => !tudu.done)
-            .map(
-              ([_, tudu]) => new TuduViewModel(tudu, listId, origin, listName),
-            );
+            .map(([id, tudu]) => {
+              customTuduIds.add(id);
+              return new TuduViewModel(tudu, listId, origin, listName);
+            });
         }) ?? [];
       const unlisted = [...unlistedTudus]
-        .filter(([_, tudu]) => !tudu.done)
+        .filter(([id, tudu]) => !tudu.done && !customTuduIds.has(id))
         .map(([_, tudu]) => new TuduViewModel(tudu, UNLISTED_LIST_ID, 'unlisted'));
       return allTudus.concat(unlisted);
     },
@@ -503,6 +522,16 @@ const useListService = () => {
 
   const saveListAndTudus = useCallback(
     (list: ListViewModel) => {
+      if (
+        !list ||
+        list.id === 'scheduled' ||
+        list.id === 'upcoming-tudus' ||
+        list.id === 'all' ||
+        list.id === 'starred' ||
+        list.id === UNLOADED_ID
+      ) {
+        return;
+      }
       const listStateSetter = getStateSetter(list.origin);
       const tudusStateSetter = getTudusStateSetter(list.origin);
 

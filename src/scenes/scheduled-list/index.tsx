@@ -84,7 +84,7 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
         tudus.forEach(tudu => {
           if (
             !tudu.listId ||
-            tudu.listId === 'scheduled' ||
+            (tudu.listId === 'scheduled' && !tudu.listName) ||
             tudu.listId === UNLISTED_LIST_ID ||
             tudu.origin === 'unlisted'
           ) {
