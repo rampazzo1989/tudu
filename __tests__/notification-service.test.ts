@@ -25,6 +25,7 @@ jest.mock('@notifee/react-native', () => ({
   AndroidImportance: {HIGH: 4, DEFAULT: 3},
   AndroidVisibility: {PUBLIC: 1},
   AndroidCategory: {CALL: 'call', ALARM: 'alarm'},
+  AndroidLaunchActivityFlag: {NEW_TASK: 2, SINGLE_TOP: 1},
   AuthorizationStatus: {AUTHORIZED: 1, PROVISIONAL: 2, DENIED: 0},
   TriggerType: {TIMESTAMP: 0},
   AlarmType: {

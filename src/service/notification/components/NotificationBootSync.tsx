@@ -107,11 +107,20 @@ export const NotificationBootSync: React.FC = () => {
       return false;
     };
 
-    checkPendingCallFromStorage();
+    const handleActiveState = () => {
+      const found = checkPendingCallFromStorage();
+      if (!found) {
+        setTimeout(() => {
+          checkPendingCallFromStorage();
+        }, 300);
+      }
+    };
+
+    handleActiveState();
 
     const appStateSub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
-        checkPendingCallFromStorage();
+        handleActiveState();
       }
     });
 

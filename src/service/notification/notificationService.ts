@@ -2,6 +2,7 @@ import notifee, {
   AlarmType,
   AndroidCategory,
   AndroidImportance,
+  AndroidLaunchActivityFlag,
   AndroidVisibility,
   AuthorizationStatus,
   TimestampTrigger,
@@ -19,6 +20,11 @@ import {
   getSoundChannelId,
 } from './types';
 import i18next from '../../i18n';
+
+const CALL_LAUNCH_ACTIVITY_FLAGS = [
+  AndroidLaunchActivityFlag?.NEW_TASK ?? 2,
+  AndroidLaunchActivityFlag?.SINGLE_TOP ?? 1,
+];
 
 class NotificationService {
   private static instance: NotificationService;
@@ -265,14 +271,20 @@ class NotificationService {
                 category: AndroidCategory.CALL,
                 ongoing: true,
                 lightUpScreen: true,
+                visibility: AndroidVisibility.PUBLIC,
                 fullScreenAction: {
                   id: 'call',
                   launchActivity: 'default',
+                  launchActivityFlags: CALL_LAUNCH_ACTIVITY_FLAGS,
                 },
                 actions: [
                   {
                     title: `📞 ${i18next.t('incomingCall.actions.answer', { defaultValue: 'Atender' })}`,
-                    pressAction: { id: 'call_answer', launchActivity: 'default' },
+                    pressAction: {
+                      id: 'call_answer',
+                      launchActivity: 'default',
+                      launchActivityFlags: CALL_LAUNCH_ACTIVITY_FLAGS,
+                    },
                   },
                   {
                     title: `🔴 ${i18next.t('incomingCall.actions.decline', { defaultValue: 'Recusar' })}`,
@@ -522,19 +534,26 @@ class NotificationService {
         category: AndroidCategory.CALL,
         ongoing: true,
         lightUpScreen: true,
+        visibility: AndroidVisibility.PUBLIC,
         sound: soundToUse === 'default' ? 'default' : soundToUse,
         pressAction: {
           id: 'call',
           launchActivity: 'default',
+          launchActivityFlags: CALL_LAUNCH_ACTIVITY_FLAGS,
         },
         fullScreenAction: {
           id: 'call',
           launchActivity: 'default',
+          launchActivityFlags: CALL_LAUNCH_ACTIVITY_FLAGS,
         },
         actions: [
           {
             title: `📞 ${i18next.t('incomingCall.actions.answer', { defaultValue: 'Atender' })}`,
-            pressAction: { id: 'call_answer', launchActivity: 'default' },
+            pressAction: {
+              id: 'call_answer',
+              launchActivity: 'default',
+              launchActivityFlags: CALL_LAUNCH_ACTIVITY_FLAGS,
+            },
           },
           {
             title: `🔴 ${i18next.t('incomingCall.actions.decline', { defaultValue: 'Recusar' })}`,
