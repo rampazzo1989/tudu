@@ -90,7 +90,8 @@ class CallReminderService {
   public async snoozeTudu(
     tudu: Partial<TuduViewModel> & { id: string; label: string },
     minutes: number = 5,
-  ): Promise<void> {
+    onSaveTudu?: (updated: TuduViewModel) => void,
+  ): Promise<TuduViewModel> {
     this.stopRingingEffect();
     ttsService.stop();
 
@@ -99,22 +100,35 @@ class CallReminderService {
     );
 
     const snoozeDate = new Date(Date.now() + minutes * 60 * 1000);
-    const updatedTudu = new TuduViewModel(
-      {
-        id: tudu.id,
-        label: tudu.label,
-        done: false,
-        hasTime: true,
-        dueDate: snoozeDate,
-        starred: tudu.starred,
-        recurrence: tudu.recurrence,
-      },
-      tudu.listId || 'unlisted',
-      tudu.listId ? 'default' : 'unlisted',
-      tudu.listName,
-    );
+    const updatedTudu =
+      tudu instanceof TuduViewModel
+        ? tudu.clone()
+        : new TuduViewModel(
+            {
+              id: tudu.id,
+              label: tudu.label,
+              done: false,
+              hasTime: true,
+              dueDate: snoozeDate,
+              starred: tudu.starred,
+              recurrence: tudu.recurrence,
+            },
+            tudu.listId || 'unlisted',
+            tudu.origin || (tudu.listId ? 'default' : 'unlisted'),
+            tudu.listName,
+          );
 
-    await notificationService.scheduleTimedTudu(updatedTudu, true);
+    updatedTudu.dueDate = snoozeDate;
+    updatedTudu.hasTime = true;
+    updatedTudu.done = false;
+
+    if (onSaveTudu) {
+      onSaveTudu(updatedTudu);
+    } else {
+      await notificationService.scheduleTimedTudu(updatedTudu, true);
+    }
+
+    return updatedTudu;
   }
 
   /**

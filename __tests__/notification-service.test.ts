@@ -390,5 +390,29 @@ describe('Notification Service', () => {
         }),
       );
     });
+
+    it('should schedule trigger notification via scheduleTestCallNotification', async () => {
+      await notificationService.scheduleTestCallNotification(5, 'tudu_pop');
+
+      expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'call_tudu_test',
+          data: expect.objectContaining({
+            type: 'call_reminder',
+            isTest: true,
+            sound: 'tudu_pop',
+          }),
+          android: expect.objectContaining({
+            fullScreenAction: expect.objectContaining({
+              id: 'call',
+              launchActivity: 'default',
+            }),
+          }),
+        }),
+        expect.objectContaining({
+          type: 0,
+        }),
+      );
+    });
   });
 });

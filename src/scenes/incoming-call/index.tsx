@@ -18,9 +18,12 @@ import { StackNavigatorParamList } from '../../navigation/stack-navigator/types'
 import { notificationSettingsState } from '../../state/atoms';
 import { useListService } from '../../service/list-service-hook/useListService';
 import { callReminderService } from '../../service/call-reminder/callReminderService';
+import { notificationService } from '../../service/notification/notificationService';
+import { NOTIFICATION_PREFIX } from '../../service/notification/types';
 import { ttsService } from '../../service/tts/ttsService';
 import { TuduViewModel } from '../../scenes/home/types';
 import { UNLISTED_LIST_ID } from '../../scenes/home/state';
+import { MMKV } from 'react-native-mmkv';
 import {
   dismissToLockScreen,
   isDeviceLocked,
@@ -69,6 +72,8 @@ import notifee from '@notifee/react-native';
 type IncomingCallRouteProp = RouteProp<StackNavigatorParamList, 'IncomingCall'>;
 type NavigationProp = StackNavigationProp<StackNavigatorParamList, 'IncomingCall'>;
 
+const storage = new MMKV();
+
 export const IncomingCallPage: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
@@ -96,9 +101,17 @@ export const IncomingCallPage: React.FC = () => {
   const cancelRelatedNotification = useCallback(async () => {
     try {
       if (tuduId) {
-        await notifee.cancelNotification(`tudu_${tuduId}`);
+        await notifee.cancelNotification(
+          `${NOTIFICATION_PREFIX.TIMED_TUDU}${tuduId}`,
+        );
+        await notifee.cancelNotification(
+          `${NOTIFICATION_PREFIX.CALL_REMINDER}${tuduId}`,
+        );
       }
       if (isTest) {
+        await notifee.cancelNotification(
+          `${NOTIFICATION_PREFIX.CALL_REMINDER}test`,
+        );
         await notifee.cancelNotification('call_test');
       }
     } catch {
@@ -260,53 +273,91 @@ export const IncomingCallPage: React.FC = () => {
     }
   }, [autoAnswer, handleAnswer]);
 
-  const handleEndCall = useCallback(async () => {
-    setCallStatus('ended');
-    callReminderService.endCall();
-    cancelRelatedNotification();
-    RNReactNativeHapticFeedback.trigger('impactLight');
+  const handleEndCall = useCallback(
+    async (cancelNotification: boolean = true) => {
+      const shouldCancel =
+        typeof cancelNotification === 'boolean' ? cancelNotification : true;
 
-    const locked = await isDeviceLocked();
-    if (locked) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
-      await dismissToLockScreen();
-      return;
-    }
+      setCallStatus('ended');
+      callReminderService.endCall();
+      try {
+        storage.delete('pending_incoming_call');
+      } catch {
+        // Ignore
+      }
 
-    const routes = navigation.getState()?.routes;
-    const prevRoute =
-      routes && routes.length > 1 ? routes[routes.length - 2]?.name : null;
+      if (shouldCancel) {
+        await cancelRelatedNotification();
+      }
+      RNReactNativeHapticFeedback.trigger('impactLight');
 
-    if (navigation.canGoBack() && prevRoute && prevRoute !== 'SplashScreen') {
-      navigation.goBack();
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
-    }
-  }, [cancelRelatedNotification, navigation]);
+      const locked = await isDeviceLocked();
+      if (locked) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+        await dismissToLockScreen();
+        return;
+      }
+
+      const routes = navigation.getState()?.routes;
+      const prevRoute =
+        routes && routes.length > 1 ? routes[routes.length - 2]?.name : null;
+
+      if (navigation.canGoBack() && prevRoute && prevRoute !== 'SplashScreen') {
+        navigation.goBack();
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      }
+    },
+    [cancelRelatedNotification, navigation],
+  );
 
   const handleSnooze = useCallback(async () => {
     RNReactNativeHapticFeedback.trigger('impactMedium');
+
+    // 1. Dismiss the currently ringing / displayed notification
+    await cancelRelatedNotification();
+
+    // 2. Reschedule the tudu (updating due date, saving to persistent store, and scheduling trigger notification)
     if (currentTudu) {
-      await callReminderService.snoozeTudu(currentTudu, 5);
-    } else {
+      await callReminderService.snoozeTudu(currentTudu, 5, updated => {
+        saveTudu(updated);
+      });
+    } else if (tuduId) {
       await callReminderService.snoozeTudu(
         {
-          id: tuduId || 'temp_snooze',
+          id: tuduId,
           label: tuduTitle,
           listId: listId || '',
           listName,
         },
         5,
+        updated => {
+          saveTudu(updated);
+        },
       );
+    } else if (isTest) {
+      await notificationService.scheduleTestCallNotification(5);
     }
-    await handleEndCall();
-  }, [currentTudu, handleEndCall, listId, listName, tuduId, tuduTitle]);
+
+    // 3. End call UI and navigate without cancelling the newly scheduled notification
+    await handleEndCall(false);
+  }, [
+    cancelRelatedNotification,
+    currentTudu,
+    handleEndCall,
+    isTest,
+    listId,
+    listName,
+    saveTudu,
+    tuduId,
+    tuduTitle,
+  ]);
 
   const handleCompleteTask = useCallback(async () => {
     RNReactNativeHapticFeedback.trigger('notificationSuccess');

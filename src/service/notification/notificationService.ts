@@ -570,6 +570,87 @@ class NotificationService {
   }
 
   /**
+   * Schedules a delayed test call notification (e.g. when snoozing a test call)
+   */
+  public async scheduleTestCallNotification(minutes: number = 5, sound?: NotificationSound): Promise<void> {
+    const soundToUse = sound || this.currentSound || DEFAULT_NOTIFICATION_SOUND;
+    await this.init(soundToUse);
+    await this.requestPermissions();
+
+    const timestamp = Date.now() + minutes * 60 * 1000;
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp,
+      alarmManager: {
+        type: AlarmType.SET_ALARM_CLOCK,
+        allowWhileIdle: true,
+      },
+    };
+
+    const iosSound =
+      soundToUse === 'default' ? 'default' : `${soundToUse}.wav`;
+
+    await notifee.createTriggerNotification(
+      {
+        id: `${NOTIFICATION_PREFIX.CALL_REMINDER}test`,
+        title: `📞 ${i18next.t('incomingCall.title', { defaultValue: 'Lembrete do Tudú' })}`,
+        body: i18next.t('incomingCall.testDescription', {
+          defaultValue: 'Toque para atender a ligação de teste do Tudú',
+        }),
+        data: {
+          type: 'call_reminder',
+          taskTitle: i18next.t('incomingCall.sampleTask', { defaultValue: 'Revisar metas do dia' }),
+          listName: i18next.t('incomingCall.sampleList', { defaultValue: 'Foco & Produtividade' }),
+          isTest: true as any,
+          sound: soundToUse,
+        },
+        android: {
+          channelId: getSoundChannelId(
+            NOTIFICATION_CHANNELS.CALL_REMINDERS.id,
+            soundToUse,
+          ),
+          importance: AndroidImportance.HIGH,
+          category: AndroidCategory.CALL,
+          ongoing: true,
+          lightUpScreen: true,
+          visibility: AndroidVisibility.PUBLIC,
+          sound: soundToUse === 'default' ? 'default' : soundToUse,
+          pressAction: {
+            id: 'call',
+            launchActivity: 'default',
+            launchActivityFlags: CALL_LAUNCH_ACTIVITY_FLAGS,
+          },
+          fullScreenAction: {
+            id: 'call',
+            launchActivity: 'default',
+            launchActivityFlags: CALL_LAUNCH_ACTIVITY_FLAGS,
+          },
+          actions: [
+            {
+              title: `📞 ${i18next.t('incomingCall.actions.answer', { defaultValue: 'Atender' })}`,
+              pressAction: {
+                id: 'call_answer',
+                launchActivity: 'default',
+                launchActivityFlags: CALL_LAUNCH_ACTIVITY_FLAGS,
+              },
+            },
+            {
+              title: `🔴 ${i18next.t('incomingCall.actions.decline', { defaultValue: 'Recusar' })}`,
+              pressAction: { id: 'call_decline' },
+            },
+          ],
+          smallIcon: 'ic_launcher',
+        },
+        ios: {
+          sound: iosSound,
+          interruptionLevel: 'timeSensitive',
+        },
+      },
+      trigger,
+    );
+  }
+
+  /**
    * Full sync of all timed notifications and daily digest with orphan cleanup
    */
   public async syncAll(

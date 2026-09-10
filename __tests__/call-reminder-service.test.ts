@@ -72,6 +72,30 @@ describe('CallReminderService', () => {
     );
   });
 
+  it('should invoke onSaveTudu callback with updated tudu when provided', async () => {
+    const onSaveTudu = jest.fn();
+    const result = await callReminderService.snoozeTudu(
+      {
+        id: 'tudu-2',
+        label: 'Revisar relatório',
+        listId: 'list-work',
+      },
+      5,
+      onSaveTudu,
+    );
+
+    expect(ttsService.stop).toHaveBeenCalled();
+    expect(onSaveTudu).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'tudu-2',
+        label: 'Revisar relatório',
+        hasTime: true,
+        done: false,
+      }),
+    );
+    expect(result.id).toBe('tudu-2');
+  });
+
   it('should end call and clean up vibration and TTS', () => {
     callReminderService.endCall();
     expect(Vibration.cancel).toHaveBeenCalled();
