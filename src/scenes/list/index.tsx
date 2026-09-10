@@ -38,11 +38,10 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
 
         const newList = cloneList(current);
         newList.tudus = tudus;
-        saveListAndTudus(newList);
         return newList;
       });
     },
-    [saveListAndTudus],
+    [],
   );
 
   return (
@@ -57,5 +56,7 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
     />
   );
 });
+
+ListPage.displayName = 'ListPage';
 
 export {ListPage};

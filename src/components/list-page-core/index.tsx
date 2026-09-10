@@ -124,21 +124,18 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleSetTudus: typeof setTudus = useCallback(
       tudusList => {
-        setInternalList(current => {
-          if (!current) {
-            return undefined;
-          }
-          const newList = cloneList(current);
+        if (internalList) {
+          const newList = cloneList(internalList);
           newList.tudus = tudusList;
+          setInternalList(newList);
           if (!isSmartList) {
             saveListAndTudus(newList);
           }
           onUpdateList?.(newList);
-          return newList;
-        });
+        }
         setTudus(tudusList);
       },
-      [setTudus, saveListAndTudus, onUpdateList, isSmartList],
+      [internalList, isSmartList, saveListAndTudus, onUpdateList, setTudus],
     );
 
     const handleListCompleted = useCallback(() => {
@@ -686,6 +683,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     );
   },
 );
+
+ListPageCore.displayName = 'ListPageCore';
 
 export { ListPageCore };
 

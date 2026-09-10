@@ -118,4 +118,6 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
   },
 );
 
+ScheduledListPage.displayName = 'ScheduledListPage';
+
 export {ScheduledListPage};

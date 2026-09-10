@@ -522,7 +522,7 @@ class NotificationService {
         type: 'call_reminder',
         taskTitle: i18next.t('incomingCall.sampleTask', { defaultValue: 'Revisar metas do dia' }),
         listName: i18next.t('incomingCall.sampleList', { defaultValue: 'Foco & Produtividade' }),
-        isTest: true,
+        isTest: true as any,
         sound: soundToUse,
       },
       android: {

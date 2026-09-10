@@ -18,8 +18,10 @@ export const NotificationBootSync: React.FC = () => {
 
   // 1. Sync notifications on boot/state update
   useEffect(() => {
+    let isMounted = true;
     const sync = async () => {
       await notificationService.init();
+      if (!isMounted) return;
       notificationService.setCallRemindersEnabled(
         Boolean(notificationSettings.callRemindersEnabled),
       );
@@ -40,6 +42,7 @@ export const NotificationBootSync: React.FC = () => {
       }
 
       const tudusForDigest = getTudusForDate(targetDigestDate);
+      if (!isMounted) return;
       await notificationService.syncAll(
         allTudus,
         tudusForDigest,
@@ -48,7 +51,11 @@ export const NotificationBootSync: React.FC = () => {
       );
     };
 
-    sync();
+    const timer = setTimeout(sync, 250);
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
   }, [getAllTudus, getTudusForDate, notificationSettings]);
 
   // 2. Handle notification interactions (foreground, delivered, and cold-boot)
@@ -80,7 +87,7 @@ export const NotificationBootSync: React.FC = () => {
             data?.taskTitle || notification.body || 'Lembrete do Tudú',
           listName: data?.listName,
           listId: data?.listId,
-          isTest: Boolean(data?.isTest),
+          isTest: data?.isTest === 'true' || Boolean(data?.isTest),
           autoAnswer: pressActionId === 'call_answer',
         });
       } else {
