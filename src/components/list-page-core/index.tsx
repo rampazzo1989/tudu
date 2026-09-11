@@ -672,6 +672,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         />
         <ReorderPromptModal
           visible={reorderPromptModalVisible}
+          listName={internalList?.label || list?.label}
           initialPrompt={internalList?.orderingPrompt}
           currentItems={internalList?.tudus?.map(t => t.label) ?? []}
           currentSections={internalList?.sections?.map(s => s.title)}

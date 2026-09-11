@@ -489,19 +489,37 @@ export const parseListResultFromResponse = (raw: string): ParsedListResult => {
       const rawTitle = typeof parsed.title === 'string' ? parsed.title.trim() : '';
       const title = rawTitle.length > 0 ? rawTitle : '📝 Lista';
 
-      // Parse sections if present
+      // Parse sections if present (checking common aliases)
       let sections: { title: string; items: string[] }[] | undefined;
-      if (Array.isArray(parsed.sections)) {
-        sections = parsed.sections
-          .filter((s: any) => s && typeof s === 'object' && typeof s.title === 'string')
-          .map((s: any) => ({
-            title: s.title.trim(),
-            items: Array.isArray(s.items)
-              ? s.items
-                  .map((it: any) => (typeof it === 'string' ? it.trim() : ''))
-                  .filter((it: string) => it.length > 0)
-              : [],
-          }))
+      const rawSections =
+        parsed.sections || parsed.secoes || parsed.seções || parsed.categories;
+
+      if (Array.isArray(rawSections)) {
+        sections = rawSections
+          .filter(
+            (s: any) =>
+              s &&
+              typeof s === 'object' &&
+              (typeof s.title === 'string' ||
+                typeof s.name === 'string' ||
+                typeof s.titulo === 'string'),
+          )
+          .map((s: any) => {
+            const rawTitle = (s.title || s.name || s.titulo || '').trim();
+            const rawItems = s.items || s.itens || s.tasks || s.tarefas || [];
+            return {
+              title: rawTitle,
+              items: Array.isArray(rawItems)
+                ? rawItems
+                    .map((it: any) =>
+                      typeof it === 'string'
+                        ? it.trim()
+                        : it?.name || it?.title || it?.label || '',
+                    )
+                    .filter((it: string) => it.length > 0)
+                : [],
+            };
+          })
           .filter(
             (s: { items: string[]; title: string }) =>
               s.items.length > 0 || s.title.length > 0,
@@ -509,12 +527,17 @@ export const parseListResultFromResponse = (raw: string): ParsedListResult => {
       }
 
       let items: string[] = [];
-      if (Array.isArray(parsed.items) && parsed.items.length > 0) {
+      // If sections are present, prioritize ordered items from sections
+      if (sections && sections.length > 0) {
+        items = sections.flatMap(s => s.items);
+      } else if (Array.isArray(parsed.items) && parsed.items.length > 0) {
         items = parsed.items
           .map((t: any) => (typeof t === 'string' ? t.trim() : ''))
           .filter((t: string) => t.length > 0);
-      } else if (sections && sections.length > 0) {
-        items = sections.flatMap(s => s.items);
+      } else if (Array.isArray(parsed.itens) && parsed.itens.length > 0) {
+        items = parsed.itens
+          .map((t: any) => (typeof t === 'string' ? t.trim() : ''))
+          .filter((t: string) => t.length > 0);
       }
 
       return {
@@ -568,14 +591,16 @@ export const buildParseListPrompt = (
     orderingInstruction =
       `\nDiretrizes de Agrupamento e Ordenação Inteligente:\n` +
       `- Identifique o contexto dos itens informados (ex: compras de mercado, afazeres domésticos, preparação de viagem, trabalho, rotina, farmácia, etc.).\n` +
-      `- Agrupe os itens em seções temáticas que façam sentido prático para o contexto identificado. Crie títulos descritivos para as seções, cada uma iniciando com um emoji relevante (ex: "🥦 Hortifruti", "🧼 Limpeza", "💼 Documentos").\n` +
-      `- Ordene as seções e os itens dentro de cada seção segundo uma sequência de execução ou conveniência lógica e prática para o contexto identificado.\n`;
+      `- Agrupe OBRIGATORIAMENTE os itens em seções temáticas claras que façam sentido prático para o contexto identificado. Crie títulos descritivos para as seções, cada uma iniciando com um emoji relevante (ex: "🥦 Hortifruti", "🧼 Limpeza e Casa", "🥩 Carnes e Frios", "🥛 Laticínios", "💊 Farmácia").\n` +
+      `- Ordene as seções e os itens dentro de cada seção segundo uma sequência de execução ou conveniência lógica e prática para o contexto identificado.\n` +
+      `- O array principal "items" deve conter todos os itens na mesma ordem das seções.\n`;
   } else if (orderingType === 'custom' && customPrompt?.trim()) {
     orderingInstruction =
       `\nDiretrizes de Agrupamento e Ordenação Personalizadas:\n` +
       `- Siga ESTRITAMENTE as seguintes instruções de agrupamento e ordenação fornecidas pelo usuário:\n` +
       `"""\n${customPrompt.trim()}\n"""\n` +
-      `- Organize os itens em seções com títulos descritivos e emojis respeitando o layout, ordem e regras informadas pelo usuário acima.\n`;
+      `- Organize OBRIGATORIAMENTE os itens em seções com títulos descritivos e emojis respeitando o layout, ordem e regras informadas pelo usuário acima.\n` +
+      `- O array principal "items" deve conter todos os itens na mesma ordem das seções.\n`;
   } else {
     orderingInstruction =
       `\nDiretrizes de Ordenação:\n` +
@@ -687,43 +712,59 @@ export const buildReorderListPrompt = (
   items: string[],
   currentSections?: string[],
   customPrompt?: string,
+  listName?: string,
 ): string => {
   const itemsText = items.map(t => `- ${t}`).join('\n');
-  const sectionsText = currentSections && currentSections.length > 0
-    ? `Seções existentes atualmente:\n${currentSections.map(s => `- ${s}`).join('\n')}\n\n`
+  const cleanListName = listName?.replace(/\s+/g, ' ').trim();
+  const listContextText = cleanListName
+    ? `Título / Tema da Lista: "${cleanListName}"\n\n`
     : '';
+  const sectionsText =
+    currentSections && currentSections.length > 0
+      ? `Seções existentes atualmente na lista:\n${currentSections.map(s => `- ${s}`).join('\n')}\n\n`
+      : '';
 
   let promptRule = '';
   if (customPrompt?.trim()) {
     promptRule =
       `Instruções específicas de ordenação e agrupamento fornecidas pelo usuário:\n` +
       `"""\n${customPrompt.trim()}\n"""\n\n` +
-      `Aplique estritamente as regras acima para agrupar e ordenar os itens.`;
+      `Regra principal: Agrupe os itens nas seções correspondentes e ordene-os seguindo com rigor as instruções acima.`;
   } else {
     promptRule =
-      `Identifique o contexto dos itens acima e agrupe e ordene os itens em seções temáticas que façam sentido prático para o contexto identificado.`;
+      `Diretrizes de Agrupamento e Ordenação Inteligente:\n` +
+      `- Contexto Temático e Semântico: Identifique o domínio da lista${cleanListName ? ` ("${cleanListName}")` : ''} e de seus itens (ex: filmes, compras de mercado, livros, jogos, farmácia, tarefas domésticas, trabalho, rotina, viagem, etc.).\n` +
+      `- Interpretação Semântica Estrita: TODOS os itens devem ser interpretados dentro do tema da lista. Por exemplo: em uma lista de filmes ou livros, itens com títulos como "Mãe!", "O Poderoso Chefão", "Up" ou "It" são nomes de obras/filmes (NUNCA os trate como conceitos literais como membros da família, direções ou pronomes).\n` +
+      `- Seções Especializadas para o Tema: Agrupe OBRIGATORIAMENTE todos os itens em seções temáticas naturais para o nicho da lista, cada uma com emoji relevante. Exemplos:\n` +
+      `  • Lista de Filmes/Séries: agrupar por gêneros ("🍿 Suspense e Terror", "🎬 Ação e Aventura", "😂 Comédia", "🎭 Drama", "🚀 Ficção Científica", "✨ Fantasia e Animação").\n` +
+      `  • Lista de Compras/Supermercado: agrupar por setores físicos em sequência de trajeto ("🥦 Hortifruti", "🥖 Padaria e Matinais", "🥩 Carnes e Aves", "🥛 Laticínios e Frios", "🥫 Mercearia", "❄️ Congelados", "🧼 Limpeza e Casa").\n` +
+      `  • Lista de Farmácia: agrupar por tipo ("💊 Medicamentos", "🩹 Primeiros Socorros", "🧴 Higiene e Cosméticos").\n` +
+      `  • Lista de Tarefas/Rotina/Trabalho: agrupar por contexto ou prioridade ("⚡ Prioridade", "💼 Trabalho", "🧹 Casa", "📞 Contatos e Pendências").\n` +
+      `- Sequência Prática: Ordene as seções e os itens internos na sequência mais lógica e conveniente para o usuário.`;
   }
 
   return (
-    `Itens atuais da lista:\n` +
+    listContextText +
+    `Itens atuais da lista para reorganizar:\n` +
     `${itemsText}\n\n` +
     sectionsText +
     `${promptRule}\n\n` +
-    `Diretrizes:\n` +
-    `1. TODOS os itens da lista original DEVEM ser mantidos. Não remova nem adicione itens novos.\n` +
-    `2. Mantenha os emojis e o texto exato de cada item.\n` +
-    `3. Crie ou reorganize seções com títulos descritivos e um emoji inicial.\n` +
-    `4. Retorne estritamente um JSON no formato:\n` +
+    `Diretrizes Obrigatórias:\n` +
+    `1. TODOS os itens da lista original DEVEM ser preservados e distribuídos nas seções criadas. Não omita nenhum item.\n` +
+    `2. Mantenha os emojis e o texto de cada item.\n` +
+    `3. A propriedade "sections" DEVE conter o array com as seções organizadas, onde cada seção tem "title" (com emoji) e "items" (array com os itens dessa seção).\n` +
+    `4. A propriedade "items" na raiz deve conter todos os itens na exata sequência ordenada das seções.\n` +
+    `5. Retorne EXCLUSIVAMENTE um objeto JSON válido no formato:\n` +
     `{\n` +
     `  "sections": [\n` +
     `    {\n` +
-    `      "title": "Emoji e Nome da Seção",\n` +
-    `      "items": ["emoji item 1", "emoji item 2"]\n` +
+    `      "title": "🥦 Hortifruti",\n` +
+    `      "items": ["🍌 Banana", "🍎 Maçã"]\n` +
     `    }\n` +
     `  ],\n` +
-    `  "items": ["emoji item 1", "emoji item 2"]\n` +
+    `  "items": ["🍌 Banana", "🍎 Maçã"]\n` +
     `}\n` +
-    `Não inclua markdown ou explicações fora do JSON.`
+    `Não inclua explicações, comentários ou markdown fora do JSON.`
   );
 };
 
@@ -735,6 +776,7 @@ export const reorderListWithAI = async (
   items: string[],
   currentSections?: string[],
   customPrompt?: string,
+  listName?: string,
   timeoutMs: number = 12000,
 ): Promise<ParsedListResult> => {
   if (!items || items.length === 0) {
@@ -747,12 +789,12 @@ export const reorderListWithAI = async (
     throw new Error('API Key not found');
   }
 
-  const prompt = buildReorderListPrompt(items, currentSections, customPrompt);
+  const prompt = buildReorderListPrompt(items, currentSections, customPrompt, listName);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`🤖 [Tudú AI] 🚀 Reordenando lista com ${provider.toUpperCase()}`);
+  console.log(`🤖 [Tudú AI] 🚀 Reordenando lista "${listName || 'N/A'}" com ${provider.toUpperCase()}`);
   console.log(`📌 Quantidade de itens: ${items.length}`);
   console.log(`💬 Prompt:\n${prompt}`);
   console.log('─────────────────────────────────────────────────────');

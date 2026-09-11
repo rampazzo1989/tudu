@@ -64,6 +64,7 @@ import {
 export const ReorderPromptModal: React.FC<ReorderPromptModalProps> = memo(
   ({
     visible,
+    listName,
     initialPrompt = '',
     currentItems,
     currentSections,
@@ -130,6 +131,7 @@ export const ReorderPromptModal: React.FC<ReorderPromptModalProps> = memo(
           orderingType === 'custom' && customPrompt.trim()
             ? customPrompt.trim()
             : undefined,
+          listName,
         );
 
         const sectionsResult = result.sections || [];

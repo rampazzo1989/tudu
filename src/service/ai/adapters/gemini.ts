@@ -118,21 +118,20 @@ export const requestGeminiParseList = async (
   signal?: AbortSignal,
 ): Promise<AIResponseWithUsage> => {
   const parseListSystemInstruction =
-    'You are an intelligent assistant in a todo app (Tudú). Your job is to convert raw pasted text (e.g. WhatsApp messages, notes, ingredients, or unstructured lists) into a clean, structured todo list with a list title and individual item tasks.\n' +
+    'You are an intelligent organization assistant in a todo app (Tudú). Your job is to extract, organize, categorize into sections, and reorder todo list items.\n' +
     'Rules:\n' +
-    '1. Extract only real, actionable tasks/items.\n' +
-    '2. Filter out chat metadata (timestamps like [15/08/2026, 14:46:44], dates, sender names like Day ❤:, greetings, conversational filler).\n' +
-    '3. If later lines update/clarify an earlier item in a conversation (e.g. "ovos" followed by "Pega logo 2 bandejas de ovo"), combine or select the final consolidated intent ("2 bandejas de ovos").\n' +
-    '4. Preserve quantities, units, and conditions (e.g. "8 pão francês", "2 leite condensado moça", "pera (se tiver macia)").\n' +
-    '5. Every item in the list MUST start with an appropriate emoji if clear (e.g. "🥚 2 bandejas de ovos", "🍞 Pão de forma", "🍌 Banana", "🍅 4 tomates").\n' +
-    '6. Provide an appropriate, concise list title with a relevant emoji in the same language as the prompt (e.g. "🛒 Compras", "📝 Tarefas", "💊 Farmácia").\n' +
-    '7. If the text does NOT contain any items/tasks, return an empty array for items.\n' +
-    '8. Return STRICTLY a raw JSON object with keys "title" (string) and "items" (array of strings). Do not include markdown code formatting, backticks, or extra text.';
+    '1. Extract only real, actionable tasks/items and preserve quantities, units, and conditions.\n' +
+    '2. Filter out chat metadata (timestamps, dates, sender names, greetings, conversational filler).\n' +
+    '3. Understand the list topic / domain (e.g. Movies, Groceries, Books, Travel) and interpret all items strictly within that domain (e.g. in a movie list, "Mãe!" is the movie "Mother!" and must be categorized by movie genre, NEVER as a literal family concept).\n' +
+    '4. Every item in the list MUST start with an appropriate emoji (e.g. "🥚 2 bandejas de ovos", "🍞 Pão de forma", "🍌 Banana", "🍿 Mãe!").\n' +
+    '5. When categorizing or reordering, ALWAYS group items into well-defined thematic sections (e.g. "🥦 Hortifruti", "🧼 Limpeza e Casa", "🍿 Suspense e Terror", "🎬 Ação e Aventura") with descriptive titles and emojis.\n' +
+    '6. Strictly follow all grouping, custom prompt, and smart ordering guidelines provided in the user prompt.\n' +
+    '7. Return STRICTLY a raw JSON object with "title" (string, optional if reordering), "sections" (array of { "title": string, "items": string[] }), and "items" (array of strings). Do not include markdown code formatting, backticks, or extra text.';
   return sendGeminiWithAutoConfig(
     apiKey,
     prompt,
     parseListSystemInstruction,
-    600,
+    1500,
     signal,
   );
 };

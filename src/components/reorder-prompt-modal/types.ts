@@ -16,6 +16,7 @@ export interface ReorderApplyPayload {
 
 export interface ReorderPromptModalProps {
   visible: boolean;
+  listName?: string;
   initialPrompt?: string;
   currentItems: string[];
   currentSections?: string[];
