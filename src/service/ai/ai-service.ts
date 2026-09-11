@@ -643,7 +643,7 @@ export const parseListFromTextWithAI = async (
   rawText: string,
   orderingType: AIOrderingType = 'none',
   customPrompt?: string,
-  timeoutMs: number = 12000,
+  timeoutMs: number = 45000,
 ): Promise<ParsedListResult> => {
   const cleanText = rawText.trim();
   if (!cleanText || cleanText.length < 2) {
@@ -702,6 +702,19 @@ export const parseListFromTextWithAI = async (
     return result;
   } catch (error: any) {
     clearTimeout(timeoutId);
+    const isAborted =
+      error?.name === 'AbortError' ||
+      error?.message?.includes('aborted') ||
+      error?.message?.includes('Aborted');
+    if (isAborted) {
+      const timeoutSec = Math.round(timeoutMs / 1000);
+      const friendlyError = new Error(
+        `Tempo limite excedido (${timeoutSec}s). Tente novamente com um texto menor.`,
+      );
+      console.error(`❌ [Tudú AI] Timeout na conversão de texto (${provider.toUpperCase()}): ${timeoutSec}s`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      throw friendlyError;
+    }
     console.error(`❌ [Tudú AI] Erro na conversão de texto (${provider.toUpperCase()}):`, error?.message || error);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     throw error;
@@ -777,7 +790,7 @@ export const reorderListWithAI = async (
   currentSections?: string[],
   customPrompt?: string,
   listName?: string,
-  timeoutMs: number = 12000,
+  timeoutMs: number = 45000,
 ): Promise<ParsedListResult> => {
   if (!items || items.length === 0) {
     return { title: '📝 Lista', items: [] };
@@ -829,6 +842,19 @@ export const reorderListWithAI = async (
     return result;
   } catch (error: any) {
     clearTimeout(timeoutId);
+    const isAborted =
+      error?.name === 'AbortError' ||
+      error?.message?.includes('aborted') ||
+      error?.message?.includes('Aborted');
+    if (isAborted) {
+      const timeoutSec = Math.round(timeoutMs / 1000);
+      const friendlyError = new Error(
+        `Tempo limite excedido (${timeoutSec}s). Tente novamente com um texto menor.`,
+      );
+      console.error(`❌ [Tudú AI] Timeout na reordenação (${provider.toUpperCase()}): ${timeoutSec}s`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      throw friendlyError;
+    }
     console.error(`❌ [Tudú AI] Erro na reordenação de itens (${provider.toUpperCase()}):`, error?.message || error);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     throw error;

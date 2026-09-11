@@ -36,5 +36,5 @@ export const LeftFadingGradient = styled(LinearGradient)`
 
 export const PageContentContainer = styled.View`
   flex: 1;
-  padding: 30px 16px;
-  `;
+  padding: 30px 16px 110px 16px;
+`;

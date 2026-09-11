@@ -42,7 +42,7 @@ export const useAIParseList = () => {
           text,
           effectiveOrdering,
           effectivePrompt,
-          15000,
+          45000,
         );
 
         setParsedTitle(result.title || '📝 Lista');

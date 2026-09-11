@@ -143,7 +143,7 @@ export const requestOpenAIParseList = async (
           content: prompt,
         },
       ],
-      max_completion_tokens: 1500,
+      max_completion_tokens: 2000,
     }),
     signal,
   });
