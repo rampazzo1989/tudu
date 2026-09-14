@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
-import { myLists as myListsAtom, tudus as tudusAtom } from '../../scenes/home/state';
+import { myLists as myListsAtom, hasTudusState } from '../../scenes/home/state';
 import { backupSettingsState } from '../../state/atoms';
 import { useBackupService } from './useBackupService';
 
 export const useBackupReminder = () => {
   const backupSettings = useRecoilValue(backupSettingsState);
   const myLists = useRecoilValue(myListsAtom);
-  const tudus = useRecoilValue(tudusAtom);
+  const hasTudus = useRecoilValue(hasTudusState);
   const { backupToGoogleDrive, recordAutoBackupError } = useBackupService();
 
   const hasCheckedAutoBackup = useRef(false);
@@ -67,7 +67,7 @@ export const useBackupReminder = () => {
     }
 
     const now = Date.now();
-    const hasData = myLists.size > 0 || tudus.size > 0;
+    const hasData = myLists.size > 0 || hasTudus;
 
     if (latestTimestamp === 0) {
       // Never backed up
@@ -106,7 +106,7 @@ export const useBackupReminder = () => {
     backupSettings.autoBackupEnabled,
     backupSettings.googleUser,
     myLists,
-    tudus,
+    hasTudus,
   ]);
 
   // 2. Trigger automatic backup on app open if schedule is due

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {AppState, AppStateStatus} from 'react-native';
 import notifee, {EventType} from '@notifee/react-native';
 import {MMKV} from 'react-native-mmkv';
@@ -16,23 +16,33 @@ export const NotificationBootSync: React.FC = () => {
   const {getTudusForDate} = useScheduledTuduService();
   const notificationSettings = useRecoilValue(notificationSettingsState);
 
-  // 1. Sync notifications on boot/state update
+  const getAllTudusRef = useRef(getAllTudus);
+  getAllTudusRef.current = getAllTudus;
+
+  const getTudusForDateRef = useRef(getTudusForDate);
+  getTudusForDateRef.current = getTudusForDate;
+
+  const settingsRef = useRef(notificationSettings);
+  settingsRef.current = notificationSettings;
+
+  // 1. Sync notifications on boot and when notification settings change
   useEffect(() => {
     let isMounted = true;
     const sync = async () => {
       await notificationService.init();
       if (!isMounted) return;
+      const currentSettings = settingsRef.current;
       notificationService.setCallRemindersEnabled(
-        Boolean(notificationSettings.callRemindersEnabled),
+        Boolean(currentSettings.callRemindersEnabled),
       );
-      const allTudus = getAllTudus();
+      const allTudus = getAllTudusRef.current();
 
       // Determine target date for Daily Digest (today if before digest time, tomorrow if after)
       const now = Date.now();
       const targetDigestDate = new Date();
       targetDigestDate.setHours(
-        notificationSettings.dailyDigestHour,
-        notificationSettings.dailyDigestMinute,
+        currentSettings.dailyDigestHour,
+        currentSettings.dailyDigestMinute,
         0,
         0,
       );
@@ -41,12 +51,12 @@ export const NotificationBootSync: React.FC = () => {
         targetDigestDate.setDate(targetDigestDate.getDate() + 1);
       }
 
-      const tudusForDigest = getTudusForDate(targetDigestDate);
+      const tudusForDigest = getTudusForDateRef.current(targetDigestDate);
       if (!isMounted) return;
       await notificationService.syncAll(
         allTudus,
         tudusForDigest,
-        notificationSettings,
+        currentSettings,
         targetDigestDate,
       );
     };
@@ -56,7 +66,14 @@ export const NotificationBootSync: React.FC = () => {
       isMounted = false;
       clearTimeout(timer);
     };
-  }, [getAllTudus, getTudusForDate, notificationSettings]);
+  }, [
+    notificationSettings.timedNotificationsEnabled,
+    notificationSettings.dailyDigestEnabled,
+    notificationSettings.dailyDigestHour,
+    notificationSettings.dailyDigestMinute,
+    notificationSettings.notificationSound,
+    notificationSettings.callRemindersEnabled,
+  ]);
 
   // 2. Handle notification interactions (foreground, delivered, and cold-boot)
   useEffect(() => {

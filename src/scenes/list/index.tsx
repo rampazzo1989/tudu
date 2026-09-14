@@ -9,14 +9,18 @@ import {UNLOADED_ID} from '../../constants';
 const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   const {listId, title, listOrigin} = route.params;
 
-  const [list, setList] = useState<ListViewModel | undefined>(
-    new ListViewModel({
-      id: UNLOADED_ID,
-      label: title,
-    }),
-  );
-
   const {getListById, saveListAndTudus} = useListService();
+
+  const [list, setList] = useState<ListViewModel | undefined>(() => {
+    const foundList = getListById(listId, listOrigin);
+    return (
+      foundList ??
+      new ListViewModel({
+        id: UNLOADED_ID,
+        label: title,
+      })
+    );
+  });
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
@@ -25,7 +29,9 @@ const ListPage: React.FC<ListPageProps> = memo(({navigation, route}) => {
   useEffect(() => {
     if (list?.id === UNLOADED_ID) {
       const foundList = getListById(listId, listOrigin);
-      setList(foundList);
+      if (foundList) {
+        setList(foundList);
+      }
     }
   }, [getListById, listId, listOrigin, list?.id]);
 

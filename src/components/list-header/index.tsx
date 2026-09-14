@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
-import {FadeIn, ZoomInRotate} from 'react-native-reanimated';
+import {ZoomInRotate} from 'react-native-reanimated';
 
 import {ContentRow, Emoji, styles, Title, TitleContainer} from './styles';
 import {ListHeaderProps} from './types';
@@ -10,11 +10,10 @@ import {trimEmoji} from '../../utils/emoji-utils';
 import {Header} from '../header';
 import {BackButton} from '../back-button';
 import {ListDefaultIcon} from '../animated-icons/list-default-icon';
+import {estimateTitleWidth} from '../header/utils';
 
 const ListHeader: React.FC<ListHeaderProps> = memo(
   ({listData, onBackButtonPress, Icon}) => {
-
-    const [titleWidth, setTitleWidth] = useState(0);
     const iconRef = useRef<AnimatedIconRef>(null);
     const theme = useTheme();
 
@@ -27,19 +26,30 @@ const ListHeader: React.FC<ListHeaderProps> = memo(
       [listData?.label],
     );
 
+    const titleText = emojiInfo?.formattedText ?? listData?.label?.trim() ?? '';
+    const [titleWidth, setTitleWidth] = useState(() => estimateTitleWidth(titleText));
+
+    useEffect(() => {
+      const estimated = estimateTitleWidth(titleText);
+      setTitleWidth(prev => (Math.abs(prev - estimated) > 3 ? estimated : prev));
+    }, [titleText]);
+
     return (
       <Header titleWidth={titleWidth}>
-        <ContentRow entering={FadeIn.duration(500)}>
+        <ContentRow>
           <TitleContainer>
             <BackButton onPress={onBackButtonPress} />
             <Title
               adjustsFontSizeToFit
               onLayout={e => {
-                setTitleWidth(e.nativeEvent.layout.width);
+                const measured = e.nativeEvent.layout.width;
+                if (measured > 0 && Math.abs(measured - titleWidth) > 3) {
+                  setTitleWidth(measured);
+                }
               }}
               numberOfLines={2}
               minimumFontScale={0.6}>
-              {emojiInfo?.formattedText ?? listData?.label?.trim()}
+              {titleText}
             </Title>
           </TitleContainer>
 

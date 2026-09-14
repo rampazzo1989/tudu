@@ -38,8 +38,18 @@ const SearchPage: React.FC<SearchPageProps> = ({ navigation, route: _route }) =>
   }, [navigation]);
 
   useEffect(() => {
-    const searchedTudus = searchTudus(searchText);
-    setTudus(searchedTudus ?? []);
+    if (!searchText) {
+      const searchedTudus = searchTudus('');
+      setTudus(searchedTudus ?? []);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const searchedTudus = searchTudus(searchText);
+      setTudus(searchedTudus ?? []);
+    }, 200);
+
+    return () => clearTimeout(timer);
   }, [searchText, searchTudus, setTudus]);
 
   const getAdditionalInformation = useCallback(
@@ -123,21 +133,22 @@ const SearchPage: React.FC<SearchPageProps> = ({ navigation, route: _route }) =>
         onBackButtonPress={handleBackButtonPress}
         onTextChange={handleTextChange}
       />
-      <PageContent contentContainerStyle={styles.pageContent}>
+      <PageContent scrollable={false}>
         {!tudus ? (
-          <SkeletonTuduList />
-        ) : (
-          <PaddedContainer>
-            <SimpleTuduList
-              getAdditionalInformation={getAdditionalInformation}
-              tudus={tudus}
-              updateTuduFn={saveTudu}
-              deleteTuduFn={deleteTudu}
-              undoDeletionFn={restoreBackup}
-              onEditPress={handleEditPress}
-              onSchedulePress={handleTuduSchedulePress}
-            />
+          <PaddedContainer style={styles.skeletonContainer}>
+            <SkeletonTuduList />
           </PaddedContainer>
+        ) : (
+          <SimpleTuduList
+            getAdditionalInformation={getAdditionalInformation}
+            tudus={tudus}
+            updateTuduFn={saveTudu}
+            deleteTuduFn={deleteTudu}
+            undoDeletionFn={restoreBackup}
+            onEditPress={handleEditPress}
+            onSchedulePress={handleTuduSchedulePress}
+            contentContainerStyle={styles.pageContent}
+          />
         )}
       </PageContent>
 

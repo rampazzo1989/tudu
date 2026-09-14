@@ -1,9 +1,8 @@
 import React, {memo, useCallback, useRef, useState} from 'react';
 import {FadeOutDown} from 'react-native-reanimated';
 import {toggle} from '../../utils/state-utils';
-import {AdjustIcon} from '../animated-icons/adjust-icon';
+import {AdjustStaticIcon, HashStaticIcon} from '../../assets/static/tudu-icons';
 import {BaseAnimatedIconRef} from '../animated-icons/animated-icon/types';
-import {HashIcon} from '../animated-icons/hash-icon';
 import {
   ButtonContainer,
   Button,
@@ -32,7 +31,6 @@ import {
 } from './types';
 import {ActionMinusIcon} from '../../assets/static/action_minus';
 import {ActionPlusIcon} from '../../assets/static/action_plus';
-import {CounterViewModel} from '../../scenes/home/types';
 import {PopoverMenu} from '../popover-menu';
 import {CounterOptions} from '../../scenes/counter/components/counter-options';
 import {OptionsThreeDotsIcon} from '../animated-icons/options-arrow-down-icon';
@@ -49,7 +47,7 @@ const TileTitle: React.FC<TileTitleProps> = memo(({title}) => {
   return (
     <TileTitleContainer>
       <IconContainer>
-        <HashIcon autoPlay size={14} animateWhenIdle />
+        <HashStaticIcon size={14} />
       </IconContainer>
       <Title numberOfLines={2}>{title}</Title>
     </TileTitleContainer>
@@ -77,12 +75,10 @@ const EditingCounterValue: React.FC<EditingCounterValueProps> = memo(
 );
 
 const AdjustButton: React.FC = memo(() => {
-  const iconRef = useRef<BaseAnimatedIconRef>(null);
-
   return (
     <ButtonContainer exiting={FadeOutDown.duration(300)}>
       <Button>
-        <AdjustIcon ref={iconRef} autoPlay />
+        <AdjustStaticIcon />
       </Button>
     </ButtonContainer>
   );

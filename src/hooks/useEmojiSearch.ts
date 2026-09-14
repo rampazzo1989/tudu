@@ -1,9 +1,5 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { getLocales } from 'react-native-localize';
-import emojisPtBr from 'emojilib-pt-br/dist/emoji-pt-BR.json';
-import emojisEn from 'emojilib-pt-br/dist/emoji-en-US.json';
-import emojisEs from 'emojilib-pt-br/dist/emoji-es.json';
-import emojisIt from 'emojilib-pt-br/dist/emoji-it.json';
 import Fuse from 'fuse.js';
 import { useRecoilValue } from 'recoil';
 import { aiSettingsState, emojiUsageState } from '../state/atoms';
@@ -23,11 +19,23 @@ export interface EmojiSearchContext {
   listName?: string;
 }
 
-const emojisDictionary = {
-  'pt': emojisPtBr,
-  'en': emojisEn,
-  'es': emojisEs,
-  'it': emojisIt,
+/**
+ * Lazy loads the dictionary for the active language only,
+ * preventing unneeded dictionaries from being parsed into JS memory.
+ */
+const loadEmojiDictionary = (languageCode: string): Record<string, string[]> => {
+  const cleanLang = (languageCode.split('-')[0] || 'en').toLowerCase();
+  switch (cleanLang) {
+    case 'pt':
+      return require('emojilib-pt-br/dist/emoji-pt-BR.json');
+    case 'es':
+      return require('emojilib-pt-br/dist/emoji-es.json');
+    case 'it':
+      return require('emojilib-pt-br/dist/emoji-it.json');
+    case 'en':
+    default:
+      return require('emojilib-pt-br/dist/emoji-en-US.json');
+  }
 };
 
 export const useEmojiSearch = (debounceDelay: number = 1200) => {
@@ -35,7 +43,7 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
   const emojiUsage = useRecoilValue(emojiUsageState); // Estado global persistido
   const aiSettings = useRecoilValue(aiSettingsState); // Configurações de IA
   const searchCache = useRef<Map<string, string[]>>(new Map());
-  const emojiEntries = useRef<EmojiEntry[]>([]);
+  const fuseCache = useRef<{ lang: string; fuse: Fuse<EmojiEntry> } | null>(null);
   const lastSearch = useRef<{
     queryKey: string;
     emojis: string[];
@@ -48,10 +56,33 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
     isAIGenerated: false,
   });
 
-  const emojis = useMemo(() => {
-    const language = getLocales()[0].languageTag;
-    const languageWithoutRegion = language.split('-')[0];
-    return emojisDictionary[languageWithoutRegion as keyof typeof emojisDictionary] || emojisDictionary['en'];
+  const getOrBuildFuse = useCallback(() => {
+    const language = getLocales()[0]?.languageTag || 'en';
+    const cleanLang = (language.split('-')[0] || 'en').toLowerCase();
+
+    if (fuseCache.current && fuseCache.current.lang === cleanLang) {
+      return fuseCache.current.fuse;
+    }
+
+    // Language changed or initial load: clear query cache and build Fuse for new language
+    searchCache.current.clear();
+
+    const dictionary = loadEmojiDictionary(cleanLang);
+    const entries: EmojiEntry[] = Object.entries(dictionary).map(([key, values]) => ({
+      key,
+      values,
+    }));
+
+    const fuse = new Fuse(entries, {
+      keys: ['values'],
+      threshold: 0.25,
+      distance: 100,
+      includeScore: true,
+      shouldSort: true,
+    });
+
+    fuseCache.current = { lang: cleanLang, fuse };
+    return fuse;
   }, []);
 
   const debounce = useCallback((func: () => void, delay: number) => {
@@ -64,7 +95,7 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
   const selectWordsToSearch = useCallback((text: string) => {
     // Remove parameters from the text, if there are any:
     text = text.replace(PARAMETERS_REGEX, '').trim();
-      
+
     let words = text.split(/\s+/).filter(Boolean);
     if (words.length > 1) {
       words = words.filter(
@@ -80,26 +111,13 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
         return [];
       }
 
-      var searchLimitPerWord = words.length === 1 
-        ? 8 
+      const searchLimitPerWord = words.length === 1
+        ? 8
         : words.length < 4
           ? 5
           : 3;
 
-      if (emojiEntries.current.length === 0) {
-        emojiEntries.current = Object.entries(emojis).map(([key, values]) => ({
-          key,
-          values,
-        }));
-      }
-
-      const fuse = new Fuse(emojiEntries.current, {
-        keys: ['values'],
-        threshold: 0.25,
-        distance: 100,
-        includeScore: true,
-        shouldSort: true,
-      });
+      const fuse = getOrBuildFuse();
 
       let wordsWithoutCache: string[] = [];
 
@@ -132,7 +150,7 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
 
       return Array.from(resultSet);
     },
-    [emojis, searchCache, emojiEntries]
+    [getOrBuildFuse]
   );
 
   const searchEmojis = useCallback((text: string) => {
@@ -166,7 +184,7 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
         results: string[],
         isShowingMostUsed: boolean,
         isAIGenerated: boolean,
-      ) => void, 
+      ) => void,
       fallbackToMostUsed: boolean = true,
       beforeCallback?: () => void,
       context?: EmojiSearchContext,

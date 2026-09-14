@@ -624,7 +624,6 @@ const TudusList: React.FC<TudusListProps> = memo(
           {flatRows.length > 0 && (
             <NestableDraggableFlatList
               data={flatRows}
-              extraData={flatRows}
               renderItem={renderUndoneRow}
               keyExtractor={item => item.id}
               onDragEnd={handleDragEnd}
@@ -657,7 +656,7 @@ const TudusList: React.FC<TudusListProps> = memo(
               overflow: 'visible',
               flexGrow: 1,
             }}
-            removeClippedSubviews
+            removeClippedSubviews={false}
             nestedScrollEnabled
           />
         </NestableScrollContainer>

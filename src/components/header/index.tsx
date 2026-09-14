@@ -4,13 +4,19 @@ import {HeaderProps} from './types';
 import {useSharedValue, useAnimatedStyle, withTiming} from 'react-native-reanimated';
 
 const Header: React.FC<HeaderProps> = memo(
-  ({children, titleWidth = 0, style}) => {
-    const width = useSharedValue(130);
+  ({children, titleWidth = 0, pillWidth, style}) => {
+    const targetWidth = pillWidth ?? (titleWidth ? 85 + titleWidth : 130);
+    const width = useSharedValue(targetWidth);
+    const isFirstRender = React.useRef(true);
 
     useEffect(() => {
-      const finalWidth = titleWidth ? 85 + titleWidth : 130;
-      width.value = withTiming(finalWidth, { duration: 200 });
-    }, [titleWidth]);
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        width.value = targetWidth;
+        return;
+      }
+      width.value = withTiming(targetWidth, { duration: 150 });
+    }, [targetWidth]);
 
     const animatedStyle = useAnimatedStyle(() => {
       return {

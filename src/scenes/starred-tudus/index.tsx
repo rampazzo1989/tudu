@@ -24,14 +24,13 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
   route,
 }) => {
   const { t } = useTranslation();
-  const [tudus, setTudus] = useState<TuduViewModel[]>();
+  const { getAllStarredTudus, saveTudu, deleteTudu, restoreBackup } =
+    useListService();
+  const [tudus, setTudus] = useState<TuduViewModel[]>(() => getAllStarredTudus() ?? []);
 
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
-
-  const { getAllStarredTudus, saveTudu, deleteTudu, restoreBackup } =
-    useListService();
 
   const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
 
@@ -40,10 +39,8 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    setTimeout(() => {
-      const starredTudus = getAllStarredTudus();
-      setTudus(starredTudus ?? []);
-    }, 100);
+    const starredTudus = getAllStarredTudus();
+    setTudus(starredTudus ?? []);
   }, [getAllStarredTudus, setTudus]);
 
   const getAdditionalInformation = useCallback(
@@ -123,25 +120,26 @@ const StarredTudusPage: React.FC<StarredTudusPageProps> = ({
         onBackButtonPress={handleBackButtonPress}
         Icon={StarIcon}
       />
-      <PageContent contentContainerStyle={styles.pageContent}>
+      <PageContent scrollable={false}>
         {!tudus ? (
-          <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
+          <PaddedContainer style={styles.skeletonContainer}>
+            <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
+          </PaddedContainer>
         ) : tudus.length === 0 ? (
           <EmptyStateContainer>
             <EmptyStateText>⭐ {t('emptyStates.starred', {defaultValue: 'Nenhum tudú marcado como favorito'})}</EmptyStateText>
           </EmptyStateContainer>
         ) : (
-          <PaddedContainer>
-            <SimpleTuduList
-              getAdditionalInformation={getAdditionalInformation}
-              tudus={tudus}
-              updateTuduFn={saveTudu}
-              deleteTuduFn={deleteTudu}
-              undoDeletionFn={restoreBackup}
-              onEditPress={handleEditPress}
-              onSchedulePress={handleTuduSchedulePress}
-            />
-          </PaddedContainer>
+          <SimpleTuduList
+            getAdditionalInformation={getAdditionalInformation}
+            tudus={tudus}
+            updateTuduFn={saveTudu}
+            deleteTuduFn={deleteTudu}
+            undoDeletionFn={restoreBackup}
+            onEditPress={handleEditPress}
+            onSchedulePress={handleTuduSchedulePress}
+            contentContainerStyle={styles.pageContent}
+          />
         )}
       </PageContent>
 

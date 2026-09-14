@@ -63,7 +63,7 @@ export const counters = atom<Map<string, Counter>>({
 export const unlistedTudus = atom<TuduItemMap>({
   key: 'unlistedTudus',
   default: new Map<string, TuduItem>(),
-  effects: [mmkvPersistAtom('unlistedTudus')],
+  effects: [mmkvPersistAtom('unlistedTudus', false, 250)],
 });
 
 export const myLists = atom<Map<string, List>>({
@@ -113,13 +113,13 @@ export const tudus = atom<Map<string, TuduItemMap>>({
       ]),
     ],
   ]),
-  effects: [mmkvPersistAtom('tudus')],
+  effects: [mmkvPersistAtom('tudus', false, 250)],
 });
 
 export const archivedTudus = atom<Map<string, TuduItemMap>>({
   key: 'archivedTudus',
   default: new Map<string, TuduItemMap>(),
-  effects: [mmkvPersistAtom('archivedTudus')],
+  effects: [mmkvPersistAtom('archivedTudus', false, 250)],
 });
 
 export const archivedLists = atom<Map<string, List>>({
@@ -139,40 +139,68 @@ export const smartListsTuduCount = selector({
     let starredCount = 0;
     let allTudus = 0;
 
-    tuduMaps.forEach(map => {
-      const undoneTudus = [...map]
-        .filter(([_, tudu]) => !tudu.done)
-        .map(([_, tudu]) => tudu);
+    for (const map of tuduMaps.values()) {
+      if (!map) {
+        continue;
+      }
+      for (const tudu of map.values()) {
+        if (!tudu || tudu.done) {
+          continue;
+        }
+        allTudus++;
 
-      allTudus += undoneTudus.length;
+        if (tudu.dueDate) {
+          if (isToday(tudu.dueDate)) {
+            todayCount++;
+          } else if (isFutureDate(tudu.dueDate)) {
+            upcomingCount++;
+          }
+        }
 
-      todayCount += undoneTudus.filter(
-        tudu => tudu.dueDate && isToday(tudu.dueDate),
-      ).length;
+        if (tudu.starred) {
+          starredCount++;
+        }
+      }
+    }
 
-      upcomingCount += undoneTudus.filter(
-        tudu => tudu.dueDate && isFutureDate(tudu.dueDate),
-      ).length;
+    if (unlisted) {
+      for (const tudu of unlisted.values()) {
+        if (!tudu || tudu.done) {
+          continue;
+        }
+        allTudus++;
 
-      starredCount += undoneTudus.filter(tudu => !!tudu.starred).length;
-    }, []);
+        if (tudu.dueDate) {
+          if (isToday(tudu.dueDate)) {
+            todayCount++;
+          } else if (isFutureDate(tudu.dueDate)) {
+            upcomingCount++;
+          }
+        }
 
-    const undoneUnlistedTudus = [...unlisted]
-      .filter(([_, tudu]) => !tudu.done)
-      .map(([_, tudu]) => tudu);
-
-    allTudus += undoneUnlistedTudus.length;
-    todayCount += undoneUnlistedTudus.filter(
-      tudu => tudu.dueDate && isToday(tudu.dueDate),
-    ).length;
-
-    upcomingCount += undoneUnlistedTudus.filter(
-      tudu => tudu.dueDate && isFutureDate(tudu.dueDate),
-    ).length;
-
-    starredCount += undoneUnlistedTudus.filter(tudu => !!tudu.starred).length;
+        if (tudu.starred) {
+          starredCount++;
+        }
+      }
+    }
 
     return {todayCount, upcomingCount, starredCount, allTudus};
+  },
+});
+
+export const hasTudusState = selector({
+  key: 'hasTudusState',
+  get: ({get}) => {
+    const custom = get(tudus);
+    if (custom.size > 0) {
+      for (const map of custom.values()) {
+        if (map && map.size > 0) {
+          return true;
+        }
+      }
+    }
+    const unlisted = get(unlistedTudus);
+    return Boolean(unlisted && unlisted.size > 0);
   },
 });
 

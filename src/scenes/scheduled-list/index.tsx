@@ -20,8 +20,11 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
     );
     const {t} = useTranslation();
     const [showOutdated] = useRecoilState(showOutdatedTudus);
-    const [outdatedTudus, setOutdatedTudus] = useState<TuduViewModel[]>([]);
     const {getTudusForDate, saveAllScheduledTudus} = useScheduledTuduService();
+    const [outdatedTudus, setOutdatedTudus] = useState<TuduViewModel[]>(() => {
+      const tudusWithOutdated = getTudusForDate(date, true);
+      return tudusWithOutdated.filter(tudu => tudu.dueDate && isOutdated(tudu.dueDate));
+    });
 
     const handleBackButtonPress = useCallback(() => {
       navigation.goBack();
@@ -29,39 +32,41 @@ const ScheduledListPage: React.FC<ScheduledListPageProps> = memo(
 
     const getListTitle = useCallback(
       () => (isToday(date) ? t('listTitles.today') : formatToLocaleDate(date)),
-      [date],
+      [date, t],
     );
 
-    const [list, setList] = useState<ListViewModel>(
-      new ListViewModel(
+    const [list, setList] = useState<ListViewModel>(() => {
+      const tudusWithOutdated = getTudusForDate(date, true);
+      const tudusForDate = tudusWithOutdated.filter(tudu => tudu.dueDate && !isOutdated(tudu.dueDate));
+      const virtualListVM = new ListViewModel(
         {
-          id: UNLOADED_ID,
-          label: getListTitle(),
+          id: 'scheduled',
+          label: isToday(date) ? t('listTitles.today') : formatToLocaleDate(date),
         },
         new Map(),
-      ),
-    );
+      );
+      virtualListVM.tudus = tudusForDate ?? [];
+      return virtualListVM;
+    });
 
     useEffect(() => {
-      setTimeout(() => {
-        const tudusWithOutdated = getTudusForDate(date, true);
-        const tudusForDate = tudusWithOutdated.filter(tudu => tudu.dueDate && !isOutdated(tudu.dueDate));
-        const outdated = tudusWithOutdated.filter(tudu => tudu.dueDate && isOutdated(tudu.dueDate));
-          
-        setOutdatedTudus(outdated);
+      const tudusWithOutdated = getTudusForDate(date, true);
+      const tudusForDate = tudusWithOutdated.filter(tudu => tudu.dueDate && !isOutdated(tudu.dueDate));
+      const outdated = tudusWithOutdated.filter(tudu => tudu.dueDate && isOutdated(tudu.dueDate));
+        
+      setOutdatedTudus(outdated);
 
-        setList(() => {
-          const virtualListVM = new ListViewModel(
-            {
-              id: 'scheduled',
-              label: getListTitle(),
-            },
-            new Map(),
-          );
-          virtualListVM.tudus = tudusForDate ?? [];
-          return virtualListVM;
-        });
-      }, 100);
+      setList(() => {
+        const virtualListVM = new ListViewModel(
+          {
+            id: 'scheduled',
+            label: getListTitle(),
+          },
+          new Map(),
+        );
+        virtualListVM.tudus = tudusForDate ?? [];
+        return virtualListVM;
+      });
     }, [date, getListTitle, getTudusForDate, showOutdated]);
 
     const setTudus = useCallback(

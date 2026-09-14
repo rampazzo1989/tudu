@@ -33,18 +33,12 @@ const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
         (callback?: () => void) => {
           scaleValue.value = withTiming(
             1 - scaleFactor,
-            {duration: 100},
+            {duration: 70},
             () => {
               scaleValue.value = withTiming(
-                1 + scaleFactor,
-                {duration: 100},
-                () => {
-                  scaleValue.value = withTiming(
-                    1,
-                    {duration: 150},
-                    callback ? runOnJS(callback) : undefined,
-                  );
-                },
+                1,
+                {duration: 90},
+                callback ? runOnJS(callback) : undefined,
               );
             },
           );
@@ -59,7 +53,11 @@ const ShrinkableView: React.FC<ShrinkableViewProps> = memo(
         if (waitForAnimation) {
           shrink(onPress);
         } else {
-          setTimeout(() => onPress?.(), delayPressEvent);
+          if (delayPressEvent > 0) {
+            setTimeout(() => onPress?.(), delayPressEvent);
+          } else {
+            onPress?.();
+          }
           shrink();
         }
       }, [delayPressEvent, onPress, shrink, waitForAnimation]);

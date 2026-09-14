@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import {
   myLists,
@@ -11,8 +11,14 @@ export const DataIntegritySync: React.FC = () => {
   const [customLists, setCustomLists] = useRecoilState(myLists);
   const [customTudus, setCustomTudus] = useRecoilState(tudusState);
   const [unlisted, setUnlisted] = useRecoilState(unlistedTudusState);
+  const hasRunRef = useRef(false);
 
   useEffect(() => {
+    if (hasRunRef.current) {
+      return;
+    }
+    hasRunRef.current = true;
+
     let hasCorruptedScheduled = false;
     if (customLists.has('scheduled')) {
       hasCorruptedScheduled = true;

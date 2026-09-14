@@ -1,4 +1,5 @@
 import React, {forwardRef, memo, useImperativeHandle} from 'react';
+import {StyleSheet} from 'react-native';
 import Svg, {Circle, Path, Rect, SvgProps} from 'react-native-svg';
 import {AnimatedIconProps} from '../../../components/animated-icons/animated-icon/types';
 
@@ -443,6 +444,38 @@ export const RecurrenceSvg = memo<TuduIconProps>(({size = 20, color = 'white', o
 });
 
 /**
+ * Adjust / Code icon (extraído de adjust.json)
+ */
+export const AdjustSvg = memo<TuduIconProps>(({size = 20, color = 'white', overrideColor, ...props}) => {
+  const c = overrideColor || color;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 500 500" fill="none" {...props}>
+      <Path
+        d="M 145.75 145.91 L 62.57 248.27 L 145.74 353.33"
+        stroke={c}
+        strokeWidth={41}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M 270.67 145.57 L 229.33 354.43"
+        stroke={c}
+        strokeWidth={41}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M 354.25 145.91 L 437.42 251.73 L 354.24 354.09"
+        stroke={c}
+        strokeWidth={41}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+});
+
+/**
  * Search icon (extraído de search.json)
  */
 export const SearchSvg = memo<TuduIconProps>(({size = 20, color = 'white', overrideColor, ...props}) => {
@@ -555,7 +588,14 @@ export function createStaticIcon(SvgComponent: React.ComponentType<TuduIconProps
         toggle: () => {},
       }));
 
-      const size = typeof props.size === 'number' ? props.size : 20;
+      const flatStyle = StyleSheet.flatten(props.style);
+      const styleSize =
+        typeof flatStyle?.width === 'number'
+          ? flatStyle.width
+          : typeof flatStyle?.height === 'number'
+          ? flatStyle.height
+          : undefined;
+      const size = typeof props.size === 'number' ? props.size : styleSize ?? 20;
       const color = props.overrideColor || (props as any).color || '#FFFFFF';
 
       return <SvgComponent size={size} color={color} overrideColor={props.overrideColor} style={props.style} />;
@@ -586,6 +626,7 @@ export const SearchStaticIcon = createStaticIcon(SearchSvg);
 export const SettingsStaticIcon = createStaticIcon(SettingsSvg);
 export const FolderStaticIcon = createStaticIcon(FolderSvg);
 export const CheckedLogoStaticIcon = createStaticIcon(CheckedLogoSvg);
+export const AdjustStaticIcon = createStaticIcon(AdjustSvg);
 
 // Legacy exports for backwards compatibility
 export const RenameActionStaticIcon = RenameStaticIcon;

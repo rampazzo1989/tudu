@@ -18,7 +18,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = memo(
     const iconRef = useRef<AnimatedIconRef>(null);
 
     return (
-      <Header>
+      <Header pillWidth={178}>
         <ContentRow>
           <LogoAndTitle>
             <LogoIcon ref={iconRef} speed={2} />

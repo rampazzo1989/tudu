@@ -34,14 +34,13 @@ const UpcomingTudusPage: React.FC<UpcomingTudusPageProps> = ({
   route,
 }) => {
   const { t } = useTranslation();
-  const [tudus, setTudus] = useState<TuduViewModel[]>();
+  const { saveTudu, deleteTudu, restoreBackup } = useListService();
+  const { getAllUpcomingTudus } = useScheduledTuduService();
+  const [tudus, setTudus] = useState<TuduViewModel[]>(() => getAllUpcomingTudus() ?? []);
 
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
-
-  const { saveTudu, deleteTudu, restoreBackup } = useListService();
-  const { getAllUpcomingTudus } = useScheduledTuduService();
 
   const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
 
@@ -50,10 +49,8 @@ const UpcomingTudusPage: React.FC<UpcomingTudusPageProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    setTimeout(() => {
-      const upcoming = getAllUpcomingTudus();
-      setTudus(upcoming ?? []);
-    }, 100);
+    const upcoming = getAllUpcomingTudus();
+    setTudus(upcoming ?? []);
   }, [getAllUpcomingTudus, setTudus]);
 
   const getAdditionalInformation = useCallback(
@@ -165,6 +162,7 @@ const UpcomingTudusPage: React.FC<UpcomingTudusPageProps> = ({
                   undoDeletionFn={restoreBackup}
                   onEditPress={handleEditPress}
                   onSchedulePress={handleTuduSchedulePress}
+                  virtualized={false}
                 />
               </React.Fragment>
             ))}

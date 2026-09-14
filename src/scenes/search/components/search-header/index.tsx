@@ -1,5 +1,5 @@
 import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
-import {FadeIn, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
+import {useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
 
 import {useTheme} from 'styled-components/native';
 import {BackButton} from '../../../../components/back-button';
@@ -9,13 +9,16 @@ import {SearchHeaderProps} from './types';
 import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
 import {ContentRow, Input, styles, Title, TitleBackground, TitleContainer} from './styles';
 import { HeaderContent } from '../../../../components/header/styles';
+import {estimateTitleWidth} from '../../../../components/header/utils';
 
 const SearchHeader: React.FC<SearchHeaderProps> = memo(
   ({listData, onBackButtonPress, onTextChange}) => {
-    const [titleWidth, setTitleWidth] = useState(0);
+    const titleText = listData?.label?.trim() ?? '';
+    const [titleWidth, setTitleWidth] = useState(() => estimateTitleWidth(titleText));
     const iconRef = useRef<AnimatedIconRef>(null);
     const theme = useTheme();
     const [searchText, setSearchText] = useState('');
+    const isFirstRender = useRef(true);
 
     useEffect(() => {
       iconRef.current?.play();
@@ -29,24 +32,29 @@ const SearchHeader: React.FC<SearchHeaderProps> = memo(
       [onTextChange],
     );
 
-    const width = useSharedValue(130);
+    const targetWidth = titleWidth ? 85 + titleWidth : 130;
+    const width = useSharedValue(targetWidth);
     
-        useEffect(() => {
-          const finalWidth = titleWidth ? 85 + titleWidth : 130;
-          width.value = withTiming(finalWidth, { duration: 200 });
-        }, [titleWidth]);
-    
-        const animatedStyle = useAnimatedStyle(() => {
-          return {
-            width: width.value,
-          };
-        });
+    useEffect(() => {
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        width.value = targetWidth;
+        return;
+      }
+      width.value = withTiming(targetWidth, { duration: 150 });
+    }, [targetWidth]);
+
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        width: width.value,
+      };
+    });
 
     return (
       <HeaderContent style={styles.header}>
-              <TitleBackground style={[animatedStyle]} />
+        <TitleBackground style={[animatedStyle]} />
               
-        <ContentRow entering={FadeIn.duration(500)}>
+        <ContentRow>
           <TitleContainer>
             <BackButton onPress={onBackButtonPress} />
             <Title

@@ -6,10 +6,9 @@ import { Star } from '../star';
 import { TuduCheckbox } from '../tudu-checkbox';
 import { styles } from './styles';
 import { TuduAdditionalInformationOriginType, TuduCardProps } from './types';
-import { RecurrenceIcon } from '../animated-icons/recurrence-icon';
 import { useTranslation } from 'react-i18next';
 import { TagChip } from '../tag-chip';
-import { CalendarChipSvg, ListChipSvg, SunChipSvg } from '../../assets/static/tudu-icons';
+import { CalendarChipSvg, ListChipSvg, RecurrenceStaticIcon, SunChipSvg } from '../../assets/static/tudu-icons';
 
 const TuduCard = memo<TuduCardProps>(
   ({
@@ -140,7 +139,7 @@ const TuduCard = memo<TuduCardProps>(
                 {data.recurrence && (
                   <TagChip
                     label={t(`recurrence.${data.recurrence}`)}
-                    Icon={<RecurrenceIcon size={10} autoPlay />}
+                    Icon={<RecurrenceStaticIcon size={10} color={theme.colors.contrastColor || 'white'} />}
                     variant="recurrence"
                     size="small"
                   />

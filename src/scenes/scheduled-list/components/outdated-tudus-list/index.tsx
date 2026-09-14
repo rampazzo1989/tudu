@@ -153,6 +153,7 @@ const OutdatedTudusList: React.FC<OutdatedTudusListProps> = ({ tudus, showUpToDa
                             undoDeletionFn={restoreBackup}
                             onEditPress={handleEditPress}
                             onSchedulePress={handleTuduSchedulePress}
+                            virtualized={false}
                         />
                     </View>
                     {showUpToDateHeader && (

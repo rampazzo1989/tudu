@@ -6,6 +6,10 @@ export const styles = StyleSheet.create({
   pageContent: {
     paddingTop: 30,
     paddingBottom: 30,
+    paddingHorizontal: DEFAULT_PAGE_HORIZONTAL_PADDING,
+  },
+  skeletonContainer: {
+    paddingTop: 30,
   },
 });
 

@@ -6,11 +6,8 @@ import { ThemeProvider } from 'styled-components/native';
 import StackNavigator from './src/navigation/stack-navigator';
 
 import RNBootSplash from 'react-native-bootsplash';
-import { IdleProvider } from './src/contexts/idle-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import ReactNativeRecoilPersist, {
-  ReactNativeRecoilPersistGate,
-} from 'react-native-recoil-persist';
+import { IdleProvider } from './src/contexts/idle-context';
 import Toast from 'react-native-toast-message';
 import { CurrentTheme } from './src/themes';
 import { toastConfig } from './src/config/toast';
@@ -100,6 +97,10 @@ function App(): React.JSX.Element {
     checkInitialCall();
   }, [initialCallParams]);
 
+  useEffect(() => {
+    RNBootSplash.hide();
+  }, []);
+
   return (
     <I18nextProvider i18n={i18next}>
       <SafeAreaProvider>
@@ -107,26 +108,22 @@ function App(): React.JSX.Element {
           <ThemeProvider theme={CurrentTheme}>
             <RecoilRoot>
               <RecoilNexus />
-              <ReactNativeRecoilPersistGate
-                onInit={() => RNBootSplash.hide()}
-                store={ReactNativeRecoilPersist}>
-                <IdleProvider>
-                  <AppLockGate>
-                    <DataIntegritySync />
-                    <NotificationBootSync />
-                    <IncomingTuduFileHandler />
-                    {hasCheckedNotification && (
-                      <NavigationContainer ref={navigationRef}>
-                        <StackNavigator
-                          initialRouteName={initialCallParams ? 'IncomingCall' : 'SplashScreen'}
-                          initialParams={initialCallParams}
-                        />
-                        <Toast config={toastConfig} />
-                      </NavigationContainer>
-                    )}
-                  </AppLockGate>
-                </IdleProvider>
-              </ReactNativeRecoilPersistGate>
+              <IdleProvider>
+                <AppLockGate>
+                  <DataIntegritySync />
+                  <NotificationBootSync />
+                  <IncomingTuduFileHandler />
+                  {hasCheckedNotification && (
+                    <NavigationContainer ref={navigationRef}>
+                      <StackNavigator
+                        initialRouteName={initialCallParams ? 'IncomingCall' : 'SplashScreen'}
+                        initialParams={initialCallParams}
+                      />
+                      <Toast config={toastConfig} />
+                    </NavigationContainer>
+                  )}
+                </AppLockGate>
+              </IdleProvider>
             </RecoilRoot>
           </ThemeProvider>
         </GestureHandlerRootView>

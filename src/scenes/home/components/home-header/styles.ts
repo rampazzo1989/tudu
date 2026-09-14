@@ -9,12 +9,17 @@ export const LogoAndTitle = styled.View`
   align-items: center;
 `;
 
-export const LogoIcon = styled(CheckedLogoStaticIcon)`
-  height: 32px;
-  width: 32px;
+export const LogoIcon = styled(CheckedLogoStaticIcon).attrs(() => ({
+  size: 36,
+}))`
+  height: 36px;
+  width: 36px;
 `;
 
-export const LogoTitle = styled(LogoText).attrs(() => ({}))`
+export const LogoTitle = styled(LogoText).attrs(() => ({
+  width: 73,
+  height: 28,
+}))`
   margin-left: 10px;
 `;
 

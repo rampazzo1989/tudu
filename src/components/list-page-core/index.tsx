@@ -104,30 +104,20 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const { t } = useTranslation();
 
-    const [internalList, setInternalList] = useState(list);
-
     const loading = useMemo(
-      () => internalList?.id === UNLOADED_ID,
-      [internalList?.id],
+      () => list?.id === UNLOADED_ID,
+      [list?.id],
     );
 
     const tudus = useMemo(() => {
-      return !internalList?.tudus ? [] :
-        [
-          ...internalList.tudus
-        ];
-    }, [internalList]);
-
-    useEffect(() => {
-      setInternalList(list);
-    }, [list]);
+      return !list?.tudus ? [] : [...list.tudus];
+    }, [list?.tudus]);
 
     const handleSetTudus: typeof setTudus = useCallback(
       tudusList => {
-        if (internalList) {
-          const newList = cloneList(internalList);
+        if (list) {
+          const newList = cloneList(list);
           newList.tudus = tudusList;
-          setInternalList(newList);
           if (!isSmartList) {
             saveListAndTudus(newList);
           }
@@ -135,7 +125,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         }
         setTudus(tudusList);
       },
-      [internalList, isSmartList, saveListAndTudus, onUpdateList, setTudus],
+      [list, isSmartList, saveListAndTudus, onUpdateList, setTudus],
     );
 
     const handleListCompleted = useCallback(() => {
@@ -154,31 +144,29 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleTuduPress = useCallback(
       (tudu: TuduViewModel) => {
-        if (!internalList) {
+        if (!list) {
           return;
         }
 
         tudu.done = !tudu.done;
 
-        // First updates the internal list
-        setInternalList(current => {
-          if (!current) {
-            return undefined;
-          }
-          const newList = cloneList(current);
-          newList.tudus = current.tudus?.map(x => {
-            if (x.id === tudu.id) {
-              return tudu;
-            }
-            return x;
-          }) || [];
-          return newList;
-        });
+        if (onUpdateList) {
+          const newList = cloneList(list);
+          newList.tudus =
+            list.tudus?.map(x => {
+              if (x.id === tudu.id) {
+                return tudu;
+              }
+              return x;
+            }) || [];
+          onUpdateList(newList);
+        }
 
-        // Then updates the global list
-        setTimeout(() => saveTudu(tudu), 50);
+        saveTudu(tudu);
 
-        const allDone = !!internalList.tudus?.filter(x => x.id !== tudu.id).every(x => x.done) && tudu.done;
+        const allDone =
+          !!list.tudus?.filter(x => x.id !== tudu.id).every(x => x.done) &&
+          tudu.done;
 
         if (allDone) {
           setTimeout(() => {
@@ -189,20 +177,32 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           handleEmojiAnimation(tudu.label);
         }
       },
-      [handleListCompleted, internalList, saveTudu, handleEmojiAnimation],
+      [handleListCompleted, list, onUpdateList, saveTudu, handleEmojiAnimation],
     );
 
     const handleTuduStarPress = useCallback(
       (tudu: TuduViewModel) => {
-        if (!internalList) {
+        if (!list) {
           return;
         }
 
         tudu.starred = !tudu.starred;
 
+        if (onUpdateList) {
+          const newList = cloneList(list);
+          newList.tudus =
+            list.tudus?.map(x => {
+              if (x.id === tudu.id) {
+                return tudu;
+              }
+              return x;
+            }) || [];
+          onUpdateList(newList);
+        }
+
         saveTudu(tudu);
       },
-      [internalList, saveTudu],
+      [list, onUpdateList, saveTudu],
     );
 
     const animateThisIcon = useCallback(
@@ -364,8 +364,8 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
       (taskLabels: string[]) => {
         if (!taskLabels.length) return;
         const newTudus = taskLabels.map(label => {
-          const listIdToUse = defaultListId || (internalList?.id === 'scheduled' || isSmartList ? UNLISTED_LIST_ID : (internalList?.id || ''));
-          const originToUse = defaultOrigin || (internalList?.id === 'scheduled' || isSmartList ? 'unlisted' : (internalList?.origin || 'default'));
+          const listIdToUse = defaultListId || (list?.id === 'scheduled' || isSmartList ? UNLISTED_LIST_ID : (list?.id || ''));
+          const originToUse = defaultOrigin || (list?.id === 'scheduled' || isSmartList ? 'unlisted' : (list?.origin || 'default'));
           const tudu = new TuduViewModel(
             {
               label,
@@ -383,7 +383,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         handleSetTudus(updatedList);
         RNReactNativeHapticFeedback.trigger('notificationSuccess');
       },
-      [defaultDueDate, defaultListId, defaultOrigin, handleSetTudus, internalList, isSmartList, tudus],
+      [defaultDueDate, defaultListId, defaultOrigin, handleSetTudus, list, isSmartList, tudus],
     );
 
     const handleAISuggestionsPress = useCallback(() => {
@@ -397,9 +397,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     }, []);
 
     const handleShareFile = useCallback(async () => {
-      if (!internalList) return;
+      if (!list) return;
       try {
-        await exportAndShareListFile(internalList, tudus);
+        await exportAndShareListFile(list, tudus);
       } catch (error: any) {
         Toast.show({
           type: 'error',
@@ -407,12 +407,12 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           text2: error.message || t('messages.shareErrorMsg', { defaultValue: 'Não foi possível gerar o arquivo da lista.' }),
         });
       }
-    }, [internalList, tudus, t]);
+    }, [list, tudus, t]);
 
     const handleShareText = useCallback(async () => {
-      if (!internalList) return;
+      if (!list) return;
       try {
-        await shareListAsText(internalList, tudus);
+        await shareListAsText(list, tudus);
       } catch (error: any) {
         Toast.show({
           type: 'error',
@@ -420,10 +420,10 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           text2: error.message || t('messages.shareErrorMsg', { defaultValue: 'Não foi possível gerar o texto da lista.' }),
         });
       }
-    }, [internalList, tudus, t]);
+    }, [list, tudus, t]);
 
     const handleInvertOrder = useCallback(() => {
-      if (!internalList || !tudus.length) return;
+      if (!list || !tudus.length) return;
 
       const undoneTudus = tudus.filter(x => !x.done);
       if (undoneTudus.length <= 1) {
@@ -437,11 +437,10 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
       handleSetTudus(newTudus);
       RNReactNativeHapticFeedback.trigger('impactLight');
-    }, [internalList, tudus, handleSetTudus]);
+    }, [list, tudus, handleSetTudus]);
 
     const handleUpdateList = useCallback(
       (updatedList: ListViewModel) => {
-        setInternalList(updatedList);
         if (!isSmartList) {
           saveListAndTudus(updatedList);
         }
@@ -452,18 +451,18 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleCreateSection = useCallback(
       (title: string) => {
-        if (!internalList) return;
-        const currentSections = internalList.sections ? [...internalList.sections] : [];
+        if (!list) return;
+        const currentSections = list.sections ? [...list.sections] : [];
         const newSection: Section = {
           id: generateRandomHash('Section'),
           title,
           order: currentSections.length,
         };
-        const newList = cloneList(internalList);
+        const newList = cloneList(list);
         newList.sections = [...currentSections, newSection];
         handleUpdateList(newList);
       },
-      [internalList, handleUpdateList],
+      [list, handleUpdateList],
     );
 
     const handleOpenReorderPrompt = useCallback(() => {
@@ -476,9 +475,9 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
 
     const handleApplyReorderedList = useCallback(
       async (payload: ReorderApplyPayload) => {
-        if (!internalList || !internalList.tudus || internalList.tudus.length === 0) return;
+        if (!list || !list.tudus || list.tudus.length === 0) return;
 
-        const currentTudus = internalList.tudus;
+        const currentTudus = list.tudus;
         const newSections: Section[] = [];
         const sectionTitleToId = new Map<string, string>();
 
@@ -526,7 +525,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           }
         });
 
-        const newList = cloneList(internalList);
+        const newList = cloneList(list);
         newList.sections = newSections.length > 0 ? newSections : undefined;
         newList.orderingPrompt = payload.orderingPrompt || undefined;
         newList.tudus = reorderedTudus;
@@ -543,7 +542,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
           bottomOffset: 60,
         });
       },
-      [internalList, handleUpdateList, t],
+      [list, handleUpdateList, t],
     );
 
     return (
@@ -580,7 +579,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
                 onClearAllDonePress={handleClearAllDone}
                 onSchedulePress={handleTuduSchedulePress}
                 onUndoAllPress={handleUndoAllPress}
-                list={internalList}
+                list={list}
                 setTudus={handleSetTudus}
                 TopComponent={TopComponent}
                 onInsertTuduPress={allowAdding ? handleInsertTudu : undefined}
@@ -597,7 +596,7 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
               onShareFilePress={handleShareFile}
               onAddSectionPress={handleOpenAddSection}
               onReorderWithAIPress={
-                internalList?.tudus && internalList.tudus.length > 0
+                list?.tudus && list.tudus.length > 0
                   ? handleOpenReorderPrompt
                   : undefined
               }
@@ -672,10 +671,10 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
         />
         <ReorderPromptModal
           visible={reorderPromptModalVisible}
-          listName={internalList?.label || list?.label}
-          initialPrompt={internalList?.orderingPrompt}
-          currentItems={internalList?.tudus?.map(t => t.label) ?? []}
-          currentSections={internalList?.sections?.map(s => s.title)}
+          listName={list?.label}
+          initialPrompt={list?.orderingPrompt}
+          currentItems={list?.tudus?.map(t => t.label) ?? []}
+          currentSections={list?.sections?.map(s => s.title)}
           onApplyReorder={handleApplyReorderedList}
           onRequestClose={() => setReorderPromptModalVisible(false)}
           onOpenAISettings={handleOpenAISettings}

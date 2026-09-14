@@ -21,13 +21,12 @@ import { openGoogleCalendarEvent } from '../../utils/google-calendar-utils';
 
 const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
   const { t } = useTranslation();
-  const [tudus, setTudus] = useState<TuduViewModel[]>();
+  const { getAllUndoneTudus, saveTudu, deleteTudu, restoreBackup } =
+    useListService();
+  const [tudus, setTudus] = useState<TuduViewModel[]>(() => getAllUndoneTudus() ?? []);
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
   const [newTuduPopupVisible, setNewTuduPopupVisible] = useState(false);
   const [editingTudu, setEditingTudu] = useState<TuduViewModel>();
-
-  const { getAllUndoneTudus, saveTudu, deleteTudu, restoreBackup } =
-    useListService();
 
   const { closeCurrentlyOpenSwipeable } = useCloseCurrentlyOpenSwipeable();
 
@@ -36,10 +35,8 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
   }, [navigation]);
 
   useEffect(() => {
-    setTimeout(() => {
-      const allTudus = getAllUndoneTudus();
-      setTudus(allTudus ?? []);
-    }, 100);
+    const allTudus = getAllUndoneTudus();
+    setTudus(allTudus ?? []);
   }, [getAllUndoneTudus, setTudus]);
 
   const getAdditionalInformation = useCallback(
@@ -119,25 +116,26 @@ const AllTudusPage: React.FC<AllTudusPageProps> = ({ navigation, route }) => {
         listData={virtualList}
         onBackButtonPress={handleBackButtonPress}
       />
-      <PageContent contentContainerStyle={styles.pageContent}>
+      <PageContent scrollable={false}>
         {!tudus ? (
-          <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
+          <PaddedContainer style={styles.skeletonContainer}>
+            <SkeletonTuduList numberOfItems={route.params?.numberOfUndoneTudus} />
+          </PaddedContainer>
         ) : tudus.length === 0 ? (
           <EmptyStateContainer>
             <EmptyStateText>🎉 {t('emptyStates.allDone', {defaultValue: 'Todos os seus tudús estão em dia!'})}</EmptyStateText>
           </EmptyStateContainer>
         ) : (
-          <PaddedContainer>
-            <SimpleTuduList
-              getAdditionalInformation={getAdditionalInformation}
-              tudus={tudus}
-              updateTuduFn={saveTudu}
-              deleteTuduFn={deleteTudu}
-              undoDeletionFn={restoreBackup}
-              onEditPress={handleEditPress}
-              onSchedulePress={handleTuduSchedulePress}
-            />
-          </PaddedContainer>
+          <SimpleTuduList
+            getAdditionalInformation={getAdditionalInformation}
+            tudus={tudus}
+            updateTuduFn={saveTudu}
+            deleteTuduFn={deleteTudu}
+            undoDeletionFn={restoreBackup}
+            onEditPress={handleEditPress}
+            onSchedulePress={handleTuduSchedulePress}
+            contentContainerStyle={styles.pageContent}
+          />
         )}
       </PageContent>
 

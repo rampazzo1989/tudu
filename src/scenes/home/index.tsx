@@ -11,6 +11,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { homeDefaultLists } from './state';
 import { HomeHeader } from './components/home-header';
 import { useTranslation } from 'react-i18next';
+import { useIsFocused } from '@react-navigation/native';
 import {
   LeftFadingGradient,
   PageContentContainer,
@@ -55,9 +56,13 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
     actionButtonRef.current?.animateThisIcon(Icon);
   }, []);
 
+  const isFocused = useIsFocused();
+  const cachedGroupedListsRef = useRef<DraggableItem<ListDataViewModel>[]>([]);
+  const cachedCountersRef = useRef<any[]>([]);
+
   // Recalculate the recurrence of a tudu when it is updated
   useEffect(() => {
-      if (!recurrentTuduToRecalculate) return;
+      if (!isFocused || !recurrentTuduToRecalculate) return;
 
       const tuduClone = recurrentTuduToRecalculate.clone();
 
@@ -66,7 +71,7 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
       saveTudu(updatedTudu);
 
       setRecurrentTuduToRecalculate(undefined);
-  }, [recurrentTuduToRecalculate, setRecurrentTuduToRecalculate]);
+  }, [isFocused, recurrentTuduToRecalculate, setRecurrentTuduToRecalculate, saveTudu]);
 
 
   // Filters all tudus with recurrence and last date past today to update their date
@@ -122,11 +127,16 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
   );
 
   const groupedCustomLists = useMemo(() => {
-    return mapListToDraggableItems(
+    if (!isFocused && cachedGroupedListsRef.current.length > 0) {
+      return cachedGroupedListsRef.current;
+    }
+    const lists = mapListToDraggableItems(
       getAllLists() ?? [],
       (list: ListDataViewModel) => list.groupName,
     ) as DraggableItem<ListDataViewModel>[];
-  }, [getAllLists]);
+    cachedGroupedListsRef.current = lists;
+    return lists;
+  }, [getAllLists, isFocused]);
 
   const handleListDragStart = useCallback(() => {
     RNReactNativeHapticFeedback.trigger('soft');
@@ -181,7 +191,14 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
     navigation.navigate('NotificationSettings');
   }, [navigation]);
 
-  const countersList = useMemo(() => getAllCounters(), [getAllCounters]);
+  const countersList = useMemo(() => {
+    if (!isFocused && cachedCountersRef.current.length > 0) {
+      return cachedCountersRef.current;
+    }
+    const counters = getAllCounters();
+    cachedCountersRef.current = counters;
+    return counters;
+  }, [getAllCounters, isFocused]);
 
   return (
     <Page>
