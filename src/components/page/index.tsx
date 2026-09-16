@@ -1,7 +1,8 @@
 import React, {memo, useEffect, useRef} from 'react';
 import {PageProps} from './types';
-import {StatusBar, StyledSafeAreaView} from './styles';
+import {StatusBar, PageContainer} from './styles';
 import {useTheme} from 'styled-components/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useIdle} from '../../contexts/idle-context';
 import {useRecoilValue} from 'recoil';
 import {idlyAnimatedComponents} from '../../state/atoms';
@@ -14,6 +15,7 @@ import {generateShuffledArray} from '../../utils/array-utils';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 const Page: React.FC<PageProps> = memo(({children}) => {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const idlyAnimatedRefs = useRecoilValue(idlyAnimatedComponents);
   const isIdle = useIdle();
@@ -61,10 +63,16 @@ const Page: React.FC<PageProps> = memo(({children}) => {
   setTimeout(() => changeNavigationBarColor('#25303D', true, false), 0);
 
   return (
-    <StyledSafeAreaView>
+    <PageContainer
+      style={{
+        paddingTop: insets.top,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+        backgroundColor: theme.colors.primary,
+      }}>
       <StatusBar backgroundColor={theme.colors.primary} hidden={false} />
       {children}
-    </StyledSafeAreaView>
+    </PageContainer>
   );
 });
 

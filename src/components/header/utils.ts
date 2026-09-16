@@ -16,7 +16,7 @@ export function estimateTitleWidth(text?: string): number {
     const char = trimmed[i];
     const code = char.charCodeAt(0);
 
-    // Narrow chars: i, j, l, 1, punctuation, space
+    // Space & narrow punctuation / glyphs: i, j, l, 1, punctuation, space
     if (
       code === 32 ||
       char === 'i' ||
@@ -34,7 +34,7 @@ export function estimateTitleWidth(text?: string): number {
       char === '(' ||
       char === ')'
     ) {
-      width += 6.5;
+      width += 7.5;
     }
     // Wide chars: W, M, emojis, symbols
     else if (
@@ -46,7 +46,7 @@ export function estimateTitleWidth(text?: string): number {
       char === 'Q' ||
       code > 255
     ) {
-      width += 18.5;
+      width += 20;
     }
     // Uppercase letters & numbers
     else if (
@@ -54,19 +54,26 @@ export function estimateTitleWidth(text?: string): number {
       (code >= 48 && code <= 57) ||
       (code >= 192 && code <= 221)
     ) {
-      width += 15;
+      width += 16;
     }
     // Lowercase wide: m, w
     else if (char === 'm' || char === 'w') {
-      width += 16.5;
+      width += 19;
     }
-    // Lowercase narrow: r, s, t, f
-    else if (char === 'r' || char === 's' || char === 't' || char === 'f') {
-      width += 9;
+    // Lowercase narrow: r, s, t, f, c, z
+    else if (
+      char === 'r' ||
+      char === 's' ||
+      char === 't' ||
+      char === 'f' ||
+      char === 'c' ||
+      char === 'z'
+    ) {
+      width += 10.5;
     }
-    // Standard lowercase (a, b, c, d, e, g, h, k, n, o, p, q, u, v, x, y, z and accented)
+    // Standard lowercase (a, b, d, e, g, h, k, n, o, p, q, u, v, x, y and accented)
     else {
-      width += 12.5;
+      width += 13.5;
     }
   }
 
@@ -74,10 +81,10 @@ export function estimateTitleWidth(text?: string): number {
   const estimated = width + 8;
 
   // Header TitleContainer has max-width: 72%.
-  // BackButton (48) + margin (12) = 60dp.
-  // Maximum single-line Title width before wrapping is (screenWidth * 0.72) - 60.
+  // BackButton (28) + margin (12) = 40dp.
+  // Maximum single-line Title width before wrapping is (screenWidth * 0.72) - 40.
   const screenWidth = Dimensions.get('window').width || 393;
-  const maxTitleWidth = Math.max(160, screenWidth * 0.72 - 60);
+  const maxTitleWidth = Math.max(160, screenWidth * 0.72 - 40);
 
   return Math.min(estimated, maxTitleWidth);
 }

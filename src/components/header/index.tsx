@@ -1,22 +1,24 @@
 import React, {memo, useEffect} from 'react';
 import {HeaderContent, TitleBackground} from './styles';
 import {HeaderProps} from './types';
-import {useSharedValue, useAnimatedStyle, withTiming} from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 
 const Header: React.FC<HeaderProps> = memo(
   ({children, titleWidth = 0, pillWidth, style}) => {
     const targetWidth = pillWidth ?? (titleWidth ? 85 + titleWidth : 130);
-    const width = useSharedValue(targetWidth);
-    const isFirstRender = React.useRef(true);
+    const width = useSharedValue(70);
 
     useEffect(() => {
-      if (isFirstRender.current) {
-        isFirstRender.current = false;
-        width.value = targetWidth;
-        return;
-      }
-      width.value = withTiming(targetWidth, { duration: 150 });
-    }, [targetWidth]);
+      width.value = withSpring(targetWidth, {
+        damping: 18,
+        stiffness: 140,
+        mass: 0.8,
+      });
+    }, [targetWidth, width]);
 
     const animatedStyle = useAnimatedStyle(() => {
       return {

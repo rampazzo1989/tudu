@@ -1,28 +1,34 @@
-import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
-import {useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
-
-import {useTheme} from 'styled-components/native';
-import {BackButton} from '../../../../components/back-button';
-import {Header} from '../../../../components/header';
-import {SearchIcon} from '../../../../components/animated-icons/search';
-import {SearchHeaderProps} from './types';
-import {AnimatedIconRef} from '../../../../components/animated-icons/animated-icon/types';
-import {ContentRow, Input, styles, Title, TitleBackground, TitleContainer} from './styles';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useTheme } from 'styled-components/native';
+import { BackButton } from '../../../../components/back-button';
+import { SearchIcon } from '../../../../components/animated-icons/search';
+import { SearchHeaderProps } from './types';
+import { AnimatedIconRef } from '../../../../components/animated-icons/animated-icon/types';
+import { ContentRow, Input, styles, Title, TitleBackground, TitleContainer } from './styles';
 import { HeaderContent } from '../../../../components/header/styles';
-import {estimateTitleWidth} from '../../../../components/header/utils';
+import { estimateTitleWidth } from '../../../../components/header/utils';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 
 const SearchHeader: React.FC<SearchHeaderProps> = memo(
-  ({listData, onBackButtonPress, onTextChange}) => {
+  ({ listData, onBackButtonPress, onTextChange }) => {
     const titleText = listData?.label?.trim() ?? '';
     const [titleWidth, setTitleWidth] = useState(() => estimateTitleWidth(titleText));
     const iconRef = useRef<AnimatedIconRef>(null);
     const theme = useTheme();
     const [searchText, setSearchText] = useState('');
-    const isFirstRender = useRef(true);
 
     useEffect(() => {
       iconRef.current?.play();
     }, []);
+
+    useEffect(() => {
+      const estimated = estimateTitleWidth(titleText);
+      setTitleWidth(prev => (Math.abs(prev - estimated) > 3 ? estimated : prev));
+    }, [titleText]);
 
     const handleTextChange = useCallback(
       (text: string) => {
@@ -33,16 +39,15 @@ const SearchHeader: React.FC<SearchHeaderProps> = memo(
     );
 
     const targetWidth = titleWidth ? 85 + titleWidth : 130;
-    const width = useSharedValue(targetWidth);
-    
+    const width = useSharedValue(100);
+
     useEffect(() => {
-      if (isFirstRender.current) {
-        isFirstRender.current = false;
-        width.value = targetWidth;
-        return;
-      }
-      width.value = withTiming(targetWidth, { duration: 150 });
-    }, [targetWidth]);
+      width.value = withSpring(targetWidth, {
+        damping: 18,
+        stiffness: 140,
+        mass: 0.8,
+      });
+    }, [targetWidth, width]);
 
     const animatedStyle = useAnimatedStyle(() => {
       return {
@@ -53,18 +58,21 @@ const SearchHeader: React.FC<SearchHeaderProps> = memo(
     return (
       <HeaderContent style={styles.header}>
         <TitleBackground style={[animatedStyle]} />
-              
+
         <ContentRow>
           <TitleContainer>
             <BackButton onPress={onBackButtonPress} />
             <Title
               adjustsFontSizeToFit
               onLayout={e => {
-                setTitleWidth(e.nativeEvent.layout.width);
+                const measured = e.nativeEvent.layout.width;
+                if (measured > 0 && Math.abs(measured - titleWidth) > 3) {
+                  setTitleWidth(measured);
+                }
               }}
               numberOfLines={2}
               minimumFontScale={0.6}>
-              {listData?.label?.trim()}
+              {titleText}
             </Title>
           </TitleContainer>
 
@@ -86,4 +94,5 @@ const SearchHeader: React.FC<SearchHeaderProps> = memo(
   },
 );
 
-export {SearchHeader};
+export { SearchHeader };
+

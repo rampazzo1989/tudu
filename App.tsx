@@ -12,7 +12,7 @@ import Toast from 'react-native-toast-message';
 import { CurrentTheme } from './src/themes';
 import { toastConfig } from './src/config/toast';
 import RecoilNexus from 'recoil-nexus';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { I18nextProvider } from 'react-i18next';
 import i18next from './src/i18n';
 import { NotificationBootSync } from './src/service/notification';
@@ -103,7 +103,7 @@ function App(): React.JSX.Element {
 
   return (
     <I18nextProvider i18n={i18next}>
-      <SafeAreaProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <ThemeProvider theme={CurrentTheme}>
             <RecoilRoot>

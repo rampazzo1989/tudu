@@ -1,9 +1,9 @@
-import {SafeAreaView} from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
-export const StyledSafeAreaView = styled(SafeAreaView)`
+export const PageContainer = styled.View`
   flex: 1;
 `;
+
 
 export const StatusBar = styled.StatusBar`
   background-color: ${({theme}) => theme.colors.primary};
