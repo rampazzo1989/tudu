@@ -17,7 +17,7 @@ import {
 
 export const CURRENT_BACKUP_VERSION = 1;
 export const APP_NAME = 'Tudu';
-export const APP_VERSION = '1.16.3';
+export const APP_VERSION = '1.17.0';
 
 export interface SerializeBackupParams {
   myLists: Map<string, List>;
