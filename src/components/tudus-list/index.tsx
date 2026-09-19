@@ -132,6 +132,14 @@ const TudusList: React.FC<TudusListProps> = memo(
 
     const hasSections = sections.length > 0;
 
+    const handleClearAllDone = useCallback(() => {
+      onClearAllDonePress(doneTudus);
+    }, [doneTudus, onClearAllDonePress]);
+
+    const handleUndoAll = useCallback(() => {
+      onUndoAllPress(doneTudus);
+    }, [doneTudus, onUndoAllPress]);
+
     const OptionsMenu = useMemo(() => {
       return (
         <PopoverMenu
@@ -148,16 +156,16 @@ const TudusList: React.FC<TudusListProps> = memo(
           onRequestClose={handlePopoverMenuRequestClose}>
           <DoneItemsOptions
             closeMenu={handlePopoverMenuRequestClose}
-            onClearAllDone={onClearAllDonePress}
-            onUndoAll={onUndoAllPress}
+            onClearAllDone={handleClearAllDone}
+            onUndoAll={handleUndoAll}
           />
         </PopoverMenu>
       );
     }, [
       handleOptionsButtonPress,
       handlePopoverMenuRequestClose,
-      onClearAllDonePress,
-      onUndoAllPress,
+      handleClearAllDone,
+      handleUndoAll,
       popoverMenuVisible,
     ]);
 

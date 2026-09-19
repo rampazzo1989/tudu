@@ -671,6 +671,9 @@ const useListService = () => {
 
   const deleteTudus = useCallback(
     (tuduList: TuduViewModel[], saveBackup = true) => {
+      if (!tuduList || !tuduList.length) {
+        return;
+      }
       const origin = tuduList[0].origin;
       const tudusStateSetter = getTudusStateSetter(origin);
 
@@ -698,6 +701,9 @@ const useListService = () => {
   );
 
   const undoTudus = useCallback((tuduList: TuduViewModel[]) => {
+    if (!tuduList || !tuduList.length) {
+      return;
+    }
     const origin = tuduList[0].origin;
     const tudusStateSetter = getTudusStateSetter(origin);
 

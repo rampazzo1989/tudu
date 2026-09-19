@@ -284,22 +284,42 @@ const ListPageCore: React.FC<ListPageCoreProps> = memo(
     const handleTuduDelete = useCallback(
       (tudu: TuduViewModel) => {
         deleteTudu(tudu);
+        const remainingTudus = tudus.filter(t => t.id !== tudu.id);
+        handleSetTudus(remainingTudus);
         showItemDeletedToast(t('toast.tuduDeleted'), restoreBackup);
       },
-      [deleteTudu, restoreBackup, t],
+      [deleteTudu, handleSetTudus, restoreBackup, t, tudus],
     );
 
     const handleClearAllDone = useCallback(
       (doneTudus: TuduViewModel[]) => {
+        if (!doneTudus || !doneTudus.length) return;
         deleteTudus(doneTudus);
+        const doneIds = new Set(doneTudus.map(t => t.id));
+        const remainingTudus = tudus.filter(t => !doneIds.has(t.id));
+        handleSetTudus(remainingTudus);
         showItemDeletedToast(t('toast.allDoneDeleted'), restoreBackup);
       },
-      [deleteTudus, restoreBackup, t],
+      [deleteTudus, handleSetTudus, restoreBackup, t, tudus],
     );
 
-    const handleUndoAllPress = useCallback((doneTudus: TuduViewModel[]) => {
-      undoTudus(doneTudus);
-    }, [undoTudus]);
+    const handleUndoAllPress = useCallback(
+      (doneTudus: TuduViewModel[]) => {
+        if (!doneTudus || !doneTudus.length) return;
+        undoTudus(doneTudus);
+        const doneIds = new Set(doneTudus.map(t => t.id));
+        const updatedTudus = tudus.map(t => {
+          if (doneIds.has(t.id)) {
+            const clone = t.clone();
+            clone.done = false;
+            return clone;
+          }
+          return t;
+        });
+        handleSetTudus(updatedTudus);
+      },
+      [handleSetTudus, tudus, undoTudus],
+    );
 
     const handleInsertTudu = useCallback(() => {
       setNewTuduPopupVisible(true);

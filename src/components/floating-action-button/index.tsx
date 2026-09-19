@@ -21,7 +21,6 @@ import {toastSpan} from '../../state/atoms';
 import { useOneTimeAnimationControl } from '../../hooks/useOneTimeAnimationControl';
 import { AnimatedEmojiIcon } from '../animated-icons/animated-emoji';
 import { ForwardedRefAnimatedEmojiIcon } from '../animated-icons/animated-emoji/types';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const ANIMATED_REACTION_DURATION = 1500;
 
 const FloatingActionButton = memo(
@@ -37,8 +36,6 @@ const FloatingActionButton = memo(
       const reactionTimeoutRef = useRef<NodeJS.Timeout>();
 
       const toastBottomSpan = useRecoilValue(toastSpan);
-
-      const insets = useSafeAreaInsets();
 
       // Animates the current icon when option is set
       useEffect(() => {

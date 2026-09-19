@@ -66,6 +66,7 @@ const Page: React.FC<PageProps> = memo(({children}) => {
     <PageContainer
       style={{
         paddingTop: insets.top,
+        paddingBottom: insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
         backgroundColor: theme.colors.primary,
