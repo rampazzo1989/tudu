@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { aiSettingsState, emojiUsageState } from '../state/atoms';
 import { PARAMETERS_REGEX } from '../constants';
 import { suggestEmojisWithAI } from '../service/ai';
+import { stripEmojis } from '../utils/emoji-utils';
 
 const MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI = 3;
 const MAX_NUMBER_OF_WORDS = 6;
@@ -93,10 +94,10 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
   }, []);
 
   const selectWordsToSearch = useCallback((text: string) => {
-    // Remove parameters from the text, if there are any:
-    text = text.replace(PARAMETERS_REGEX, '').trim();
+    // Remove parameters and existing emojis from the text:
+    const clean = stripEmojis(text.replace(PARAMETERS_REGEX, '').trim());
 
-    let words = text.split(/\s+/).filter(Boolean);
+    let words = clean.split(/\s+/).filter(Boolean);
     if (words.length > 1) {
       words = words.filter(
         (word) => word.length >= MINIMUM_TEXT_SIZE_TO_SUGGEST_EMOJI
@@ -111,9 +112,12 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
         return [];
       }
 
-      const searchLimitPerWord = words.length === 1
+      // Prioritize specific words (later words like nouns/objects) over initial generic words (verbs like 'comprar', 'fazer')
+      const orderedWords = words.length > 1 ? [...words].reverse() : words;
+
+      const searchLimitPerWord = orderedWords.length === 1
         ? 8
-        : words.length < 4
+        : orderedWords.length < 4
           ? 5
           : 3;
 
@@ -121,7 +125,7 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
 
       let wordsWithoutCache: string[] = [];
 
-      const resultsFromCache = words.map((word) => {
+      const resultsFromCache = orderedWords.map((word) => {
         const cachedResult = searchCache.current.get(word)?.slice(0, searchLimitPerWord);
         if (cachedResult) {
           return cachedResult;
@@ -190,11 +194,13 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
       context?: EmojiSearchContext,
     ) => {
       debounce(async () => {
-        // Normalizes spaces, removes parameters
-        const cleanText = text
-          .replace(PARAMETERS_REGEX, '')
-          .replace(/\s+/g, ' ')
-          .trim();
+        // Normalizes spaces, removes parameters and existing emojis
+        const cleanText = stripEmojis(
+          text
+            .replace(PARAMETERS_REGEX, '')
+            .replace(/\s+/g, ' ')
+            .trim()
+        );
 
         const queryKey = `${context?.type ?? 'tudu'}:${
           context?.listName ? context.listName.replace(/\s+/g, ' ').trim().toLowerCase() : ''

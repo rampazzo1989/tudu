@@ -1,6 +1,39 @@
-import { stripEmojis, trimEmoji } from '../src/utils/emoji-utils';
+import { hasEmoji, stripEmojis, trimEmoji } from '../src/utils/emoji-utils';
 
 describe('Emoji Utils', () => {
+  describe('hasEmoji', () => {
+    it('should return false for empty, null, undefined or whitespace text', () => {
+      expect(hasEmoji('')).toBe(false);
+      expect(hasEmoji('   ')).toBe(false);
+      expect(hasEmoji(null)).toBe(false);
+      expect(hasEmoji(undefined)).toBe(false);
+    });
+
+    it('should return false for plain text and numbers without emojis', () => {
+      expect(hasEmoji('Comprar pão')).toBe(false);
+      expect(hasEmoji('12345')).toBe(false);
+      expect(hasEmoji('1. Comprar 2 caixas de leite às 14:30! #urgente $50')).toBe(false);
+      expect(hasEmoji('tarefa -t @14:00')).toBe(false);
+    });
+
+    it('should return true when emoji is at the start', () => {
+      expect(hasEmoji('🥖 Comprar pão')).toBe(true);
+      expect(hasEmoji('☕ Tomar café')).toBe(true);
+    });
+
+    it('should return true when emoji is at the end or in the middle', () => {
+      expect(hasEmoji('Comprar pão 🥖')).toBe(true);
+      expect(hasEmoji('Comprar 🍎 maçã e 🍌 banana')).toBe(true);
+    });
+
+    it('should return true for complex composite and keycap emojis', () => {
+      expect(hasEmoji('👨‍👩‍👧‍👦 Família reunida')).toBe(true);
+      expect(hasEmoji('1️⃣ Primeiro item')).toBe(true);
+      expect(hasEmoji('#️⃣ Hash')).toBe(true);
+      expect(hasEmoji('🇧🇷 Viagem')).toBe(true);
+    });
+  });
+
   describe('stripEmojis', () => {
     it('should return empty string for null, undefined or empty input', () => {
       expect(stripEmojis('')).toBe('');

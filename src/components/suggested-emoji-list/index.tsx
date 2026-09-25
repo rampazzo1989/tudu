@@ -15,6 +15,7 @@ interface SuggestedEmojiListProps {
     onEmojiSelect: (emoji: string) => void;
     showDefaultIcon?: boolean;
     isLoading?: boolean;
+    selectedEmoji?: string | null;
 }
 
 const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({
@@ -24,23 +25,27 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({
     onEmojiSelect,
     showDefaultIcon = false,
     isLoading = false,
+    selectedEmoji: selectedEmojiProp,
 }) => {
     const { t } = useTranslation();
-    const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
+    const [internalSelectedEmoji, setInternalSelectedEmoji] = useState<string | null>(null);
     const [_, setEmojiUsage] = useRecoilState(emojiUsageState);
     const theme = useTheme();
 
+    const activeSelectedEmoji =
+        selectedEmojiProp !== undefined ? selectedEmojiProp : internalSelectedEmoji;
+
     const handleEmojiPress = (emoji: string) => {
-        var emojiIsAlreadySelected: boolean = false;
-        setSelectedEmoji(current => {
-            if (emoji === current) {
-                emojiIsAlreadySelected = true;
-            }
-            return emoji;
-        });
+        if (activeSelectedEmoji === emoji) {
+            setInternalSelectedEmoji(null);
+            onEmojiSelect('');
+            return;
+        }
+
+        setInternalSelectedEmoji(emoji);
         onEmojiSelect(emoji);
 
-        if (emoji !== '' && !emojiIsAlreadySelected) {
+        if (emoji !== '') {
             setEmojiUsage((currentUsage) => {
                 const newUsage = new Map(currentUsage);
                 newUsage.set(emoji, (newUsage.get(emoji) || 0) + 1);
@@ -96,7 +101,7 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({
                     <EmojiButton
                         key={'default'}
                         onPress={() => handleEmojiPress('')}
-                        selected={selectedEmoji === ''}
+                        selected={activeSelectedEmoji === ''}
                         entering={FadeIn}>
                         <ListDefaultStaticIcon size={24} />
                     </EmojiButton>
@@ -105,7 +110,7 @@ const SuggestedEmojiList: React.FC<SuggestedEmojiListProps> = ({
                     <EmojiButton
                         key={emoji}
                         onPress={() => handleEmojiPress(emoji)}
-                        selected={selectedEmoji === emoji}
+                        selected={activeSelectedEmoji === emoji}
                         entering={FadeIn.delay(30 * (index + 1))}>
                         <EmojiText>{emoji}</EmojiText>
                     </EmojiButton>

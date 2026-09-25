@@ -40,7 +40,9 @@ import {
   PARAMETERS_REGEX,
   TIME_PARAMETERS_REGEX,
 } from '../../constants';
-import { trimEmoji } from '../../utils/emoji-utils';
+import { useSetRecoilState } from 'recoil';
+import { emojiUsageState } from '../../state/atoms';
+import { hasEmoji, trimEmoji } from '../../utils/emoji-utils';
 
 const getNewEmptyTudu = (
   defaultDueDate?: Date,
@@ -83,6 +85,15 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
         : getNewEmptyTudu(defaultDueDate, defaultListId, defaultOrigin, listName),
     );
     const [suggestedEmojis, setSuggestedEmojis] = useState<string[]>([]);
+    const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
+    const selectedEmojiRef = useRef<string | null>(null);
+    const userOptedOutEmojiRef = useRef<boolean>(false);
+    const setEmojiUsage = useSetRecoilState(emojiUsageState);
+
+    const updateSelectedEmoji = useCallback((emoji: string | null) => {
+      selectedEmojiRef.current = emoji;
+      setSelectedEmoji(emoji);
+    }, []);
     const [isTopContainerVisible, setIsTopContainerVisible] = useState(false);
     const [showingMostUsedEmojis, setShowingMostUsedEmojis] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -107,24 +118,128 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     const isVisibleRef = useRef(false);
     const editingTuduIdRef = useRef<string | undefined>(editingTudu?.id);
 
+    const searchEmojisForListName = useCallback(() => {
+      var resultsForListName: string[] = [];
+      const tuduListName = editingTudu?.listName || listName;
+
+      if (tuduListName) {
+        resultsForListName = searchEmojis(tuduListName);
+      }
+
+      return resultsForListName;
+    }, [editingTudu, searchEmojis, listName]);
+
+    const triggerEmojiSearch = useCallback(
+      (text: string) => {
+        setIsTopContainerVisible(true);
+        const targetListName = editingTudu?.listName || listName;
+
+        debounceSearchEmojis(
+          text,
+          (results, isShowingMostUsed, isAI) => {
+            var emojis = results;
+
+            if (isShowingMostUsed) {
+              if (emojis.length < 3) {
+                emojis = [...emojis, ...searchEmojisForListName()];
+              }
+              emojis = [...new Set([...emojis, ...getDefaultEmojis('tudu')])];
+              updateSelectedEmoji(null);
+            } else if (results.length > 0) {
+              if (!userOptedOutEmojiRef.current) {
+                const bestEmoji = results[0];
+                updateSelectedEmoji(bestEmoji);
+
+                // Já inclui no texto, como se o usuário tivesse tocado no botão!
+                setInternalTuduData(current => {
+                  const tuduClone = current.clone();
+                  let label = tuduClone.label;
+                  const trimmed = trimEmoji(label, 'start');
+                  label = (trimmed?.emoji ? trimmed.formattedText : label).trim();
+                  tuduClone.label = `${bestEmoji} ${label}`.trim();
+                  return tuduClone;
+                });
+              }
+            } else {
+              updateSelectedEmoji(null);
+            }
+
+            setShowingMostUsedEmojis(isShowingMostUsed);
+            setIsAIGenerated(isAI);
+            setIsLoading(false);
+            setSuggestedEmojis(emojis);
+          },
+          true,
+          () => {
+            if (suggestedEmojis.length === 0) {
+              setIsLoading(true);
+            }
+          },
+          {
+            type: 'tudu',
+            listName: targetListName,
+          },
+        );
+      },
+      [
+        debounceSearchEmojis,
+        editingTudu?.listName,
+        listName,
+        searchEmojisForListName,
+        getDefaultEmojis,
+        suggestedEmojis.length,
+      ],
+    );
+
     useEffect(() => {
       if (visible) {
         const isNewlyOpened = !isVisibleRef.current;
         const isDifferentTudu = editingTuduIdRef.current !== editingTudu?.id;
 
         if (isNewlyOpened || isDifferentTudu) {
-          setInternalTuduData(
-            editingTudu
-              ? editingTudu.clone()
-              : getNewEmptyTudu(defaultDueDate, defaultListId, defaultOrigin, listName),
-          );
+          const initialTudu = editingTudu
+            ? editingTudu.clone()
+            : getNewEmptyTudu(defaultDueDate, defaultListId, defaultOrigin, listName);
+          setInternalTuduData(initialTudu);
           setIsScheduleModalVisible(false);
           setAddToGoogleCalendar(false);
+          setSelectedEmoji(null);
+          selectedEmojiRef.current = null;
+          userOptedOutEmojiRef.current = false;
+
+          // Se estiver editando tudú e ele NÃO tiver emoji:
+          // Não espera alteração do usuário; dispara imediatamente a sugestão e pré-seleção de emoji!
+          if (editingTudu && editingTudu.label && !hasEmoji(editingTudu.label)) {
+            const syncResults = searchEmojis(editingTudu.label);
+            if (syncResults.length > 0) {
+              const bestEmoji = syncResults[0];
+              setSuggestedEmojis(syncResults);
+              setShowingMostUsedEmojis(false);
+              updateSelectedEmoji(bestEmoji);
+              setIsTopContainerVisible(true);
+              initialTudu.label = `${bestEmoji} ${editingTudu.label}`.trim();
+              setInternalTuduData(initialTudu);
+            }
+            triggerEmojiSearch(editingTudu.label);
+          }
         }
+      } else {
+        updateSelectedEmoji(null);
+        userOptedOutEmojiRef.current = false;
       }
       isVisibleRef.current = visible;
       editingTuduIdRef.current = editingTudu?.id;
-    }, [visible, editingTudu, defaultDueDate, defaultListId, defaultOrigin, listName]);
+    }, [
+      visible,
+      editingTudu,
+      defaultDueDate,
+      defaultListId,
+      defaultOrigin,
+      listName,
+      searchEmojis,
+      triggerEmojiSearch,
+      updateSelectedEmoji,
+    ]);
 
     useEffect(() => {
       if (visible && autoStartVoice) {
@@ -258,12 +373,14 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       cancelListening();
       setIsTopContainerVisible(false);
       setSuggestedEmojis([]);
+      updateSelectedEmoji(null);
+      userOptedOutEmojiRef.current = false;
       setIsLoading(false);
       setIsAIGenerated(false);
       setIsScheduleModalVisible(false);
       setIsAISuggestionsModalVisible(false);
       onRequestClose();
-    }, [cancelListening, onRequestClose]);
+    }, [cancelListening, onRequestClose, updateSelectedEmoji]);
 
     const handleOpenAISuggestions = useCallback(() => {
       RNReactNativeHapticFeedback.trigger('impactLight');
@@ -291,17 +408,6 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     );
 
 
-    const searchEmojisForListName = useCallback(() => {
-      var resultsForListName: string[] = [];
-      const tuduListName = editingTudu?.listName || listName;
-
-      if (tuduListName) {
-        resultsForListName = searchEmojis(tuduListName);
-      }
-
-      return resultsForListName;
-    }, [editingTudu, searchEmojis, listName]);
-
     const handleTextChange = useCallback(
       (text: string) => {
         setInternalTuduData(x => {
@@ -310,46 +416,9 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           return newTudu;
         });
 
-        setIsTopContainerVisible(true);
-
-        const targetListName = editingTudu?.listName || listName;
-
-        debounceSearchEmojis(
-          text,
-          (results, isShowingMostUsed, isAI) => {
-            var emojis = results;
-
-            if (isShowingMostUsed) {
-              if (emojis.length < 3) {
-                emojis = [...emojis, ...searchEmojisForListName()];
-              }
-              emojis = [...new Set([...emojis, ...getDefaultEmojis('tudu')])];
-            }
-            setShowingMostUsedEmojis(isShowingMostUsed);
-            setIsAIGenerated(isAI);
-            setIsLoading(false);
-            setSuggestedEmojis(emojis);
-          },
-          true,
-          () => {
-            if (suggestedEmojis.length === 0) {
-              setIsLoading(true);
-            }
-          },
-          {
-            type: 'tudu',
-            listName: targetListName,
-          },
-        );
+        triggerEmojiSearch(text);
       },
-      [
-        debounceSearchEmojis,
-        editingTudu,
-        listName,
-        searchEmojisForListName,
-        getDefaultEmojis,
-        suggestedEmojis.length,
-      ],
+      [triggerEmojiSearch],
     );
 
     handleTextChangeRef.current = handleTextChange;
@@ -533,8 +602,42 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
 
         const { params, cleanedText } = parseParameters(tudu.label);
 
+        let finalLabel = cleanedText;
+
+        // Se ainda não há emoji no texto e o usuário não fez opt-out explícito:
+        if (!hasEmoji(cleanedText) && !userOptedOutEmojiRef.current) {
+          let emojiToPrepend: string | null = null;
+
+          if (selectedEmojiRef.current && !showingMostUsedEmojis) {
+            emojiToPrepend = selectedEmojiRef.current;
+          } else if (!showingMostUsedEmojis && suggestedEmojis.length > 0) {
+            emojiToPrepend = suggestedEmojis[0];
+          } else {
+            // Caso o usuário tenha confirmado rapidamente antes do debounce:
+            // busca síncrona offline imediata
+            const syncResults = searchEmojis(cleanedText);
+            if (syncResults.length > 0) {
+              emojiToPrepend = syncResults[0];
+            }
+          }
+
+          if (emojiToPrepend) {
+            finalLabel = `${emojiToPrepend} ${cleanedText}`.trim();
+          }
+        }
+
+        // Se temos um emoji no início de finalLabel, registra nas estatísticas de uso
+        const leadingEmoji = trimEmoji(finalLabel, 'start')?.emoji;
+        if (leadingEmoji) {
+          setEmojiUsage(currentUsage => {
+            const newUsage = new Map(currentUsage);
+            newUsage.set(leadingEmoji, (newUsage.get(leadingEmoji) || 0) + 1);
+            return newUsage;
+          });
+        }
+
         const updatedTudu = tudu.clone();
-        updatedTudu.label = cleanedText;
+        updatedTudu.label = finalLabel;
 
         if (params.starred) {
           updatedTudu.starred = true;
@@ -613,7 +716,16 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           });
         }
       },
-      [onInsertOrUpdate, addToGoogleCalendar, editingTudu, listName],
+      [
+        onInsertOrUpdate,
+        addToGoogleCalendar,
+        editingTudu,
+        listName,
+        showingMostUsedEmojis,
+        suggestedEmojis,
+        searchEmojis,
+        setEmojiUsage,
+      ],
     );
 
     const handleConfirmButtonPress = useCallback(() => {
@@ -639,14 +751,30 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
     );
 
     const handleEmojiSelect = useCallback((emoji: string) => {
+      if (!emoji) {
+        userOptedOutEmojiRef.current = true;
+        updateSelectedEmoji(null);
+        setInternalTuduData(current => {
+          var tuduClone = current.clone();
+          var label = tuduClone.label;
+          const trimmed = trimEmoji(label, 'start');
+          tuduClone.label = (trimmed?.emoji ? trimmed.formattedText : label).trim();
+          return tuduClone;
+        });
+        return;
+      }
+
+      userOptedOutEmojiRef.current = false;
+      updateSelectedEmoji(emoji);
       setInternalTuduData(current => {
         var tuduClone = current.clone();
         var label = tuduClone.label;
-        label = trimEmoji(label, 'start')?.formattedText ?? '';
-        tuduClone.label = `${emoji} ${label.trim()}`;
+        const trimmed = trimEmoji(label, 'start');
+        label = (trimmed?.emoji ? trimmed.formattedText : label).trim();
+        tuduClone.label = `${emoji} ${label}`.trim();
         return tuduClone;
       });
-    }, []);
+    }, [updateSelectedEmoji]);
 
     const TopContainerComponent = useMemo(() => {
       return (
@@ -656,6 +784,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
           isShowingMostUsedEmojis={showingMostUsedEmojis}
           isAIGenerated={isAIGenerated}
           isLoading={isLoading}
+          selectedEmoji={selectedEmoji}
         />
       );
     }, [
@@ -664,6 +793,7 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
       showingMostUsedEmojis,
       isAIGenerated,
       isLoading,
+      selectedEmoji,
     ]);
 
     const ActionButtonComponent = useMemo(
@@ -687,8 +817,14 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
               setTimeout(() => inputRef.current?.focus(), 200);
             }
             setTimeout(() => {
-              setIsLoading(true);
               setIsTopContainerVisible(true);
+
+              // Se estiver editando tudú e ele NÃO tiver emoji, já foi disparada a busca imediata
+              if (editingTudu && editingTudu.label && !hasEmoji(editingTudu.label)) {
+                return;
+              }
+
+              setIsLoading(true);
 
               setTimeout(() => {
                 var emojis = searchEmojis(editingTudu?.label ?? '');
@@ -701,6 +837,12 @@ const NewTuduModal: React.FC<NewTuduModalProps> = memo(
                     ]),
                   ];
                   setShowingMostUsedEmojis(!!emojis.length);
+                  setSelectedEmoji(null);
+                } else {
+                  setShowingMostUsedEmojis(false);
+                  if (!hasEmoji(editingTudu?.label) && !userOptedOutEmojiRef.current) {
+                    setSelectedEmoji(emojis[0]);
+                  }
                 }
 
                 if (emojis.length < 3) {

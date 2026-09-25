@@ -48,7 +48,18 @@ export const trimEmoji = (text: string, side: "start" | "end" | "both" = "both")
 };
 
 export const EMOJI_REGEX_PATTERN =
-  /(?:[\u231A\u231B\u23E9-\u23EC\u23F0-\u23F3\u25FD\u25FE\u2600-\u27BF\u2B50\u2B55]|\p{Extended_Pictographic}|\p{Regional_Indicator}|\p{Emoji_Presentation})(?:[\u{1F3FB}-\u{1F3FF}]|[\u{E0020}-\u{E007F}]|[\uFE0E\uFE0F\u200D\u20E3]|\p{Extended_Pictographic}|\p{Regional_Indicator}|\p{Emoji_Presentation})*/gu;
+  /(?:[0-9#*]\uFE0F?\u20E3|[\u231A\u231B\u23E9-\u23EC\u23F0-\u23F3\u25FD\u25FE\u2600-\u27BF\u2B50\u2B55]|\p{Extended_Pictographic}|\p{Regional_Indicator}|\p{Emoji_Presentation})(?:[\u{1F3FB}-\u{1F3FF}]|[\u{E0020}-\u{E007F}]|[\uFE0E\uFE0F\u200D\u20E3])*/gu;
+
+/**
+ * Checks whether a given string contains at least one emoji or pictogram.
+ */
+export const hasEmoji = (text?: string | null): boolean => {
+  if (!text || text.trim() === '') {
+    return false;
+  }
+  EMOJI_REGEX_PATTERN.lastIndex = 0;
+  return EMOJI_REGEX_PATTERN.test(text);
+};
 
 /**
  * Removes all emojis and related Unicode pictograms/symbols from a text string,
@@ -64,3 +75,4 @@ export const stripEmojis = (text?: string | null): string => {
     .replace(/\s+/g, ' ')
     .trim();
 };
+
