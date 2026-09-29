@@ -12,6 +12,7 @@ export const Overlay = styled.View`
 export const ModalContainer = styled.View`
   width: 100%;
   max-width: 380px;
+  max-height: 85%;
   background-color: ${({ theme }) => theme.colors.popupBackground};
   border-radius: 24px;
   padding: 24px 20px 20px 20px;
@@ -72,6 +73,7 @@ export const Title = styled.Text`
 export const PriceRow = styled.View`
   flex-direction: row;
   align-items: baseline;
+  flex-wrap: wrap;
   margin-bottom: 8px;
 `;
 

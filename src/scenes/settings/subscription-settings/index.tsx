@@ -58,7 +58,7 @@ export const SubscriptionSettingsPage: React.FC<SubscriptionSettingsProps> = ({ 
     purchasePro,
     restorePurchases,
     manageSubscription,
-    devSetStatus,
+    // devSetStatus, // Comentado para testar sempre a assinatura real
   } = useSubscription();
 
   const [actionLoading, setActionLoading] = useState(false);
@@ -305,7 +305,8 @@ export const SubscriptionSettingsPage: React.FC<SubscriptionSettingsProps> = ({ 
             })}
           </TermsNote>
 
-          {/* [DEV ONLY] Controles de Teste / Sandbox */}
+          {/* [DEV ONLY] Controles de Teste / Sandbox comentado para testar sempre a assinatura real no emulador */}
+          {/*
           {__DEV__ && (
             <DevSandboxContainer>
               <DevSandboxHeader>
@@ -336,6 +337,7 @@ export const SubscriptionSettingsPage: React.FC<SubscriptionSettingsProps> = ({ 
               </DevButtonsRow>
             </DevSandboxContainer>
           )}
+          */}
         </Container>
       </PageContent>
     </Page>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Modal } from 'react-native';
+import { Modal, ScrollView } from 'react-native';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import { hasSeenSubscriptionReminderState } from '../../state/atoms';
@@ -75,121 +75,123 @@ export const SubscriptionReminderModal: React.FC<SubscriptionReminderModalProps>
       onRequestClose={handleDismiss}>
       <Overlay>
         <ModalContainer>
-          <HeaderRow>
-            <TrialBadge>
-              <TrialBadgeText>
-                {t('settings.subscription.reminder.badge', {
-                  defaultValue: '7 Dias Grátis',
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            <HeaderRow>
+              <TrialBadge>
+                <TrialBadgeText>
+                  {t('settings.subscription.reminder.badge', {
+                    defaultValue: '7 Dias Grátis',
+                  })}
+                </TrialBadgeText>
+              </TrialBadge>
+              <CloseButton onPress={handleDismiss} activeOpacity={0.7}>
+                <CloseButtonText>✕</CloseButtonText>
+              </CloseButton>
+            </HeaderRow>
+
+            <Title>
+              {t('settings.subscription.reminder.title', {
+                defaultValue: 'Experimente o Tudú Pro ⚡',
+              })}
+            </Title>
+
+            <PriceRow>
+              <PriceHighlight>
+                {priceFormatted || t('subscription.viewInStore', { defaultValue: '7 Dias Grátis' })}
+              </PriceHighlight>
+              <PriceSubtext>
+                {t('settings.subscription.priceSubtext', {
+                  defaultValue: 'após a 1ª semana grátis',
                 })}
-              </TrialBadgeText>
-            </TrialBadge>
-            <CloseButton onPress={handleDismiss} activeOpacity={0.7}>
-              <CloseButtonText>✕</CloseButtonText>
-            </CloseButton>
-          </HeaderRow>
+              </PriceSubtext>
+            </PriceRow>
 
-          <Title>
-            {t('settings.subscription.reminder.title', {
-              defaultValue: 'Experimente o Tudú Pro ⚡',
-            })}
-          </Title>
-
-          <PriceRow>
-            <PriceHighlight>
-              {priceFormatted || t('subscription.viewInStore', { defaultValue: '7 Dias Grátis' })}
-            </PriceHighlight>
-            <PriceSubtext>
-              {priceFormatted
-                ? t('settings.subscription.reminder.priceSubtext', {
-                    defaultValue: '/ mês após a 1ª semana grátis',
-                  })
-                : t('subscription.consultInStoreSubtext', {
-                    defaultValue: 'Consulte o valor na confirmação do Google Play',
-                  })}
-            </PriceSubtext>
-          </PriceRow>
-
-          <Subtitle>
-            {t('settings.subscription.reminder.subtitle', {
-              defaultValue:
-                'Desbloqueie IA nativa sem chaves, sincronização contínua na nuvem e backup automático sem nenhum custo por uma semana inteira.',
-            })}
-          </Subtitle>
-
-          <FeaturesList>
-            <FeatureItem>
-              <FeatureIconBox>
-                <FeatureIconText>🧠</FeatureIconText>
-              </FeatureIconBox>
-              <FeatureTextContainer>
-                <FeatureTitle>
-                  {t('settings.subscription.reminder.feat1Title', {
-                    defaultValue: 'IA Nativa Integrada',
-                  })}
-                </FeatureTitle>
-                <FeatureDescription>
-                  {t('settings.subscription.reminder.feat1Desc', {
-                    defaultValue:
-                      'Sugestões inteligentes de tarefas e emojis sem complicação de API Keys.',
-                  })}
-                </FeatureDescription>
-              </FeatureTextContainer>
-            </FeatureItem>
-
-            <FeatureItem>
-              <FeatureIconBox>
-                <FeatureIconText>☁️</FeatureIconText>
-              </FeatureIconBox>
-              <FeatureTextContainer>
-                <FeatureTitle>
-                  {t('settings.subscription.reminder.feat2Title', {
-                    defaultValue: 'Sincronização em Nuvem',
-                  })}
-                </FeatureTitle>
-                <FeatureDescription>
-                  {t('settings.subscription.reminder.feat2Desc', {
-                    defaultValue:
-                      'Suas tarefas e contadores salvos com segurança em tempo real.',
-                  })}
-                </FeatureDescription>
-              </FeatureTextContainer>
-            </FeatureItem>
-
-            <FeatureItem>
-              <FeatureIconBox>
-                <FeatureIconText>📱</FeatureIconText>
-              </FeatureIconBox>
-              <FeatureTextContainer>
-                <FeatureTitle>
-                  {t('settings.subscription.reminder.feat3Title', {
-                    defaultValue: 'Backup & Multi-Aparelhos',
-                  })}
-                </FeatureTitle>
-                <FeatureDescription>
-                  {t('settings.subscription.reminder.feat3Desc', {
-                    defaultValue:
-                      'Troque de aparelho ou recupere seus dados a qualquer momento.',
-                  })}
-                </FeatureDescription>
-              </FeatureTextContainer>
-            </FeatureItem>
-          </FeaturesList>
-
-          <PrimaryButton onPress={handleAction}>
-            <PrimaryButtonText>
-              {t('settings.subscription.reminder.tryButton', {
-                defaultValue: 'Experimentar 7 Dias Grátis',
+            <Subtitle>
+              {t('settings.subscription.reminder.subtitle', {
+                defaultValue:
+                  'Desbloqueie IA nativa sem chaves, sincronização contínua na nuvem e backup automático sem nenhum custo por uma semana inteira.',
               })}
-            </PrimaryButtonText>
-          </PrimaryButton>
+            </Subtitle>
 
-          <SecondaryButton onPress={handleDismiss} activeOpacity={0.7}>
-            <SecondaryButtonText>
-              {t('settings.subscription.reminder.dismissButton', {
-                defaultValue: 'Agora não',
-              })}
-            </SecondaryButtonText>
-          </SecondaryButton>
+            <FeaturesList>
+              <FeatureItem>
+                <FeatureIconBox>
+                  <FeatureIconText>🧠</FeatureIconText>
+                </FeatureIconBox>
+                <FeatureTextContainer>
+                  <FeatureTitle>
+                    {t('settings.subscription.reminder.feat1Title', {
+                      defaultValue: 'IA Nativa Integrada',
+                    })}
+                  </FeatureTitle>
+                  <FeatureDescription>
+                    {t('settings.subscription.reminder.feat1Desc', {
+                      defaultValue:
+                        'Sugestões inteligentes de tarefas e emojis sem complicação de API Keys.',
+                    })}
+                  </FeatureDescription>
+                </FeatureTextContainer>
+              </FeatureItem>
+
+              <FeatureItem>
+                <FeatureIconBox>
+                  <FeatureIconText>☁️</FeatureIconText>
+                </FeatureIconBox>
+                <FeatureTextContainer>
+                  <FeatureTitle>
+                    {t('settings.subscription.reminder.feat2Title', {
+                      defaultValue: 'Sincronização em Nuvem',
+                    })}
+                  </FeatureTitle>
+                  <FeatureDescription>
+                    {t('settings.subscription.reminder.feat2Desc', {
+                      defaultValue:
+                        'Suas tarefas e contadores salvos com segurança em tempo real.',
+                    })}
+                  </FeatureDescription>
+                </FeatureTextContainer>
+              </FeatureItem>
+
+              <FeatureItem>
+                <FeatureIconBox>
+                  <FeatureIconText>📱</FeatureIconText>
+                </FeatureIconBox>
+                <FeatureTextContainer>
+                  <FeatureTitle>
+                    {t('settings.subscription.reminder.feat3Title', {
+                      defaultValue: 'Backup & Multi-Aparelhos',
+                    })}
+                  </FeatureTitle>
+                  <FeatureDescription>
+                    {t('settings.subscription.reminder.feat3Desc', {
+                      defaultValue:
+                        'Troque de aparelho ou recupere seus dados a qualquer momento.',
+                    })}
+                  </FeatureDescription>
+                </FeatureTextContainer>
+              </FeatureItem>
+            </FeaturesList>
+
+            <PrimaryButton onPress={handleAction}>
+              <PrimaryButtonText>
+                {t('settings.subscription.reminder.tryButton', {
+                  defaultValue: 'Experimentar 7 Dias Grátis',
+                })}
+              </PrimaryButtonText>
+            </PrimaryButton>
+
+            <SecondaryButton onPress={handleDismiss} activeOpacity={0.7}>
+              <SecondaryButtonText>
+                {t('settings.subscription.reminder.dismissButton', {
+                  defaultValue: 'Agora não',
+                })}
+              </SecondaryButtonText>
+            </SecondaryButton>
+          </ScrollView>
         </ModalContainer>
       </Overlay>
     </Modal>

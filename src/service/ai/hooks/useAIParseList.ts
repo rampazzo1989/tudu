@@ -1,4 +1,6 @@
 import {useCallback, useState} from 'react';
+import {useRecoilValue} from 'recoil';
+import {subscriptionState} from '../../../state/atoms';
 import {AIOrderingType, ParsedListItem, ParsedListResult, ParsedSectionGroup} from '../types';
 import {parseListFromTextWithAI} from '../ai-service';
 import {useAISettings} from './useAISettings';
@@ -6,6 +8,7 @@ import {generateRandomHash} from '../../../hooks/useHashGenerator';
 
 export const useAIParseList = () => {
   const {settings, getCurrentApiKey} = useAISettings();
+  const subscription = useRecoilValue(subscriptionState);
   const [rawText, setRawText] = useState<string>('');
   const [parsedTitle, setParsedTitle] = useState<string>('📝 Lista');
   const [items, setItems] = useState<ParsedListItem[]>([]);
@@ -16,7 +19,8 @@ export const useAIParseList = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasParsed, setHasParsed] = useState<boolean>(false);
 
-  const isAIConfigured = !!getCurrentApiKey();
+  const isManaged = subscription.isPro || settings.mode === 'managed';
+  const isAIConfigured = isManaged ? subscription.isPro : !!getCurrentApiKey();
 
   const parseText = useCallback(
     async (

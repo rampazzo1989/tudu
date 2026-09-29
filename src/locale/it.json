@@ -246,7 +246,7 @@
       "reminder": {
         "badge": "7 Giorni Gratis",
         "title": "Prova Tudú Pro ⚡",
-        "priceSubtext": "/ mese dopo la 1ª settimana gratis",
+        "priceSubtext": "dopo la 1ª settimana gratis",
         "subtitle": "Sblocca l'IA nativa senza chiavi, sincronizzazione continua nel cloud e backup automatico gratis per un'intera settimana.",
         "feat1Title": "IA Nativa Integrata",
         "feat1Desc": "Suggerimenti intelligenti di attività ed emoji senza complicazioni di chiavi API.",
@@ -577,6 +577,8 @@
     "addSelectedNone": "Nessuno selezionato",
     "loading": "✨ Generazione suggerimenti intelligenti...",
     "noApiKey": "Configura la tua chiave API nelle impostazioni IA per generare suggerimenti.",
+    "proRequired": "Tudú Cloud AI è disponibile per gli abbonati Tudú Pro. Abbonati per generare suggerimenti intelligenti per le attività.",
+    "upgradePro": "⭐ Scopri Tudú Pro",
     "configureAI": "⚙️ Configura IA",
     "error": "Impossibile caricare suggerimenti al momento."
   },
@@ -619,6 +621,8 @@
     "buttonCreateNone": "Nessuno selezionato",
     "buttonBack": "Indietro",
     "noApiKey": "Configura la tua chiave API nelle impostazioni IA per convertire il testo in liste.",
+    "proRequired": "Tudú Cloud AI è disponibile per gli abbonati Tudú Pro. Abbonati per convertire il testo in liste con l'intelligenza artificiale.",
+    "upgradePro": "⭐ Scopri Tudú Pro",
     "configureAI": "⚙️ Configura IA",
     "emptyError": "Nessun elemento trovato nel testo incollato. Prova a incollare una lista con elementi o attività.",
     "genericError": "Impossibile elaborare il testo con l'IA al momento.",
@@ -662,6 +666,8 @@
     "buttonBack": "Indietro",
     "successToast": "Lista riordinata con successo!",
     "noApiKey": "Configura la tua chiave API nelle impostazioni IA per riordinare le liste.",
+    "proRequired": "Tudú Cloud AI è disponibile per gli abbonati Tudú Pro. Abbonati per organizzare e riordinare le liste con l'intelligenza artificiale.",
+    "upgradePro": "⭐ Scopri Tudú Pro",
     "configureAI": "⚙️ Configura IA",
     "genericError": "Impossibile riordinare la lista con l'IA al momento."
   },

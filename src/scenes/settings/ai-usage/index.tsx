@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Alert} from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {SettingsIcon} from '../../../components/animated-icons/settings-icon';
@@ -7,6 +7,7 @@ import {Page} from '../../../components/page';
 import {PageContent} from '../../../components/page-content';
 import {styles} from '../../home/styles';
 import {AIProvider, UsagePeriod, useAITokenUsage} from '../../../service/ai';
+import {useSubscription} from '../../../service/subscription';
 import {
   BreakdownCard,
   BreakdownItem,
@@ -92,8 +93,15 @@ const formatDate = (isoString: string): string => {
 
 const AIUsagePage: React.FC<AIUsagePageProps> = ({navigation}) => {
   const {t} = useTranslation();
+  const {isPro} = useSubscription();
   const {getStats, lastResetAt, resetUsage} = useAITokenUsage();
   const [selectedPeriod, setSelectedPeriod] = useState<UsagePeriod>('month');
+
+  useEffect(() => {
+    if (isPro) {
+      navigation.goBack();
+    }
+  }, [isPro, navigation]);
 
   const stats = useMemo(
     () => getStats(selectedPeriod),

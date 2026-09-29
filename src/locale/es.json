@@ -577,6 +577,8 @@
     "addSelectedNone": "Ninguno seleccionado",
     "loading": "✨ Generando sugerencias inteligentes...",
     "noApiKey": "Configura tu clave de API en Ajustes de IA para generar sugerencias.",
+    "proRequired": "Tudú Cloud AI está disponible para suscriptores de Tudú Pro. Suscríbase para generar sugerencias inteligentes de tareas.",
+    "upgradePro": "⭐ Conocer Tudú Pro",
     "configureAI": "⚙️ Configurar IA",
     "error": "No se pudieron cargar sugerencias en este momento."
   },
@@ -619,6 +621,8 @@
     "buttonCreateNone": "Ninguno seleccionado",
     "buttonBack": "Volver",
     "noApiKey": "Configura tu clave de API en los ajustes de IA para convertir texto en listas.",
+    "proRequired": "Tudú Cloud AI está disponible para suscriptores de Tudú Pro. Suscríbase para convertir textos en listas con inteligencia artificial.",
+    "upgradePro": "⭐ Conocer Tudú Pro",
     "configureAI": "⚙️ Configurar IA",
     "emptyError": "No se encontraron elementos en el texto pegado. Intenta pegar una lista con tareas o elementos.",
     "genericError": "No se pudo procesar el texto con IA en este momento.",
@@ -662,6 +666,8 @@
     "buttonBack": "Volver",
     "successToast": "¡Lista reordenada con éxito!",
     "noApiKey": "Configura tu clave de API en los ajustes de IA para reordenar listas.",
+    "proRequired": "Tudú Cloud AI está disponible para suscriptores de Tudú Pro. Suscríbase para organizar y reordenar listas con inteligencia artificial.",
+    "upgradePro": "⭐ Conocer Tudú Pro",
     "configureAI": "⚙️ Configurar IA",
     "genericError": "No fue posible reordenar la lista con IA en este momento."
   },

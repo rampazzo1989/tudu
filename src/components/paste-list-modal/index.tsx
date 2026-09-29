@@ -14,11 +14,13 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { BlurredModal } from '../blurred-modal';
 import { GradientSeparator } from '../gradient-separator';
 import Skeleton from '../skeleton';
 import { CheckboxSimple } from '../checkbox-simple';
+import { aiSettingsState, paywallModalVisibleState, subscriptionState } from '../../state/atoms';
 import { AIOrderingType, useAIParseList } from '../../service/ai';
 import { useListService } from '../../service/list-service-hook/useListService';
 import { generateRandomHash } from '../../hooks/useHashGenerator';
@@ -123,6 +125,11 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
       selectedItems,
       isAllSelected,
     } = useAIParseList();
+
+    const aiSettings = useRecoilValue(aiSettingsState);
+    const subscription = useRecoilValue(subscriptionState);
+    const setPaywallVisible = useSetRecoilState(paywallModalVisibleState);
+    const isManaged = subscription.isPro || aiSettings.mode === 'managed';
 
     const { getAllLists, saveListAndTudus } = useListService();
 
@@ -334,25 +341,44 @@ export const PasteListModal: React.FC<PasteListModalProps> = memo(
                 {/* No API key notice */}
                 {!isAIConfigured ? (
                   <NoticeCard>
-                    <NoticeIcon>🔑</NoticeIcon>
+                    <NoticeIcon>{isManaged ? '⭐' : '🔑'}</NoticeIcon>
                     <NoticeText>
-                      {t('pasteListModal.noApiKey', {
-                        defaultValue:
-                          'Configure sua chave de API nas configurações de IA para converter textos em listas.',
-                      })}
+                      {isManaged
+                        ? t('pasteListModal.proRequired', {
+                            defaultValue:
+                              'O Tudú Cloud AI está disponível para assinantes Tudú Pro. Assine para converter textos em listas com inteligência artificial.',
+                          })
+                        : t('pasteListModal.noApiKey', {
+                            defaultValue:
+                              'Configure sua chave de API nas configurações de IA para converter textos em listas.',
+                          })}
                     </NoticeText>
-                    {onOpenAISettings && (
+                    {isManaged ? (
                       <NoticeButton
                         onPress={() => {
                           handleRequestClose();
-                          onOpenAISettings();
+                          setPaywallVisible(true);
                         }}>
                         <NoticeButtonText>
-                          {t('pasteListModal.configureAI', {
-                            defaultValue: '⚙️ Configurar IA',
+                          {t('pasteListModal.upgradePro', {
+                            defaultValue: '⭐ Conhecer Tudú Pro',
                           })}
                         </NoticeButtonText>
                       </NoticeButton>
+                    ) : (
+                      onOpenAISettings && (
+                        <NoticeButton
+                          onPress={() => {
+                            handleRequestClose();
+                            onOpenAISettings();
+                          }}>
+                          <NoticeButtonText>
+                            {t('pasteListModal.configureAI', {
+                              defaultValue: '⚙️ Configurar IA',
+                            })}
+                          </NoticeButtonText>
+                        </NoticeButton>
+                      )
                     )}
                   </NoticeCard>
                 ) : isLoading ? (

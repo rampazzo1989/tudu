@@ -65,8 +65,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   }, [navigation]);
 
   const handleAIUsagePress = useCallback(() => {
+    if (isPro) return;
     navigation.navigate('AIUsage');
-  }, [navigation]);
+  }, [isPro, navigation]);
 
   const handleNotificationSettingsPress = useCallback(() => {
     navigation.navigate('NotificationSettings');
@@ -83,7 +84,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
     });
   };
 
-  const isAIActive = aiSettings.hasApiKey;
+  const isAIActive = isPro || aiSettings.hasApiKey;
   const isNotificationActive =
     notificationSettings.timedNotificationsEnabled ||
     notificationSettings.dailyDigestEnabled;
@@ -331,48 +332,57 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
                 <CardTextContainer>
                   <CardTitle>{t('settings.ai.title')}</CardTitle>
                   <CardSubtitle numberOfLines={2}>
-                    {t('settings.ai.subtitle')}
+                    {isPro
+                      ? t('settings.ai.managedModeDescription', {
+                          defaultValue:
+                            'IA integrada pronta para uso, sem necessidade de chaves de API. Backup e sincronização em nuvem inclusos.',
+                        })
+                      : t('settings.ai.subtitle')}
                   </CardSubtitle>
                 </CardTextContainer>
               </CardLeftContent>
               <StatusBadge active={isAIActive}>
                 <StatusText active={isAIActive}>
-                  {isAIActive
-                    ? t('settings.ai.statusActive', {
-                        provider: getProviderName(aiSettings.provider),
-                      })
-                    : t('settings.ai.statusNotConfigured')}
+                  {isPro
+                    ? t('settings.ai.proActive', {defaultValue: 'Tudú Pro Ativo'})
+                    : isAIActive
+                      ? t('settings.ai.statusActive', {
+                          provider: getProviderName(aiSettings.provider),
+                        })
+                      : t('settings.ai.statusNotConfigured')}
                 </StatusText>
               </StatusBadge>
             </SettingsCard>
 
-            <SettingsCard onPress={handleAIUsagePress} style={{marginTop: 8}}>
-              <CardLeftContent>
-                <IconContainer>
-                  <Text style={{fontSize: 22}}>📊</Text>
-                </IconContainer>
-                <CardTextContainer>
-                  <CardTitle>{t('settings.ai.usage.title', {defaultValue: 'Consumo de Tokens'})}</CardTitle>
-                  <CardSubtitle numberOfLines={2}>
+            {!isPro && (
+              <SettingsCard onPress={handleAIUsagePress} style={{marginTop: 8}}>
+                <CardLeftContent>
+                  <IconContainer>
+                    <Text style={{fontSize: 22}}>📊</Text>
+                  </IconContainer>
+                  <CardTextContainer>
+                    <CardTitle>{t('settings.ai.usage.title', {defaultValue: 'Consumo de Tokens'})}</CardTitle>
+                    <CardSubtitle numberOfLines={2}>
+                      {monthlyStats.totalTokens > 0
+                        ? t('settings.ai.usage.cardSubtitle', {
+                            tokens: monthlyStats.totalTokens.toLocaleString(),
+                            defaultValue: `${monthlyStats.totalTokens.toLocaleString()} tokens consumidos este mês`,
+                          })
+                        : t('settings.ai.usage.cardSubtitleEmpty', {
+                            defaultValue: 'Veja o relatório detalhado de tokens',
+                          })}
+                    </CardSubtitle>
+                  </CardTextContainer>
+                </CardLeftContent>
+                <StatusBadge active={monthlyStats.totalTokens > 0}>
+                  <StatusText active={monthlyStats.totalTokens > 0}>
                     {monthlyStats.totalTokens > 0
-                      ? t('settings.ai.usage.cardSubtitle', {
-                          tokens: monthlyStats.totalTokens.toLocaleString(),
-                          defaultValue: `${monthlyStats.totalTokens.toLocaleString()} tokens consumidos este mês`,
-                        })
-                      : t('settings.ai.usage.cardSubtitleEmpty', {
-                          defaultValue: 'Veja o relatório detalhado de tokens',
-                        })}
-                  </CardSubtitle>
-                </CardTextContainer>
-              </CardLeftContent>
-              <StatusBadge active={monthlyStats.totalTokens > 0}>
-                <StatusText active={monthlyStats.totalTokens > 0}>
-                  {monthlyStats.totalTokens > 0
-                    ? `${monthlyStats.totalTokens.toLocaleString()} tokens`
-                    : t('settings.ai.usage.periods.month', {defaultValue: 'Este mês'})}
-                </StatusText>
-              </StatusBadge>
-            </SettingsCard>
+                      ? `${monthlyStats.totalTokens.toLocaleString()} tokens`
+                      : t('settings.ai.usage.periods.month', {defaultValue: 'Este mês'})}
+                  </StatusText>
+                </StatusBadge>
+              </SettingsCard>
+            )}
           </SectionContainer>
 
         </Container>

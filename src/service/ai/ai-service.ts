@@ -169,7 +169,7 @@ export const suggestEmojisWithAI = async (
   const subscription = getRecoil(subscriptionState);
 
   // 1. Roteamento: Modo Gerenciado (Tudú Cloud AI)
-  if (settings?.mode === 'managed') {
+  if (subscription?.isPro || settings?.mode === 'managed') {
     if (!subscription?.isPro) {
       console.warn('⚠️ [Tudú AI] Assinatura Tudú Pro necessária. Abrindo Paywall.');
       setRecoil(paywallModalVisibleState, true);
@@ -367,7 +367,7 @@ export const suggestTasksWithAI = async (
   const subscription = getRecoil(subscriptionState);
 
   // 1. Roteamento: Modo Gerenciado (Tudú Cloud AI)
-  if (settings?.mode === 'managed') {
+  if (subscription?.isPro || settings?.mode === 'managed') {
     if (!subscription?.isPro) {
       console.warn('⚠️ [Tudú AI] Assinatura Tudú Pro necessária. Abrindo Paywall.');
       setRecoil(paywallModalVisibleState, true);
@@ -712,7 +712,7 @@ export const parseListFromTextWithAI = async (
   const subscription = getRecoil(subscriptionState);
 
   // 1. Roteamento: Modo Gerenciado (Tudú Cloud AI)
-  if (settings?.mode === 'managed') {
+  if (subscription?.isPro || settings?.mode === 'managed') {
     if (!subscription?.isPro) {
       console.warn('⚠️ [Tudú AI] Assinatura Tudú Pro necessária. Abrindo Paywall.');
       setRecoil(paywallModalVisibleState, true);
@@ -881,6 +881,34 @@ export const reorderListWithAI = async (
     return { title: '📝 Lista', items: [] };
   }
 
+  const settings = getRecoil(aiSettingsState);
+  const subscription = getRecoil(subscriptionState);
+
+  // 1. Roteamento: Modo Gerenciado (Tudú Cloud AI)
+  if (subscription?.isPro || settings?.mode === 'managed') {
+    if (!subscription?.isPro) {
+      console.warn('⚠️ [Tudú AI] Assinatura Tudú Pro necessária. Abrindo Paywall.');
+      setRecoil(paywallModalVisibleState, true);
+      throw new Error('SUBSCRIPTION_REQUIRED');
+    }
+
+    try {
+      const response = await tuduApi.ai.reorderList({
+        items,
+        currentSections,
+        customPrompt,
+        listName,
+      });
+      return response.result;
+    } catch (apiError: any) {
+      if (apiError?.status === 403) {
+        setRecoil(paywallModalVisibleState, true);
+      }
+      throw apiError;
+    }
+  }
+
+  // 2. Roteamento: Modo Chave Própria (BYOK)
   const apiKey = getSecureApiKey(provider);
   if (!apiKey) {
     console.warn(`⚠️ [Tudú AI] Nenhuma chave de API configurada para o provedor: ${provider}`);

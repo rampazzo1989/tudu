@@ -141,16 +141,27 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
     setTestResult(null);
   }, [selectedProvider]);
 
+  // Ensure Pro subscribers are always on managed mode (Tudú Cloud AI)
+  useEffect(() => {
+    if (isPro && settings.mode !== 'managed') {
+      setAIMode('managed');
+    }
+  }, [isPro, settings.mode, setAIMode]);
+
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
   const handleUsagePress = useCallback(() => {
+    if (isPro) return;
     navigation.navigate('AIUsage');
-  }, [navigation]);
+  }, [isPro, navigation]);
 
   const handleSelectMode = useCallback(
     (mode: 'managed' | 'byok') => {
+      if (isPro) {
+        return;
+      }
       if (mode === 'managed' && !isPro) {
         openPaywall();
         return;
@@ -159,6 +170,14 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
     },
     [isPro, openPaywall, setAIMode],
   );
+
+  const handleSubscriptionAction = useCallback(() => {
+    if (isPro) {
+      navigation.navigate('SubscriptionSettings');
+    } else {
+      openPaywall();
+    }
+  }, [isPro, navigation, openPaywall]);
 
   const handleSelectProvider = useCallback(
     (provider: AIProvider) => {
@@ -237,7 +256,7 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
 
   const currentProviderConfig = PROVIDERS.find(p => p.id === selectedProvider);
   const isKeyConfigured = hasSecureApiKey(selectedProvider);
-  const isManaged = settings.mode === 'managed';
+  const isManaged = isPro || settings.mode === 'managed';
 
   return (
     <Page>
@@ -256,6 +275,7 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
             <ModeContainer>
               <ModeCard
                 isSelected={isManaged}
+                disabled={isPro}
                 onPress={() => handleSelectMode('managed')}>
                 <ModeHeaderRow>
                   <ModeTitle isSelected={isManaged}>
@@ -264,7 +284,7 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
                   <ProStatusBadge isPro={isPro}>
                     <ProStatusText>
                       {isPro
-                        ? subscriptionStatus === 'trial'
+                        ? subscriptionStatus === 'TRIALING'
                           ? 'Teste Grátis'
                           : 'Pro Ativo'
                         : 'Tudú Pro'}
@@ -279,24 +299,26 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
                 </ModeSubtitle>
               </ModeCard>
 
-              <ModeCard
-                isSelected={!isManaged}
-                onPress={() => handleSelectMode('byok')}>
-                <ModeHeaderRow>
-                  <ModeTitle isSelected={!isManaged}>
-                    🔑 Traga sua Chave (BYOK)
-                  </ModeTitle>
-                  <ProStatusBadge isPro={false}>
-                    <ProStatusText>Grátis</ProStatusText>
-                  </ProStatusBadge>
-                </ModeHeaderRow>
-                <ModeSubtitle>
-                  {t(
-                    'settings.ai.byokModeDescription',
-                    'Use sua própria chave de API gratuita ou paga (Gemini, OpenAI ou Claude).',
-                  )}
-                </ModeSubtitle>
-              </ModeCard>
+              {!isPro && (
+                <ModeCard
+                  isSelected={!isManaged}
+                  onPress={() => handleSelectMode('byok')}>
+                  <ModeHeaderRow>
+                    <ModeTitle isSelected={!isManaged}>
+                      🔑 Traga sua Chave (BYOK)
+                    </ModeTitle>
+                    <ProStatusBadge isPro={false}>
+                      <ProStatusText>Grátis</ProStatusText>
+                    </ProStatusBadge>
+                  </ModeHeaderRow>
+                  <ModeSubtitle>
+                    {t(
+                      'settings.ai.byokModeDescription',
+                      'Use sua própria chave de API gratuita ou paga (Gemini, OpenAI ou Claude).',
+                    )}
+                  </ModeSubtitle>
+                </ModeCard>
+              )}
             </ModeContainer>
           </Section>
 
@@ -315,7 +337,7 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
                       ? `Assine por ${priceFormatted} com 7 dias grátis para usar IA sem chave de API e manter seus dados salvos na nuvem.`
                       : 'Experimente 7 dias grátis para usar IA sem chave de API e manter seus dados salvos na nuvem.'}
                 </ModeSubtitle>
-                <PrimaryButton onPress={openPaywall}>
+                <PrimaryButton onPress={handleSubscriptionAction}>
                   <PrimaryButtonText>
                     {isPro ? 'Gerenciar Assinatura' : 'Experimentar 7 Dias Grátis'}
                   </PrimaryButtonText>
@@ -445,8 +467,12 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
               <Switch
                 value={
                   isManaged
-                    ? settings.aiEmojiSuggestionsEnabled && isPro
-                    : settings.aiEmojiSuggestionsEnabled && isKeyConfigured
+                    ? (settings.aiEmojiSuggestionsManuallySet !== undefined
+                        ? settings.aiEmojiSuggestionsEnabled
+                        : true) && isPro
+                    : (settings.aiEmojiSuggestionsManuallySet !== undefined
+                        ? settings.aiEmojiSuggestionsEnabled
+                        : true) && isKeyConfigured
                 }
                 disabled={
                   isManaged
@@ -464,7 +490,7 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
           </Section>
 
           {/* AI Token Usage Summary Card (BYOK only) */}
-          {!isManaged && (
+          {!isPro && !isManaged && (
             <Section>
               <SectionTitle>{t('settings.ai.usage.title')}</SectionTitle>
               <UsageCard onPress={handleUsagePress}>

@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react';
 import { getLocales } from 'react-native-localize';
 import Fuse from 'fuse.js';
 import { useRecoilValue } from 'recoil';
-import { aiSettingsState, emojiUsageState } from '../state/atoms';
+import { aiSettingsState, emojiUsageState, subscriptionState } from '../state/atoms';
 import { PARAMETERS_REGEX } from '../constants';
 import { suggestEmojisWithAI } from '../service/ai';
 import { stripEmojis } from '../utils/emoji-utils';
@@ -43,6 +43,10 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
   const timer = useRef<NodeJS.Timeout | undefined>(undefined);
   const emojiUsage = useRecoilValue(emojiUsageState); // Estado global persistido
   const aiSettings = useRecoilValue(aiSettingsState); // Configurações de IA
+  const subscription = useRecoilValue(subscriptionState); // Assinatura Tudú Pro
+
+  const isManaged = subscription.isPro || aiSettings.mode === 'managed';
+  const isAIConfigured = isManaged ? subscription.isPro : aiSettings.hasApiKey;
   const searchCache = useRef<Map<string, string[]>>(new Map());
   const fuseCache = useRef<{ lang: string; fuse: Fuse<EmojiEntry> } | null>(null);
   const lastSearch = useRef<{
@@ -220,12 +224,17 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
         }
 
         // 1. Try AI-powered suggestion if configured, enabled and text is meaningful
+        const isEmojiSuggestionsActive =
+          aiSettings.aiEmojiSuggestionsManuallySet !== undefined
+            ? aiSettings.aiEmojiSuggestionsEnabled
+            : true;
+
         if (
-          aiSettings.hasApiKey &&
-          aiSettings.aiEmojiSuggestionsEnabled &&
+          isAIConfigured &&
+          isEmojiSuggestionsActive &&
           cleanText.length >= 2
         ) {
-          console.log(`✨ [useEmojiSearch] Disparando busca por IA (${aiSettings.provider}) para "${cleanText}"...`);
+          console.log(`✨ [useEmojiSearch] Disparando busca por IA (${isManaged ? 'Tudú Cloud AI' : aiSettings.provider}) para "${cleanText}"...`);
           beforeCallback?.();
           try {
             const aiEmojis = await suggestEmojisWithAI(aiSettings.provider, {
@@ -249,7 +258,7 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
             console.warn(`⚠️ [useEmojiSearch] Falha na IA, usando busca offline como fallback:`, error?.message || error);
           }
         } else {
-          console.log(`ℹ️ [useEmojiSearch] Busca offline direta (IA desativada ou sem chave). Texto: "${cleanText}"`);
+          console.log(`ℹ️ [useEmojiSearch] Busca offline direta (IA desativada ou sem chave/assinatura). Texto: "${cleanText}"`);
         }
 
         // 2. Offline fallback (Fuse.js fuzzy search)
@@ -275,6 +284,8 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
     [
       debounce,
       aiSettings,
+      isAIConfigured,
+      isManaged,
       selectWordsToSearch,
       searchEmojisByWords,
       getMostUsedEmojis,
@@ -287,6 +298,10 @@ export const useEmojiSearch = (debounceDelay: number = 1200) => {
     debounceSearchEmojis,
     getMostUsedEmojis,
     getDefaultEmojis,
-    isAIEnabled: aiSettings.hasApiKey && aiSettings.aiEmojiSuggestionsEnabled,
+    isAIEnabled:
+      isAIConfigured &&
+      (aiSettings.aiEmojiSuggestionsManuallySet !== undefined
+        ? aiSettings.aiEmojiSuggestionsEnabled
+        : true),
   };
 };

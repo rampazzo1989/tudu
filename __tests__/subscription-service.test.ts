@@ -129,18 +129,19 @@ describe('SubscriptionService', () => {
     });
   });
 
-  it('should support devActivateTrial fallback', async () => {
-    await SubscriptionService.devActivateTrial();
-
-    expect(mockSetRecoil).toHaveBeenCalledWith(
-      subscriptionState,
-      expect.objectContaining({
-        isPro: true,
-        status: 'TRIALING',
-        trialEndsAt: expect.any(String),
-      }),
-    );
-  });
+  // [MOCK COMENTADO PARA TESTAR SEMPRE ASSINATURA REAL NO EMULADOR]
+  // it('should support devActivateTrial fallback', async () => {
+  //   await SubscriptionService.devActivateTrial();
+  //
+  //   expect(mockSetRecoil).toHaveBeenCalledWith(
+  //     subscriptionState,
+  //     expect.objectContaining({
+  //       isPro: true,
+  //       status: 'TRIALING',
+  //       trialEndsAt: expect.any(String),
+  //     }),
+  //   );
+  // });
 
   describe('when RevenueCat is disabled or placeholder key is used', () => {
     beforeEach(() => {
@@ -163,11 +164,18 @@ describe('SubscriptionService', () => {
       expect(Purchases.getOfferings).not.toHaveBeenCalled();
     });
 
-    it('should directly activate dev trial on purchaseProMonthly in mock mode', async () => {
-      const devSpy = jest.spyOn(SubscriptionService, 'devActivateTrial').mockResolvedValueOnce({ success: true } as any);
-      await SubscriptionService.purchaseProMonthly();
-      expect(Purchases.purchasePackage).not.toHaveBeenCalled();
-      expect(devSpy).toHaveBeenCalled();
+    // [MOCK COMENTADO PARA TESTAR SEMPRE ASSINATURA REAL NO EMULADOR]
+    // it('should directly activate dev trial on purchaseProMonthly in mock mode', async () => {
+    //   const devSpy = jest.spyOn(SubscriptionService, 'devActivateTrial').mockResolvedValueOnce({ success: true } as any);
+    //   await SubscriptionService.purchaseProMonthly();
+    //   expect(Purchases.purchasePackage).not.toHaveBeenCalled();
+    //   expect(devSpy).toHaveBeenCalled();
+    // });
+
+    it('should throw an error on purchaseProMonthly when RevenueCat is disabled', async () => {
+      await expect(SubscriptionService.purchaseProMonthly()).rejects.toThrow(
+        '[SubscriptionService] RevenueCat não está configurado.',
+      );
     });
   });
 });

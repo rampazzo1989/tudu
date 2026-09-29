@@ -9,13 +9,13 @@ import {
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 import { BlurredModal } from '../blurred-modal';
 import { GradientSeparator } from '../gradient-separator';
 import Skeleton from '../skeleton';
-import { aiSettingsState } from '../../state/atoms';
+import { aiSettingsState, paywallModalVisibleState, subscriptionState } from '../../state/atoms';
 import {
   AIOrderingType,
   getSecureApiKey,
@@ -75,6 +75,8 @@ export const ReorderPromptModal: React.FC<ReorderPromptModalProps> = memo(
     const { t } = useTranslation();
     const theme = useTheme();
     const aiSettings = useRecoilValue(aiSettingsState);
+    const subscription = useRecoilValue(subscriptionState);
+    const setPaywallVisible = useSetRecoilState(paywallModalVisibleState);
     const customPromptInputRef = useRef<TextInput>(null);
 
     const [orderingType, setOrderingType] = useState<AIOrderingType>('smart');
@@ -82,9 +84,10 @@ export const ReorderPromptModal: React.FC<ReorderPromptModalProps> = memo(
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const isManaged = subscription.isPro || aiSettings.mode === 'managed';
     const isAIConfigured = useMemo(() => {
-      return !!getSecureApiKey(aiSettings.provider);
-    }, [aiSettings.provider]);
+      return isManaged ? subscription.isPro : !!getSecureApiKey(aiSettings.provider);
+    }, [isManaged, subscription.isPro, aiSettings.provider]);
 
     useEffect(() => {
       if (visible) {
@@ -244,24 +247,43 @@ export const ReorderPromptModal: React.FC<ReorderPromptModalProps> = memo(
                 {/* Body Content */}
                 {!isAIConfigured ? (
                   <NoticeCard>
-                    <NoticeIcon>⚙️</NoticeIcon>
+                    <NoticeIcon>{isManaged ? '⭐' : '⚙️'}</NoticeIcon>
                     <NoticeText>
-                      {t('reorderPromptModal.noApiKey', {
-                        defaultValue:
-                          'Configure sua chave de API nas configurações de IA para reordenar listas.',
-                      })}
+                      {isManaged
+                        ? t('reorderPromptModal.proRequired', {
+                            defaultValue:
+                              'O Tudú Cloud AI está disponível para assinantes Tudú Pro. Assine para organizar e reordenar listas com inteligência artificial.',
+                          })
+                        : t('reorderPromptModal.noApiKey', {
+                            defaultValue:
+                              'Configure sua chave de API nas configurações de IA para reordenar listas.',
+                          })}
                     </NoticeText>
-                    <NoticeButton
-                      onPress={() => {
-                        onRequestClose();
-                        onOpenAISettings?.();
-                      }}>
-                      <NoticeButtonText>
-                        {t('reorderPromptModal.configureAI', {
-                          defaultValue: '⚙️ Configurar IA',
-                        })}
-                      </NoticeButtonText>
-                    </NoticeButton>
+                    {isManaged ? (
+                      <NoticeButton
+                        onPress={() => {
+                          onRequestClose();
+                          setPaywallVisible(true);
+                        }}>
+                        <NoticeButtonText>
+                          {t('reorderPromptModal.upgradePro', {
+                            defaultValue: '⭐ Conhecer Tudú Pro',
+                          })}
+                        </NoticeButtonText>
+                      </NoticeButton>
+                    ) : (
+                      <NoticeButton
+                        onPress={() => {
+                          onRequestClose();
+                          onOpenAISettings?.();
+                        }}>
+                        <NoticeButtonText>
+                          {t('reorderPromptModal.configureAI', {
+                            defaultValue: '⚙️ Configurar IA',
+                          })}
+                        </NoticeButtonText>
+                      </NoticeButton>
+                    )}
                   </NoticeCard>
                 ) : isLoading ? (
                   <LoadingContainer>

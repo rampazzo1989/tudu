@@ -246,7 +246,7 @@
       "reminder": {
         "badge": "7 Days Free",
         "title": "Experience Tudú Pro ⚡",
-        "priceSubtext": "/ month after 1st free week",
+        "priceSubtext": "after 1st week free",
         "subtitle": "Unlock native AI without keys, continuous cloud sync, and automatic backup at zero cost for a full week.",
         "feat1Title": "Built-in Native AI",
         "feat1Desc": "Smart task and emoji suggestions without API key hassles.",
@@ -577,6 +577,8 @@
     "addSelectedNone": "None selected",
     "loading": "✨ Generating smart suggestions...",
     "noApiKey": "Configure your API key in AI Settings to generate smart suggestions.",
+    "proRequired": "Tudú Cloud AI is available for Tudú Pro subscribers. Subscribe to generate smart task suggestions.",
+    "upgradePro": "⭐ Learn about Tudú Pro",
     "configureAI": "⚙️ Configure AI",
     "error": "Could not load suggestions at this moment."
   },
@@ -619,6 +621,8 @@
     "buttonCreateNone": "None selected",
     "buttonBack": "Back",
     "noApiKey": "Configure your API key in AI settings to convert text into lists.",
+    "proRequired": "Tudú Cloud AI is available for Tudú Pro subscribers. Subscribe to convert text into lists with artificial intelligence.",
+    "upgradePro": "⭐ Learn about Tudú Pro",
     "configureAI": "⚙️ Configure AI",
     "emptyError": "No items found in pasted text. Try pasting a list with items or tasks.",
     "genericError": "Could not process text with AI at this time.",
@@ -662,6 +666,8 @@
     "buttonBack": "Back",
     "successToast": "List reordered successfully!",
     "noApiKey": "Configure your API key in AI settings to reorder lists.",
+    "proRequired": "Tudú Cloud AI is available for Tudú Pro subscribers. Subscribe to organize and reorder lists with artificial intelligence.",
+    "upgradePro": "⭐ Learn about Tudú Pro",
     "configureAI": "⚙️ Configure AI",
     "genericError": "Could not reorder the list with AI at this time."
   },

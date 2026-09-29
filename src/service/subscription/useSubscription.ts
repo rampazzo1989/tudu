@@ -62,7 +62,7 @@ export function useSubscription() {
   }, [setPaywallVisible]);
 
   const manageSubscription = useCallback(() => {
-    const playStoreUrl = 'https://play.google.com/store/account/subscriptions';
+    const playStoreUrl = 'https://play.google.com/store/account/subscriptions?package=com.rampazzo.tudu';
     const appStoreUrl = 'https://apps.apple.com/account/subscriptions';
     const url = Platform.OS === 'ios' ? appStoreUrl : playStoreUrl;
     Linking.openURL(url).catch(() => {
@@ -70,9 +70,11 @@ export function useSubscription() {
     });
   }, []);
 
+  /* [MOCK DE SIMULAÇÃO COMENTADO PARA TESTAR SEMPRE ASSINATURA REAL]
   const devSetStatus = useCallback((target: 'FREE' | 'TRIALING' | 'ACTIVE') => {
     return SubscriptionService.devSetStatus(target);
   }, []);
+  */
 
   // Compute days left if in trial
   const daysLeftInTrial = subscription.trialEndsAt
@@ -100,6 +102,6 @@ export function useSubscription() {
     openPaywall,
     closePaywall,
     manageSubscription,
-    devSetStatus,
+    // devSetStatus,
   };
 }

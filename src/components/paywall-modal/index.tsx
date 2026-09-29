@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Text } from 'react-native';
+import { ActivityIndicator, Alert, Modal, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { aiSettingsState, paywallModalVisibleState } from '../../state/atoms';
@@ -38,7 +38,13 @@ export const PaywallModal: React.FC = () => {
   const { t } = useTranslation();
   const [visible, setVisible] = useRecoilState(paywallModalVisibleState);
   const setAiSettings = useSetRecoilState(aiSettingsState);
-  const { purchasePro, restorePurchases, priceFormatted } = useSubscription();
+  const {
+    purchasePro,
+    restorePurchases,
+    priceFormatted,
+    isPro,
+    manageSubscription,
+  } = useSubscription();
   const [loading, setLoading] = useState(false);
 
   const handleClose = useCallback(() => {
@@ -84,6 +90,7 @@ export const PaywallModal: React.FC = () => {
   }, [restorePurchases, setVisible]);
 
   const handleUseOwnKey = useCallback(() => {
+    if (isPro) return;
     setAiSettings(prev => ({
       ...prev,
       mode: 'byok',
@@ -93,7 +100,12 @@ export const PaywallModal: React.FC = () => {
       'Modo Chave Própria (BYOK)',
       'Você alternou para o modo de chave própria. Você pode configurar suas chaves gratuitas do Gemini, OpenAI ou Claude nas Configurações de IA.',
     );
-  }, [setAiSettings, setVisible]);
+  }, [isPro, setAiSettings, setVisible]);
+
+  const handleManageInStore = useCallback(() => {
+    setVisible(false);
+    manageSubscription();
+  }, [manageSubscription, setVisible]);
 
   if (!visible) return null;
 
@@ -106,92 +118,153 @@ export const PaywallModal: React.FC = () => {
     >
       <Overlay>
         <ModalContainer>
-          <HeaderRow>
-            <TrialBadge>
-              <TrialBadgeText>7 Dias Grátis</TrialBadgeText>
-            </TrialBadge>
-            <CloseButton onPress={handleClose} activeOpacity={0.7}>
-              <CloseButtonText>✕</CloseButtonText>
-            </CloseButton>
-          </HeaderRow>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            {isPro ? (
+              <>
+                <HeaderRow>
+                  <TrialBadge style={{ backgroundColor: '#10b981' }}>
+                    <TrialBadgeText style={{ color: '#fff' }}>
+                      {t('settings.subscription.badgePro', { defaultValue: 'PRO ATIVO' })}
+                    </TrialBadgeText>
+                  </TrialBadge>
+                  <CloseButton onPress={handleClose} activeOpacity={0.7}>
+                    <CloseButtonText>✕</CloseButtonText>
+                  </CloseButton>
+                </HeaderRow>
 
-          <Title>Tudú Pro ⚡</Title>
-          <PriceRow>
-            <PriceHighlight>
-              {priceFormatted || t('subscription.viewInStore', { defaultValue: '7 Dias Grátis' })}
-            </PriceHighlight>
-            <PriceSubtext>
-              {priceFormatted
-                ? t('settings.subscription.reminder.priceSubtext', {
-                    defaultValue: '/ mês após a 1ª semana grátis',
-                  })
-                : t('subscription.consultInStoreSubtext', {
-                    defaultValue: 'Consulte o valor na confirmação do Google Play',
-                  })}
-            </PriceSubtext>
-          </PriceRow>
-          <Subtitle>
-            Aproveite todos os recursos inteligentes e salve seus dados na nuvem com total segurança. Cancele quando quiser.
-          </Subtitle>
+                <Title>Tudú Pro ⚡</Title>
+                <Subtitle style={{ marginBottom: 20 }}>
+                  {t(
+                    'settings.subscription.proActiveModalDesc',
+                    { defaultValue: 'Sua assinatura Tudú Pro está ativa na loja com todos os recursos inteligentes liberados!' }
+                  )}
+                </Subtitle>
 
-          <FeaturesList>
-            <FeatureItem>
-              <FeatureIconBox>
-                <FeatureIconText>🧠</FeatureIconText>
-              </FeatureIconBox>
-              <FeatureTextContainer>
-                <FeatureTitle>IA Nativa Integrada</FeatureTitle>
-                <FeatureDescription>
-                  Sugestão de emojis, desdobramento de tarefas e importação de listas sem precisar de chaves.
-                </FeatureDescription>
-              </FeatureTextContainer>
-            </FeatureItem>
+                <PrimaryButton onPress={handleManageInStore}>
+                  <PrimaryButtonText>
+                    {t('settings.subscription.buttons.manage', {
+                      defaultValue: 'Gerenciar Assinatura na Loja',
+                    })}
+                  </PrimaryButtonText>
+                </PrimaryButton>
 
-            <FeatureItem>
-              <FeatureIconBox>
-                <FeatureIconText>☁️</FeatureIconText>
-              </FeatureIconBox>
-              <FeatureTextContainer>
-                <FeatureTitle>Sincronização em Nuvem</FeatureTitle>
-                <FeatureDescription>
-                  Seus dados e listas sincronizados e salvos com segurança no banco de dados.
-                </FeatureDescription>
-              </FeatureTextContainer>
-            </FeatureItem>
-
-            <FeatureItem>
-              <FeatureIconBox>
-                <FeatureIconText>📱</FeatureIconText>
-              </FeatureIconBox>
-              <FeatureTextContainer>
-                <FeatureTitle>Backup e Multi-Dispositivo</FeatureTitle>
-                <FeatureDescription>
-                  Acesse suas anotações e restaure seus dados em qualquer aparelho a qualquer momento.
-                </FeatureDescription>
-              </FeatureTextContainer>
-            </FeatureItem>
-          </FeaturesList>
-
-          <PrimaryButton onPress={handlePurchase}>
-            {loading ? (
-              <ActivityIndicator color="#fff" size="small" />
+                <SecondaryActionsRow style={{ justifyContent: 'center', marginTop: 10 }}>
+                  <LinkButton onPress={handleClose}>
+                    <LinkButtonText>{t('common.close', { defaultValue: 'Fechar' })}</LinkButtonText>
+                  </LinkButton>
+                </SecondaryActionsRow>
+              </>
             ) : (
-              <PrimaryButtonText>Experimentar 7 Dias Grátis</PrimaryButtonText>
+              <>
+                <HeaderRow>
+                  <TrialBadge>
+                    <TrialBadgeText>
+                      {t('settings.subscription.reminder.badge', { defaultValue: '7 Dias Grátis' })}
+                    </TrialBadgeText>
+                  </TrialBadge>
+                  <CloseButton onPress={handleClose} activeOpacity={0.7}>
+                    <CloseButtonText>✕</CloseButtonText>
+                  </CloseButton>
+                </HeaderRow>
+
+                <Title>Tudú Pro ⚡</Title>
+                <PriceRow>
+                  <PriceHighlight>
+                    {priceFormatted || t('subscription.viewInStore', { defaultValue: '7 Dias Grátis' })}
+                  </PriceHighlight>
+                  <PriceSubtext>
+                    {t('settings.subscription.priceSubtext', {
+                      defaultValue: 'após a 1ª semana grátis',
+                    })}
+                  </PriceSubtext>
+                </PriceRow>
+                <Subtitle>
+                  {t('settings.subscription.reminder.subtitle', {
+                    defaultValue: 'Aproveite todos os recursos inteligentes e salve seus dados na nuvem com total segurança. Cancele quando quiser.',
+                  })}
+                </Subtitle>
+
+                <FeaturesList>
+                  <FeatureItem>
+                    <FeatureIconBox>
+                      <FeatureIconText>🧠</FeatureIconText>
+                    </FeatureIconBox>
+                    <FeatureTextContainer>
+                      <FeatureTitle>
+                        {t('settings.subscription.benefits.aiTitle', { defaultValue: 'IA Nativa Integrada' })}
+                      </FeatureTitle>
+                      <FeatureDescription>
+                        {t('settings.subscription.benefits.aiDesc', { defaultValue: 'Sugestão de emojis, desdobramento de tarefas e importação de listas sem precisar de chaves.' })}
+                      </FeatureDescription>
+                    </FeatureTextContainer>
+                  </FeatureItem>
+
+                  <FeatureItem>
+                    <FeatureIconBox>
+                      <FeatureIconText>☁️</FeatureIconText>
+                    </FeatureIconBox>
+                    <FeatureTextContainer>
+                      <FeatureTitle>
+                        {t('settings.subscription.benefits.syncTitle', { defaultValue: 'Sincronização em Nuvem' })}
+                      </FeatureTitle>
+                      <FeatureDescription>
+                        {t('settings.subscription.benefits.syncDesc', { defaultValue: 'Seus dados e listas sincronizados e salvos com segurança no banco de dados.' })}
+                      </FeatureDescription>
+                    </FeatureTextContainer>
+                  </FeatureItem>
+
+                  <FeatureItem>
+                    <FeatureIconBox>
+                      <FeatureIconText>📱</FeatureIconText>
+                    </FeatureIconBox>
+                    <FeatureTextContainer>
+                      <FeatureTitle>
+                        {t('settings.subscription.benefits.backupTitle', { defaultValue: 'Backup e Multi-Dispositivo' })}
+                      </FeatureTitle>
+                      <FeatureDescription>
+                        {t('settings.subscription.benefits.backupDesc', { defaultValue: 'Acesse suas anotações e restaure seus dados em qualquer aparelho a qualquer momento.' })}
+                      </FeatureDescription>
+                    </FeatureTextContainer>
+                  </FeatureItem>
+                </FeaturesList>
+
+                <PrimaryButton onPress={handlePurchase}>
+                  {loading ? (
+                    <ActivityIndicator color="#fff" size="small" />
+                  ) : (
+                    <PrimaryButtonText>
+                      {t('settings.subscription.buttons.startTrial', { defaultValue: 'Experimentar 7 Dias Grátis' })}
+                    </PrimaryButtonText>
+                  )}
+                </PrimaryButton>
+
+                <SecondaryActionsRow>
+                  <LinkButton onPress={handleRestore}>
+                    <LinkButtonText>
+                      {t('settings.subscription.buttons.restore', { defaultValue: 'Restaurar Compras' })}
+                    </LinkButtonText>
+                  </LinkButton>
+                  <LinkButton onPress={handleClose}>
+                    <LinkButtonText>
+                      {t('settings.subscription.reminder.dismissButton', { defaultValue: 'Agora Não' })}
+                    </LinkButtonText>
+                  </LinkButton>
+                </SecondaryActionsRow>
+
+                {!isPro && (
+                  <ByokButton onPress={handleUseOwnKey}>
+                    <ByokButtonText>
+                      {t('settings.subscription.byokButton', { defaultValue: 'Prefiro usar minha chave própria (Gratuito)' })}
+                    </ByokButtonText>
+                  </ByokButton>
+                )}
+              </>
             )}
-          </PrimaryButton>
-
-          <SecondaryActionsRow>
-            <LinkButton onPress={handleRestore}>
-              <LinkButtonText>Restaurar Compras</LinkButtonText>
-            </LinkButton>
-            <LinkButton onPress={handleClose}>
-              <LinkButtonText>Agora Não</LinkButtonText>
-            </LinkButton>
-          </SecondaryActionsRow>
-
-          <ByokButton onPress={handleUseOwnKey}>
-            <ByokButtonText>Prefiro usar minha chave própria (Gratuito)</ByokButtonText>
-          </ByokButton>
+          </ScrollView>
         </ModalContainer>
       </Overlay>
     </Modal>

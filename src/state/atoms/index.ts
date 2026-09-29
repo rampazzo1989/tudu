@@ -44,6 +44,7 @@ export interface AISettingsState {
   mode: AIMode;
   provider: 'openai' | 'gemini' | 'claude';
   aiEmojiSuggestionsEnabled: boolean;
+  aiEmojiSuggestionsManuallySet?: boolean;
   hasApiKey: boolean;
   managedQuota?: {
     dailyEmojiLimit: number;
@@ -58,7 +59,7 @@ export const aiSettingsState = atom<AISettingsState>({
   default: {
     mode: 'managed',
     provider: 'gemini',
-    aiEmojiSuggestionsEnabled: false,
+    aiEmojiSuggestionsEnabled: true,
     hasApiKey: false,
   },
   effects: [mmkvPersistAtom('aiSettingsState')],

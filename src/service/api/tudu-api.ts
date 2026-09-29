@@ -80,6 +80,22 @@ export const tuduApi = {
         { signal },
       ),
 
+    reorderList: (
+      request: {
+        items: string[];
+        currentSections?: string[];
+        customPrompt?: string;
+        listName?: string;
+      },
+      signal?: AbortSignal,
+    ) =>
+      apiRequest<{ result: ParsedListResult; providerUsed: string }>(
+        'api/v1/ai/reorder-list',
+        'POST',
+        request,
+        { signal },
+      ),
+
     getQuota: () =>
       apiRequest<{
         dailyEmojiLimit: number;

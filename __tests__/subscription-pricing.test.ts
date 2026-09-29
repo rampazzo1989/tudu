@@ -36,6 +36,12 @@ describe('subscription-pricing', () => {
       expect(formatPriceWithPeriod('R$ 6,49/mês', 'pt-BR')).toBe('R$ 6,49/mês');
     });
 
+    it('strips Google Play sandbox test intervals and applies localized period suffix', () => {
+      expect(formatPriceWithPeriod('R$5.49/5 min', 'pt-BR')).toBe('R$5.49 /mês');
+      expect(formatPriceWithPeriod('R$ 5,49 / 5 min', 'pt-BR')).toBe('R$ 5,49 /mês');
+      expect(formatPriceWithPeriod('$1.08/5m', 'en')).toBe('$1.08 /month');
+    });
+
     it('returns null when store price is null, undefined, or empty to prevent misleading estimates', () => {
       expect(formatPriceWithPeriod(null, 'pt-BR')).toBeNull();
       expect(formatPriceWithPeriod(undefined, 'en')).toBeNull();

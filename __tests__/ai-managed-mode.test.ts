@@ -21,11 +21,18 @@ jest.mock('../src/service/api/tudu-api', () => ({
       }),
       parseList: jest.fn().mockResolvedValue({
         result: {
-          listTitle: 'Mercado',
-          listEmoji: '🛒',
-          items: [{ text: 'Arroz' }, { text: 'Feijão' }],
+          title: 'Mercado',
+          items: ['Arroz', 'Feijão'],
         },
         providerUsed: 'openai',
+      }),
+      reorderList: jest.fn().mockResolvedValue({
+        result: {
+          title: 'Mercado Organizado',
+          items: ['🍌 Banana', '🥛 Leite'],
+          sections: [{ title: '🥦 Hortifruti', items: ['🍌 Banana'] }],
+        },
+        providerUsed: 'deepseek',
       }),
     },
   },
@@ -35,6 +42,7 @@ import {
   suggestEmojisWithAI,
   suggestTasksWithAI,
   parseListFromTextWithAI,
+  reorderListWithAI,
 } from '../src/service/ai/ai-service';
 import { tuduApi } from '../src/service/api/tudu-api';
 import {
@@ -83,6 +91,15 @@ describe('AI Service Mode Routing (Managed vs BYOK)', () => {
       expect(mockSetRecoil).toHaveBeenCalledWith(paywallModalVisibleState, true);
       expect(tuduApi.ai.parseList).not.toHaveBeenCalled();
     });
+
+    it('should open paywall modal and throw error for reorderListWithAI', async () => {
+      await expect(
+        reorderListWithAI('openai', ['Arroz', 'Feijão']),
+      ).rejects.toThrow('SUBSCRIPTION_REQUIRED');
+
+      expect(mockSetRecoil).toHaveBeenCalledWith(paywallModalVisibleState, true);
+      expect(tuduApi.ai.reorderList).not.toHaveBeenCalled();
+    });
   });
 
   describe('Managed Mode with Active Subscription (Tudú Pro)', () => {
@@ -129,13 +146,50 @@ describe('AI Service Mode Routing (Managed vs BYOK)', () => {
         'Mercado: Arroz, Feijao',
       );
 
-      expect(result.listTitle).toBe('Mercado');
+      expect(result.title).toBe('Mercado');
       expect(result.items).toHaveLength(2);
       expect(tuduApi.ai.parseList).toHaveBeenCalledWith(
         expect.objectContaining({
           rawText: 'Mercado: Arroz, Feijao',
         }),
       );
+    });
+
+    it('should route reorderListWithAI to tuduApi.ai.reorderList', async () => {
+      const result = await reorderListWithAI(
+        'openai',
+        ['Leite', 'Banana'],
+        ['Hortifruti'],
+        undefined,
+        'Mercado',
+      );
+
+      expect(result.title).toBe('Mercado Organizado');
+      expect(result.items).toEqual(['🍌 Banana', '🥛 Leite']);
+      expect(result.sections).toHaveLength(1);
+      expect(tuduApi.ai.reorderList).toHaveBeenCalledWith(
+        expect.objectContaining({
+          items: ['Leite', 'Banana'],
+          currentSections: ['Hortifruti'],
+          listName: 'Mercado',
+        }),
+      );
+    });
+
+    it('should route to managed cloud API even if mode was byok when user is Pro', async () => {
+      mockGetRecoil.mockImplementation((atom: any) => {
+        if (atom === aiSettingsState) return { mode: 'byok' };
+        if (atom === subscriptionState) return { isPro: true };
+        return null;
+      });
+
+      const result = await suggestEmojisWithAI('openai', {
+        type: 'list',
+        title: 'Viagem de Ferias',
+      });
+
+      expect(result).toEqual(['🍕', '🍝', '🍷']);
+      expect(tuduApi.ai.suggestEmojis).toHaveBeenCalled();
     });
   });
 });

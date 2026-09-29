@@ -15,5 +15,11 @@
     ],
     "styled-components": ["node_modules/styled-components/native"]
   },
-
+  "exclude": [
+    "node_modules",
+    "tudu-api",
+    "build",
+    "android",
+    "ios"
+  ]
 }

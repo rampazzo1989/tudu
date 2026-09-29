@@ -246,7 +246,7 @@
       "reminder": {
         "badge": "7 Dias Grátis",
         "title": "Experimente o Tudú Pro ⚡",
-        "priceSubtext": "/ mês após a 1ª semana grátis",
+        "priceSubtext": "após a 1ª semana grátis",
         "subtitle": "Desbloqueie IA nativa sem chaves, sincronização contínua na nuvem e backup automático sem nenhum custo por uma semana inteira.",
         "feat1Title": "IA Nativa Integrada",
         "feat1Desc": "Sugestões inteligentes de tarefas e emojis sem complicação de API Keys.",
@@ -577,6 +577,8 @@
     "addSelectedNone": "Nenhum selecionado",
     "loading": "✨ Gerando sugestões com IA...",
     "noApiKey": "Configure sua chave de API nas configurações de IA para gerar sugestões inteligentes.",
+    "proRequired": "O Tudú Cloud AI está disponível para assinantes Tudú Pro. Assine para gerar sugestões inteligentes de tarefas.",
+    "upgradePro": "⭐ Conhecer Tudú Pro",
     "configureAI": "⚙️ Configurar IA",
     "error": "Não foi possível carregar sugestões no momento."
   },
@@ -619,6 +621,8 @@
     "buttonCreateNone": "Nenhum selecionado",
     "buttonBack": "Voltar",
     "noApiKey": "Configure sua chave de API nas configurações de IA para converter textos em listas.",
+    "proRequired": "O Tudú Cloud AI está disponível para assinantes Tudú Pro. Assine para converter textos em listas com inteligência artificial.",
+    "upgradePro": "⭐ Conhecer Tudú Pro",
     "configureAI": "⚙️ Configurar IA",
     "emptyError": "Nenhum item identificado no texto colado. Tente colar uma lista com itens ou tarefas.",
     "genericError": "Não foi possível processar o texto com IA no momento.",
@@ -662,6 +666,8 @@
     "buttonBack": "Voltar",
     "successToast": "Lista reordenada com sucesso!",
     "noApiKey": "Configure sua chave de API nas configurações de IA para reordenar listas.",
+    "proRequired": "O Tudú Cloud AI está disponível para assinantes Tudú Pro. Assine para organizar e reordenar listas com inteligência artificial.",
+    "upgradePro": "⭐ Conhecer Tudú Pro",
     "configureAI": "⚙️ Configurar IA",
     "genericError": "Não foi possível reordenar a lista com IA no momento."
   },

@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 import Purchases, { PurchasesOffering, PurchasesPackage } from 'react-native-purchases';
 import { getRecoil, setRecoil } from 'recoil-nexus';
 import {
+  aiSettingsState,
   subscriptionState,
   SubscriptionStatusType,
   userSessionState,
@@ -109,7 +110,9 @@ export class SubscriptionService {
    */
   static async purchaseProMonthly(pkg?: PurchasesPackage) {
     if (!this.isRevenueCatEnabled()) {
-      return this.devActivateTrial();
+      // [MOCK COMENTADO PARA TESTAR SEMPRE ASSINATURA REAL NO EMULADOR]
+      // return this.devActivateTrial();
+      throw new Error('[SubscriptionService] RevenueCat não está configurado.');
     }
 
     try {
@@ -121,8 +124,10 @@ export class SubscriptionService {
       }
 
       if (!targetPackage) {
+        // [MOCK COMENTADO PARA TESTAR SEMPRE ASSINATURA REAL NO EMULADOR]
         // Fallback for sandbox / dev testing when packages aren't published on store yet
-        return this.devActivateTrial();
+        // return this.devActivateTrial();
+        throw new Error('Nenhum pacote de assinatura encontrado na loja.');
       }
 
       const { customerInfo } = await Purchases.purchasePackage(targetPackage);
@@ -161,71 +166,96 @@ export class SubscriptionService {
     }
   }
 
-  /**
-   * Directly sets the subscription status for testing/dev purposes.
-   * Allows quickly jumping between:
-   * - 'FREE': resets to free user
-   * - 'TRIALING': 7-day free trial
-   * - 'ACTIVE': paid Pro subscriber (skipping trial)
-   */
-  static async devSetStatus(target: 'FREE' | 'TRIALING' | 'ACTIVE') {
-    const session = getRecoil(userSessionState);
-
-    if (target === 'FREE') {
-      setRecoil(subscriptionState, {
-        isPro: false,
-        status: 'NONE' as SubscriptionStatusType,
-        trialEndsAt: null,
-        currentPeriodEndsAt: null,
-      });
-      return { success: true };
-    }
-
-    if (target === 'TRIALING') {
-      const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      if (session?.token) {
-        try {
-          await tuduApi.subscriptions.devActivate(true);
-        } catch (e) {
-          // Local fallback
-        }
-      }
-      setRecoil(subscriptionState, {
-        isPro: true,
-        status: 'TRIALING' as SubscriptionStatusType,
-        trialEndsAt,
-        currentPeriodEndsAt: null,
-      });
-      return { success: true };
-    }
-
-    if (target === 'ACTIVE') {
-      const currentPeriodEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-      if (session?.token) {
-        try {
-          await tuduApi.subscriptions.devActivate(false);
-        } catch (e) {
-          // Local fallback
-        }
-      }
-      setRecoil(subscriptionState, {
-        isPro: true,
-        status: 'ACTIVE' as SubscriptionStatusType,
-        trialEndsAt: null,
-        currentPeriodEndsAt,
-      });
-      return { success: true };
-    }
-
-    return { success: false };
-  }
-
-  /**
-   * Activates development trial (useful for testing on emulator/sandbox).
-   */
-  static async devActivateTrial() {
-    return this.devSetStatus('TRIALING');
-  }
+  // ============================================================================
+  // [MOCK / SIMULAÇÃO COMENTADO PARA TESTAR SEMPRE A ASSINATURA REAL NO EMULADOR]
+  // ============================================================================
+  // /**
+  //  * Directly sets the subscription status for testing/dev purposes.
+  //  * Allows quickly jumping between:
+  //  * - 'FREE': resets to free user
+  //  * - 'TRIALING': 7-day free trial
+  //  * - 'ACTIVE': paid Pro subscriber (skipping trial)
+  //  */
+  // static async devSetStatus(target: 'FREE' | 'TRIALING' | 'ACTIVE') {
+  //   const session = getRecoil(userSessionState);
+  //
+  //   if (target === 'FREE') {
+  //     setRecoil(subscriptionState, {
+  //       isPro: false,
+  //       status: 'NONE' as SubscriptionStatusType,
+  //       trialEndsAt: null,
+  //       currentPeriodEndsAt: null,
+  //     });
+  //     return { success: true };
+  //   }
+  //
+  //   if (target === 'TRIALING') {
+  //     const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  //     let currentToken = session?.token;
+  //     if (!currentToken && __DEV__) {
+  //       try {
+  //         const { AuthService } = require('../auth/auth-service');
+  //         await AuthService.devLogin();
+  //         currentToken = getRecoil(userSessionState)?.token;
+  //       } catch (e) {
+  //         // Dev login fallback
+  //       }
+  //     }
+  //     if (currentToken) {
+  //       try {
+  //         await tuduApi.subscriptions.devActivate(true);
+  //       } catch (e) {
+  //         // Local fallback
+  //       }
+  //     }
+  //     setRecoil(subscriptionState, {
+  //       isPro: true,
+  //       status: 'TRIALING' as SubscriptionStatusType,
+  //       trialEndsAt,
+  //       currentPeriodEndsAt: null,
+  //     });
+  //     this.enableEmojiSuggestionsIfDefault();
+  //     return { success: true };
+  //   }
+  //
+  //   if (target === 'ACTIVE') {
+  //     const currentPeriodEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  //     let currentToken = session?.token;
+  //     if (!currentToken && __DEV__) {
+  //       try {
+  //         const { AuthService } = require('../auth/auth-service');
+  //         await AuthService.devLogin();
+  //         currentToken = getRecoil(userSessionState)?.token;
+  //       } catch (e) {
+  //         // Dev login fallback
+  //       }
+  //     }
+  //     if (currentToken) {
+  //       try {
+  //         await tuduApi.subscriptions.devActivate(false);
+  //       } catch (e) {
+  //         // Local fallback
+  //       }
+  //     }
+  //     setRecoil(subscriptionState, {
+  //       isPro: true,
+  //       status: 'ACTIVE' as SubscriptionStatusType,
+  //       trialEndsAt: null,
+  //       currentPeriodEndsAt,
+  //     });
+  //     this.enableEmojiSuggestionsIfDefault();
+  //     return { success: true };
+  //   }
+  //
+  //   return { success: false };
+  // }
+  //
+  // /**
+  //  * Activates development trial (useful for testing on emulator/sandbox).
+  //  */
+  // static async devActivateTrial() {
+  //   return this.devSetStatus('TRIALING');
+  // }
 
   /**
    * Synchronizes subscription state with Tudú Backend.
@@ -242,8 +272,25 @@ export class SubscriptionService {
         trialEndsAt: status.trialEndsAt,
         currentPeriodEndsAt: status.currentPeriodEndsAt,
       });
+      if (status.isPro) {
+        this.enableEmojiSuggestionsIfDefault();
+      }
     } catch (e) {
       console.warn('[SubscriptionService] Could not sync subscription with backend:', e);
+    }
+  }
+
+  private static enableEmojiSuggestionsIfDefault() {
+    try {
+      const current = getRecoil(aiSettingsState);
+      if (!current.aiEmojiSuggestionsManuallySet && !current.aiEmojiSuggestionsEnabled) {
+        setRecoil(aiSettingsState, {
+          ...current,
+          aiEmojiSuggestionsEnabled: true,
+        });
+      }
+    } catch (e) {
+      // Recoil might not be ready or outside context
     }
   }
 
@@ -264,6 +311,7 @@ export class SubscriptionService {
         trialEndsAt: isTrial ? proEntitlement.expirationDate : null,
         currentPeriodEndsAt: proEntitlement.expirationDate || null,
       });
+      this.enableEmojiSuggestionsIfDefault();
     }
   }
 }

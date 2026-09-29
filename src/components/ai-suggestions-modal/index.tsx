@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeOutDown, LinearTransition } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BlurredModal } from '../blurred-modal';
 import { GradientSeparator } from '../gradient-separator';
 import Skeleton from '../skeleton';
 import { CheckboxSimple } from '../checkbox-simple';
+import { aiSettingsState, paywallModalVisibleState, subscriptionState } from '../../state/atoms';
 import { useAITaskSuggestions } from '../../service/ai';
 import { AISuggestionsModalProps } from './types';
 import {
@@ -72,6 +74,11 @@ const AISuggestionsModal: React.FC<AISuggestionsModalProps> = memo(
       selectedLabels,
       isAllSelected,
     } = useAITaskSuggestions();
+
+    const aiSettings = useRecoilValue(aiSettingsState);
+    const subscription = useRecoilValue(subscriptionState);
+    const setPaywallVisible = useSetRecoilState(paywallModalVisibleState);
+    const isManaged = subscription.isPro || aiSettings.mode === 'managed';
 
     useEffect(() => {
       if (isVisible) {
@@ -165,25 +172,44 @@ const AISuggestionsModal: React.FC<AISuggestionsModalProps> = memo(
             {/* Not configured state */}
             {!isAIConfigured ? (
               <NoticeCard>
-                <NoticeIcon>🔑</NoticeIcon>
+                <NoticeIcon>{isManaged ? '⭐' : '🔑'}</NoticeIcon>
                 <NoticeText>
-                  {t('aiSuggestions.noApiKey', {
-                    defaultValue:
-                      'Configure sua chave de API nas configurações de IA para gerar sugestões inteligentes.',
-                  })}
+                  {isManaged
+                    ? t('aiSuggestions.proRequired', {
+                        defaultValue:
+                          'O Tudú Cloud AI está disponível para assinantes Tudú Pro. Assine para gerar sugestões inteligentes de tarefas.',
+                      })
+                    : t('aiSuggestions.noApiKey', {
+                        defaultValue:
+                          'Configure sua chave de API nas configurações de IA para gerar sugestões inteligentes.',
+                      })}
                 </NoticeText>
-                {onOpenAISettings && (
+                {isManaged ? (
                   <NoticeButton
                     onPress={() => {
                       onClose();
-                      onOpenAISettings();
+                      setPaywallVisible(true);
                     }}>
                     <NoticeButtonText>
-                      {t('aiSuggestions.configureAI', {
-                        defaultValue: '⚙️ Configurar IA',
+                      {t('aiSuggestions.upgradePro', {
+                        defaultValue: '⭐ Conhecer Tudú Pro',
                       })}
                     </NoticeButtonText>
                   </NoticeButton>
+                ) : (
+                  onOpenAISettings && (
+                    <NoticeButton
+                      onPress={() => {
+                        onClose();
+                        onOpenAISettings();
+                      }}>
+                      <NoticeButtonText>
+                        {t('aiSuggestions.configureAI', {
+                          defaultValue: '⚙️ Configurar IA',
+                        })}
+                      </NoticeButtonText>
+                    </NoticeButton>
+                  )
                 )}
               </NoticeCard>
             ) : isLoading ? (

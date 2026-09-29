@@ -1,4 +1,6 @@
 import {useCallback, useState} from 'react';
+import {useRecoilValue} from 'recoil';
+import {subscriptionState} from '../../../state/atoms';
 import {TaskSuggestionItem, TaskSuggestionRequest} from '../types';
 import {suggestTasksWithAI} from '../ai-service';
 import {useAISettings} from './useAISettings';
@@ -6,12 +8,14 @@ import {generateRandomHash} from '../../../hooks/useHashGenerator';
 
 export const useAITaskSuggestions = () => {
   const {settings, getCurrentApiKey} = useAISettings();
+  const subscription = useRecoilValue(subscriptionState);
   const [suggestions, setSuggestions] = useState<TaskSuggestionItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [lastRequest, setLastRequest] = useState<TaskSuggestionRequest | null>(null);
 
-  const isAIConfigured = !!getCurrentApiKey();
+  const isManaged = subscription.isPro || settings.mode === 'managed';
+  const isAIConfigured = isManaged ? subscription.isPro : !!getCurrentApiKey();
 
   const fetchSuggestions = useCallback(
     async (

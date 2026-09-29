@@ -109,12 +109,14 @@ export class SyncEngine {
 
       const listsDelta: any[] = [];
       myListsMap.forEach((list, id) => {
+        const listName = list.label || (list as any).name || 'Lista';
         listsDelta.push({
           id,
-          name: list.name,
-          color: list.color,
-          icon: list.icon,
-          order: list.order,
+          name: listName,
+          label: listName,
+          color: list.color || null,
+          icon: (list as any).icon || null,
+          order: (list as any).order ?? 0,
           isArchived: false,
           updatedAt: Date.now(),
         });
@@ -123,15 +125,17 @@ export class SyncEngine {
       const tasksDelta: any[] = [];
       tudusMap.forEach((taskMap, listId) => {
         taskMap.forEach((task, id) => {
+          const taskTitle = task.label || (task as any).title || 'Tarefa';
           tasksDelta.push({
             id,
             listId,
-            title: task.title,
-            description: task.description,
-            done: task.done,
-            starred: task.starred,
+            title: taskTitle,
+            label: taskTitle,
+            description: (task as any).description || null,
+            done: !!task.done,
+            starred: !!task.starred,
             dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : undefined,
-            order: task.order,
+            order: (task as any).scheduledOrder ?? (task as any).order ?? 0,
             isArchived: false,
             updatedAt: Date.now(),
           });
@@ -205,12 +209,12 @@ export class SyncEngine {
           if (l.deletedAt) {
             next.delete(l.id);
           } else {
+            const existing = next.get(l.id);
             next.set(l.id, {
+              ...existing,
               id: l.id,
-              name: l.name,
-              color: l.color,
-              icon: l.icon,
-              order: l.order,
+              label: l.name || l.label || existing?.label || 'Lista',
+              color: l.color || existing?.color,
             });
           }
         });
@@ -228,14 +232,15 @@ export class SyncEngine {
           if (t.deletedAt) {
             listMap.delete(t.id);
           } else {
+            const existing = listMap.get(t.id);
             listMap.set(t.id, {
+              ...existing,
               id: t.id,
-              title: t.title,
-              description: t.description,
-              done: t.done,
-              starred: t.starred,
-              dueDate: t.dueDate ? new Date(t.dueDate) : undefined,
-              order: t.order,
+              label: t.title || t.label || existing?.label || 'Tarefa',
+              done: Boolean(t.done),
+              starred: Boolean(t.starred),
+              dueDate: t.dueDate ? new Date(t.dueDate) : existing?.dueDate,
+              scheduledOrder: typeof t.order === 'number' ? t.order : existing?.scheduledOrder,
             });
           }
           next.set(listId, listMap);

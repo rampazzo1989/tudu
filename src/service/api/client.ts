@@ -39,7 +39,18 @@ export async function apiRequest<T = any>(
   options?: RequestOptions,
 ): Promise<T> {
   const url = `${API_BASE_URL.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
-  const session = getRecoil(userSessionState);
+  let session = getRecoil(userSessionState);
+
+  // In development, auto-login if token is missing and not already calling auth endpoint
+  if (!session?.token && __DEV__ && !path.includes('auth/')) {
+    try {
+      const { AuthService } = require('../auth/auth-service');
+      await AuthService.devLogin();
+      session = getRecoil(userSessionState);
+    } catch {
+      // Backend might be offline or starting up; proceed without token
+    }
+  }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

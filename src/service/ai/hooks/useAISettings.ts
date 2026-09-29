@@ -1,4 +1,4 @@
-import {useCallback} from 'react';
+import {useCallback, useEffect} from 'react';
 import {useRecoilState} from 'recoil';
 import {aiSettingsState, AISettingsState} from '../../../state/atoms';
 import {AIProvider} from '../types';
@@ -12,6 +12,16 @@ import {
 export const useAISettings = () => {
   const [settings, setSettings] = useRecoilState(aiSettingsState);
 
+  // Auto-enable AI emoji suggestions by default if user hasn't explicitly toggled it
+  useEffect(() => {
+    if (settings.aiEmojiSuggestionsManuallySet === undefined && !settings.aiEmojiSuggestionsEnabled) {
+      setSettings(prev => ({
+        ...prev,
+        aiEmojiSuggestionsEnabled: true,
+      }));
+    }
+  }, [settings.aiEmojiSuggestionsManuallySet, settings.aiEmojiSuggestionsEnabled, setSettings]);
+
   const setProvider = useCallback(
     (provider: AIProvider) => {
       const hasKey = hasSecureApiKey(provider);
@@ -19,8 +29,10 @@ export const useAISettings = () => {
         ...prev,
         provider,
         hasApiKey: hasKey,
-        // If current provider has key and suggestions was enabled, keep it; else update
-        aiEmojiSuggestionsEnabled: hasKey ? prev.aiEmojiSuggestionsEnabled : false,
+        // Auto-enable if hasKey and not explicitly disabled
+        aiEmojiSuggestionsEnabled: hasKey
+          ? (prev.aiEmojiSuggestionsManuallySet !== undefined ? prev.aiEmojiSuggestionsEnabled : true)
+          : false,
       }));
     },
     [setSettings],
@@ -59,6 +71,7 @@ export const useAISettings = () => {
       setSettings(prev => ({
         ...prev,
         aiEmojiSuggestionsEnabled: enabled,
+        aiEmojiSuggestionsManuallySet: true,
       }));
     },
     [setSettings],

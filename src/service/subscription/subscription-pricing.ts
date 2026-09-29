@@ -28,17 +28,23 @@ export function formatPriceWithPeriod(storePriceString?: string | null, lang?: s
   }
 
   const period = getPeriodSuffix(lang);
+  let cleaned = storePriceString.trim();
 
-  // If storePriceString already contains period indicator, return as is
+  // Strip Google Play sandbox/test accelerated intervals like "/ 5 min", "/5 min", "/ 5m", "/5m", "/ 5 mins"
+  cleaned = cleaned.replace(/\s*\/\s*\d+\s*(min|m|mins|minutes)\b/gi, '').trim();
+
+  // If storePriceString already contains a valid monthly period indicator, return cleaned
   if (
-    storePriceString.includes('/') ||
-    storePriceString.includes('mês') ||
-    storePriceString.includes('month') ||
-    storePriceString.includes('mes') ||
-    storePriceString.includes('mese')
+    cleaned.includes('mês') ||
+    cleaned.includes('month') ||
+    cleaned.includes('mes') ||
+    cleaned.includes('mese')
   ) {
-    return storePriceString.trim();
+    return cleaned;
   }
 
-  return `${storePriceString.trim()} ${period}`;
+  // If there is any remaining slash-separated abbreviation (e.g. "/mo"), strip it so we use the unified localized suffix
+  cleaned = cleaned.replace(/\s*\/\s*(mo|m|yr|y|week|w)\b/gi, '').trim();
+
+  return `${cleaned} ${period}`;
 }
