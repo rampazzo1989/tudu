@@ -38,20 +38,105 @@ export const recalculateRecurrence = atom<TuduViewModel | undefined>({
   default: undefined,
 });
 
+export type AIMode = 'managed' | 'byok';
+
 export interface AISettingsState {
+  mode: AIMode;
   provider: 'openai' | 'gemini' | 'claude';
   aiEmojiSuggestionsEnabled: boolean;
   hasApiKey: boolean;
+  managedQuota?: {
+    dailyEmojiLimit: number;
+    emojisRemainingToday: number;
+    dailyParseLimit: number;
+    parsesRemainingToday: number;
+  };
 }
 
 export const aiSettingsState = atom<AISettingsState>({
   key: 'aiSettingsState',
   default: {
+    mode: 'managed',
     provider: 'gemini',
     aiEmojiSuggestionsEnabled: false,
     hasApiKey: false,
   },
   effects: [mmkvPersistAtom('aiSettingsState')],
+});
+
+export interface UserSessionState {
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+    avatarUrl?: string;
+    provider?: string;
+  } | null;
+  token: string | null;
+}
+
+export const userSessionState = atom<UserSessionState>({
+  key: 'userSessionState',
+  default: {
+    user: null,
+    token: null,
+  },
+  effects: [mmkvPersistAtom('userSessionState')],
+});
+
+export type SubscriptionStatusType =
+  | 'INACTIVE'
+  | 'TRIALING'
+  | 'ACTIVE'
+  | 'PAST_DUE'
+  | 'CANCELED'
+  | 'EXPIRED';
+
+export interface SubscriptionState {
+  isPro: boolean;
+  status: SubscriptionStatusType;
+  trialEndsAt: string | null;
+  currentPeriodEndsAt: string | null;
+}
+
+export const subscriptionState = atom<SubscriptionState>({
+  key: 'subscriptionState',
+  default: {
+    isPro: false,
+    status: 'INACTIVE',
+    trialEndsAt: null,
+    currentPeriodEndsAt: null,
+  },
+  effects: [mmkvPersistAtom('subscriptionState')],
+});
+
+export interface CloudSyncState {
+  isSyncing: boolean;
+  lastSyncAt: number | null;
+  pendingMutationsCount: number;
+  lastError: string | null;
+}
+
+export const cloudSyncState = atom<CloudSyncState>({
+  key: 'cloudSyncState',
+  default: {
+    isSyncing: false,
+    lastSyncAt: null,
+    pendingMutationsCount: 0,
+    lastError: null,
+  },
+  effects: [mmkvPersistAtom('cloudSyncState')],
+});
+
+export const paywallModalVisibleState = atom<boolean>({
+  key: 'paywallModalVisibleState',
+  default: false,
+});
+
+export const hasSeenSubscriptionReminderState = atom<boolean>({
+  key: 'hasSeenSubscriptionReminderState',
+  default: false,
+  effects: [mmkvPersistAtom('hasSeenSubscriptionReminderState')],
 });
 
 export interface NotificationSettingsState {

@@ -34,6 +34,7 @@ import { ForwardedRefAnimatedIcon } from '../../components/animated-icons/animat
 import { useListService } from '../../service/list-service-hook/useListService';
 import { useCounterService } from '../../service/counter-service-hook/useCounterService';
 import { OnboardingModal } from './components/onboarding-modal';
+import { SubscriptionReminderModal } from '../../components/subscription-reminder-modal';
 import { BackupReminderBanner } from '../../components/backup-reminder-banner';
 import { CallReminderBanner } from '../../components/call-reminder-banner';
 import { getDateOnlyTimeStamp } from '../../utils/date-utils';
@@ -183,6 +184,10 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
     navigation.navigate('Settings');
   }, [navigation]);
 
+  const handleProPress = useCallback(() => {
+    navigation.navigate('SubscriptionSettings');
+  }, [navigation]);
+
   const handleNavigateToBackupSettings = useCallback(() => {
     navigation.navigate('BackupSettings');
   }, [navigation]);
@@ -203,9 +208,11 @@ const HomePage: React.FC<HomePageProps> = ({ navigation }) => {
   return (
     <Page>
       <OnboardingModal />
+      <SubscriptionReminderModal onNavigateToSubscription={handleProPress} />
       <HomeHeader
         onSearchPress={handleSearchPress}
         onSettingsPress={handleSettingsPress}
+        onProPress={handleProPress}
       />
       <DraggableContextProvider<ListDataViewModel>
         data={groupedCustomLists}

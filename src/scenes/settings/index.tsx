@@ -7,6 +7,7 @@ import {DefaultHeader} from '../../components/default-header';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
 import {aiSettingsState, backupSettingsState, notificationSettingsState, securitySettingsState} from '../../state/atoms';
+import {useSubscription} from '../../service/subscription/useSubscription';
 import {useAITokenUsage} from '../../service/ai';
 import {useImportListService} from '../../service/list-sharing';
 import {ImportListModal} from '../../components/import-list-modal';
@@ -22,12 +23,18 @@ import {
   CardSubtitle,
   StatusBadge,
   StatusText,
+  ProSettingsCard,
+  ProIconContainer,
+  ProBadge,
+  ProBadgeText,
+  ProChevron,
 } from './styles';
 import {styles} from '../home/styles';
 import {SettingsPageProps} from './types';
 
 const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const {t} = useTranslation();
+  const {isPro, status: subscriptionStatus} = useSubscription();
   const aiSettings = useRecoilValue(aiSettingsState);
   const notificationSettings = useRecoilValue(notificationSettingsState);
   const backupSettings = useRecoilValue(backupSettingsState);
@@ -43,6 +50,10 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
 
   const handleBackButtonPress = useCallback(() => {
     navigation.goBack();
+  }, [navigation]);
+
+  const handleSubscriptionPress = useCallback(() => {
+    navigation.navigate('SubscriptionSettings');
   }, [navigation]);
 
   const handleSecuritySettingsPress = useCallback(() => {
@@ -136,6 +147,70 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
       />
       <PageContent contentContainerStyle={styles.scrollContentContainer}>
         <Container>
+          {/* Subscription Section (Highlighted) */}
+          <SectionContainer>
+            <SectionTitleText>
+              {t('settings.subscription.sectionTitle', {
+                defaultValue: 'Assinatura',
+              })}
+            </SectionTitleText>
+            <ProSettingsCard onPress={handleSubscriptionPress} isPro={isPro}>
+              <CardLeftContent>
+                <ProIconContainer isPro={isPro}>
+                  <Text style={{fontSize: 22}}>⚡</Text>
+                </ProIconContainer>
+                <CardTextContainer>
+                  <CardTitle>
+                    {t('settings.subscription.cardTitle', {
+                      defaultValue: 'Tudú Pro',
+                    })}
+                  </CardTitle>
+                  <CardSubtitle numberOfLines={2}>
+                    {isPro
+                      ? t('settings.subscription.cardSubtitlePro', {
+                          defaultValue:
+                            'Assinatura ativa. Recursos de IA e nuvem liberados.',
+                        })
+                      : t('settings.subscription.cardSubtitleFree', {
+                          defaultValue:
+                            'IA integrada sem chaves, nuvem e backup automático. Teste 7 dias grátis!',
+                        })}
+                  </CardSubtitle>
+                </CardTextContainer>
+              </CardLeftContent>
+              <ProBadge
+                type={
+                  isPro
+                    ? subscriptionStatus === 'TRIALING'
+                      ? 'trial'
+                      : 'active'
+                    : 'free'
+                }>
+                <ProBadgeText
+                  type={
+                    isPro
+                      ? subscriptionStatus === 'TRIALING'
+                        ? 'trial'
+                        : 'active'
+                      : 'free'
+                  }>
+                  {isPro
+                    ? subscriptionStatus === 'TRIALING'
+                      ? t('settings.subscription.badgeTrial', {
+                          defaultValue: 'TESTE ATIVO',
+                        })
+                      : t('settings.subscription.badgePro', {
+                          defaultValue: 'PRO ATIVO',
+                        })
+                    : t('settings.subscription.badgeFree', {
+                        defaultValue: '7 DIAS GRÁTIS',
+                      })}
+                </ProBadgeText>
+              </ProBadge>
+              <ProChevron>›</ProChevron>
+            </ProSettingsCard>
+          </SectionContainer>
+
           {/* Security & Lock Section */}
           <SectionContainer>
             <SectionTitleText>

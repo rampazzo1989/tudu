@@ -215,6 +215,49 @@
   },
   "settings": {
     "title": "Settings",
+    "subscription": {
+      "sectionTitle": "Subscription",
+      "pageTitle": "Tudú Pro",
+      "cardTitle": "Tudú Pro",
+      "cardSubtitleFree": "Built-in AI without keys, cloud sync and auto backup. Try 7 days free!",
+      "cardSubtitlePro": "Subscription active. AI and cloud features unlocked.",
+      "badgeFree": "7 DAYS FREE",
+      "badgePro": "PRO ACTIVE",
+      "badgeTrial": "TRIAL ACTIVE",
+      "benefitsTitle": "Exclusive Benefits",
+      "benefits": {
+        "aiTitle": "Native Integrated AI",
+        "aiDesc": "Smart emoji suggestions, automatic task breakdown, and list importing without needing an API key.",
+        "syncTitle": "Real-Time Cloud Sync",
+        "syncDesc": "All your notes, tasks, and counters saved instantly and kept in sync across devices.",
+        "backupTitle": "Backup & Multi-Device",
+        "backupDesc": "Restore your lists and counters on any device at any time with total peace of mind.",
+        "earlyTitle": "Early Feature Access",
+        "earlyDesc": "Be the first to access all new smart tools and improvements in Tudú.",
+        "privacyTitle": "Total Privacy & Security",
+        "privacyDesc": "Your data is protected with state-of-the-art encryption and never shared with third parties."
+      },
+      "buttons": {
+        "startTrial": "Try 7 Days Free",
+        "manage": "Manage Subscription on Store",
+        "restore": "Restore Purchases"
+      },
+      "termsNote": "Monthly recurring subscription. Cancel anytime in Google Play settings with zero charges before the 7-day trial ends.",
+      "reminder": {
+        "badge": "7 Days Free",
+        "title": "Experience Tudú Pro ⚡",
+        "priceSubtext": "/ month after 1st free week",
+        "subtitle": "Unlock native AI without keys, continuous cloud sync, and automatic backup at zero cost for a full week.",
+        "feat1Title": "Built-in Native AI",
+        "feat1Desc": "Smart task and emoji suggestions without API key hassles.",
+        "feat2Title": "Cloud Sync",
+        "feat2Desc": "Your tasks and counters safely synced in real time.",
+        "feat3Title": "Backup & Multi-Device",
+        "feat3Desc": "Switch devices or recover your data at any time.",
+        "tryButton": "Try 7 Days Free",
+        "dismissButton": "Not now"
+      }
+    },
     "sections": {
       "ai": "Artificial Intelligence",
       "general": "General"
@@ -279,7 +322,17 @@
         "gemini": "Google Gemini",
         "openai": "OpenAI",
         "claude": "Anthropic Claude"
-      }
+      },
+      "modeTitle": "Artificial Intelligence Mode",
+      "managedModeTitle": "Tudú Cloud AI",
+      "managedModeDescription": "Built-in cloud AI ready to use with no API keys required. Cloud backup and sync included.",
+      "byokModeTitle": "Bring Your Own Key (BYOK)",
+      "byokModeDescription": "Use your own free or paid API key (Gemini, OpenAI, or Claude).",
+      "managedStatusTitle": "Subscription Status",
+      "proActive": "Tudú Pro Active",
+      "proUnlock": "Unlock Tudú Pro",
+      "manageSubscription": "Manage Subscription",
+      "tryFreeTrial": "Try 7 Days Free"
     },
     "notifications": {
       "title": "Notifications",
@@ -638,6 +691,34 @@
     "openSettings": "Open Settings",
     "errorTitle": "Voice Recognition",
     "error": "Could not recognize voice. Please try again."
+  },
+  "subscription": {
+    "title": "Tudú Pro",
+    "badge": "PRO",
+    "trialBadge": "7 DAYS FREE",
+    "headline": "Supercharge your productivity with Tudú Pro",
+    "subheadline": "Unlimited AI without API keys, automatic backup, and real-time cloud sync.",
+    "monthlyPrice": "Just {{price}}",
+    "priceSubtext": "after 1st week free",
+    "viewInStore": "7 Days Free",
+    "consultInStoreSubtext": "Check price at Google Play confirmation",
+    "freeTrial": "7 days free during your first week",
+    "subscribeButton": "Try 7 Days Free",
+    "subscribedButton": "Active Subscription",
+    "restorePurchases": "Restore Purchases",
+    "terms": "Cancel anytime on Google Play or App Store. Renews monthly after the trial period.",
+    "features": {
+      "ai": "Integrated AI (DeepSeek & OpenAI) with no setup required",
+      "cloudSync": "Instant sync and automatic cloud backup",
+      "offlineFirst": "Fully functional offline when you don't have internet",
+      "prioritySupport": "Early access to new features and smart productivity updates"
+    }
+  },
+  "sync": {
+    "statusSaving": "Saving...",
+    "statusCloud": "Cloud",
+    "syncSuccess": "Data synced successfully with the cloud!",
+    "syncError": "Unable to sync at the moment. Your data remains safe on your device."
   }
 }
 

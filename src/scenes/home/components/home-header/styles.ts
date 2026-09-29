@@ -49,3 +49,26 @@ export const StyledProfileIcon = styled(ProfileIcon)`
   margin-left: 6px;
 `;
 
+export const ProHeaderBadgeButton = styled.View`
+  flex-direction: row;
+  align-items: center;
+  background-color: rgba(245, 158, 11, 0.18);
+  border-width: 1px;
+  border-color: rgba(245, 158, 11, 0.75);
+  padding: 4px 8px;
+  border-radius: 12px;
+  margin-right: 4px;
+`;
+
+export const ProHeaderIcon = styled.Text`
+  font-size: 13px;
+  margin-right: 4px;
+`;
+
+export const ProHeaderLabel = styled.Text`
+  font-size: 11px;
+  font-weight: 800;
+  color: #f59e0b;
+  letter-spacing: 0.5px;
+`;
+

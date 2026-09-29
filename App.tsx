@@ -20,6 +20,7 @@ import { DataIntegritySync } from './src/components/data-integrity-sync';
 import { navigationRef } from './src/navigation/navigation-ref';
 import { AppLockGate } from './src/components/app-lock-gate';
 import { IncomingTuduFileHandler } from './src/components/incoming-tudu-file-handler';
+import { PaywallModal } from './src/components/paywall-modal';
 import notifee from '@notifee/react-native';
 import { MMKV } from 'react-native-mmkv';
 
@@ -113,6 +114,7 @@ function App(): React.JSX.Element {
                   <DataIntegritySync />
                   <NotificationBootSync />
                   <IncomingTuduFileHandler />
+                  <PaywallModal />
                   {hasCheckedNotification && (
                     <NavigationContainer ref={navigationRef}>
                       <StackNavigator

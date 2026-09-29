@@ -1,10 +1,18 @@
+export type AIMode = 'managed' | 'byok';
 export type AIProvider = 'openai' | 'gemini' | 'claude';
 export type AIFeature = 'emoji' | 'task_suggestions' | 'parse_list' | 'test';
 
 export interface AISettings {
+  mode?: AIMode;
   provider: AIProvider;
   aiEmojiSuggestionsEnabled: boolean;
   hasApiKey: boolean;
+  managedQuota?: {
+    dailyEmojiLimit: number;
+    emojisRemainingToday: number;
+    dailyParseLimit: number;
+    parsesRemainingToday: number;
+  };
 }
 
 export interface AITokenUsage {

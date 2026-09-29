@@ -215,6 +215,49 @@
   },
   "settings": {
     "title": "Configuración",
+    "subscription": {
+      "sectionTitle": "Suscripción",
+      "pageTitle": "Tudú Pro",
+      "cardTitle": "Tudú Pro",
+      "cardSubtitleFree": "IA integrada sin claves, nube y copia de seguridad automática. ¡Prueba 7 días gratis!",
+      "cardSubtitlePro": "Suscripción activa. Funciones de IA y nube desbloqueadas.",
+      "badgeFree": "7 DÍAS GRATIS",
+      "badgePro": "PRO ACTIVO",
+      "badgeTrial": "PRUEBA ACTIVA",
+      "benefitsTitle": "Ventajas Exclusivas",
+      "benefits": {
+        "aiTitle": "IA Nativa Integrada",
+        "aiDesc": "Sugerencias inteligentes de emojis, desglose automático de tareas e importación de listas sin necesidad de clave de API.",
+        "syncTitle": "Sincronización en la Nube en Tiempo Real",
+        "syncDesc": "Todas tus notas, tareas y contadores guardados al instante y sincronizados en la base de datos.",
+        "backupTitle": "Copia de Seguridad y Multi-Dispositivo",
+        "backupDesc": "Restaura tus listas y contadores en cualquier dispositivo en cualquier momento con total tranquilidad.",
+        "earlyTitle": "Acceso Anticipado a Funciones Pro",
+        "earlyDesc": "Sé el primero en disfrutar de todas las nuevas herramientas inteligentes y mejoras de Tudú.",
+        "privacyTitle": "Seguridad y Privacidad Total",
+        "privacyDesc": "Tus datos están protegidos con cifrado avanzado y nunca se comparten con terceros."
+      },
+      "buttons": {
+        "startTrial": "Probar 7 Días Gratis",
+        "manage": "Gestionar Suscripción en la Tienda",
+        "restore": "Restaurar Compras"
+      },
+      "termsNote": "Suscripción mensual recurrente. Cancela cuando quieras en Google Play sin coste antes de que finalice la prueba de 7 días.",
+      "reminder": {
+        "badge": "7 Días Gratis",
+        "title": "Prueba Tudú Pro ⚡",
+        "priceSubtext": "/ mes tras la 1ª semana gratis",
+        "subtitle": "Desbloquea IA nativa sin claves, sincronización continua en la nube y copia de seguridad automática gratis durante una semana completa.",
+        "feat1Title": "IA Nativa Integrada",
+        "feat1Desc": "Sugerencias inteligentes de tareas y emojis sin líos de claves API.",
+        "feat2Title": "Sincronización en la Nube",
+        "feat2Desc": "Tus tareas y contadores sincronizados de forma segura en tiempo real.",
+        "feat3Title": "Copia de Seguridad y Multi-Dispositivo",
+        "feat3Desc": "Cambia de dispositivo o recupera tus datos en cualquier momento.",
+        "tryButton": "Probar 7 Días Gratis",
+        "dismissButton": "Ahora no"
+      }
+    },
     "sections": {
       "ai": "Inteligencia Artificial",
       "general": "General"
@@ -279,7 +322,17 @@
         "gemini": "Google Gemini",
         "openai": "OpenAI",
         "claude": "Anthropic Claude"
-      }
+      },
+      "modeTitle": "Modo de Inteligencia Artificial",
+      "managedModeTitle": "Tudú Cloud AI",
+      "managedModeDescription": "IA integrada lista para usar sin necesidad de claves de API. Copia de seguridad y sincronización en la nube incluidas.",
+      "byokModeTitle": "Traiga su Propia Clave (BYOK)",
+      "byokModeDescription": "Use su propia clave de API gratuita o de pago (Gemini, OpenAI o Claude).",
+      "managedStatusTitle": "Estado de la Suscripción",
+      "proActive": "Tudú Pro Activo",
+      "proUnlock": "Desbloquea Tudú Pro",
+      "manageSubscription": "Gestionar Suscripción",
+      "tryFreeTrial": "Probar 7 Días Gratis"
     },
     "notifications": {
       "title": "Notificaciones",
@@ -638,5 +691,33 @@
     "openSettings": "Abrir Ajustes",
     "errorTitle": "Reconocimiento de Voz",
     "error": "No se pudo reconocer la voz. Inténtalo de nuevo."
+  },
+  "subscription": {
+    "title": "Tudú Pro",
+    "badge": "PRO",
+    "trialBadge": "7 DÍAS GRATIS",
+    "headline": "Potencia tu productividad con Tudú Pro",
+    "subheadline": "IA ilimitada sin claves de API, copia de seguridad automática y sincronización en tiempo real en la nube.",
+    "monthlyPrice": "Solo {{price}}",
+    "priceSubtext": "tras la 1ª semana gratis",
+    "viewInStore": "7 Días Gratis",
+    "consultInStoreSubtext": "Consulta el valor en la confirmación de Google Play",
+    "freeTrial": "7 días gratis en tu primera semana",
+    "subscribeButton": "Probar 7 Días Gratis",
+    "subscribedButton": "Suscripción Activa",
+    "restorePurchases": "Restaurar Compras",
+    "terms": "Cancela cuando quieras en Google Play o App Store. Renovación automática mensual tras el período de prueba.",
+    "features": {
+      "ai": "IA Integrada (DeepSeek & OpenAI) sin necesidad de configurar claves",
+      "cloudSync": "Sincronización instantánea y copia de seguridad en la nube",
+      "offlineFirst": "Completamente funcional offline cuando no tengas conexión",
+      "prioritySupport": "Acceso prioritario a nuevas funciones inteligentes"
+    }
+  },
+  "sync": {
+    "statusSaving": "Guardando...",
+    "statusCloud": "Nube",
+    "syncSuccess": "¡Datos sincronizados con éxito en la nube!",
+    "syncError": "No se pudo sincronizar en este momento. Tus datos permanecen seguros en tu dispositivo."
   }
 }

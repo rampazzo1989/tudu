@@ -68,8 +68,19 @@ export const useAISettings = () => {
     return getSecureApiKey(settings.provider);
   }, [settings.provider]);
 
+  const setAIMode = useCallback(
+    (mode: 'managed' | 'byok') => {
+      setSettings(prev => ({
+        ...prev,
+        mode,
+      }));
+    },
+    [setSettings],
+  );
+
   return {
     settings,
+    setAIMode,
     setProvider,
     saveApiKey,
     removeApiKey,

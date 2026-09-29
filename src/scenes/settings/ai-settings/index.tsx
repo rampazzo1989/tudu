@@ -34,8 +34,15 @@ import {
   HelpLinkText,
   IconButton,
   InputWrapper,
+  ModeCard,
+  ModeContainer,
+  ModeHeaderRow,
+  ModeSubtitle,
+  ModeTitle,
   PrimaryButton,
   PrimaryButtonText,
+  ProStatusBadge,
+  ProStatusText,
   ProviderEmoji,
   ProviderName,
   ProviderOption,
@@ -62,6 +69,7 @@ import {
   UsageTitle,
 } from './styles';
 import {AISettingsPageProps} from './types';
+import {useSubscription} from '../../../service/subscription';
 
 
 const PROVIDERS: {
@@ -95,11 +103,19 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
   const theme = useTheme();
   const {
     settings,
+    setAIMode,
     setProvider,
     saveApiKey,
     removeApiKey,
     toggleEmojiSuggestions,
   } = useAISettings();
+
+  const {
+    isPro,
+    status: subscriptionStatus,
+    openPaywall,
+    priceFormatted,
+  } = useSubscription();
 
   const {monthlyStats} = useAITokenUsage();
 
@@ -133,6 +149,16 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
     navigation.navigate('AIUsage');
   }, [navigation]);
 
+  const handleSelectMode = useCallback(
+    (mode: 'managed' | 'byok') => {
+      if (mode === 'managed' && !isPro) {
+        openPaywall();
+        return;
+      }
+      setAIMode(mode);
+    },
+    [isPro, openPaywall, setAIMode],
+  );
 
   const handleSelectProvider = useCallback(
     (provider: AIProvider) => {
@@ -211,6 +237,7 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
 
   const currentProviderConfig = PROVIDERS.find(p => p.id === selectedProvider);
   const isKeyConfigured = hasSecureApiKey(selectedProvider);
+  const isManaged = settings.mode === 'managed';
 
   return (
     <Page>
@@ -223,109 +250,185 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
         contentContainerStyle={styles.scrollContentContainer}
         keyboardShouldPersistTaps="handled">
         <Container>
-          {/* Provider Selection */}
+          {/* AI Mode Selection */}
           <Section>
-            <SectionTitle>{t('settings.ai.selectProvider')}</SectionTitle>
-            <ProvidersRow>
-              {PROVIDERS.map(p => {
-                const isSelected = selectedProvider === p.id;
-                return (
-                  <ProviderOption
-                    key={p.id}
-                    isSelected={isSelected}
-                    onPress={() => handleSelectProvider(p.id)}>
-                    <ProviderEmoji>{p.emoji}</ProviderEmoji>
-                    <ProviderName isSelected={isSelected}>
-                      {p.name}
-                    </ProviderName>
-                  </ProviderOption>
-                );
-              })}
-            </ProvidersRow>
+            <SectionTitle>{t('settings.ai.modeTitle', 'Modo de Inteligência Artificial')}</SectionTitle>
+            <ModeContainer>
+              <ModeCard
+                isSelected={isManaged}
+                onPress={() => handleSelectMode('managed')}>
+                <ModeHeaderRow>
+                  <ModeTitle isSelected={isManaged}>
+                    ✨ Tudú Cloud AI
+                  </ModeTitle>
+                  <ProStatusBadge isPro={isPro}>
+                    <ProStatusText>
+                      {isPro
+                        ? subscriptionStatus === 'trial'
+                          ? 'Teste Grátis'
+                          : 'Pro Ativo'
+                        : 'Tudú Pro'}
+                    </ProStatusText>
+                  </ProStatusBadge>
+                </ModeHeaderRow>
+                <ModeSubtitle>
+                  {t(
+                    'settings.ai.managedModeDescription',
+                    'IA integrada pronta para uso, sem necessidade de chaves de API. Backup e sincronização em nuvem inclusos.',
+                  )}
+                </ModeSubtitle>
+              </ModeCard>
+
+              <ModeCard
+                isSelected={!isManaged}
+                onPress={() => handleSelectMode('byok')}>
+                <ModeHeaderRow>
+                  <ModeTitle isSelected={!isManaged}>
+                    🔑 Traga sua Chave (BYOK)
+                  </ModeTitle>
+                  <ProStatusBadge isPro={false}>
+                    <ProStatusText>Grátis</ProStatusText>
+                  </ProStatusBadge>
+                </ModeHeaderRow>
+                <ModeSubtitle>
+                  {t(
+                    'settings.ai.byokModeDescription',
+                    'Use sua própria chave de API gratuita ou paga (Gemini, OpenAI ou Claude).',
+                  )}
+                </ModeSubtitle>
+              </ModeCard>
+            </ModeContainer>
           </Section>
 
-          {/* API Key Input & Config */}
-          <Section>
-            <SectionTitle>{t('settings.ai.apiKeyLabel')}</SectionTitle>
-            <Card>
-              <InputWrapper>
-                <StyledTextInput
-                  value={apiKeyInput}
-                  onChangeText={(text: string) => {
-                    setApiKeyInput(text);
-                    setTestResult(null);
-                  }}
-                  placeholder={t('settings.ai.apiKeyPlaceholder')}
-                  placeholderTextColor="#7E8895"
-                  secureTextEntry={!showKey}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  multiline={false}
-                  numberOfLines={1}
-                />
-                <IconButton onPress={() => setShowKey(!showKey)}>
-                  <Text style={{fontSize: 16}}>
-                    {showKey ? '👁️' : '🔒'}
-                  </Text>
-                </IconButton>
-              </InputWrapper>
-
-              {currentProviderConfig && (
-                <HelpLink
-                  onPress={() => Linking.openURL(currentProviderConfig.url)}>
-                  <HelpLinkText>
-                    {t('settings.ai.getApiKey')} ({currentProviderConfig.name}) ↗
-                  </HelpLinkText>
-                </HelpLink>
-              )}
-
-              <SecurityBadge>
-                <Text style={{fontSize: 16}}>🛡️</Text>
-                <SecurityText>
-                  {t('settings.ai.securityNotice')}
-                </SecurityText>
-              </SecurityBadge>
-
-              {testResult && (
-                <StatusFeedback isSuccess={testResult.success}>
-                  <StatusFeedbackText isSuccess={testResult.success}>
-                    {testResult.message}
-                  </StatusFeedbackText>
-                </StatusFeedback>
-              )}
-
-              <ButtonRow>
-                <PrimaryButton onPress={handleSaveKey}>
+          {/* Managed Mode Status Card */}
+          {isManaged ? (
+            <Section>
+              <SectionTitle>{t('settings.ai.managedStatusTitle', 'Status da Assinatura')}</SectionTitle>
+              <Card>
+                <ModeTitle style={{marginBottom: 6}}>
+                  {isPro ? '✨ Tudú Pro Ativo' : '🔒 Desbloqueie o Tudú Pro'}
+                </ModeTitle>
+                <ModeSubtitle style={{marginBottom: 16}}>
+                  {isPro
+                    ? 'Sua assinatura inclui acesso completo à IA em nuvem (DeepSeek & OpenAI), sincronização automática e backup seguro dos seus dados.'
+                    : priceFormatted
+                      ? `Assine por ${priceFormatted} com 7 dias grátis para usar IA sem chave de API e manter seus dados salvos na nuvem.`
+                      : 'Experimente 7 dias grátis para usar IA sem chave de API e manter seus dados salvos na nuvem.'}
+                </ModeSubtitle>
+                <PrimaryButton onPress={openPaywall}>
                   <PrimaryButtonText>
-                    {t('settings.ai.saveKey')}
+                    {isPro ? 'Gerenciar Assinatura' : 'Experimentar 7 Dias Grátis'}
                   </PrimaryButtonText>
                 </PrimaryButton>
+              </Card>
+            </Section>
+          ) : (
+            <>
+              {/* Provider Selection */}
+              <Section>
+                <SectionTitle>{t('settings.ai.selectProvider')}</SectionTitle>
+                <ProvidersRow>
+                  {PROVIDERS.map(p => {
+                    const isSelected = selectedProvider === p.id;
+                    return (
+                      <ProviderOption
+                        key={p.id}
+                        isSelected={isSelected}
+                        onPress={() => handleSelectProvider(p.id)}>
+                        <ProviderEmoji>{p.emoji}</ProviderEmoji>
+                        <ProviderName isSelected={isSelected}>
+                          {p.name}
+                        </ProviderName>
+                      </ProviderOption>
+                    );
+                  })}
+                </ProvidersRow>
+              </Section>
 
-                <SecondaryButton
-                  onPress={handleTestConnection}
-                  disabled={isTesting}>
-                  {isTesting ? (
-                    <ActivityIndicator
-                      size="small"
-                      color={theme.colors.contrastColor}
+              {/* API Key Input & Config */}
+              <Section>
+                <SectionTitle>{t('settings.ai.apiKeyLabel')}</SectionTitle>
+                <Card>
+                  <InputWrapper>
+                    <StyledTextInput
+                      value={apiKeyInput}
+                      onChangeText={(text: string) => {
+                        setApiKeyInput(text);
+                        setTestResult(null);
+                      }}
+                      placeholder={t('settings.ai.apiKeyPlaceholder')}
+                      placeholderTextColor="#7E8895"
+                      secureTextEntry={!showKey}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      multiline={false}
+                      numberOfLines={1}
                     />
-                  ) : (
-                    <SecondaryButtonText>
-                      {t('settings.ai.testConnection')}
-                    </SecondaryButtonText>
-                  )}
-                </SecondaryButton>
+                    <IconButton onPress={() => setShowKey(!showKey)}>
+                      <Text style={{fontSize: 16}}>
+                        {showKey ? '👁️' : '🔒'}
+                      </Text>
+                    </IconButton>
+                  </InputWrapper>
 
-                {isKeyConfigured && (
-                  <DangerButton onPress={handleRemoveKey}>
-                    <DangerButtonText>
-                      {t('settings.ai.removeKey')}
-                    </DangerButtonText>
-                  </DangerButton>
-                )}
-              </ButtonRow>
-            </Card>
-          </Section>
+                  {currentProviderConfig && (
+                    <HelpLink
+                      onPress={() => Linking.openURL(currentProviderConfig.url)}>
+                      <HelpLinkText>
+                        {t('settings.ai.getApiKey')} ({currentProviderConfig.name}) ↗
+                      </HelpLinkText>
+                    </HelpLink>
+                  )}
+
+                  <SecurityBadge>
+                    <Text style={{fontSize: 16}}>🛡️</Text>
+                    <SecurityText>
+                      {t('settings.ai.securityNotice')}
+                    </SecurityText>
+                  </SecurityBadge>
+
+                  {testResult && (
+                    <StatusFeedback isSuccess={testResult.success}>
+                      <StatusFeedbackText isSuccess={testResult.success}>
+                        {testResult.message}
+                      </StatusFeedbackText>
+                    </StatusFeedback>
+                  )}
+
+                  <ButtonRow>
+                    <PrimaryButton onPress={handleSaveKey}>
+                      <PrimaryButtonText>
+                        {t('settings.ai.saveKey')}
+                      </PrimaryButtonText>
+                    </PrimaryButton>
+
+                    <SecondaryButton
+                      onPress={handleTestConnection}
+                      disabled={isTesting}>
+                      {isTesting ? (
+                        <ActivityIndicator
+                          size="small"
+                          color={theme.colors.contrastColor}
+                        />
+                      ) : (
+                        <SecondaryButtonText>
+                          {t('settings.ai.testConnection')}
+                        </SecondaryButtonText>
+                      )}
+                    </SecondaryButton>
+
+                    {isKeyConfigured && (
+                      <DangerButton onPress={handleRemoveKey}>
+                        <DangerButtonText>
+                          {t('settings.ai.removeKey')}
+                        </DangerButtonText>
+                      </DangerButton>
+                    )}
+                  </ButtonRow>
+                </Card>
+              </Section>
+            </>
+          )}
 
           {/* AI Emoji Suggestions Toggle */}
           <Section>
@@ -341,9 +444,15 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
               </ToggleTextContainer>
               <Switch
                 value={
-                  settings.aiEmojiSuggestionsEnabled && isKeyConfigured
+                  isManaged
+                    ? settings.aiEmojiSuggestionsEnabled && isPro
+                    : settings.aiEmojiSuggestionsEnabled && isKeyConfigured
                 }
-                disabled={!isKeyConfigured && !apiKeyInput.trim()}
+                disabled={
+                  isManaged
+                    ? !isPro
+                    : !isKeyConfigured && !apiKeyInput.trim()
+                }
                 onValueChange={toggleEmojiSuggestions}
                 trackColor={{
                   false: '#3C414A',
@@ -354,28 +463,30 @@ const AISettingsPage: React.FC<AISettingsPageProps> = ({navigation}) => {
             </ToggleCard>
           </Section>
 
-          {/* AI Token Usage Summary Card */}
-          <Section>
-            <SectionTitle>{t('settings.ai.usage.title')}</SectionTitle>
-            <UsageCard onPress={handleUsagePress}>
-              <UsageCardLeftContent>
-                <UsageIconContainer>
-                  <Text style={{fontSize: 20}}>📊</Text>
-                </UsageIconContainer>
-                <UsageTextContainer>
-                  <UsageTitle>{t('settings.ai.usage.cardTitle')}</UsageTitle>
-                  <UsageSubtitle>
-                    {monthlyStats.totalTokens > 0
-                      ? t('settings.ai.usage.cardSubtitle', {
-                          tokens: monthlyStats.totalTokens.toLocaleString(),
-                        })
-                      : t('settings.ai.usage.cardSubtitleEmpty')}
-                  </UsageSubtitle>
-                </UsageTextContainer>
-              </UsageCardLeftContent>
-              <UsageChevron>›</UsageChevron>
-            </UsageCard>
-          </Section>
+          {/* AI Token Usage Summary Card (BYOK only) */}
+          {!isManaged && (
+            <Section>
+              <SectionTitle>{t('settings.ai.usage.title')}</SectionTitle>
+              <UsageCard onPress={handleUsagePress}>
+                <UsageCardLeftContent>
+                  <UsageIconContainer>
+                    <Text style={{fontSize: 20}}>📊</Text>
+                  </UsageIconContainer>
+                  <UsageTextContainer>
+                    <UsageTitle>{t('settings.ai.usage.cardTitle')}</UsageTitle>
+                    <UsageSubtitle>
+                      {monthlyStats.totalTokens > 0
+                        ? t('settings.ai.usage.cardSubtitle', {
+                            tokens: monthlyStats.totalTokens.toLocaleString(),
+                          })
+                        : t('settings.ai.usage.cardSubtitleEmpty')}
+                    </UsageSubtitle>
+                  </UsageTextContainer>
+                </UsageCardLeftContent>
+                <UsageChevron>›</UsageChevron>
+              </UsageCard>
+            </Section>
+          )}
         </Container>
       </PageContent>
     </Page>

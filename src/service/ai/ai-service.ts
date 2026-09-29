@@ -25,8 +25,14 @@ import {
   requestClaudeParseList,
   requestClaudeTasks,
 } from './adapters/claude';
-import {setRecoil} from 'recoil-nexus';
-import {aiTokenUsageState} from '../../state/atoms';
+import {setRecoil, getRecoil} from 'recoil-nexus';
+import {
+  aiSettingsState,
+  aiTokenUsageState,
+  paywallModalVisibleState,
+  subscriptionState,
+} from '../../state/atoms';
+import {tuduApi} from '../api/tudu-api';
 
 // In-memory cache for emoji suggestions: key -> string[]
 const emojiCache = new Map<string, string[]>();
@@ -159,6 +165,32 @@ export const suggestEmojisWithAI = async (
     return cached;
   }
 
+  const settings = getRecoil(aiSettingsState);
+  const subscription = getRecoil(subscriptionState);
+
+  // 1. Roteamento: Modo Gerenciado (Tudú Cloud AI)
+  if (settings?.mode === 'managed') {
+    if (!subscription?.isPro) {
+      console.warn('⚠️ [Tudú AI] Assinatura Tudú Pro necessária. Abrindo Paywall.');
+      setRecoil(paywallModalVisibleState, true);
+      throw new Error('SUBSCRIPTION_REQUIRED');
+    }
+
+    try {
+      const response = await tuduApi.ai.suggestEmojis(request);
+      if (response.emojis && response.emojis.length > 0) {
+        emojiCache.set(cacheKey, response.emojis);
+      }
+      return response.emojis || [];
+    } catch (apiError: any) {
+      if (apiError?.status === 403) {
+        setRecoil(paywallModalVisibleState, true);
+      }
+      throw apiError;
+    }
+  }
+
+  // 2. Roteamento: Modo Chave Própria (BYOK)
   const apiKey = getSecureApiKey(provider);
   if (!apiKey) {
     console.warn(`⚠️ [Tudú AI] Nenhuma chave de API configurada para o provedor: ${provider}`);
@@ -331,6 +363,32 @@ export const suggestTasksWithAI = async (
     }
   }
 
+  const settings = getRecoil(aiSettingsState);
+  const subscription = getRecoil(subscriptionState);
+
+  // 1. Roteamento: Modo Gerenciado (Tudú Cloud AI)
+  if (settings?.mode === 'managed') {
+    if (!subscription?.isPro) {
+      console.warn('⚠️ [Tudú AI] Assinatura Tudú Pro necessária. Abrindo Paywall.');
+      setRecoil(paywallModalVisibleState, true);
+      throw new Error('SUBSCRIPTION_REQUIRED');
+    }
+
+    try {
+      const response = await tuduApi.ai.suggestTasks(request);
+      if (response.suggestions && response.suggestions.length > 0) {
+        taskCache.set(cacheKey, response.suggestions);
+      }
+      return response.suggestions || [];
+    } catch (apiError: any) {
+      if (apiError?.status === 403) {
+        setRecoil(paywallModalVisibleState, true);
+      }
+      throw apiError;
+    }
+  }
+
+  // 2. Roteamento: Modo Chave Própria (BYOK)
   const apiKey = getSecureApiKey(provider);
   if (!apiKey) {
     console.warn(`⚠️ [Tudú AI] Nenhuma chave de API configurada para o provedor: ${provider}`);
@@ -650,6 +708,33 @@ export const parseListFromTextWithAI = async (
     return { title: '📝 Lista', items: [] };
   }
 
+  const settings = getRecoil(aiSettingsState);
+  const subscription = getRecoil(subscriptionState);
+
+  // 1. Roteamento: Modo Gerenciado (Tudú Cloud AI)
+  if (settings?.mode === 'managed') {
+    if (!subscription?.isPro) {
+      console.warn('⚠️ [Tudú AI] Assinatura Tudú Pro necessária. Abrindo Paywall.');
+      setRecoil(paywallModalVisibleState, true);
+      throw new Error('SUBSCRIPTION_REQUIRED');
+    }
+
+    try {
+      const response = await tuduApi.ai.parseList({
+        rawText: cleanText,
+        orderingType,
+        customPrompt,
+      });
+      return response.result;
+    } catch (apiError: any) {
+      if (apiError?.status === 403) {
+        setRecoil(paywallModalVisibleState, true);
+      }
+      throw apiError;
+    }
+  }
+
+  // 2. Roteamento: Modo Chave Própria (BYOK)
   const apiKey = getSecureApiKey(provider);
   if (!apiKey) {
     console.warn(`⚠️ [Tudú AI] Nenhuma chave de API configurada para o provedor: ${provider}`);

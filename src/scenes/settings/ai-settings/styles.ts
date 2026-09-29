@@ -270,3 +270,54 @@ export const UsageChevron = styled.Text`
   color: ${({theme}) => theme.colors.iconOverlay};
 `;
 
+export const ModeContainer = styled.View`
+  gap: 10px;
+  margin-bottom: 8px;
+`;
+
+export const ModeCard = styled(ShrinkableView)<{isSelected?: boolean}>`
+  background-color: ${({theme, isSelected}) =>
+    isSelected ? theme.colors.counterIconBackground : theme.colors.listCard};
+  border-radius: 14px;
+  padding: 16px;
+  border-width: 1.5px;
+  border-color: ${({theme, isSelected}) =>
+    isSelected ? theme.colors.primary : 'transparent'};
+`;
+
+export const ModeHeaderRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+`;
+
+export const ModeTitle = styled.Text<{isSelected?: boolean}>`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 15px;
+  font-weight: 700;
+  color: ${({theme, isSelected}) =>
+    isSelected ? theme.colors.contrastColor : theme.colors.text};
+`;
+
+export const ModeSubtitle = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  font-size: 12px;
+  color: ${({theme}) => theme.colors.iconOverlay};
+  line-height: 17px;
+`;
+
+export const ProStatusBadge = styled.View<{isPro?: boolean}>`
+  background-color: ${({isPro}) => (isPro ? '#10b981' : '#f59e0b')};
+  padding: 3px 8px;
+  border-radius: 8px;
+`;
+
+export const ProStatusText = styled.Text`
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+`;
+
+

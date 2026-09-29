@@ -8,14 +8,20 @@ import {
   LogoAndTitle,
   LogoIcon,
   LogoTitle,
+  ProHeaderBadgeButton,
+  ProHeaderIcon,
+  ProHeaderLabel,
   SearchAndProfile,
 } from './styles';
 import {HomeHeaderProps} from './types';
 import {SettingsIcon} from '../../../../components/animated-icons/settings-icon';
+import {SyncStatusIndicator} from '../../../../components/sync-status-indicator';
+import {useSubscription} from '../../../../service/subscription/useSubscription';
 
 const HomeHeader: React.FC<HomeHeaderProps> = memo(
-  ({onSearchPress, onSettingsPress}) => {
+  ({onSearchPress, onSettingsPress, onProPress}) => {
     const iconRef = useRef<AnimatedIconRef>(null);
+    const {isPro} = useSubscription();
 
     return (
       <Header pillWidth={178}>
@@ -25,7 +31,16 @@ const HomeHeader: React.FC<HomeHeaderProps> = memo(
             <LogoTitle />
           </LogoAndTitle>
           <SearchAndProfile>
-            <ShrinkableView onPress={onSearchPress}>
+            {!isPro && onProPress && (
+              <ShrinkableView onPress={onProPress} style={{marginRight: 6}}>
+                <ProHeaderBadgeButton>
+                  <ProHeaderIcon>👑</ProHeaderIcon>
+                  <ProHeaderLabel>PRO</ProHeaderLabel>
+                </ProHeaderBadgeButton>
+              </ShrinkableView>
+            )}
+            <SyncStatusIndicator />
+            <ShrinkableView onPress={onSearchPress} style={{marginLeft: 10}}>
               <SearchIcon animateWhenIdle size={30} />
             </ShrinkableView>
             <ShrinkableView

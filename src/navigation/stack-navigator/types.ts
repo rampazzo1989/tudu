@@ -21,6 +21,7 @@ type StackNavigatorParamList = {
   StarredTudus: ListCommonProps;
   Search: undefined;
   Settings: undefined;
+  SubscriptionSettings: undefined;
   AISettings: undefined;
   AIUsage: undefined;
   NotificationSettings: undefined;

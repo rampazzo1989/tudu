@@ -14,6 +14,7 @@ import {AllTudusPage} from '../../scenes/all-tudus';
 import {StarredTudusPage} from '../../scenes/starred-tudus';
 import {SearchPage} from '../../scenes/search';
 import {SettingsPage} from '../../scenes/settings';
+import {SubscriptionSettingsPage} from '../../scenes/settings/subscription-settings';
 import {AISettingsPage} from '../../scenes/settings/ai-settings';
 import {AIUsagePage} from '../../scenes/settings/ai-usage';
 import {NotificationSettingsPage} from '../../scenes/settings/notification-settings';
@@ -156,6 +157,17 @@ const StackNavigator: React.FC<StackNavigatorProps> = ({
       <Stack.Screen
         name="Settings"
         component={SettingsPage}
+        options={{
+          cardStyle: {backgroundColor: theme.colors.primary},
+          transitionSpec: {
+            open: configSlow,
+            close: configSlow,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="SubscriptionSettings"
+        component={SubscriptionSettingsPage}
         options={{
           cardStyle: {backgroundColor: theme.colors.primary},
           transitionSpec: {

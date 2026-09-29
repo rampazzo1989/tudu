@@ -215,6 +215,49 @@
   },
   "settings": {
     "title": "Impostazioni",
+    "subscription": {
+      "sectionTitle": "Abbonamento",
+      "pageTitle": "Tudú Pro",
+      "cardTitle": "Tudú Pro",
+      "cardSubtitleFree": "IA integrata senza chiavi, cloud e backup automatico. Prova 7 giorni gratis!",
+      "cardSubtitlePro": "Abbonamento attivo. Funzionalità IA e cloud sbloccate.",
+      "badgeFree": "7 GIORNI GRATIS",
+      "badgePro": "PRO ATTIVO",
+      "badgeTrial": "PROVA ATTIVA",
+      "benefitsTitle": "Vantaggi Esclusivi",
+      "benefits": {
+        "aiTitle": "IA Nativa Integrata",
+        "aiDesc": "Suggerimenti intelligenti di emoji, scomposizione automatica delle attività e importazione elenchi senza bisogno di chiavi API.",
+        "syncTitle": "Sincronizzazione Cloud in Tempo Reale",
+        "syncDesc": "Tutte le tue note, attività e contatori salvati all'istante e sincronizzati sul database.",
+        "backupTitle": "Backup e Multi-Dispositivo",
+        "backupDesc": "Ripristina i tuoi elenchi e contatori su qualsiasi dispositivo in qualsiasi momento con totale sicurezza.",
+        "earlyTitle": "Accesso Anticipato a Funzioni Pro",
+        "earlyDesc": "Ricevi per primo tutti i nuovi strumenti intelligenti e miglioramenti di Tudú.",
+        "privacyTitle": "Sicurezza e Privacy Totale",
+        "privacyDesc": "I tuoi dati sono protetti con crittografia avanzata e mai condivisi con terzi."
+      },
+      "buttons": {
+        "startTrial": "Prova 7 Giorni Gratis",
+        "manage": "Gestisci Abbonamento nello Store",
+        "restore": "Ripristina Acquisti"
+      },
+      "termsNote": "Abbonamento mensile ricorrente. Annulla quando vuoi su Google Play senza alcun addebito prima della fine della prova di 7 giorni.",
+      "reminder": {
+        "badge": "7 Giorni Gratis",
+        "title": "Prova Tudú Pro ⚡",
+        "priceSubtext": "/ mese dopo la 1ª settimana gratis",
+        "subtitle": "Sblocca l'IA nativa senza chiavi, sincronizzazione continua nel cloud e backup automatico gratis per un'intera settimana.",
+        "feat1Title": "IA Nativa Integrata",
+        "feat1Desc": "Suggerimenti intelligenti di attività ed emoji senza complicazioni di chiavi API.",
+        "feat2Title": "Sincronizzazione Cloud",
+        "feat2Desc": "Le tue attività e i tuoi contatori sincronizzati in tempo reale in tutta sicurezza.",
+        "feat3Title": "Backup e Multi-Dispositivo",
+        "feat3Desc": "Cambia dispositivo o recupera i tuoi dati in qualsiasi momento.",
+        "tryButton": "Prova 7 Giorni Gratis",
+        "dismissButton": "Non ora"
+      }
+    },
     "sections": {
       "ai": "Intelligenza Artificiale",
       "general": "Generale"
@@ -279,7 +322,17 @@
         "gemini": "Google Gemini",
         "openai": "OpenAI",
         "claude": "Anthropic Claude"
-      }
+      },
+      "modeTitle": "Modalità Intelligenza Artificiale",
+      "managedModeTitle": "Tudú Cloud AI",
+      "managedModeDescription": "IA integrata pronta all'uso senza chiavi API richieste. Backup e sincronizzazione cloud inclusi.",
+      "byokModeTitle": "Porta la Tua Chiave (BYOK)",
+      "byokModeDescription": "Usa la tua chiave API gratuita o a pagamento (Gemini, OpenAI o Claude).",
+      "managedStatusTitle": "Stato dell'Abbonamento",
+      "proActive": "Tudú Pro Attivo",
+      "proUnlock": "Sblocca Tudú Pro",
+      "manageSubscription": "Gestisci Abbonamento",
+      "tryFreeTrial": "Prova 7 Giorni Gratis"
     },
     "notifications": {
       "title": "Notifiche",
@@ -638,6 +691,34 @@
     "openSettings": "Apri Impostazioni",
     "errorTitle": "Riconoscimento Vocale",
     "error": "Impossibile riconoscere la voce. Riprova."
+  },
+  "subscription": {
+    "title": "Tudú Pro",
+    "badge": "PRO",
+    "trialBadge": "7 GIORNI GRATIS",
+    "headline": "Potenzia la tua produttività con Tudú Pro",
+    "subheadline": "IA illimitata senza chiavi API, backup automatico e sincronizzazione in tempo reale nel cloud.",
+    "monthlyPrice": "Solo {{price}}",
+    "priceSubtext": "dopo la 1ª settimana gratis",
+    "viewInStore": "7 Giorni Gratis",
+    "consultInStoreSubtext": "Consulta il valore nella conferma di Google Play",
+    "freeTrial": "7 giorni gratis durante la prima settimana",
+    "subscribeButton": "Prova 7 Giorni Gratis",
+    "subscribedButton": "Abbonamento Attivo",
+    "restorePurchases": "Ripristina Acquisti",
+    "terms": "Annulla in qualsiasi momento su Google Play o App Store. Rinnovo mensile automatico dopo il periodo di prova.",
+    "features": {
+      "ai": "IA Integrata (DeepSeek & OpenAI) senza configurazione di chiavi",
+      "cloudSync": "Sincronizzazione istantanea e backup automatico nel cloud",
+      "offlineFirst": "Completamente funzionante offline in assenza di connessione",
+      "prioritySupport": "Accesso anticipato a nuove funzionalità intelligenti"
+    }
+  },
+  "sync": {
+    "statusSaving": "Salvataggio...",
+    "statusCloud": "Cloud",
+    "syncSuccess": "Dati sincronizzati con successo nel cloud!",
+    "syncError": "Impossibile sincronizzare al momento. I tuoi dati restano al sicuro sul tuo dispositivo."
   }
 }
 
