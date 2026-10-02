@@ -3,6 +3,7 @@ import Purchases, { PurchasesOffering, PurchasesPackage } from 'react-native-pur
 import { getRecoil, setRecoil } from 'recoil-nexus';
 import {
   aiSettingsState,
+  cloudSyncState,
   subscriptionState,
   SubscriptionStatusType,
   userSessionState,
@@ -75,9 +76,13 @@ export class SubscriptionService {
       const customerInfo = await Purchases.getCustomerInfo();
       this.updateStateFromCustomerInfo(customerInfo);
 
+      // Synchronize with Tudú backend status
+      await this.syncWithBackend();
+
       // Listen for real-time updates
       Purchases.addCustomerInfoUpdateListener(info => {
         this.updateStateFromCustomerInfo(info);
+        this.syncWithBackend().catch(() => {});
       });
     } catch (error) {
       console.warn('[SubscriptionService] Error initializing RevenueCat:', error);
@@ -261,19 +266,49 @@ export class SubscriptionService {
    * Synchronizes subscription state with Tudú Backend.
    */
   static async syncWithBackend() {
-    const session = getRecoil(userSessionState);
+    let session = getRecoil(userSessionState);
+    if (!session?.token && __DEV__) {
+      try {
+        const { AuthService } = require('../auth/auth-service');
+        await AuthService.devLogin();
+        session = getRecoil(userSessionState);
+      } catch (e) {
+        // Fallback
+      }
+    }
     if (!session?.token) return;
 
     try {
       const status = await tuduApi.subscriptions.getStatus();
+      const currentSub = getRecoil(subscriptionState);
+      const isPro = Boolean(status.isPro || currentSub.isPro);
+
       setRecoil(subscriptionState, {
-        isPro: status.isPro,
+        isPro,
         status: status.status as SubscriptionStatusType,
         trialEndsAt: status.trialEndsAt,
         currentPeriodEndsAt: status.currentPeriodEndsAt,
       });
-      if (status.isPro) {
+
+      if (isPro) {
         this.enableEmojiSuggestionsIfDefault();
+
+        // Automatic Cloud Sync on App Startup / Pro Recognition:
+        // If lastSyncAt is unset or 0 (clean install / data wiped), restore data from cloud!
+        // Otherwise, run an incremental delta sync.
+        try {
+          const { SyncEngine } = require('../sync/sync-engine');
+          const syncState = getRecoil(cloudSyncState);
+          if (!syncState?.lastSyncAt) {
+            console.log('[SubscriptionService] Fresh start for Pro user: auto-restoring cloud data...');
+            await SyncEngine.restoreFromCloud();
+          } else {
+            console.log('[SubscriptionService] Pro user: auto-syncing delta...');
+            await SyncEngine.syncDelta();
+          }
+        } catch (syncErr) {
+          console.warn('[SubscriptionService] Auto-sync on startup error:', syncErr);
+        }
       }
     } catch (e) {
       console.warn('[SubscriptionService] Could not sync subscription with backend:', e);

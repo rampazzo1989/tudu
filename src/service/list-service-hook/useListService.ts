@@ -25,6 +25,7 @@ import { isOutdated } from '../../utils/date-utils';
 import { recalculateRecurrence, notificationSettingsState } from '../../state/atoms';
 import { notificationService } from '../notification';
 import { UNLOADED_ID } from '../../constants';
+import { SyncEngine } from '../sync/sync-engine';
 
 class SingletonBackup {
   private static instance: SingletonBackup;
@@ -257,6 +258,8 @@ const useListService = () => {
           notificationService.cancelTimedTudu(tudu.id);
         }
       });
+
+      SyncEngine.scheduleSync();
     },
     [
       setUnlistedTudus,
@@ -317,7 +320,8 @@ const useListService = () => {
       if (tudu.dueDate && tudu.recurrence && tudu.done && isOutdated(tudu.dueDate)) {
         setTimeout(() => setRecurrentTuduToRecalculate(tudu), 1000);
       }
-      
+
+      SyncEngine.scheduleSync();
     },
     [
       getTudusStateSetter,
@@ -389,6 +393,8 @@ const useListService = () => {
             notificationService.cancelTimedTudu(tudu.id);
           }
         });
+
+      SyncEngine.scheduleSync();
     },
     [
       getTudusStateSetter,
@@ -516,6 +522,8 @@ const useListService = () => {
         newMap = new Map([...newMap, ...previousState]);
         return newMap;
       });
+
+      SyncEngine.scheduleSync();
     },
     [getStateSetter],
   );
@@ -563,6 +571,8 @@ const useListService = () => {
           }
         });
       }
+
+      SyncEngine.scheduleSync();
     },
     [
       getStateSetter,
@@ -641,6 +651,8 @@ const useListService = () => {
 
         return newState;
       });
+
+      SyncEngine.scheduleSync();
     },
     [doStateBackup, getStateSetter, getTudusState, getTudusStateSetter],
   );
@@ -665,6 +677,8 @@ const useListService = () => {
 
         return newState;
       });
+
+      SyncEngine.scheduleSync();
     },
     [doStateBackup, getTudusStateSetter],
   );
@@ -696,6 +710,8 @@ const useListService = () => {
 
         return newState;
       });
+
+      SyncEngine.scheduleSync();
     },
     [doStateBackup, getTudusStateSetter],
   );
@@ -732,6 +748,8 @@ const useListService = () => {
         );
       }
     });
+
+    SyncEngine.scheduleSync();
   }, [
     getTudusStateSetter,
     notificationSettings.timedNotificationsEnabled,
@@ -807,6 +825,8 @@ const useListService = () => {
 
         return newState;
       });
+
+      SyncEngine.scheduleSync();
     },
     [
       customLists,
@@ -879,6 +899,8 @@ const useListService = () => {
 
         return newState;
       });
+
+      SyncEngine.scheduleSync();
     },
     [
       archivedLists,

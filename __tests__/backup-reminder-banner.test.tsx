@@ -115,7 +115,7 @@ import { ThemeProvider } from 'styled-components/native';
 import { darkTheme } from '../src/themes/dark';
 import Toast from 'react-native-toast-message';
 import { BackupReminderBanner } from '../src/components/backup-reminder-banner';
-import { backupSettingsState } from '../src/state/atoms';
+import { backupSettingsState, subscriptionState } from '../src/state/atoms';
 import { myLists, tudus } from '../src/scenes/home/state';
 import { PrimaryAction } from '../src/components/backup-reminder-banner/styles';
 
@@ -232,5 +232,46 @@ describe('BackupReminderBanner', () => {
     expect(mockSignInWithGoogle).not.toHaveBeenCalled();
     expect(mockUploadGoogleDriveBackup).not.toHaveBeenCalled();
     expect(onNavigateToBackupSettings).toHaveBeenCalled();
+  });
+
+  it('should not render banner if user has an active Pro subscription', async () => {
+    let testRenderer!: TestRenderer.ReactTestRenderer;
+
+    await act(async () => {
+      testRenderer = TestRenderer.create(
+        <RecoilRoot
+          initializeState={({ set }) => {
+            set(subscriptionState, {
+              isPro: true,
+              status: 'ACTIVE',
+              trialEndsAt: null,
+              currentPeriodEndsAt: null,
+            });
+            set(backupSettingsState, {
+              googleUser: null,
+              lastCloudBackupDate: null,
+              lastLocalBackupDate: null,
+              autoBackupEnabled: false,
+              autoBackupFrequency: 'daily',
+              reminderEnabled: true,
+              reminderIntervalDays: 7,
+              lastReminderDismissedDate: null,
+              lastAutoBackupError: null,
+              includeSettingsInBackup: true,
+            });
+            set(
+              myLists,
+              new Map([['list-1', { id: 'list-1', label: 'Minha Lista' }]]),
+            );
+            set(tudus, new Map());
+          }}>
+          <ThemeProvider theme={darkTheme}>
+            <BackupReminderBanner onNavigateToBackupSettings={onNavigateToBackupSettings} />
+          </ThemeProvider>
+        </RecoilRoot>,
+      );
+    });
+
+    expect(testRenderer.toJSON()).toBeNull();
   });
 });

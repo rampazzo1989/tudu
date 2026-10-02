@@ -3,19 +3,26 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { setRecoil, getRecoil } from 'recoil-nexus';
 import { tuduApi } from '../api/tudu-api';
 import {
+  backupSettingsState,
   subscriptionState,
   SubscriptionStatusType,
   userSessionState,
 } from '../../state/atoms';
+import { configureGoogleSignIn } from '../backup/googleAuthService';
+import { withAppLockSuppressed } from '../security';
 
 export class AuthService {
   /**
    * Performs Google Sign-In and authenticates with Tudú API.
+   * Also centralizes Google Drive backup so the same account is used for both.
    */
   static async signInWithGoogle() {
     try {
+      configureGoogleSignIn();
       await GoogleSignin.hasPlayServices();
-      const signInResult = await GoogleSignin.signIn();
+      const signInResult = await withAppLockSuppressed(async () => {
+        return await GoogleSignin.signIn();
+      });
       const tokens = await GoogleSignin.getTokens();
       const idToken = tokens.idToken;
 
@@ -35,6 +42,17 @@ export class AuthService {
         },
         token: accessToken,
       });
+
+      // Centralized account: automatically link Google Drive backup to the same account
+      setRecoil(backupSettingsState, prev => ({
+        ...prev,
+        googleUser: {
+          id: user.id,
+          email: user.email,
+          name: user.name || user.email.split('@')[0],
+          photo: user.avatarUrl,
+        },
+      }));
 
       // Synchronize subscription status after login
       await this.refreshSubscriptionStatus();
@@ -112,6 +130,17 @@ export class AuthService {
       token: accessToken,
     });
 
+    // In dev mode, also link backup settings for consistency
+    setRecoil(backupSettingsState, prev => ({
+      ...prev,
+      googleUser: prev.googleUser || {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        photo: user.avatarUrl,
+      },
+    }));
+
     await this.refreshSubscriptionStatus();
     return user;
   }
@@ -140,6 +169,7 @@ export class AuthService {
 
   /**
    * Signs out user and clears local session.
+   * Also disconnects the centralized Google Drive backup.
    */
   static async signOut() {
     try {
@@ -149,11 +179,12 @@ export class AuthService {
     }
 
     setRecoil(userSessionState, { user: null, token: null });
-    setRecoil(subscriptionState, {
-      isPro: false,
-      status: 'INACTIVE',
-      trialEndsAt: null,
-      currentPeriodEndsAt: null,
-    });
+
+    // Disconnect centralized backup account
+    setRecoil(backupSettingsState, prev => ({
+      ...prev,
+      googleUser: null,
+      autoBackupEnabled: false,
+    }));
   }
 }

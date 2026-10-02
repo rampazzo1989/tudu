@@ -78,8 +78,12 @@ export const PaywallModal: React.FC = () => {
     try {
       const success = await restorePurchases();
       if (success) {
-        Alert.alert('Sucesso', 'Assinatura restaurada com sucesso!');
-        SyncEngine.uploadInitialSnapshot();
+        const restored = await SyncEngine.restoreFromCloud();
+        if (restored) {
+          Alert.alert('Sucesso', 'Assinatura e dados da nuvem restaurados com sucesso!');
+        } else {
+          Alert.alert('Sucesso', 'Assinatura restaurada com sucesso!');
+        }
         setVisible(false);
       }
     } catch (err: any) {

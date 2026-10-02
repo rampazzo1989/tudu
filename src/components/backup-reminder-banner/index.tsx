@@ -1,7 +1,9 @@
 import React, { memo, useCallback } from 'react';
 import { ActivityIndicator, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useRecoilValue } from 'recoil';
 import Toast from 'react-native-toast-message';
+import { subscriptionState } from '../../state/atoms';
 import { useBackupReminder } from '../../service/backup/useBackupReminder';
 import { useBackupService } from '../../service/backup/useBackupService';
 import {
@@ -29,6 +31,7 @@ export const BackupReminderBanner: React.FC<BackupReminderBannerProps> = memo(
   ({ onNavigateToBackupSettings }) => {
     const { t } = useTranslation();
     const reminderInfo = useBackupReminder();
+    const subscription = useRecoilValue(subscriptionState);
     const {
       backupSettings,
       connectGoogle,
@@ -74,7 +77,7 @@ export const BackupReminderBanner: React.FC<BackupReminderBannerProps> = memo(
       onNavigateToBackupSettings,
     ]);
 
-    if (!reminderInfo.shouldShow) {
+    if (subscription.isPro || !reminderInfo.shouldShow) {
       return null;
     }
 

@@ -168,3 +168,127 @@ export const ProChevron = styled.Text`
   color: ${({theme}) => theme.colors.iconOverlay};
   margin-left: 8px;
 `;
+
+export const AccountCard = styled.View`
+  width: 100%;
+  background-color: ${({theme}) => theme.colors.listCard};
+  border-radius: 16px;
+  padding: 16px;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.08);
+`;
+
+export const AccountHeader = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const AccountUserRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  margin-right: 12px;
+`;
+
+export const AccountAvatarImage = styled.Image`
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  margin-right: 12px;
+  border-width: 1.5px;
+  border-color: #81C784;
+`;
+
+export const AccountAvatarFallback = styled.View`
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background-color: rgba(76, 175, 80, 0.25);
+  border-width: 1.5px;
+  border-color: #81C784;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+`;
+
+export const AccountAvatarFallbackText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 18px;
+  color: #81C784;
+  font-weight: 700;
+`;
+
+export const AccountInfoCol = styled.View`
+  flex: 1;
+`;
+
+export const AccountNameText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 16px;
+  color: ${({theme}) => theme.colors.text};
+  font-weight: 600;
+  margin-bottom: 2px;
+`;
+
+export const AccountEmailText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  font-size: 13px;
+  color: ${({theme}) => theme.colors.iconOverlay};
+`;
+
+export const AccountBadgeRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top-width: 1px;
+  border-top-color: rgba(255, 255, 255, 0.06);
+  justify-content: space-between;
+`;
+
+export const AccountSyncTag = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const AccountSyncText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  font-size: 12px;
+  color: #81C784;
+  font-weight: 500;
+`;
+
+export const AccountSignOutButton = styled.TouchableOpacity`
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: rgba(239, 68, 68, 0.15);
+  border-width: 1px;
+  border-color: rgba(239, 68, 68, 0.3);
+`;
+
+export const AccountSignOutButtonText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.default};
+  font-size: 12px;
+  color: #EF4444;
+  font-weight: 600;
+`;
+
+export const AccountConnectButton = styled(ShrinkableView)`
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: #4285F4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 4px;
+`;
+
+export const AccountConnectButtonText = styled.Text`
+  font-family: ${({theme}) => theme.fonts.sectionTitle};
+  font-size: 14px;
+  color: #FFFFFF;
+  font-weight: 600;
+  margin-left: 8px;
+`;

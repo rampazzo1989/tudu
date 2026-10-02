@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import { myLists as myListsAtom, hasTudusState } from '../../scenes/home/state';
-import { backupSettingsState } from '../../state/atoms';
+import { backupSettingsState, subscriptionState } from '../../state/atoms';
 import { useBackupService } from './useBackupService';
 
 export const useBackupReminder = () => {
   const backupSettings = useRecoilValue(backupSettingsState);
+  const subscription = useRecoilValue(subscriptionState);
   const myLists = useRecoilValue(myListsAtom);
   const hasTudus = useRecoilValue(hasTudusState);
   const { backupToGoogleDrive, recordAutoBackupError } = useBackupService();
@@ -14,6 +15,16 @@ export const useBackupReminder = () => {
 
   // 1. Calculate reminder conditions
   const reminderInfo = useMemo(() => {
+    // Pro subscribers have continuous Tudú Cloud sync; manual/drive reminder is not applicable
+    if (subscription.isPro) {
+      return {
+        shouldShow: false,
+        daysElapsed: 0,
+        isNever: false,
+        isAutoBackupFailed: false,
+      };
+    }
+
     const todayStr = new Date().toISOString().split('T')[0];
     const isDismissedToday = backupSettings.lastReminderDismissedDate === todayStr;
 

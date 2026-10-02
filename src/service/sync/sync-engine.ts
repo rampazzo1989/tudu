@@ -83,14 +83,51 @@ export class SyncEngine {
     }
   }
 
+  private static syncDebounceTimer: any = null;
+
+  /**
+   * Schedules a debounced delta sync (default 1200ms after user mutation).
+   */
+  static scheduleSync(delayMs: number = 1200) {
+    if (this.syncDebounceTimer) {
+      clearTimeout(this.syncDebounceTimer);
+    }
+    this.syncDebounceTimer = setTimeout(() => {
+      this.syncDebounceTimer = null;
+      this.syncDelta().catch(err => {
+        console.warn('[SyncEngine] Scheduled sync error:', err);
+      });
+    }, delayMs);
+  }
+
   /**
    * Performs an incremental bidirectional sync with the cloud database.
    */
   static async syncDelta(): Promise<boolean> {
     if (this.isSyncInProgress) return false;
 
-    const session = getRecoil(userSessionState);
-    const subscription = getRecoil(subscriptionState);
+    let session = getRecoil(userSessionState);
+    if (!session?.token && __DEV__) {
+      try {
+        const { AuthService } = require('../auth/auth-service');
+        await AuthService.devLogin();
+        session = getRecoil(userSessionState);
+      } catch (e) {
+        // Fallback
+      }
+    }
+
+    let subscription = getRecoil(subscriptionState);
+    if (!subscription.isPro && session?.token) {
+      try {
+        const { AuthService } = require('../auth/auth-service');
+        await AuthService.refreshSubscriptionStatus();
+        subscription = getRecoil(subscriptionState);
+      } catch (e) {
+        // Fallback
+      }
+    }
+
     const syncState = getRecoil(cloudSyncState);
 
     if (!session?.token || !subscription.isPro) {
@@ -178,19 +215,40 @@ export class SyncEngine {
    * Restores complete cloud backup into local storage.
    */
   static async restoreFromCloud(): Promise<boolean> {
-    const session = getRecoil(userSessionState);
+    let session = getRecoil(userSessionState);
+    if (!session?.token && __DEV__) {
+      try {
+        const { AuthService } = require('../auth/auth-service');
+        await AuthService.devLogin();
+        session = getRecoil(userSessionState);
+      } catch (e) {
+        // Fallback
+      }
+    }
     if (!session?.token) return false;
 
     try {
       setRecoil(cloudSyncState, prev => ({ ...prev, isSyncing: true }));
       const backupPayload = await tuduApi.sync.exportBackup();
-      await restoreStateFromPayload(backupPayload);
-      setRecoil(cloudSyncState, prev => ({
-        ...prev,
-        isSyncing: false,
-        lastSyncAt: Date.now(),
-      }));
-      return true;
+      const hasCloudData =
+        (backupPayload?.data?.myLists && backupPayload.data.myLists.length > 0) ||
+        (backupPayload?.data?.tudus && backupPayload.data.tudus.length > 0) ||
+        (backupPayload?.data?.counters && backupPayload.data.counters.length > 0);
+
+      if (hasCloudData) {
+        await restoreStateFromPayload(backupPayload);
+        setRecoil(cloudSyncState, prev => ({
+          ...prev,
+          isSyncing: false,
+          lastSyncAt: Date.now(),
+        }));
+        console.log('[SyncEngine] Restored state from cloud backup successfully.');
+        return true;
+      } else {
+        console.log('[SyncEngine] Cloud backup is empty, uploading initial snapshot...');
+        await this.uploadInitialSnapshot();
+        return true;
+      }
     } catch (error) {
       console.error('[SyncEngine] Error restoring from cloud:', error);
       setRecoil(cloudSyncState, prev => ({ ...prev, isSyncing: false }));

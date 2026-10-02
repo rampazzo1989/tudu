@@ -37,7 +37,10 @@ jest.mock('../src/service/api/tudu-api', () => ({
       exportBackup: jest.fn().mockResolvedValue({
         version: 1,
         timestamp: '2026-09-28',
-        data: {},
+        data: {
+          myLists: [['list_1', { id: 'list_1', label: 'Lista 1' }]],
+          tudus: [],
+        },
       }),
     },
   },

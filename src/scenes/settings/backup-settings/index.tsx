@@ -9,6 +9,7 @@ import { Page } from '../../../components/page';
 import { PageContent } from '../../../components/page-content';
 import { BackupPreviewInfo } from '../../../service/backup/types';
 import { useBackupService } from '../../../service/backup/useBackupService';
+import { useSubscription } from '../../../service/subscription/useSubscription';
 import { styles } from '../../home/styles';
 import {
   AccountCard,
@@ -74,6 +75,7 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
     toggleIncludeSettingsInBackup,
   } = useBackupService();
 
+  const { isPro } = useSubscription();
   const [previewData, setPreviewData] = useState<BackupPreviewInfo | null>(null);
   const [isRestoring, setIsRestoring] = useState<boolean>(false);
 
@@ -87,34 +89,51 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
 
   const handleConnect = useCallback(async () => {
     try {
-      await connectGoogle();
+      if (isPro) {
+        // Centralized login: connects Tudú Pro and Backup simultaneously
+        const { AuthService } = require('../../../service/auth/auth-service');
+        await AuthService.signInWithGoogle();
+      } else {
+        await connectGoogle();
+      }
       Toast.show({
         type: 'success',
         text1: t('settings.backup.connectSuccessTitle', { defaultValue: 'Conta conectada!' }),
         text2: t('settings.backup.connectSuccessMsg', { defaultValue: 'Sua conta Google foi conectada com sucesso.' }),
       });
     } catch (err: any) {
-      Toast.show({
-        type: 'error',
-        text1: t('settings.backup.connectErrorTitle', { defaultValue: 'Falha na Conexão' }),
-        text2: err.message || t('settings.backup.connectErrorMsg', { defaultValue: 'Não foi possível autenticar com o Google.' }),
-      });
+      if (err?.message !== 'Login cancelado pelo usuário.') {
+        Toast.show({
+          type: 'error',
+          text1: t('settings.backup.connectErrorTitle', { defaultValue: 'Falha na Conexão' }),
+          text2: err.message || t('settings.backup.connectErrorMsg', { defaultValue: 'Não foi possível autenticar com o Google.' }),
+        });
+      }
     }
-  }, [connectGoogle, t]);
+  }, [connectGoogle, isPro, t]);
 
   const handleDisconnect = useCallback(() => {
     Alert.alert(
-      t('settings.backup.disconnectTitle', { defaultValue: 'Desconectar Google Drive' }),
-      t('settings.backup.disconnectConfirm', {
-        defaultValue: 'Deseja realmente desconectar sua conta Google? O backup automático será desativado.',
-      }),
+      t('settings.backup.disconnectTitle', { defaultValue: 'Desconectar Conta' }),
+      isPro
+        ? t('settings.backup.disconnectProConfirm', {
+            defaultValue: 'Esta conta é a mesma vinculada ao seu Tudú Pro. Desconectar aqui também pausará a sincronização em nuvem.',
+          })
+        : t('settings.backup.disconnectConfirm', {
+            defaultValue: 'Deseja realmente desconectar sua conta Google? O backup automático será desativado.',
+          }),
       [
         { text: t('buttons.cancel'), style: 'cancel' },
         {
           text: t('buttons.yes'),
           style: 'destructive',
           onPress: async () => {
-            await disconnectGoogle();
+            if (isPro) {
+              const { AuthService } = require('../../../service/auth/auth-service');
+              await AuthService.signOut();
+            } else {
+              await disconnectGoogle();
+            }
             Toast.show({
               type: 'info',
               text1: t('settings.backup.disconnectedTitle', { defaultValue: 'Conta desconectada' }),
@@ -123,7 +142,7 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
         },
       ],
     );
-  }, [disconnectGoogle, t]);
+  }, [disconnectGoogle, isPro, t]);
 
   const handleCloudBackup = useCallback(async () => {
     try {
@@ -288,6 +307,11 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
                   <AccountDetails>
                     <AccountName numberOfLines={1}>{backupSettings.googleUser.name}</AccountName>
                     <AccountEmail numberOfLines={1}>{backupSettings.googleUser.email}</AccountEmail>
+                    {isPro && (
+                      <Text style={{ fontSize: 11, color: '#81C784', fontWeight: '600', marginTop: 3 }}>
+                        ⭐ {t('settings.backup.proLinked', { defaultValue: 'Vinculado à Conta Tudú Pro' })}
+                      </Text>
+                    )}
                   </AccountDetails>
                 </AccountInfo>
                 <DisconnectButton onPress={handleDisconnect}>
@@ -297,7 +321,11 @@ export const BackupSettingsPage: React.FC<BackupSettingsPageProps> = ({
             ) : (
               <ConnectButton onPress={handleConnect} disabled={isLoading}>
                 <Text style={{ fontSize: 18 }}>🇬</Text>
-                <ConnectButtonText>{t('settings.backup.connectGoogle', { defaultValue: 'Conectar Google Drive' })}</ConnectButtonText>
+                <ConnectButtonText>
+                  {isPro
+                    ? t('settings.backup.connectProGoogle', { defaultValue: 'Conectar Conta Tudú Pro' })
+                    : t('settings.backup.connectGoogle', { defaultValue: 'Conectar Google Drive' })}
+                </ConnectButtonText>
               </ConnectButton>
             )}
           </Section>

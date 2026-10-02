@@ -1,13 +1,15 @@
 import React, {useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
-import {Text} from 'react-native';
+import {ActivityIndicator, Alert, Text} from 'react-native';
 import {useRecoilValue} from 'recoil';
+import Toast from 'react-native-toast-message';
 import {SettingsIcon} from '../../components/animated-icons/settings-icon';
 import {DefaultHeader} from '../../components/default-header';
 import {Page} from '../../components/page';
 import {PageContent} from '../../components/page-content';
 import {aiSettingsState, backupSettingsState, notificationSettingsState, securitySettingsState} from '../../state/atoms';
 import {useSubscription} from '../../service/subscription/useSubscription';
+import {useAuth} from '../../service/auth/useAuth';
 import {useAITokenUsage} from '../../service/ai';
 import {useImportListService} from '../../service/list-sharing';
 import {ImportListModal} from '../../components/import-list-modal';
@@ -28,6 +30,22 @@ import {
   ProBadge,
   ProBadgeText,
   ProChevron,
+  AccountCard,
+  AccountHeader,
+  AccountUserRow,
+  AccountAvatarImage,
+  AccountAvatarFallback,
+  AccountAvatarFallbackText,
+  AccountInfoCol,
+  AccountNameText,
+  AccountEmailText,
+  AccountBadgeRow,
+  AccountSyncTag,
+  AccountSyncText,
+  AccountSignOutButton,
+  AccountSignOutButtonText,
+  AccountConnectButton,
+  AccountConnectButtonText,
 } from './styles';
 import {styles} from '../home/styles';
 import {SettingsPageProps} from './types';
@@ -35,6 +53,7 @@ import {SettingsPageProps} from './types';
 const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const {t} = useTranslation();
   const {isPro, status: subscriptionStatus} = useSubscription();
+  const {user, signInWithGoogle, signOut, loading: authLoading} = useAuth();
   const aiSettings = useRecoilValue(aiSettingsState);
   const notificationSettings = useRecoilValue(notificationSettingsState);
   const backupSettings = useRecoilValue(backupSettingsState);
@@ -76,6 +95,50 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
   const handleBackupSettingsPress = useCallback(() => {
     navigation.navigate('BackupSettings');
   }, [navigation]);
+
+  const handleConnectGoogle = useCallback(async () => {
+    try {
+      await signInWithGoogle();
+      Toast.show({
+        type: 'success',
+        text1: t('settings.account.connectSuccessTitle', { defaultValue: 'Conta Conectada!' }),
+        text2: t('settings.account.connectSuccessMsg', {
+          defaultValue: 'Sua conta foi vinculada ao Tudú Pro e ao Google Drive.',
+        }),
+      });
+    } catch (err: any) {
+      if (err?.message !== 'Login cancelado pelo usuário.') {
+        Toast.show({
+          type: 'error',
+          text1: t('settings.account.connectErrorTitle', { defaultValue: 'Falha na Conexão' }),
+          text2: err?.message || t('settings.account.connectErrorMsg', { defaultValue: 'Não foi possível conectar com o Google.' }),
+        });
+      }
+    }
+  }, [signInWithGoogle, t]);
+
+  const handleSignOut = useCallback(() => {
+    Alert.alert(
+      t('settings.account.signOutTitle', { defaultValue: 'Desconectar Conta' }),
+      t('settings.account.signOutConfirm', {
+        defaultValue: 'Deseja realmente sair da sua Conta Tudú Pro? O backup automático e a sincronização em nuvem serão pausados.',
+      }),
+      [
+        { text: t('buttons.cancel', { defaultValue: 'Cancelar' }), style: 'cancel' },
+        {
+          text: t('buttons.yes', { defaultValue: 'Sair' }),
+          style: 'destructive',
+          onPress: async () => {
+            await signOut();
+            Toast.show({
+              type: 'info',
+              text1: t('settings.account.signOutSuccess', { defaultValue: 'Conta desconectada com sucesso.' }),
+            });
+          },
+        },
+      ],
+    );
+  }, [signOut, t]);
 
 
   const getProviderName = (providerKey: string) => {
@@ -211,6 +274,91 @@ const SettingsPage: React.FC<SettingsPageProps> = ({navigation}) => {
               <ProChevron>›</ProChevron>
             </ProSettingsCard>
           </SectionContainer>
+
+          {/* Minha Conta Section (Exclusivo Tudú Pro) */}
+          {isPro && (
+            <SectionContainer>
+              <SectionTitleText>
+                {t('settings.account.sectionTitle', { defaultValue: 'Minha Conta' })}
+              </SectionTitleText>
+              <AccountCard>
+                {user ? (
+                  <>
+                    <AccountHeader>
+                      <AccountUserRow>
+                        {user.avatarUrl ? (
+                          <AccountAvatarImage source={{ uri: user.avatarUrl }} />
+                        ) : (
+                          <AccountAvatarFallback>
+                            <AccountAvatarFallbackText>
+                              {user.name
+                                ? user.name
+                                    .split(' ')
+                                    .map((n: string) => n[0])
+                                    .slice(0, 2)
+                                    .join('')
+                                    .toUpperCase()
+                                : 'U'}
+                            </AccountAvatarFallbackText>
+                          </AccountAvatarFallback>
+                        )}
+                        <AccountInfoCol>
+                          <AccountNameText numberOfLines={1}>
+                            {user.name || t('settings.account.defaultUserName', { defaultValue: 'Usuário Tudú Pro' })}
+                          </AccountNameText>
+                          <AccountEmailText numberOfLines={1}>{user.email}</AccountEmailText>
+                        </AccountInfoCol>
+                      </AccountUserRow>
+                      <AccountSignOutButton onPress={handleSignOut} disabled={authLoading}>
+                        <AccountSignOutButtonText>
+                          {t('settings.account.signOut', { defaultValue: 'Sair' })}
+                        </AccountSignOutButtonText>
+                      </AccountSignOutButton>
+                    </AccountHeader>
+
+                    <AccountBadgeRow>
+                      <AccountSyncTag>
+                        <Text style={{ fontSize: 14, marginRight: 6 }}>☁️</Text>
+                        <AccountSyncText>
+                          {t('settings.account.syncAndBackupActive', { defaultValue: 'Nuvem e Backup Integrados' })}
+                        </AccountSyncText>
+                      </AccountSyncTag>
+                      <ProBadge type={subscriptionStatus === 'TRIALING' ? 'trial' : 'active'}>
+                        <ProBadgeText type={subscriptionStatus === 'TRIALING' ? 'trial' : 'active'}>
+                          {subscriptionStatus === 'TRIALING' ? 'TESTE PRO' : 'TUDÚ PRO'}
+                        </ProBadgeText>
+                      </ProBadge>
+                    </AccountBadgeRow>
+                  </>
+                ) : (
+                  <>
+                    <CardTextContainer style={{ marginBottom: 10 }}>
+                      <CardTitle>
+                        {t('settings.account.connectTitle', { defaultValue: 'Vincular Conta Google' })}
+                      </CardTitle>
+                      <CardSubtitle>
+                        {t('settings.account.connectSubtitle', {
+                          defaultValue: 'Conecte sua conta para sincronização em nuvem e backup automático no Google Drive.',
+                        })}
+                      </CardSubtitle>
+                    </CardTextContainer>
+                    <AccountConnectButton onPress={handleConnectGoogle} disabled={authLoading}>
+                      {authLoading ? (
+                        <ActivityIndicator size="small" color="#FFFFFF" />
+                      ) : (
+                        <>
+                          <Text style={{ fontSize: 18 }}>🇬</Text>
+                          <AccountConnectButtonText>
+                            {t('settings.account.connectButton', { defaultValue: 'Conectar com o Google' })}
+                          </AccountConnectButtonText>
+                        </>
+                      )}
+                    </AccountConnectButton>
+                  </>
+                )}
+              </AccountCard>
+            </SectionContainer>
+          )}
 
           {/* Security & Lock Section */}
           <SectionContainer>
